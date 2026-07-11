@@ -153,7 +153,7 @@
         <div class="menu-list">
             <a href="<?= base_url('/members') ?>" class="menu-item">Data Anggota</a>
             <a href="<?= base_url('/structures') ?>" class="menu-item">Struktur Pengurus</a>
-            <div class="menu-item">Agenda Rapat</div>
+            <a href="<?= base_url('/meetings') ?>" class="menu-item">Agenda Rapat</a>
             <div class="menu-item">Absensi</div>
             <div class="menu-item">Kas Organisasi</div>
             <div class="menu-item">Laporan</div>
