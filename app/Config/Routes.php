@@ -11,3 +11,9 @@ $routes->post('/login', 'AuthController::attemptLogin');
 $routes->get('/logout', 'AuthController::logout');
 
 $routes->get('/dashboard', 'DashboardController::index', ['filter' => 'auth']);
+$routes->get('/members', 'MemberController::index', ['filter' => 'auth']);
+$routes->get('/members/create', 'MemberController::create', ['filter' => 'auth']);
+$routes->post('/members/store', 'MemberController::store', ['filter' => 'auth']);
+$routes->get('/members/edit/(:num)', 'MemberController::edit/$1', ['filter' => 'auth']);
+$routes->post('/members/update/(:num)', 'MemberController::update/$1', ['filter' => 'auth']);
+$routes->get('/members/delete/(:num)', 'MemberController::delete/$1', ['filter' => 'auth']);

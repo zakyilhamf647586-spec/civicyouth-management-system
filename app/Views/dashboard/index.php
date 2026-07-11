@@ -101,6 +101,8 @@
             border: 1px solid #d9e2ec;
             border-radius: 12px;
             background: #f8fafc;
+            text-decoration: none;
+            color: #102a43;
         }
 
         @media (max-width: 768px) {
@@ -149,7 +151,7 @@
         <p>Fitur utama CivicYouth Management System.</p>
 
         <div class="menu-list">
-            <div class="menu-item">Data Anggota</div>
+            <a href="<?= base_url('/members') ?>" class="menu-item">Data Anggota</a>
             <div class="menu-item">Struktur Pengurus</div>
             <div class="menu-item">Agenda Rapat</div>
             <div class="menu-item">Absensi</div>
