@@ -32,3 +32,10 @@ $routes->post('/meetings/store', 'MeetingController::store', ['filter' => 'auth'
 $routes->get('/meetings/edit/(:num)', 'MeetingController::edit/$1', ['filter' => 'auth']);
 $routes->post('/meetings/update/(:num)', 'MeetingController::update/$1', ['filter' => 'auth']);
 $routes->get('/meetings/delete/(:num)', 'MeetingController::delete/$1', ['filter' => 'auth']);
+
+$routes->get('/attendances', 'AttendanceController::index', ['filter' => 'auth']);
+$routes->get('/attendances/create', 'AttendanceController::create', ['filter' => 'auth']);
+$routes->post('/attendances/store', 'AttendanceController::store', ['filter' => 'auth']);
+$routes->get('/attendances/edit/(:num)', 'AttendanceController::edit/$1', ['filter' => 'auth']);
+$routes->post('/attendances/update/(:num)', 'AttendanceController::update/$1', ['filter' => 'auth']);
+$routes->get('/attendances/delete/(:num)', 'AttendanceController::delete/$1', ['filter' => 'auth']);
