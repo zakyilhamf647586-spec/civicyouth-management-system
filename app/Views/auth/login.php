@@ -52,14 +52,16 @@
                 <button type="submit" class="auth-btn">Masuk ke Dashboard</button>
             </form>
 
-            <div class="auth-note">
-                <strong>Akun Admin Default</strong><br>
-                Email: admin@civicyouth.local<br>
-                Password: admin123
-            </div>
+            <?php if (ENVIRONMENT === 'development') : ?>
+                <div class="auth-note">
+                    <strong>Akun Demo Lokal</strong><br>
+                    Email: admin@civicyouth.local<br>
+                    Password: admin123
+                </div>
+            <?php endif; ?>
 
             <div class="auth-footer">
-                CivicYouth Management System · Studi Kasus Karang Taruna RW 01
+                CivicYouth Management System · Karang Taruna RW 01 Kelurahan Randugarut
             </div>
         </div>
     </div>

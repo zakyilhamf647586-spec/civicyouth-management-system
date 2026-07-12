@@ -124,3 +124,7 @@ _modules/*
 
 /results/
 /phpunit.xml
+
+# Uploaded files
+public/uploads/activities/*
+!public/uploads/activities/.gitkeep
