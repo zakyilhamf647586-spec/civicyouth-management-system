@@ -211,4 +211,67 @@ class AttendanceController extends BaseController
 
         return view('attendances/recap', $data);
     }
+
+    public function recapPrint($meetingId)
+    {
+        $meetingId = (int) $meetingId;
+
+        $meeting = $this->meetingModel->find($meetingId);
+
+        if (!$meeting) {
+            return redirect()->to('/attendances')->with('error', 'Data rapat tidak ditemukan.');
+        }
+
+        $db = \Config\Database::connect();
+
+        $members = $db->table('members')
+            ->select('
+                members.id as member_id,
+                members.full_name,
+                members.rt,
+                members.position,
+                attendances.id as attendance_id,
+                attendances.attendance_status,
+                attendances.note
+            ')
+            ->join(
+                'attendances',
+                'attendances.member_id = members.id AND attendances.meeting_id = ' . $meetingId,
+                'left'
+            )
+            ->where('members.membership_status', 'active')
+            ->orderBy('members.rt', 'ASC')
+            ->orderBy('members.full_name', 'ASC')
+            ->get()
+            ->getResultArray();
+
+        $summary = [
+            'total_members' => count($members),
+            'present'       => 0,
+            'permission'    => 0,
+            'absent'        => 0,
+            'not_recorded'  => 0,
+        ];
+
+        foreach ($members as $member) {
+            if ($member['attendance_status'] === 'present') {
+                $summary['present']++;
+            } elseif ($member['attendance_status'] === 'permission') {
+                $summary['permission']++;
+            } elseif ($member['attendance_status'] === 'absent') {
+                $summary['absent']++;
+            } else {
+                $summary['not_recorded']++;
+            }
+        }
+
+        $data = [
+            'title'   => 'Cetak Rekap Absensi Rapat',
+            'meeting' => $meeting,
+            'members' => $members,
+            'summary' => $summary,
+        ];
+
+        return view('attendances/recap_print', $data);
+    }
 }

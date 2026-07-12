@@ -40,6 +40,7 @@ $routes->get('/attendances/edit/(:num)', 'AttendanceController::edit/$1', ['filt
 $routes->post('/attendances/update/(:num)', 'AttendanceController::update/$1', ['filter' => 'auth']);
 $routes->get('/attendances/delete/(:num)', 'AttendanceController::delete/$1', ['filter' => 'auth']);
 $routes->get('/attendances/recap/(:num)', 'AttendanceController::recap/$1', ['filter' => 'auth']);
+$routes->get('/attendances/recap/(:num)/print', 'AttendanceController::recapPrint/$1', ['filter' => 'auth']);
 
 $routes->get('/cash', 'CashTransactionController::index', ['filter' => 'auth']);
 $routes->get('/cash/create', 'CashTransactionController::create', ['filter' => 'auth']);

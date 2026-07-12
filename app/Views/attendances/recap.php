@@ -8,7 +8,15 @@
         <p>Ringkasan kehadiran anggota pada agenda rapat tertentu.</p>
     </div>
 
-    <a href="<?= base_url('/meetings') ?>" class="btn btn-secondary">Kembali ke Rapat</a>
+    <div>
+        <a href="<?= base_url('/attendances/recap/' . $meeting['id'] . '/print') ?>" class="btn btn-primary" target="_blank">
+            Cetak / Save PDF
+        </a>
+
+        <a href="<?= base_url('/meetings') ?>" class="btn btn-secondary">
+            Kembali ke Rapat
+        </a>
+    </div>
 </div>
 
 <div class="section">
