@@ -15,12 +15,45 @@ class ActivityController extends BaseController
 
     public function index()
     {
+        $keyword  = $this->request->getGet('keyword');
+        $status   = $this->request->getGet('status');
+        $dateFrom = $this->request->getGet('date_from');
+        $dateTo   = $this->request->getGet('date_to');
+
+        $query = $this->activityModel;
+
+        if (!empty($keyword)) {
+            $query = $query->groupStart()
+                ->like('title', $keyword)
+                ->orLike('location', $keyword)
+                ->orLike('description', $keyword)
+                ->orLike('result', $keyword)
+                ->groupEnd();
+        }
+
+        if (!empty($status)) {
+            $query = $query->where('status', $status);
+        }
+
+        if (!empty($dateFrom)) {
+            $query = $query->where('activity_date >=', $dateFrom);
+        }
+
+        if (!empty($dateTo)) {
+            $query = $query->where('activity_date <=', $dateTo);
+        }
+
         $data = [
             'title'      => 'Kegiatan',
-            'activities' => $this->activityModel
+            'activities' => $query
                 ->orderBy('activity_date', 'DESC')
                 ->orderBy('id', 'DESC')
-                ->findAll()
+                ->paginate(10, 'activities'),
+            'pager'      => $this->activityModel->pager,
+            'keyword'    => $keyword,
+            'status'     => $status,
+            'date_from'  => $dateFrom,
+            'date_to'    => $dateTo,
         ];
 
         return view('activities/index', $data);

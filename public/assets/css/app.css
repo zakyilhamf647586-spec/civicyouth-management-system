@@ -545,3 +545,13 @@ textarea {
         grid-template-columns: 1fr;
     }
 }
+
+.activity-filter-grid {
+    grid-template-columns: 1.5fr 1fr 1fr 1fr auto;
+}
+
+@media (max-width: 900px) {
+    .activity-filter-grid {
+        grid-template-columns: 1fr;
+    }
+}
