@@ -806,3 +806,31 @@ textarea {
 .table-card table .btn {
     white-space: nowrap;
 }
+
+.import-guide h3 {
+    margin-top: 0;
+    color: var(--navy-dark);
+}
+
+.import-guide p {
+    color: var(--muted);
+}
+
+.import-guide table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 14px;
+}
+
+.import-guide table th,
+.import-guide table td {
+    border: 1px solid var(--border);
+    padding: 10px;
+    font-size: 14px;
+    text-align: left;
+}
+
+.import-guide table th {
+    background: var(--navy);
+    color: white;
+}

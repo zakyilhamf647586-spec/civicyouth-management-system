@@ -9,6 +9,7 @@
     </div>
 
     <div>
+        <a href="<?= base_url('/imports/members') ?>" class="btn btn-secondary">Import Excel</a>
         <a href="<?= base_url('/exports/members') ?>" class="btn btn-secondary">Export Excel</a>
         <a href="<?= base_url('/members/create') ?>" class="btn btn-primary">+ Tambah Anggota</a>
     </div>

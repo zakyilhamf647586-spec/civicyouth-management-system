@@ -67,3 +67,7 @@ $routes->get('/reports/meetings', 'ReportController::meetings', ['filter' => 'au
 
 $routes->get('/exports/members', 'ExportController::members', ['filter' => 'auth']);
 $routes->get('/exports/cash', 'ExportController::cash', ['filter' => 'auth']);
+
+$routes->get('/imports/members', 'ImportController::membersForm', ['filter' => 'auth']);
+$routes->get('/imports/members/template', 'ImportController::membersTemplate', ['filter' => 'auth']);
+$routes->post('/imports/members', 'ImportController::membersImport', ['filter' => 'auth']);
