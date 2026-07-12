@@ -1,69 +1,447 @@
-# CodeIgniter 4 Application Starter
+# CivicYouth Management System
 
-## What is CodeIgniter?
+CivicYouth Management System adalah sistem informasi manajemen organisasi pemuda berbasis web yang dikembangkan menggunakan CodeIgniter 4 dan MySQL.
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](https://codeigniter.com).
+Project ini dibuat sebagai studi kasus nyata untuk membantu administrasi Karang Taruna RW 01 Kelurahan Randugarut dalam mengelola data anggota, struktur pengurus, agenda rapat, absensi rapat, kas organisasi, kegiatan, dan laporan.
 
-This repository holds a composer-installable app starter.
-It has been built from the
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
+Pada sisi portofolio, nama project ini adalah **CivicYouth Management System**.  
+Pada sisi penggunaan aplikasi, sistem ini diterapkan untuk **Karang Taruna RW 01 Kelurahan Randugarut**.
 
-More information about the plans for version 4 can be found in [CodeIgniter 4](https://forum.codeigniter.com/forumdisplay.php?fid=28) on the forums.
+---
 
-You can read the [user guide](https://codeigniter.com/user_guide/)
-corresponding to the latest version of the framework.
+## Studi Kasus
 
-## Installation & updates
+Aplikasi ini dikembangkan berdasarkan kebutuhan administrasi organisasi kepemudaan tingkat RW, khususnya:
 
-`composer create-project codeigniter4/appstarter` then `composer update` whenever
-there is a new release of the framework.
+**Karang Taruna RW 01 Kelurahan Randugarut**
 
-When updating, check the release notes to see if there are any changes you might need to apply
-to your `app` folder. The affected files can be copied or merged from
-`vendor/codeigniter4/framework/app`.
+Tujuan utama sistem ini adalah membantu pengurus organisasi agar proses administrasi menjadi lebih rapi, terdokumentasi, mudah dicari, dan lebih profesional.
 
-## Setup
+---
 
-Copy `env` to `.env` and tailor for your app, specifically the baseURL
-and any database settings.
+## Tujuan Project
 
-## Important Change with index.php
+Project ini dibuat untuk:
 
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
+- Membangun sistem administrasi organisasi pemuda berbasis web.
+- Mengelola data anggota secara lebih tertib.
+- Mencatat struktur kepengurusan organisasi.
+- Mengelola agenda rapat dan hasil keputusan rapat.
+- Mencatat absensi rapat.
+- Mengelola pemasukan dan pengeluaran kas organisasi.
+- Mendokumentasikan kegiatan organisasi.
+- Menyediakan laporan yang dapat dicetak atau disimpan sebagai PDF.
+- Menjadi portofolio pengembangan web berbasis studi kasus nyata.
 
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
+---
 
-**Please** read the user guide for a better explanation of how CI4 works!
+## Fitur Utama
 
-## Repository Management
+- Login admin
+- Dashboard ringkasan organisasi
+- Manajemen data anggota
+- Manajemen struktur pengurus
+- Manajemen agenda rapat
+- Manajemen absensi rapat
+- Manajemen kas organisasi
+- Manajemen kegiatan
+- Laporan data anggota
+- Laporan kas organisasi
+- Laporan agenda rapat
+- Halaman laporan printable / save as PDF
+- Branding visual Karang Taruna RW 01
 
-We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
+---
 
-This repository is a "distribution" one, built by our release preparation script.
-Problems with it can be raised on our forum, or as issues in the main repository.
+## Teknologi yang Digunakan
 
-## Server Requirements
+- PHP
+- CodeIgniter 4
+- MySQL
+- HTML
+- CSS
+- Git
+- GitHub
 
-PHP version 8.2 or higher is required, with the following extensions installed:
+---
 
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
+## Modul Sistem
 
-> [!WARNING]
-> - The end of life date for PHP 7.4 was November 28, 2022.
-> - The end of life date for PHP 8.0 was November 26, 2023.
-> - The end of life date for PHP 8.1 was December 31, 2025.
-> - If you are still using below PHP 8.2, you should upgrade immediately.
-> - The end of life date for PHP 8.2 will be December 31, 2026.
+### 1. Dashboard
 
-Additionally, make sure that the following extensions are enabled in your PHP:
+Dashboard digunakan untuk menampilkan ringkasan data utama organisasi, seperti total anggota, jumlah anggota aktif, dan saldo kas organisasi.
 
-- json (enabled by default - don't turn it off)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php) if you plan to use MySQL
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
+### 2. Data Anggota
+
+Modul ini digunakan untuk mencatat dan mengelola data anggota Karang Taruna, meliputi:
+
+- Nama lengkap
+- RT
+- Jenis kelamin
+- Tanggal lahir
+- Nomor HP
+- Alamat
+- Jabatan atau posisi
+- Status keanggotaan
+
+### 3. Struktur Pengurus
+
+Modul ini digunakan untuk mengelola susunan kepengurusan organisasi, meliputi:
+
+- Jabatan
+- Nama pengurus
+- Bidang atau seksi
+- Lingkup RT
+- Periode
+- Deskripsi tugas
+- Urutan tampilan
+- Status jabatan
+
+### 4. Agenda Rapat
+
+Modul ini digunakan untuk mencatat agenda rapat organisasi, meliputi:
+
+- Judul rapat
+- Tanggal rapat
+- Waktu mulai
+- Waktu selesai
+- Tempat rapat
+- Agenda pembahasan
+- Hasil keputusan
+- Catatan tambahan
+- Status rapat
+
+### 5. Absensi Rapat
+
+Modul ini digunakan untuk mencatat kehadiran anggota dalam agenda rapat, meliputi:
+
+- Agenda rapat
+- Nama anggota
+- Status kehadiran
+- Catatan kehadiran
+
+Status kehadiran yang tersedia:
+
+- Hadir
+- Izin
+- Tidak hadir
+
+### 6. Kas Organisasi
+
+Modul ini digunakan untuk mencatat pemasukan dan pengeluaran kas organisasi.
+
+Fitur pada modul kas:
+
+- Catat pemasukan
+- Catat pengeluaran
+- Kategori transaksi
+- Nominal transaksi
+- Keterangan transaksi
+- Pencatat transaksi
+- Perhitungan total pemasukan
+- Perhitungan total pengeluaran
+- Perhitungan saldo kas otomatis
+
+### 7. Kegiatan
+
+Modul ini digunakan untuk mencatat kegiatan organisasi, meliputi:
+
+- Nama kegiatan
+- Tanggal kegiatan
+- Lokasi kegiatan
+- Deskripsi kegiatan
+- Hasil kegiatan
+- Link dokumentasi
+- Status kegiatan
+
+Status kegiatan yang tersedia:
+
+- Direncanakan
+- Selesai
+- Dibatalkan
+
+### 8. Laporan
+
+Modul laporan digunakan untuk menampilkan laporan administrasi organisasi dalam bentuk halaman yang dapat dicetak atau disimpan sebagai PDF.
+
+Laporan yang tersedia:
+
+- Laporan data anggota
+- Laporan kas organisasi
+- Laporan agenda rapat
+
+---
+
+## Struktur Database
+
+Tabel utama yang digunakan dalam project ini:
+
+- `roles`
+- `users`
+- `members`
+- `organizational_structures`
+- `meetings`
+- `attendances`
+- `cash_transactions`
+- `activities`
+
+---
+
+## Cara Menjalankan Project
+
+### 1. Clone Repository
+
+Clone repository dari GitHub:
+
+```bash
+git clone https://github.com/zakyilhamf647586-spec/civicyouth-management-system.git
+```
+
+Masuk ke folder project:
+
+```bash
+cd civicyouth-management-system
+```
+
+---
+
+### 2. Install Dependency
+
+Jalankan perintah berikut:
+
+```bash
+composer install
+```
+
+---
+
+### 3. Buat File Environment
+
+Copy file `env` menjadi `.env`.
+
+Untuk Windows:
+
+```bash
+copy env .env
+```
+
+Untuk Linux / Mac:
+
+```bash
+cp env .env
+```
+
+---
+
+### 4. Konfigurasi File `.env`
+
+Buka file `.env`, lalu sesuaikan konfigurasi berikut:
+
+```env
+CI_ENVIRONMENT = development
+
+app.baseURL = 'http://localhost:8080/'
+
+database.default.hostname = localhost
+database.default.database = db_civicyouth
+database.default.username = root
+database.default.password =
+database.default.DBDriver = MySQLi
+database.default.DBPrefix =
+database.default.port = 3306
+```
+
+Pastikan tanda `#` di depan baris konfigurasi database sudah dihapus jika masih ada.
+
+---
+
+### 5. Buat Database
+
+Buka phpMyAdmin, lalu buat database baru dengan nama:
+
+```sql
+CREATE DATABASE db_civicyouth;
+```
+
+Atau buat secara manual melalui phpMyAdmin dengan nama:
+
+```text
+db_civicyouth
+```
+
+---
+
+### 6. Jalankan Migration
+
+Jalankan perintah berikut untuk membuat tabel database:
+
+```bash
+php spark migrate
+```
+
+---
+
+### 7. Jalankan Seeder
+
+Jalankan perintah berikut untuk membuat data awal, termasuk role dan akun admin:
+
+```bash
+php spark db:seed InitialSeeder
+```
+
+---
+
+### 8. Jalankan Server Lokal
+
+Jalankan server CodeIgniter:
+
+```bash
+php spark serve
+```
+
+Buka aplikasi di browser:
+
+```text
+http://localhost:8080
+```
+
+---
+
+## Akun Admin Default
+
+Gunakan akun berikut untuk login:
+
+```text
+Email    : admin@civicyouth.local
+Password : admin123
+```
+
+Catatan: akun ini digunakan untuk kebutuhan development lokal. Pada penggunaan nyata, password sebaiknya segera diganti.
+
+---
+
+## Struktur Folder Penting
+
+```text
+civicyouth-management-system/
+├── app/
+│   ├── Controllers/
+│   ├── Models/
+│   ├── Views/
+│   ├── Database/
+│   │   ├── Migrations/
+│   │   └── Seeds/
+│   └── Filters/
+├── public/
+│   └── assets/
+│       ├── css/
+│       └── img/
+├── writable/
+├── tests/
+├── env
+├── .gitignore
+├── composer.json
+├── spark
+└── README.md
+```
+
+---
+
+## Branding
+
+Aplikasi ini menggunakan identitas visual Karang Taruna RW 01 dengan warna utama:
+
+- Navy
+- Gold
+- Cream
+- Putih
+
+Pendekatan visual ini dipilih agar aplikasi terlihat formal, rapi, profesional, dan tetap sesuai dengan karakter organisasi kepemudaan.
+
+Nama aplikasi yang tampil di sistem:
+
+```text
+Karang Taruna RW 01
+Sistem Manajemen Organisasi Pemuda
+```
+
+Nama project untuk portofolio:
+
+```text
+CivicYouth Management System
+```
+
+---
+
+## Status Project
+
+Project ini berada pada tahap **MVP** atau versi awal.
+
+Fitur inti sudah tersedia dan dapat digunakan untuk kebutuhan administrasi dasar organisasi, seperti pengelolaan anggota, struktur, rapat, absensi, kas, kegiatan, dan laporan.
+
+---
+
+## Roadmap Pengembangan
+
+Pengembangan berikutnya dapat mencakup:
+
+- Export PDF otomatis
+- Export Excel
+- Upload foto kegiatan
+- Upload dokumen organisasi
+- Manajemen surat masuk dan surat keluar
+- Manajemen notulen rapat
+- Rekap absensi per rapat
+- Rekap kas per bulan
+- Role-based access control
+- Hak akses berdasarkan jabatan
+- API backend
+- Pencarian dan filter data
+- Dashboard statistik yang lebih lengkap
+- Versi modern menggunakan Next.js, TypeScript, Supabase, Tailwind CSS, dan Vercel
+
+---
+
+## Rencana Versi Modern
+
+Project ini dapat dikembangkan menjadi versi modern dengan stack:
+
+- Next.js
+- TypeScript
+- Supabase
+- Tailwind CSS
+- Vercel
+
+Versi modern tersebut dapat menjadi pengembangan lanjutan dari sistem ini dengan tampilan yang lebih modern, deployment online, dan arsitektur yang lebih fleksibel.
+
+---
+
+## Nilai Portofolio
+
+Project ini menunjukkan kemampuan dalam:
+
+- Membuat aplikasi web berbasis studi kasus nyata
+- Membangun CRUD dengan CodeIgniter 4
+- Merancang database relasional
+- Menggunakan migration dan seeder
+- Mengelola autentikasi login
+- Membuat dashboard sistem
+- Membuat laporan printable
+- Mengelola project dengan Git dan GitHub
+- Menyusun aplikasi dengan identitas visual organisasi
+- Mengubah kebutuhan organisasi menjadi sistem digital
+
+---
+
+## Author
+
+**Zaky Ilham Ferdiansyah**
+
+Mahasiswa Teknik Informatika  
+Ketua Karang Taruna RW 01 Kelurahan Randugarut
+
+---
+
+## Catatan
+
+Project ini dibuat sebagai bagian dari proses pembelajaran, pengembangan portofolio, dan penerapan teknologi informasi untuk kebutuhan administrasi organisasi pemuda di lingkungan masyarakat.
