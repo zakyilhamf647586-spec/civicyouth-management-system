@@ -773,3 +773,36 @@ textarea {
         flex-direction: column;
     }
 }
+
+.table-card table th,
+.table-card table td {
+    vertical-align: middle;
+}
+
+.table-card table td {
+    line-height: 1.35;
+}
+
+.table-card table td:nth-child(1),
+.table-card table td:nth-child(2),
+.table-card table td:nth-child(3),
+.table-card table td:nth-child(5),
+.table-card table td:last-child {
+    white-space: nowrap;
+}
+
+.table-card table td:nth-child(4),
+.table-card table td:nth-child(6),
+.table-card table td:nth-child(7) {
+    min-width: 120px;
+}
+
+.table-card table td:last-child {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.table-card table .btn {
+    white-space: nowrap;
+}
