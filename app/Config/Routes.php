@@ -39,3 +39,10 @@ $routes->post('/attendances/store', 'AttendanceController::store', ['filter' => 
 $routes->get('/attendances/edit/(:num)', 'AttendanceController::edit/$1', ['filter' => 'auth']);
 $routes->post('/attendances/update/(:num)', 'AttendanceController::update/$1', ['filter' => 'auth']);
 $routes->get('/attendances/delete/(:num)', 'AttendanceController::delete/$1', ['filter' => 'auth']);
+
+$routes->get('/cash', 'CashTransactionController::index', ['filter' => 'auth']);
+$routes->get('/cash/create', 'CashTransactionController::create', ['filter' => 'auth']);
+$routes->post('/cash/store', 'CashTransactionController::store', ['filter' => 'auth']);
+$routes->get('/cash/edit/(:num)', 'CashTransactionController::edit/$1', ['filter' => 'auth']);
+$routes->post('/cash/update/(:num)', 'CashTransactionController::update/$1', ['filter' => 'auth']);
+$routes->get('/cash/delete/(:num)', 'CashTransactionController::delete/$1', ['filter' => 'auth']);

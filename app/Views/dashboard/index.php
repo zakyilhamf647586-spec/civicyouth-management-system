@@ -142,7 +142,7 @@
 
         <div class="card">
             <span>Saldo Kas</span>
-            <h3>Rp0</h3>
+            <h3>Rp<?= number_format($cash_balance, 0, ',', '.') ?></h3>
         </div>
     </div>
 
@@ -155,7 +155,7 @@
             <a href="<?= base_url('/structures') ?>" class="menu-item">Struktur Pengurus</a>
             <a href="<?= base_url('/meetings') ?>" class="menu-item">Agenda Rapat</a>
             <a href="<?= base_url('/attendances') ?>" class="menu-item">Absensi</a>
-            <div class="menu-item">Kas Organisasi</div>
+            <a href="<?= base_url('/cash') ?>" class="menu-item">Kas Organisasi</a>
             <div class="menu-item">Laporan</div>
         </div>
     </div>
