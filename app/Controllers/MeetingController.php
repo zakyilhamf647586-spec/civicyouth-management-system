@@ -15,12 +15,46 @@ class MeetingController extends BaseController
 
     public function index()
     {
+        $keyword  = $this->request->getGet('keyword');
+        $status   = $this->request->getGet('status');
+        $dateFrom = $this->request->getGet('date_from');
+        $dateTo   = $this->request->getGet('date_to');
+
+        $query = $this->meetingModel;
+
+        if (!empty($keyword)) {
+            $query = $query->groupStart()
+                ->like('title', $keyword)
+                ->orLike('location', $keyword)
+                ->orLike('agenda', $keyword)
+                ->orLike('decisions', $keyword)
+                ->orLike('notes', $keyword)
+                ->groupEnd();
+        }
+
+        if (!empty($status)) {
+            $query = $query->where('status', $status);
+        }
+
+        if (!empty($dateFrom)) {
+            $query = $query->where('meeting_date >=', $dateFrom);
+        }
+
+        if (!empty($dateTo)) {
+            $query = $query->where('meeting_date <=', $dateTo);
+        }
+
         $data = [
-            'title'    => 'Agenda Rapat',
-            'meetings' => $this->meetingModel
+            'title'     => 'Agenda Rapat',
+            'meetings'  => $query
                 ->orderBy('meeting_date', 'DESC')
                 ->orderBy('id', 'DESC')
-                ->findAll()
+                ->paginate(10, 'meetings'),
+            'pager'     => $this->meetingModel->pager,
+            'keyword'   => $keyword,
+            'status'    => $status,
+            'date_from' => $dateFrom,
+            'date_to'   => $dateTo,
         ];
 
         return view('meetings/index', $data);

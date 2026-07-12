@@ -23,6 +23,47 @@
     </div>
 <?php endif; ?>
 
+<div class="filter-card">
+    <form action="<?= base_url('/meetings') ?>" method="get">
+        <div class="filter-grid meeting-filter-grid">
+            <div class="form-group">
+                <label>Cari Rapat</label>
+                <input
+                    type="text"
+                    name="keyword"
+                    value="<?= esc($keyword ?? '') ?>"
+                    placeholder="Cari judul, tempat, agenda, keputusan, atau catatan"
+                >
+            </div>
+
+            <div class="form-group">
+                <label>Status</label>
+                <select name="status">
+                    <option value="">Semua Status</option>
+                    <option value="scheduled" <?= ($status ?? '') === 'scheduled' ? 'selected' : '' ?>>Terjadwal</option>
+                    <option value="completed" <?= ($status ?? '') === 'completed' ? 'selected' : '' ?>>Selesai</option>
+                    <option value="cancelled" <?= ($status ?? '') === 'cancelled' ? 'selected' : '' ?>>Dibatalkan</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Dari Tanggal</label>
+                <input type="date" name="date_from" value="<?= esc($date_from ?? '') ?>">
+            </div>
+
+            <div class="form-group">
+                <label>Sampai Tanggal</label>
+                <input type="date" name="date_to" value="<?= esc($date_to ?? '') ?>">
+            </div>
+
+            <div class="filter-actions">
+                <button type="submit" class="btn btn-primary">Terapkan</button>
+                <a href="<?= base_url('/meetings') ?>" class="btn btn-secondary">Reset</a>
+            </div>
+        </div>
+    </form>
+</div>
+
 <div class="table-card">
     <table>
         <thead>
@@ -38,7 +79,13 @@
         </thead>
         <tbody>
             <?php if (!empty($meetings)) : ?>
-                <?php $no = 1; foreach ($meetings as $meeting) : ?>
+                <?php
+                    $currentPage = $pager->getCurrentPage('meetings');
+                    $perPage     = $pager->getPerPage('meetings');
+                    $no          = 1 + ($perPage * ($currentPage - 1));
+                ?>
+
+                <?php foreach ($meetings as $meeting) : ?>
                     <tr>
                         <td><?= $no++ ?></td>
                         <td>
@@ -75,11 +122,15 @@
                 <?php endforeach; ?>
             <?php else : ?>
                 <tr>
-                    <td colspan="7" class="empty">Belum ada agenda rapat.</td>
+                    <td colspan="7" class="empty">Data rapat tidak ditemukan.</td>
                 </tr>
             <?php endif; ?>
         </tbody>
     </table>
+
+    <div class="pagination-wrapper">
+        <?= $pager->only(['keyword', 'status', 'date_from', 'date_to'])->links('meetings', 'default_full') ?>
+    </div>
 </div>
 
 <?= $this->endSection() ?>

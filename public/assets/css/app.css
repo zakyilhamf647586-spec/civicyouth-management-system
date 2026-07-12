@@ -555,3 +555,13 @@ textarea {
         grid-template-columns: 1fr;
     }
 }
+
+.meeting-filter-grid {
+    grid-template-columns: 1.5fr 1fr 1fr 1fr auto;
+}
+
+@media (max-width: 900px) {
+    .meeting-filter-grid {
+        grid-template-columns: 1fr;
+    }
+}
