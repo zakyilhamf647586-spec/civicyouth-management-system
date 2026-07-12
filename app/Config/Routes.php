@@ -53,3 +53,8 @@ $routes->post('/activities/store', 'ActivityController::store', ['filter' => 'au
 $routes->get('/activities/edit/(:num)', 'ActivityController::edit/$1', ['filter' => 'auth']);
 $routes->post('/activities/update/(:num)', 'ActivityController::update/$1', ['filter' => 'auth']);
 $routes->get('/activities/delete/(:num)', 'ActivityController::delete/$1', ['filter' => 'auth']);
+
+$routes->get('/reports', 'ReportController::index', ['filter' => 'auth']);
+$routes->get('/reports/members', 'ReportController::members', ['filter' => 'auth']);
+$routes->get('/reports/cash', 'ReportController::cash', ['filter' => 'auth']);
+$routes->get('/reports/meetings', 'ReportController::meetings', ['filter' => 'auth']);

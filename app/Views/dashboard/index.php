@@ -157,7 +157,7 @@
             <a href="<?= base_url('/attendances') ?>" class="menu-item">Absensi</a>
             <a href="<?= base_url('/cash') ?>" class="menu-item">Kas Organisasi</a>
             <a href="<?= base_url('/activities') ?>" class="menu-item">Kegiatan</a>
-            <div class="menu-item">Laporan</div>
+            <a href="<?= base_url('/reports') ?>" class="menu-item">Laporan</a>
         </div>
     </div>
 </div>
