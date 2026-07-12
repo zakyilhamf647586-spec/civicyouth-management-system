@@ -8,7 +8,10 @@
         <p>Kelola data anggota Karang Taruna RW 01.</p>
     </div>
 
-    <a href="<?= base_url('/members/create') ?>" class="btn btn-primary">+ Tambah Anggota</a>
+    <div>
+        <a href="<?= base_url('/exports/members') ?>" class="btn btn-secondary">Export Excel</a>
+        <a href="<?= base_url('/members/create') ?>" class="btn btn-primary">+ Tambah Anggota</a>
+    </div>
 </div>
 
 <?php if (session()->getFlashdata('success')) : ?>

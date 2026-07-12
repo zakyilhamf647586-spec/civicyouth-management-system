@@ -64,3 +64,6 @@ $routes->get('/reports', 'ReportController::index', ['filter' => 'auth']);
 $routes->get('/reports/members', 'ReportController::members', ['filter' => 'auth']);
 $routes->get('/reports/cash', 'ReportController::cash', ['filter' => 'auth']);
 $routes->get('/reports/meetings', 'ReportController::meetings', ['filter' => 'auth']);
+
+$routes->get('/exports/members', 'ExportController::members', ['filter' => 'auth']);
+$routes->get('/exports/cash', 'ExportController::cash', ['filter' => 'auth']);

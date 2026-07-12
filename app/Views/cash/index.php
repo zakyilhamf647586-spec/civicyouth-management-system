@@ -8,7 +8,10 @@
         <p>Kelola pemasukan, pengeluaran, dan saldo kas Karang Taruna RW 01.</p>
     </div>
 
-    <a href="<?= base_url('/cash/create') ?>" class="btn btn-primary">+ Tambah Transaksi</a>
+    <div>
+        <a href="<?= base_url('/exports/cash') ?>" class="btn btn-secondary">Export Excel</a>
+        <a href="<?= base_url('/cash/create') ?>" class="btn btn-primary">+ Tambah Transaksi</a>
+    </div>
 </div>
 
 <div class="cards">
