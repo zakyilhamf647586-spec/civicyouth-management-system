@@ -20,7 +20,7 @@
 <?php endif; ?>
 
 <div class="form-card">
-    <form action="<?= base_url('/activities/store') ?>" method="post">
+    <form action="<?= base_url('/activities/store') ?>" method="post" enctype="multipart/form-data">
         <?= csrf_field() ?>
 
         <div class="form-group">
@@ -53,6 +53,12 @@
         <div class="form-group">
             <label>Link Dokumentasi</label>
             <input type="text" name="documentation_link" value="<?= old('documentation_link') ?>" placeholder="Contoh: Link Google Drive / Instagram / dokumentasi">
+        </div>
+
+        <div class="form-group">
+            <label>Upload Foto Dokumentasi</label>
+            <input type="file" name="documentation_file" accept=".jpg,.jpeg,.png,.webp">
+            <small>Format yang didukung: JPG, JPEG, PNG, WEBP. Maksimal 2MB.</small>
         </div>
 
         <div class="form-group">

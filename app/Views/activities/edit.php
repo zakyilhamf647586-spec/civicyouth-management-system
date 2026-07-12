@@ -20,7 +20,7 @@
 <?php endif; ?>
 
 <div class="form-card">
-    <form action="<?= base_url('/activities/update/' . $activity['id']) ?>" method="post">
+    <form action="<?= base_url('/activities/update/' . $activity['id']) ?>" method="post" enctype="multipart/form-data">
         <?= csrf_field() ?>
 
         <div class="form-group">
@@ -54,6 +54,23 @@
             <label>Link Dokumentasi</label>
             <input type="text" name="documentation_link" value="<?= old('documentation_link', $activity['documentation_link']) ?>">
         </div>
+
+        <div class="form-group">
+            <label>Upload Foto Dokumentasi Baru</label>
+            <input type="file" name="documentation_file" accept=".jpg,.jpeg,.png,.webp">
+            <small>Kosongkan jika tidak ingin mengganti foto dokumentasi.</small>
+        </div>
+
+        <?php if (!empty($activity['documentation_file'])) : ?>
+            <div class="form-group">
+                <label>Dokumentasi Saat Ini</label><br>
+                <img
+                    src="<?= base_url('uploads/activities/' . $activity['documentation_file']) ?>"
+                    alt="Dokumentasi Kegiatan"
+                    style="max-width: 220px; border-radius: 12px; border: 1px solid #ddd;"
+                >
+            </div>
+        <?php endif; ?>
 
         <div class="form-group">
             <label>Status Kegiatan</label>

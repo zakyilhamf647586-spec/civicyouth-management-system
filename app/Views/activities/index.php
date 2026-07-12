@@ -106,8 +106,16 @@
                             <?php endif; ?>
                         </td>
                         <td>
-                            <?php if (!empty($activity['documentation_link'])) : ?>
-                                <a href="<?= esc($activity['documentation_link']) ?>" target="_blank" class="btn btn-primary">Lihat</a>
+                            <?php if (!empty($activity['documentation_file'])) : ?>
+                                <a href="<?= base_url('uploads/activities/' . $activity['documentation_file']) ?>" target="_blank">
+                                    <img
+                                        src="<?= base_url('uploads/activities/' . $activity['documentation_file']) ?>"
+                                        alt="Dokumentasi"
+                                        class="activity-thumbnail"
+                                    >
+                                </a>
+                            <?php elseif (!empty($activity['documentation_link'])) : ?>
+                                <a href="<?= esc($activity['documentation_link']) ?>" target="_blank" class="btn btn-primary">Lihat Link</a>
                             <?php else : ?>
                                 -
                             <?php endif; ?>

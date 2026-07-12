@@ -74,6 +74,14 @@ class ActivityController extends BaseController
             'title'         => 'required|min_length[3]',
             'activity_date' => 'required|valid_date',
             'status'        => 'required|in_list[planned,completed,cancelled]',
+            'documentation_file' => [
+                'rules' => 'if_exist|max_size[documentation_file,2048]|is_image[documentation_file]|mime_in[documentation_file,image/jpg,image/jpeg,image/png,image/webp]',
+                'errors' => [
+                    'max_size' => 'Ukuran foto dokumentasi maksimal 2MB.',
+                    'is_image' => 'File dokumentasi harus berupa gambar.',
+                    'mime_in'  => 'Format gambar harus JPG, JPEG, PNG, atau WEBP.',
+                ],
+            ],
         ];
 
         if (!$this->validate($rules)) {
@@ -82,14 +90,23 @@ class ActivityController extends BaseController
                 ->with('errors', $this->validator->getErrors());
         }
 
+        $fileName = null;
+        $file = $this->request->getFile('documentation_file');
+
+        if ($file && $file->isValid() && !$file->hasMoved()) {
+            $fileName = $file->getRandomName();
+            $file->move(FCPATH . 'uploads/activities', $fileName);
+        }
+
         $this->activityModel->save([
             'title'              => $this->request->getPost('title'),
+            'description'        => $this->request->getPost('description'),
             'activity_date'      => $this->request->getPost('activity_date'),
             'location'           => $this->request->getPost('location'),
-            'description'        => $this->request->getPost('description'),
-            'result'             => $this->request->getPost('result'),
-            'documentation_link' => $this->request->getPost('documentation_link'),
             'status'             => $this->request->getPost('status'),
+            'documentation_link' => $this->request->getPost('documentation_link'),
+            'documentation_file' => $fileName,
+            'result'             => $this->request->getPost('result'),
         ]);
 
         return redirect()->to('/activities')->with('success', 'Data kegiatan berhasil ditambahkan.');
@@ -123,6 +140,14 @@ class ActivityController extends BaseController
             'title'         => 'required|min_length[3]',
             'activity_date' => 'required|valid_date',
             'status'        => 'required|in_list[planned,completed,cancelled]',
+            'documentation_file' => [
+                'rules' => 'if_exist|max_size[documentation_file,2048]|is_image[documentation_file]|mime_in[documentation_file,image/jpg,image/jpeg,image/png,image/webp]',
+                'errors' => [
+                    'max_size' => 'Ukuran foto dokumentasi maksimal 2MB.',
+                    'is_image' => 'File dokumentasi harus berupa gambar.',
+                    'mime_in'  => 'Format gambar harus JPG, JPEG, PNG, atau WEBP.',
+                ],
+            ],
         ];
 
         if (!$this->validate($rules)) {
@@ -131,14 +156,27 @@ class ActivityController extends BaseController
                 ->with('errors', $this->validator->getErrors());
         }
 
+        $fileName = $activity['documentation_file'] ?? null;
+        $file = $this->request->getFile('documentation_file');
+
+        if ($file && $file->isValid() && !$file->hasMoved()) {
+            if (!empty($fileName) && file_exists(FCPATH . 'uploads/activities/' . $fileName)) {
+                unlink(FCPATH . 'uploads/activities/' . $fileName);
+            }
+
+            $fileName = $file->getRandomName();
+            $file->move(FCPATH . 'uploads/activities', $fileName);
+        }
+
         $this->activityModel->update($id, [
             'title'              => $this->request->getPost('title'),
+            'description'        => $this->request->getPost('description'),
             'activity_date'      => $this->request->getPost('activity_date'),
             'location'           => $this->request->getPost('location'),
-            'description'        => $this->request->getPost('description'),
-            'result'             => $this->request->getPost('result'),
-            'documentation_link' => $this->request->getPost('documentation_link'),
             'status'             => $this->request->getPost('status'),
+            'documentation_link' => $this->request->getPost('documentation_link'),
+            'documentation_file' => $fileName,
+            'result'             => $this->request->getPost('result'),
         ]);
 
         return redirect()->to('/activities')->with('success', 'Data kegiatan berhasil diperbarui.');

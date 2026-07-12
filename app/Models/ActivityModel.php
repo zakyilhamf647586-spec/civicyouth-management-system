@@ -16,6 +16,7 @@ class ActivityModel extends Model
         'description',
         'result',
         'documentation_link',
+        'documentation_file',
         'status'
     ];
 
