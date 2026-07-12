@@ -8,7 +8,7 @@
         <p>Perbarui agenda rapat, anggota, status kehadiran, atau catatan absensi.</p>
     </div>
 
-    <a href="<?= base_url('/attendances') ?>" class="btn btn-secondary">Kembali</a>
+    <a href="<?= base_url('/attendances/recap/' . $attendance['meeting_id']) ?>" class="btn btn-secondary">Kembali</a>
 </div>
 
 <?php if (session()->getFlashdata('errors')) : ?>
@@ -62,7 +62,7 @@
         </div>
 
         <button type="submit" class="btn btn-primary">Update Absensi</button>
-        <a href="<?= base_url('/attendances') ?>" class="btn btn-secondary">Batal</a>
+        <a href="<?= base_url('/attendances/recap/' . $attendance['meeting_id']) ?>" class="btn btn-secondary">Batal</a>
     </form>
 </div>
 

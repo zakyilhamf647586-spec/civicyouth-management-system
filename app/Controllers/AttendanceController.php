@@ -72,14 +72,28 @@ class AttendanceController extends BaseController
                 ->with('errors', $this->validator->getErrors());
         }
 
+        $meetingId = $this->request->getPost('meeting_id');
+        $memberId  = $this->request->getPost('member_id');
+
+        $existingAttendance = $this->attendanceModel
+            ->where('meeting_id', $meetingId)
+            ->where('member_id', $memberId)
+            ->first();
+
+        if ($existingAttendance) {
+            return redirect()->to('/attendances/edit/' . $existingAttendance['id'])
+                ->with('error', 'Absensi anggota ini untuk rapat tersebut sudah ada. Silakan edit data yang sudah tercatat.');
+        }
+
         $this->attendanceModel->save([
-            'meeting_id'        => $this->request->getPost('meeting_id'),
-            'member_id'         => $this->request->getPost('member_id'),
+            'meeting_id'        => $meetingId,
+            'member_id'         => $memberId,
             'attendance_status' => $this->request->getPost('attendance_status'),
             'note'              => $this->request->getPost('note'),
         ]);
 
-        return redirect()->to('/attendances')->with('success', 'Data absensi berhasil ditambahkan.');
+        return redirect()->to('/attendances/recap/' . $meetingId)
+            ->with('success', 'Data absensi berhasil ditambahkan.');
     }
 
     public function edit($id)
@@ -125,14 +139,32 @@ class AttendanceController extends BaseController
                 ->with('errors', $this->validator->getErrors());
         }
 
+        $meetingId = $this->request->getPost('meeting_id');
+        $memberId  = $this->request->getPost('member_id');
+
+        $duplicateAttendance = $this->attendanceModel
+            ->where('meeting_id', $meetingId)
+            ->where('member_id', $memberId)
+            ->where('id !=', $id)
+            ->first();
+
+        if ($duplicateAttendance) {
+            return redirect()->back()
+                ->withInput()
+                ->with('errors', [
+                    'duplicate' => 'Absensi anggota ini untuk rapat tersebut sudah tercatat pada data lain.'
+                ]);
+        }
+
         $this->attendanceModel->update($id, [
-            'meeting_id'        => $this->request->getPost('meeting_id'),
-            'member_id'         => $this->request->getPost('member_id'),
+            'meeting_id'        => $meetingId,
+            'member_id'         => $memberId,
             'attendance_status' => $this->request->getPost('attendance_status'),
             'note'              => $this->request->getPost('note'),
         ]);
 
-        return redirect()->to('/attendances')->with('success', 'Data absensi berhasil diperbarui.');
+        return redirect()->to('/attendances/recap/' . $meetingId)
+            ->with('success', 'Data absensi berhasil diperbarui.');
     }
 
     public function delete($id)

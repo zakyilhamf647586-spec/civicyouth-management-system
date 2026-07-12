@@ -19,6 +19,18 @@
     </div>
 </div>
 
+<?php if (session()->getFlashdata('success')) : ?>
+    <div class="alert-success">
+        <?= session()->getFlashdata('success') ?>
+    </div>
+<?php endif; ?>
+
+<?php if (session()->getFlashdata('error')) : ?>
+    <div class="alert-error">
+        <?= session()->getFlashdata('error') ?>
+    </div>
+<?php endif; ?>
+
 <div class="section">
     <h3><?= esc($meeting['title']) ?></h3>
     <p>
