@@ -156,6 +156,7 @@
             <a href="<?= base_url('/meetings') ?>" class="menu-item">Agenda Rapat</a>
             <a href="<?= base_url('/attendances') ?>" class="menu-item">Absensi</a>
             <a href="<?= base_url('/cash') ?>" class="menu-item">Kas Organisasi</a>
+            <a href="<?= base_url('/activities') ?>" class="menu-item">Kegiatan</a>
             <div class="menu-item">Laporan</div>
         </div>
     </div>

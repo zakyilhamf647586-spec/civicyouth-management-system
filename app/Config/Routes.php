@@ -46,3 +46,10 @@ $routes->post('/cash/store', 'CashTransactionController::store', ['filter' => 'a
 $routes->get('/cash/edit/(:num)', 'CashTransactionController::edit/$1', ['filter' => 'auth']);
 $routes->post('/cash/update/(:num)', 'CashTransactionController::update/$1', ['filter' => 'auth']);
 $routes->get('/cash/delete/(:num)', 'CashTransactionController::delete/$1', ['filter' => 'auth']);
+
+$routes->get('/activities', 'ActivityController::index', ['filter' => 'auth']);
+$routes->get('/activities/create', 'ActivityController::create', ['filter' => 'auth']);
+$routes->post('/activities/store', 'ActivityController::store', ['filter' => 'auth']);
+$routes->get('/activities/edit/(:num)', 'ActivityController::edit/$1', ['filter' => 'auth']);
+$routes->post('/activities/update/(:num)', 'ActivityController::update/$1', ['filter' => 'auth']);
+$routes->get('/activities/delete/(:num)', 'ActivityController::delete/$1', ['filter' => 'auth']);
