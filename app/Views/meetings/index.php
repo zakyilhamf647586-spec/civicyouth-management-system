@@ -74,7 +74,7 @@
                 <th>Waktu</th>
                 <th>Tempat</th>
                 <th>Status</th>
-                <th width="170">Aksi</th>
+                <th width="250">Aksi</th>
             </tr>
         </thead>
         <tbody>
@@ -111,10 +111,11 @@
                             <?php endif; ?>
                         </td>
                         <td>
+                            <a href="<?= base_url('/attendances/recap/' . $meeting['id']) ?>" class="btn btn-primary">Rekap</a>
                             <a href="<?= base_url('/meetings/edit/' . $meeting['id']) ?>" class="btn btn-warning">Edit</a>
                             <a href="<?= base_url('/meetings/delete/' . $meeting['id']) ?>"
-                               class="btn btn-danger"
-                               onclick="return confirm('Yakin ingin menghapus agenda rapat ini?')">
+                            class="btn btn-danger"
+                            onclick="return confirm('Yakin ingin menghapus agenda rapat ini?')">
                                 Hapus
                             </a>
                         </td>

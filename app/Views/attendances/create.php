@@ -28,7 +28,8 @@
             <select name="meeting_id" required>
                 <option value="">Pilih Rapat</option>
                 <?php foreach ($meetings as $meeting) : ?>
-                    <option value="<?= $meeting['id'] ?>" <?= old('meeting_id') == $meeting['id'] ? 'selected' : '' ?>>
+                    <option value="<?= $meeting['id'] ?>"
+                        <?= old('meeting_id', $selected_meeting_id ?? '') == $meeting['id'] ? 'selected' : '' ?>>
                         <?= esc($meeting['title']) ?> - <?= date('d M Y', strtotime($meeting['meeting_date'])) ?>
                     </option>
                 <?php endforeach; ?>
@@ -40,7 +41,8 @@
             <select name="member_id" required>
                 <option value="">Pilih Anggota</option>
                 <?php foreach ($members as $member) : ?>
-                    <option value="<?= $member['id'] ?>" <?= old('member_id') == $member['id'] ? 'selected' : '' ?>>
+                    <option value="<?= $member['id'] ?>"
+                        <?= old('member_id', $selected_member_id ?? '') == $member['id'] ? 'selected' : '' ?>>
                         <?= esc($member['full_name']) ?> - <?= esc($member['rt'] ?? '-') ?>
                     </option>
                 <?php endforeach; ?>
