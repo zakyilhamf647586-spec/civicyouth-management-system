@@ -15,17 +15,42 @@ class CashTransactionController extends BaseController
 
     public function index()
     {
-        $transactions = $this->cashModel
-            ->orderBy('transaction_date', 'DESC')
-            ->orderBy('id', 'DESC')
-            ->findAll();
+        $keyword         = $this->request->getGet('keyword');
+        $transactionType = $this->request->getGet('transaction_type');
+        $dateFrom        = $this->request->getGet('date_from');
+        $dateTo          = $this->request->getGet('date_to');
 
-        $totalIncome = $this->cashModel
+        $listModel = new CashTransactionModel();
+
+        if (!empty($keyword)) {
+            $listModel = $listModel->groupStart()
+                ->like('category', $keyword)
+                ->orLike('description', $keyword)
+                ->orLike('created_by', $keyword)
+                ->groupEnd();
+        }
+
+        if (!empty($transactionType)) {
+            $listModel = $listModel->where('transaction_type', $transactionType);
+        }
+
+        if (!empty($dateFrom)) {
+            $listModel = $listModel->where('transaction_date >=', $dateFrom);
+        }
+
+        if (!empty($dateTo)) {
+            $listModel = $listModel->where('transaction_date <=', $dateTo);
+        }
+
+        $incomeModel = new CashTransactionModel();
+        $expenseModel = new CashTransactionModel();
+
+        $totalIncome = $incomeModel
             ->selectSum('amount')
             ->where('transaction_type', 'income')
             ->first();
 
-        $totalExpense = $this->cashModel
+        $totalExpense = $expenseModel
             ->selectSum('amount')
             ->where('transaction_type', 'expense')
             ->first();
@@ -35,16 +60,24 @@ class CashTransactionController extends BaseController
         $balance = $income - $expense;
 
         $data = [
-            'title'        => 'Kas Organisasi',
-            'transactions' => $transactions,
-            'total_income' => $income,
-            'total_expense'=> $expense,
-            'balance'      => $balance,
+            'title'            => 'Kas Organisasi',
+            'transactions'     => $listModel
+                ->orderBy('transaction_date', 'DESC')
+                ->orderBy('id', 'DESC')
+                ->paginate(10, 'cash'),
+            'pager'            => $listModel->pager,
+            'total_income'     => $income,
+            'total_expense'    => $expense,
+            'balance'          => $balance,
+            'keyword'          => $keyword,
+            'transaction_type' => $transactionType,
+            'date_from'        => $dateFrom,
+            'date_to'          => $dateTo,
         ];
 
         return view('cash/index', $data);
     }
-
+    
     public function create()
     {
         $data = [

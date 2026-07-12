@@ -15,9 +15,35 @@ class MemberController extends BaseController
 
     public function index()
     {
+        $keyword = $this->request->getGet('keyword');
+        $rt      = $this->request->getGet('rt');
+        $status  = $this->request->getGet('status');
+
+        $query = $this->memberModel;
+
+        if (!empty($keyword)) {
+            $query = $query->groupStart()
+                ->like('full_name', $keyword)
+                ->orLike('phone', $keyword)
+                ->orLike('position', $keyword)
+                ->groupEnd();
+        }
+
+        if (!empty($rt)) {
+            $query = $query->where('rt', $rt);
+        }
+
+        if (!empty($status)) {
+            $query = $query->where('membership_status', $status);
+        }
+
         $data = [
-            'title'   => 'Data Anggota',
-            'members' => $this->memberModel->orderBy('id', 'DESC')->findAll()
+            'title'    => 'Data Anggota',
+            'members'  => $query->orderBy('id', 'DESC')->paginate(10, 'members'),
+            'pager'    => $this->memberModel->pager,
+            'keyword'  => $keyword,
+            'rt'       => $rt,
+            'status'   => $status,
         ];
 
         return view('members/index', $data);

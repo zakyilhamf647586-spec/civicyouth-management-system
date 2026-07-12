@@ -42,6 +42,46 @@
     </div>
 <?php endif; ?>
 
+<div class="filter-card">
+    <form action="<?= base_url('/cash') ?>" method="get">
+        <div class="filter-grid cash-filter-grid">
+            <div class="form-group">
+                <label>Cari Transaksi</label>
+                <input
+                    type="text"
+                    name="keyword"
+                    value="<?= esc($keyword ?? '') ?>"
+                    placeholder="Cari kategori, keterangan, atau pencatat"
+                >
+            </div>
+
+            <div class="form-group">
+                <label>Jenis</label>
+                <select name="transaction_type">
+                    <option value="">Semua Jenis</option>
+                    <option value="income" <?= ($transaction_type ?? '') === 'income' ? 'selected' : '' ?>>Pemasukan</option>
+                    <option value="expense" <?= ($transaction_type ?? '') === 'expense' ? 'selected' : '' ?>>Pengeluaran</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Dari Tanggal</label>
+                <input type="date" name="date_from" value="<?= esc($date_from ?? '') ?>">
+            </div>
+
+            <div class="form-group">
+                <label>Sampai Tanggal</label>
+                <input type="date" name="date_to" value="<?= esc($date_to ?? '') ?>">
+            </div>
+
+            <div class="filter-actions">
+                <button type="submit" class="btn btn-primary">Terapkan</button>
+                <a href="<?= base_url('/cash') ?>" class="btn btn-secondary">Reset</a>
+            </div>
+        </div>
+    </form>
+</div>
+
 <div class="table-card">
     <table>
         <thead>
@@ -58,7 +98,13 @@
         </thead>
         <tbody>
             <?php if (!empty($transactions)) : ?>
-                <?php $no = 1; foreach ($transactions as $transaction) : ?>
+                <?php
+                    $currentPage = $pager->getCurrentPage('cash');
+                    $perPage     = $pager->getPerPage('cash');
+                    $no          = 1 + ($perPage * ($currentPage - 1));
+                ?>
+
+                <?php foreach ($transactions as $transaction) : ?>
                     <tr>
                         <td><?= $no++ ?></td>
                         <td><?= date('d M Y', strtotime($transaction['transaction_date'])) ?></td>
@@ -87,11 +133,15 @@
                 <?php endforeach; ?>
             <?php else : ?>
                 <tr>
-                    <td colspan="8" class="empty">Belum ada transaksi kas.</td>
+                    <td colspan="8" class="empty">Data transaksi kas tidak ditemukan.</td>
                 </tr>
             <?php endif; ?>
         </tbody>
     </table>
+
+    <div class="pagination-wrapper">
+        <?= $pager->only(['keyword', 'transaction_type', 'date_from', 'date_to'])->links('cash', 'default_full') ?>
+    </div>
 </div>
 
 <?= $this->endSection() ?>

@@ -23,6 +23,47 @@
     </div>
 <?php endif; ?>
 
+<div class="filter-card">
+    <form action="<?= base_url('/members') ?>" method="get">
+        <div class="filter-grid">
+            <div class="form-group">
+                <label>Cari Anggota</label>
+                <input
+                    type="text"
+                    name="keyword"
+                    value="<?= esc($keyword ?? '') ?>"
+                    placeholder="Cari nama, no. HP, atau jabatan"
+                >
+            </div>
+
+            <div class="form-group">
+                <label>Filter RT</label>
+                <select name="rt">
+                    <option value="">Semua RT</option>
+                    <option value="RT 01" <?= ($rt ?? '') === 'RT 01' ? 'selected' : '' ?>>RT 01</option>
+                    <option value="RT 02" <?= ($rt ?? '') === 'RT 02' ? 'selected' : '' ?>>RT 02</option>
+                    <option value="RT 03" <?= ($rt ?? '') === 'RT 03' ? 'selected' : '' ?>>RT 03</option>
+                    <option value="RT 04" <?= ($rt ?? '') === 'RT 04' ? 'selected' : '' ?>>RT 04</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Status</label>
+                <select name="status">
+                    <option value="">Semua Status</option>
+                    <option value="active" <?= ($status ?? '') === 'active' ? 'selected' : '' ?>>Aktif</option>
+                    <option value="inactive" <?= ($status ?? '') === 'inactive' ? 'selected' : '' ?>>Tidak Aktif</option>
+                </select>
+            </div>
+
+            <div class="filter-actions">
+                <button type="submit" class="btn btn-primary">Terapkan</button>
+                <a href="<?= base_url('/members') ?>" class="btn btn-secondary">Reset</a>
+            </div>
+        </div>
+    </form>
+</div>
+
 <div class="table-card">
     <table>
         <thead>
@@ -38,7 +79,13 @@
         </thead>
         <tbody>
             <?php if (!empty($members)) : ?>
-                <?php $no = 1; foreach ($members as $member) : ?>
+                <?php
+                    $currentPage = $pager->getCurrentPage('members');
+                    $perPage     = $pager->getPerPage('members');
+                    $no          = 1 + ($perPage * ($currentPage - 1));
+                ?>
+
+                <?php foreach ($members as $member) : ?>
                     <tr>
                         <td><?= $no++ ?></td>
                         <td><?= esc($member['full_name']) ?></td>
@@ -72,11 +119,15 @@
                 <?php endforeach; ?>
             <?php else : ?>
                 <tr>
-                    <td colspan="7" class="empty">Belum ada data anggota.</td>
+                    <td colspan="7" class="empty">Data anggota tidak ditemukan.</td>
                 </tr>
             <?php endif; ?>
         </tbody>
     </table>
+
+    <div class="pagination-wrapper">
+        <?= $pager->only(['keyword', 'rt', 'status'])->links('members', 'default_full') ?>
+    </div>
 </div>
 
 <?= $this->endSection() ?>
