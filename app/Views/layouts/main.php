@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title><?= esc($title ?? 'CivicYouth') ?> - CivicYouth</title>
+    <title><?= esc($title ?? 'Karang Taruna RW 01') ?> - Karang Taruna RW 01</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link rel="stylesheet" href="<?= base_url('assets/css/app.css') ?>">
@@ -10,7 +10,14 @@
 <body>
 
 <div class="navbar">
-    <h1>CivicYouth</h1>
+    <div class="brand-area">
+        <img src="<?= base_url('assets/img/logo-rw01.png') ?>" alt="Logo Karang Taruna RW 01" class="brand-logo">
+
+        <div class="brand-text">
+            <h1>Karang Taruna RW 01</h1>
+            <span>Sistem Manajemen Organisasi Pemuda</span>
+        </div>
+    </div>
 
     <div class="navbar-menu">
         <a href="<?= base_url('/dashboard') ?>">Dashboard</a>

@@ -28,7 +28,7 @@
 
 <div class="section">
     <h3>Menu Sistem</h3>
-    <p>Fitur utama CivicYouth Management System.</p>
+    <p>Fitur utama Sistem Manajemen Karang Taruna RW 01.</p>
 
     <div class="menu-list">
         <a href="<?= base_url('/members') ?>" class="menu-item">Data Anggota</a>

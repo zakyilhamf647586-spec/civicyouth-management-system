@@ -98,8 +98,8 @@
 
 <div class="login-card">
     <div class="brand">
-        <h1>CivicYouth</h1>
-        <p>Sistem Manajemen Karang Taruna RW 01</p>
+        <h1>Karang Taruna RW 01</h1>
+        <p>Sistem Manajemen Organisasi Pemuda</p>
     </div>
 
     <?php if (session()->getFlashdata('error')) : ?>
