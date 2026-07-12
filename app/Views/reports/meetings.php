@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title><?= esc($title) ?> - CivicYouth</title>
+    <title><?= esc($title) ?> - Karang Taruna RW 01</title>
 
     <style>
         body {
@@ -11,29 +11,70 @@
             margin: 32px;
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 28px;
+        .actions {
+            margin-bottom: 20px;
         }
 
-        .header h2, .header h3 {
+        .btn {
+            display: inline-block;
+            background: #08264a;
+            color: white;
+            padding: 9px 14px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .kop {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            border-bottom: 4px solid #d9a323;
+            padding-bottom: 14px;
+            margin-bottom: 24px;
+        }
+
+        .kop img {
+            width: 78px;
+            height: 78px;
+            object-fit: contain;
+        }
+
+        .kop-text {
+            flex: 1;
+            text-align: center;
+        }
+
+        .kop-text h2,
+        .kop-text h3,
+        .kop-text p {
             margin: 4px 0;
+        }
+
+        .kop-text h2 {
+            color: #08264a;
+            font-size: 20px;
+        }
+
+        .kop-text h3 {
+            font-size: 17px;
         }
 
         .meta {
             margin-bottom: 18px;
             font-size: 14px;
+            line-height: 1.7;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 13px;
+            font-size: 12px;
         }
 
         th, td {
             border: 1px solid #111827;
-            padding: 8px;
+            padding: 7px;
             text-align: left;
             vertical-align: top;
         }
@@ -42,18 +83,9 @@
             background: #f3f4f6;
         }
 
-        .actions {
-            margin-bottom: 20px;
-        }
-
-        .btn {
-            display: inline-block;
-            background: #0f5132;
-            color: white;
-            padding: 9px 14px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 14px;
+        .signature-table td {
+            border: none;
+            font-size: 13px;
         }
 
         @media print {
@@ -74,10 +106,18 @@
     <a href="#" onclick="window.print()" class="btn">Cetak / Save PDF</a>
 </div>
 
-<div class="header">
-    <h2>LAPORAN AGENDA RAPAT</h2>
-    <h3>KARANG TARUNA RW 01</h3>
-    <p>Kelurahan Randugarut</p>
+<div class="kop">
+    <img src="<?= base_url('assets/img/logo-rw01.png') ?>" alt="Logo Karang Taruna RW 01">
+
+    <div class="kop-text">
+        <h2>KARANG TARUNA RW 01</h2>
+        <h3>KELURAHAN RANDUGARUT</h3>
+        <p>Sistem Manajemen Organisasi Pemuda</p>
+    </div>
+</div>
+
+<div style="text-align:center; margin-bottom: 24px;">
+    <h3 style="margin:0;">LAPORAN AGENDA RAPAT</h3>
 </div>
 
 <div class="meta">
@@ -135,15 +175,15 @@
 
 <br><br>
 
-<table style="width: 100%; border: none;">
+<table class="signature-table" style="width: 100%;">
     <tr>
-        <td style="border: none; width: 50%; text-align: center;">
+        <td style="width: 50%; text-align: center;">
             Mengetahui,<br>
             Ketua Karang Taruna RW 01
             <br><br><br><br>
             <strong>Zaky Ilham Ferdiansyah</strong>
         </td>
-        <td style="border: none; width: 50%; text-align: center;">
+        <td style="width: 50%; text-align: center;">
             Randugarut, <?= date('d M Y') ?><br>
             Sekretaris
             <br><br><br><br>
