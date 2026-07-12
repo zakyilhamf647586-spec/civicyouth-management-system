@@ -306,4 +306,99 @@ class AttendanceController extends BaseController
 
         return view('attendances/recap_print', $data);
     }
+
+    public function bulk($meetingId)
+    {
+        $meetingId = (int) $meetingId;
+
+        $meeting = $this->meetingModel->find($meetingId);
+
+        if (!$meeting) {
+            return redirect()->to('/meetings')->with('error', 'Data rapat tidak ditemukan.');
+        }
+
+        $db = \Config\Database::connect();
+
+        $members = $db->table('members')
+            ->select('
+                members.id as member_id,
+                members.full_name,
+                members.rt,
+                members.position,
+                attendances.id as attendance_id,
+                attendances.attendance_status,
+                attendances.note
+            ')
+            ->join(
+                'attendances',
+                'attendances.member_id = members.id AND attendances.meeting_id = ' . $meetingId,
+                'left'
+            )
+            ->where('members.membership_status', 'active')
+            ->orderBy('members.rt', 'ASC')
+            ->orderBy('members.full_name', 'ASC')
+            ->get()
+            ->getResultArray();
+
+        $data = [
+            'title'   => 'Input Absensi Massal',
+            'meeting' => $meeting,
+            'members' => $members,
+        ];
+
+        return view('attendances/bulk', $data);
+    }
+
+    public function bulkSave($meetingId)
+    {
+        $meetingId = (int) $meetingId;
+
+        $meeting = $this->meetingModel->find($meetingId);
+
+        if (!$meeting) {
+            return redirect()->to('/meetings')->with('error', 'Data rapat tidak ditemukan.');
+        }
+
+        $statuses = $this->request->getPost('attendance_status');
+        $notes    = $this->request->getPost('note');
+
+        if (empty($statuses) || !is_array($statuses)) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Belum ada data absensi yang dipilih.');
+        }
+
+        foreach ($statuses as $memberId => $status) {
+            $memberId = (int) $memberId;
+
+            if (empty($status)) {
+                continue;
+            }
+
+            if (!in_array($status, ['present', 'permission', 'absent'])) {
+                continue;
+            }
+
+            $existingAttendance = $this->attendanceModel
+                ->where('meeting_id', $meetingId)
+                ->where('member_id', $memberId)
+                ->first();
+
+            $data = [
+                'meeting_id'        => $meetingId,
+                'member_id'         => $memberId,
+                'attendance_status' => $status,
+                'note'              => $notes[$memberId] ?? null,
+            ];
+
+            if ($existingAttendance) {
+                $this->attendanceModel->update($existingAttendance['id'], $data);
+            } else {
+                $this->attendanceModel->insert($data);
+            }
+        }
+
+        return redirect()->to('/attendances/recap/' . $meetingId)
+            ->with('success', 'Absensi massal berhasil disimpan.');
+    }
 }

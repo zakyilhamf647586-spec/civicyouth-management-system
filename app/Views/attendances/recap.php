@@ -9,7 +9,11 @@
     </div>
 
     <div>
-        <a href="<?= base_url('/attendances/recap/' . $meeting['id'] . '/print') ?>" class="btn btn-primary" target="_blank">
+        <a href="<?= base_url('/attendances/bulk/' . $meeting['id']) ?>" class="btn btn-primary">
+            Input Absensi Massal
+        </a>
+
+        <a href="<?= base_url('/attendances/recap/' . $meeting['id'] . '/print') ?>" class="btn btn-secondary" target="_blank">
             Cetak / Save PDF
         </a>
 
