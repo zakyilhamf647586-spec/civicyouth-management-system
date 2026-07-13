@@ -385,6 +385,10 @@ Fitur inti sudah tersedia dan dapat digunakan untuk kebutuhan administrasi dasar
 
 For production deployment, this project should be configured carefully before being used online.
 
+For detailed cPanel/shared hosting deployment instructions, see:
+
+[docs/cpanel-deployment-guide.md](docs/cpanel-deployment-guide.md)
+
 ### Production Setup
 
 1. Upload the project to a hosting/server that supports PHP and MySQL.
