@@ -381,6 +381,75 @@ Fitur inti sudah tersedia dan dapat digunakan untuk kebutuhan administrasi dasar
 
 ---
 
+## Deployment Notes
+
+For production deployment, this project should be configured carefully before being used online.
+
+### Production Setup
+
+1. Upload the project to a hosting/server that supports PHP and MySQL.
+2. Set the web document root to the `public` folder.
+3. Create a production `.env` file based on `.env.example`.
+4. Set the production environment configuration:
+
+```env
+CI_ENVIRONMENT = production
+app.baseURL = 'https://your-domain.com/'
+```
+
+5. Configure the production database credentials:
+
+```env
+database.default.hostname = localhost
+database.default.database = your_database_name
+database.default.username = your_database_username
+database.default.password = your_database_password
+database.default.DBDriver = MySQLi
+database.default.DBPrefix =
+database.default.port = 3306
+```
+
+6. Run database migration and seeder if supported by the server:
+
+```bash
+php spark migrate
+php spark db:seed InitialSeeder
+```
+
+7. Make sure the `writable` directory has write permission.
+8. Make sure the `public/uploads` directory has write permission.
+9. Change the default admin email and password before real use.
+10. Enable HTTPS/SSL on the domain.
+
+### Important Security Notes
+
+- Do not expose the project root directly.
+- The public web root should point to the `public` directory.
+- Do not upload the real `.env` file to GitHub.
+- Do not keep the default admin password in production.
+- Do not show demo credentials in production.
+- Backup the database regularly.
+
+### Final Production Test
+
+Before using the application in a real environment, make sure:
+
+- Login works properly.
+- Dashboard loads correctly.
+- Member management works.
+- Organization structure management works.
+- Meeting management works.
+- Attendance and recap features work.
+- Bulk attendance input works.
+- Cash transaction management works.
+- Activity documentation upload works.
+- Excel export works.
+- Excel import works.
+- Print/Save PDF works.
+- Logout works properly.
+
+---
+
 ## Roadmap Pengembangan
 
 Pengembangan berikutnya dapat mencakup:
