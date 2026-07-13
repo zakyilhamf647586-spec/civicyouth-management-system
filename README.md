@@ -475,6 +475,59 @@ Pengembangan berikutnya dapat mencakup:
 
 ---
 
+---
+
+## AI Content Studio Provider
+
+AI Content Studio supports multiple AI provider modes.
+
+### Available Modes
+
+| Provider | Description | Best For |
+|---|---|---|
+| `demo` | Generates fallback content without external API | Portfolio demo, offline demo, GitHub showcase |
+| `openai` | Uses official OpenAI API | Real production usage |
+| `github_models` | Uses GitHub Models API | Development and prototyping |
+| `openrouter` | Uses OpenRouter API | Testing alternative/free model routes |
+
+### Example Configuration
+
+```env
+AI_PROVIDER=demo
+```
+
+For official OpenAI API:
+
+```env
+AI_PROVIDER=openai
+OPENAI_API_KEY=your_openai_api_key
+OPENAI_MODEL=gpt-4o-mini
+```
+
+For GitHub Models:
+
+```env
+AI_PROVIDER=github_models
+GITHUB_MODELS_TOKEN=your_github_personal_access_token
+GITHUB_MODELS_MODEL=openai/gpt-4o-mini
+```
+
+For OpenRouter:
+
+```env
+AI_PROVIDER=openrouter
+OPENROUTER_API_KEY=your_openrouter_api_key
+OPENROUTER_MODEL=openrouter/free
+```
+
+### Important Notes
+
+- Do not commit real API keys to GitHub.
+- Keep real API keys inside `.env`.
+- Use `demo` mode for public portfolio demonstration.
+- Free providers may have rate limits, quota limits, or model availability changes.
+- For real organizational use, use a production-ready paid API provider or the organization's own API key.
+
 ## Rencana Versi Modern
 
 Project ini dapat dikembangkan menjadi versi modern dengan stack:
