@@ -2,66 +2,90 @@
 
 <?= $this->section('content') ?>
 
-<div class="page-header">
-    <div>
-        <h2>Dashboard</h2>
-        <p>Ringkasan kondisi organisasi Karang Taruna RW 01.</p>
-    </div>
-</div>
+<section class="portal-hero">
+    <div class="portal-hero-content">
+        <span class="portal-kicker">Sistem Manajemen Organisasi Pemuda</span>
+        <h1>Karang Taruna RW 01 Randugarut</h1>
+        <p>
+            Portal internal untuk mengelola data anggota, struktur pengurus, rapat, absensi,
+            kas organisasi, kegiatan, laporan, dan konten media sosial organisasi.
+        </p>
 
-<div class="dashboard-cards">
-    <div class="dashboard-card">
-        <span>Anggota Aktif</span>
-        <h3><?= esc($active_members) ?></h3>
-        <p>Total anggota yang masih aktif.</p>
-    </div>
-
-    <div class="dashboard-card">
-        <span>Anggota Tidak Aktif</span>
-        <h3><?= esc($inactive_members) ?></h3>
-        <p>Data anggota nonaktif.</p>
+        <div class="portal-hero-actions">
+            <a href="<?= base_url('/members') ?>" class="btn btn-primary">Kelola Anggota</a>
+            <a href="<?= base_url('/content-studio') ?>" class="btn btn-secondary">AI Content Studio</a>
+        </div>
     </div>
 
-    <div class="dashboard-card">
-        <span>Total Rapat</span>
-        <h3><?= esc($total_meetings) ?></h3>
-        <p>Seluruh agenda rapat tercatat.</p>
+    <div class="portal-hero-card">
+        <img src="<?= base_url('assets/img/logo-rw01.png') ?>" alt="Logo Karang Taruna RW 01">
+        <strong>RW 01 Kelurahan Randugarut</strong>
+        <span>Aktif · Tertib · Terdata · Terdokumentasi</span>
+    </div>
+</section>
+
+<section class="quick-actions-section">
+    <div class="quick-action-card">
+        <span>Anggota</span>
+        <strong><?= esc($active_members) ?></strong>
+        <small>Anggota aktif tercatat</small>
     </div>
 
-    <div class="dashboard-card">
-        <span>Total Kegiatan</span>
-        <h3><?= esc($total_activities) ?></h3>
-        <p>Seluruh kegiatan organisasi.</p>
-    </div>
-</div>
-
-<br>
-
-<div class="dashboard-cards finance-cards">
-    <div class="dashboard-card">
-        <span>Total Pemasukan</span>
-        <h3>Rp<?= number_format($total_income, 0, ',', '.') ?></h3>
-        <p>Akumulasi kas masuk.</p>
+    <div class="quick-action-card">
+        <span>Rapat</span>
+        <strong><?= esc($total_meetings) ?></strong>
+        <small>Agenda rapat organisasi</small>
     </div>
 
-    <div class="dashboard-card">
-        <span>Total Pengeluaran</span>
-        <h3>Rp<?= number_format($total_expense, 0, ',', '.') ?></h3>
-        <p>Akumulasi kas keluar.</p>
+    <div class="quick-action-card">
+        <span>Kegiatan</span>
+        <strong><?= esc($total_activities) ?></strong>
+        <small>Kegiatan terdokumentasi</small>
     </div>
 
-    <div class="dashboard-card dashboard-card-highlight">
+    <div class="quick-action-card dark">
         <span>Saldo Kas</span>
-        <h3>Rp<?= number_format($cash_balance, 0, ',', '.') ?></h3>
-        <p>Saldo akhir organisasi.</p>
+        <strong>Rp<?= number_format($cash_balance, 0, ',', '.') ?></strong>
+        <small>Saldo akhir organisasi</small>
     </div>
-</div>
+</section>
 
-<br>
+<section class="portal-grid">
+    <div class="portal-panel">
+        <div class="panel-header">
+            <div>
+                <h3>Keuangan Organisasi</h3>
+                <p>Ringkasan pemasukan, pengeluaran, dan saldo kas.</p>
+            </div>
+            <a href="<?= base_url('/cash') ?>">Buka Kas</a>
+        </div>
 
-<div class="dashboard-grid">
-    <div class="panel-card">
-        <h3>Anggota per RT</h3>
+        <div class="finance-summary">
+            <div>
+                <span>Total Pemasukan</span>
+                <strong>Rp<?= number_format($total_income, 0, ',', '.') ?></strong>
+            </div>
+
+            <div>
+                <span>Total Pengeluaran</span>
+                <strong>Rp<?= number_format($total_expense, 0, ',', '.') ?></strong>
+            </div>
+
+            <div class="finance-balance">
+                <span>Saldo Kas</span>
+                <strong>Rp<?= number_format($cash_balance, 0, ',', '.') ?></strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="portal-panel">
+        <div class="panel-header">
+            <div>
+                <h3>Anggota per RT</h3>
+                <p>Distribusi anggota berdasarkan wilayah RT.</p>
+            </div>
+            <a href="<?= base_url('/members') ?>">Data Anggota</a>
+        </div>
 
         <?php
             $maxRt = max($members_by_rt ?: [1]);
@@ -72,155 +96,33 @@
 
         <?php foreach ($members_by_rt as $rtName => $count) : ?>
             <?php $percent = ($count / $maxRt) * 100; ?>
-            <div class="stat-row">
-                <div class="stat-label">
+            <div class="portal-stat-row">
+                <div>
                     <span><?= esc($rtName) ?></span>
                     <strong><?= esc($count) ?></strong>
                 </div>
-                <div class="mini-bar">
-                    <div style="width: <?= $percent ?>%"></div>
+                <div class="portal-progress">
+                    <span style="width: <?= $percent ?>%"></span>
                 </div>
             </div>
         <?php endforeach; ?>
     </div>
+</section>
 
-    <div class="panel-card">
-        <h3>Status Kegiatan</h3>
-
-        <?php
-            $maxActivity = max($activities_status ?: [1]);
-            if ($maxActivity < 1) {
-                $maxActivity = 1;
-            }
-        ?>
-
-        <div class="stat-row">
-            <div class="stat-label">
-                <span>Direncanakan</span>
-                <strong><?= esc($activities_status['planned']) ?></strong>
-            </div>
-            <div class="mini-bar">
-                <div style="width: <?= ($activities_status['planned'] / $maxActivity) * 100 ?>%"></div>
-            </div>
-        </div>
-
-        <div class="stat-row">
-            <div class="stat-label">
-                <span>Selesai</span>
-                <strong><?= esc($activities_status['completed']) ?></strong>
-            </div>
-            <div class="mini-bar">
-                <div style="width: <?= ($activities_status['completed'] / $maxActivity) * 100 ?>%"></div>
-            </div>
-        </div>
-
-        <div class="stat-row">
-            <div class="stat-label">
-                <span>Dibatalkan</span>
-                <strong><?= esc($activities_status['cancelled']) ?></strong>
-            </div>
-            <div class="mini-bar">
-                <div style="width: <?= ($activities_status['cancelled'] / $maxActivity) * 100 ?>%"></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="panel-card">
-        <h3>Status Rapat</h3>
-
-        <?php
-            $maxMeeting = max($meetings_status ?: [1]);
-            if ($maxMeeting < 1) {
-                $maxMeeting = 1;
-            }
-        ?>
-
-        <div class="stat-row">
-            <div class="stat-label">
-                <span>Terjadwal</span>
-                <strong><?= esc($meetings_status['scheduled']) ?></strong>
-            </div>
-            <div class="mini-bar">
-                <div style="width: <?= ($meetings_status['scheduled'] / $maxMeeting) * 100 ?>%"></div>
-            </div>
-        </div>
-
-        <div class="stat-row">
-            <div class="stat-label">
-                <span>Selesai</span>
-                <strong><?= esc($meetings_status['completed']) ?></strong>
-            </div>
-            <div class="mini-bar">
-                <div style="width: <?= ($meetings_status['completed'] / $maxMeeting) * 100 ?>%"></div>
-            </div>
-        </div>
-
-        <div class="stat-row">
-            <div class="stat-label">
-                <span>Dibatalkan</span>
-                <strong><?= esc($meetings_status['cancelled']) ?></strong>
-            </div>
-            <div class="mini-bar">
-                <div style="width: <?= ($meetings_status['cancelled'] / $maxMeeting) * 100 ?>%"></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="panel-card">
-        <h3>Ringkasan Absensi</h3>
-
-        <?php
-            $maxAttendance = max($attendance_summary ?: [1]);
-            if ($maxAttendance < 1) {
-                $maxAttendance = 1;
-            }
-        ?>
-
-        <div class="stat-row">
-            <div class="stat-label">
-                <span>Hadir</span>
-                <strong><?= esc($attendance_summary['present']) ?></strong>
-            </div>
-            <div class="mini-bar">
-                <div style="width: <?= ($attendance_summary['present'] / $maxAttendance) * 100 ?>%"></div>
-            </div>
-        </div>
-
-        <div class="stat-row">
-            <div class="stat-label">
-                <span>Izin</span>
-                <strong><?= esc($attendance_summary['permission']) ?></strong>
-            </div>
-            <div class="mini-bar">
-                <div style="width: <?= ($attendance_summary['permission'] / $maxAttendance) * 100 ?>%"></div>
-            </div>
-        </div>
-
-        <div class="stat-row">
-            <div class="stat-label">
-                <span>Tidak Hadir</span>
-                <strong><?= esc($attendance_summary['absent']) ?></strong>
-            </div>
-            <div class="mini-bar">
-                <div style="width: <?= ($attendance_summary['absent'] / $maxAttendance) * 100 ?>%"></div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<br>
-
-<div class="dashboard-grid">
-    <div class="panel-card">
+<section class="portal-grid">
+    <div class="portal-panel">
         <div class="panel-header">
-            <h3>Rapat Terbaru</h3>
-            <a href="<?= base_url('/meetings') ?>">Lihat semua</a>
+            <div>
+                <h3>Rapat Terbaru</h3>
+                <p>Agenda rapat yang terakhir tercatat.</p>
+            </div>
+            <a href="<?= base_url('/meetings') ?>">Lihat Semua</a>
         </div>
 
         <?php if (!empty($latest_meetings)) : ?>
-            <div class="simple-list">
+            <div class="portal-list">
                 <?php foreach ($latest_meetings as $meeting) : ?>
-                    <div class="simple-list-item">
+                    <div class="portal-list-item">
                         <div>
                             <strong><?= esc($meeting['title']) ?></strong>
                             <span><?= date('d M Y', strtotime($meeting['meeting_date'])) ?> · <?= esc($meeting['location'] ?? '-') ?></span>
@@ -241,16 +143,19 @@
         <?php endif; ?>
     </div>
 
-    <div class="panel-card">
+    <div class="portal-panel">
         <div class="panel-header">
-            <h3>Kegiatan Terbaru</h3>
-            <a href="<?= base_url('/activities') ?>">Lihat semua</a>
+            <div>
+                <h3>Kegiatan Terbaru</h3>
+                <p>Dokumentasi aktivitas organisasi terbaru.</p>
+            </div>
+            <a href="<?= base_url('/activities') ?>">Lihat Semua</a>
         </div>
 
         <?php if (!empty($latest_activities)) : ?>
-            <div class="simple-list">
+            <div class="portal-list">
                 <?php foreach ($latest_activities as $activity) : ?>
-                    <div class="simple-list-item">
+                    <div class="portal-list-item">
                         <div>
                             <strong><?= esc($activity['title']) ?></strong>
                             <span><?= date('d M Y', strtotime($activity['activity_date'])) ?> · <?= esc($activity['location'] ?? '-') ?></span>
@@ -270,6 +175,19 @@
             <p class="empty-text">Belum ada data kegiatan.</p>
         <?php endif; ?>
     </div>
-</div>
+</section>
+
+<section class="ai-highlight-section">
+    <div>
+        <span class="portal-kicker">Fitur Modern</span>
+        <h3>AI Content Studio</h3>
+        <p>
+            Buat draft caption, hashtag, dan visual feed Instagram 4:5 berbasis template resmi
+            Karang Taruna RW 01.
+        </p>
+    </div>
+
+    <a href="<?= base_url('/content-studio') ?>" class="btn btn-primary">Buka AI Studio</a>
+</section>
 
 <?= $this->endSection() ?>
