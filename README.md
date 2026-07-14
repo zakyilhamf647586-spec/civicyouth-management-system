@@ -172,6 +172,25 @@ Laporan yang tersedia:
 
 ---
 
+### AI Content Studio
+
+The application includes an experimental AI-based social media content feature.
+
+Main capabilities:
+
+- Upload multiple activity photos
+- Generate Instagram caption, hashtag, title, alt text, and summary
+- Support demo fallback mode when API quota is unavailable
+- Support multiple AI provider configuration
+- Generate branded Instagram feed image using a fixed 4:5 portrait template
+- Export generated feed as PNG
+
+The visual template is designed for Karang Taruna RW 01 branding with fixed logo, organization name, brand colors, and Instagram footer.
+
+Further visual refinements are documented in:
+
+[docs/ai-content-studio-roadmap.md](docs/ai-content-studio-roadmap.md)
+
 ## Struktur Database
 
 Tabel utama yang digunakan dalam project ini:
