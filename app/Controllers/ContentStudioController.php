@@ -42,14 +42,18 @@ class ContentStudioController extends BaseController
     {
         $rules = [
             'category' => 'required',
-            'template_type' => 'required',
+            'event_title' => 'required',
+            'event_date' => 'required',
+            'event_time' => 'required',
+            'event_location' => 'required',
+            'activity_description' => 'required',
             'content_images' => 'uploaded[content_images.0]',
         ];
 
         if (!$this->validate($rules)) {
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Minimal upload 1 gambar untuk membuat konten.');
+                ->with('error', 'Mohon lengkapi seluruh data utama konten.');
         }
 
         $files = $this->request->getFiles();
@@ -95,29 +99,40 @@ class ContentStudioController extends BaseController
         }
 
         $postId = $this->postModel->insert([
-            'category'      => $this->request->getPost('category'),
+            'category' => $this->request->getPost('category'),
             'template_type' => 'feed_portrait_permanent',
-            'notes'         => $this->request->getPost('notes'),
-            'status'        => 'draft',
-            'created_by'    => session()->get('user_name') ?? 'Admin',
+            'event_title' => $this->request->getPost('event_title'),
+            'event_date' => $this->request->getPost('event_date'),
+            'event_time' => $this->request->getPost('event_time'),
+            'event_location' => $this->request->getPost('event_location'),
+            'activity_description' => $this->request->getPost('activity_description'),
+            'notes' => $this->request->getPost('notes'),
+            'status' => 'draft',
+            'created_by' => session()->get('user_name') ?? 'Admin',
         ]);
 
         $sortOrder = 1;
 
         foreach ($validFiles as $file) {
             $fileName = $file->getRandomName();
-            $file->move(FCPATH . 'uploads/content_studio', $fileName);
+            $uploadDir = FCPATH . 'uploads/content_studio';
+
+            $file->move($uploadDir, $fileName);
+
+            $savedPath = $uploadDir . DIRECTORY_SEPARATOR . $fileName;
+
+            $this->optimizeImageForTemplate($savedPath);
 
             $this->assetModel->insert([
                 'content_post_id' => $postId,
-                'image_path'      => 'uploads/content_studio/' . $fileName,
-                'original_name'   => $file->getClientName(),
-                'sort_order'      => $sortOrder++,
+                'image_path' => 'uploads/content_studio/' . $fileName,
+                'original_name' => $file->getClientName(),
+                'sort_order' => $sortOrder++,
             ]);
         }
 
         return redirect()->to('/content-studio/show/' . $postId)
-            ->with('success', 'Draft konten berhasil dibuat. Silakan generate konten AI.');
+            ->with('success', 'Draft konten berhasil dibuat. Silakan generate teks AI dan feed visual.');
     }
 
     public function show($id)
@@ -247,7 +262,7 @@ class ContentStudioController extends BaseController
 
         try {
             $templateService = new ContentTemplateService();
-            $generatedImage = $templateService->renderFeedSquare($post, $assets);
+            $generatedImage = $templateService->renderFeedPortraitPermanent($post, $assets);
 
             $this->postModel->update($id, [
                 'generated_image' => $generatedImage,
@@ -255,9 +270,78 @@ class ContentStudioController extends BaseController
             ]);
 
             return redirect()->to('/content-studio/show/' . $id)
-                ->with('success', 'Feed visual berhasil dibuat.');
+                ->with('success', 'Feed visual 4:5 berhasil dibuat.');
         } catch (\Throwable $e) {
             return redirect()->back()->with('error', $e->getMessage());
         }
+    }
+
+    private function optimizeImageForTemplate(string $path, int $maxWidth = 2000, int $maxHeight = 2000): void
+    {
+        if (!file_exists($path)) {
+            return;
+        }
+
+        $info = getimagesize($path);
+
+        if (!$info) {
+            return;
+        }
+
+        [$width, $height] = $info;
+        $mime = $info['mime'] ?? '';
+
+        if ($width <= $maxWidth && $height <= $maxHeight) {
+            return;
+        }
+
+        $ratio = min($maxWidth / $width, $maxHeight / $height);
+
+        $newWidth = (int) ($width * $ratio);
+        $newHeight = (int) ($height * $ratio);
+
+        if ($mime === 'image/jpeg' || $mime === 'image/jpg') {
+            $source = imagecreatefromjpeg($path);
+        } elseif ($mime === 'image/png') {
+            $source = imagecreatefrompng($path);
+        } elseif ($mime === 'image/webp') {
+            $source = imagecreatefromwebp($path);
+        } else {
+            return;
+        }
+
+        if (!$source) {
+            return;
+        }
+
+        $target = imagecreatetruecolor($newWidth, $newHeight);
+
+        // Background putih agar PNG transparan tetap aman
+        $white = imagecolorallocate($target, 255, 255, 255);
+        imagefilledrectangle($target, 0, 0, $newWidth, $newHeight, $white);
+
+        imagecopyresampled(
+            $target,
+            $source,
+            0,
+            0,
+            0,
+            0,
+            $newWidth,
+            $newHeight,
+            $width,
+            $height
+        );
+
+        if ($mime === 'image/jpeg' || $mime === 'image/jpg') {
+            imagejpeg($target, $path, 85);
+        } elseif ($mime === 'image/png') {
+            imagepng($target, $path, 7);
+        } elseif ($mime === 'image/webp') {
+            imagewebp($target, $path, 85);
+        }
+
+        imagedestroy($source);
+        imagedestroy($target);
     }
 }

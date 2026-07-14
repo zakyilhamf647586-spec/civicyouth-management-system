@@ -128,3 +128,7 @@ _modules/*
 # Uploaded files
 public/uploads/activities/*
 !public/uploads/activities/.gitkeep
+
+# AI Content Studio uploads
+public/uploads/content_studio/*
+!public/uploads/content_studio/.gitkeep

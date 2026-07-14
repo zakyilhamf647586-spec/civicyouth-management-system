@@ -71,3 +71,12 @@ $routes->get('/exports/cash', 'ExportController::cash', ['filter' => 'auth']);
 $routes->get('/imports/members', 'ImportController::membersForm', ['filter' => 'auth']);
 $routes->get('/imports/members/template', 'ImportController::membersTemplate', ['filter' => 'auth']);
 $routes->post('/imports/members', 'ImportController::membersImport', ['filter' => 'auth']);
+
+$routes->get('/content-studio', 'ContentStudioController::index', ['filter' => 'auth']);
+$routes->get('/content-studio/create', 'ContentStudioController::create', ['filter' => 'auth']);
+$routes->post('/content-studio/store', 'ContentStudioController::store', ['filter' => 'auth']);
+$routes->get('/content-studio/show/(:num)', 'ContentStudioController::show/$1', ['filter' => 'auth']);
+$routes->post('/content-studio/generate/(:num)', 'ContentStudioController::generate/$1', ['filter' => 'auth']);
+$routes->post('/content-studio/update-text/(:num)', 'ContentStudioController::updateText/$1', ['filter' => 'auth']);
+$routes->get('/content-studio/delete/(:num)', 'ContentStudioController::delete/$1', ['filter' => 'auth']);
+$routes->post('/content-studio/render-feed/(:num)', 'ContentStudioController::renderFeed/$1', ['filter' => 'auth']);

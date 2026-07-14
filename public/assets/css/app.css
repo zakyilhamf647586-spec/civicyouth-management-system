@@ -883,7 +883,7 @@ textarea {
 
 .generated-preview img {
     width: 100%;
-    max-width: 420px;
+    max-width: 360px;
     border-radius: 16px;
     border: 1px solid var(--border);
     box-shadow: 0 12px 28px rgba(8, 38, 74, 0.18);
@@ -901,4 +901,16 @@ textarea {
 
 .template-locked-box strong {
     color: #04172d;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
 }

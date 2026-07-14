@@ -1,0 +1,3 @@
+# AI Content Studio uploads
+public/uploads/content_studio/*
+!public/uploads/content_studio/.gitkeep
