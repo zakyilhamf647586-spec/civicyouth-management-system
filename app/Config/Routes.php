@@ -3,7 +3,7 @@
 use CodeIgniter\Router\RouteCollection;
 
 /** @var RouteCollection $routes */
-$routes->get('/', 'Home::index');
+$routes->get('/', 'PublicController::index');
 $routes->get('/', 'DashboardController::index', ['filter' => 'auth']);
 
 $routes->get('/login', 'AuthController::login');
