@@ -13,8 +13,8 @@
         <div class="auth-card">
             <div class="auth-header">
                 <img src="<?= base_url('assets/img/logo-rw01.png') ?>" alt="Logo Karang Taruna RW 01" class="auth-logo">
-                <h1>Karang Taruna RW 01</h1>
-                <p>Sistem Manajemen Organisasi Pemuda<br>Kelurahan Randugarut</p>
+                <h2>Masuk Sistem Internal</h2>
+                <p>Karang Taruna RW 01 Kelurahan Randugarut</p>
             </div>
 
             <?php if (session()->getFlashdata('error')) : ?>
@@ -50,6 +50,10 @@
                 </div>
 
                 <button type="submit" class="auth-btn">Masuk ke Dashboard</button>
+
+                <a href="<?= base_url('/') ?>" class="auth-home-link">
+                    ← Kembali ke Beranda
+                </a>
             </form>
 
             <?php if (ENVIRONMENT === 'development') : ?>
@@ -61,7 +65,8 @@
             <?php endif; ?>
 
             <div class="auth-footer">
-                CivicYouth Management System · Karang Taruna RW 01 Kelurahan Randugarut
+                CivicYouth Management System<br>
+                Karang Taruna RW 01 Kelurahan Randugarut
             </div>
         </div>
     </div>

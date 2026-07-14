@@ -1900,3 +1900,17 @@ textarea {
         flex-direction: column;
     }
 }
+
+.auth-home-link {
+    display: block;
+    margin-top: 14px;
+    text-align: center;
+    color: var(--gold-dark);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.auth-home-link:hover {
+    text-decoration: underline;
+}
