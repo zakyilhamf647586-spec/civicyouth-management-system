@@ -22,7 +22,7 @@
         <nav class="public-nav-links">
             <a href="#profil">Profil</a>
             <a href="#program">Program</a>
-            <a href="#kegiatan">Kegiatan</a>
+            <a href="<?= base_url('/kegiatan') ?>">Kegiatan</a>
             <a href="<?= base_url('/login') ?>" class="public-login-btn">Masuk Sistem</a>
         </nav>
     </header>
@@ -37,7 +37,7 @@
             </p>
 
             <div class="public-hero-actions">
-                <a href="#kegiatan" class="btn btn-primary">Lihat Kegiatan</a>
+                <a href="<?= base_url('/kegiatan') ?>" class="btn btn-primary">Lihat Kegiatan</a>
                 <a href="<?= base_url('/login') ?>" class="btn btn-secondary">Masuk Dashboard</a>
             </div>
         </div>
@@ -132,6 +132,10 @@
                             <span><?= date('d M Y', strtotime($activity['activity_date'])) ?></span>
                             <h3><?= esc($activity['title']) ?></h3>
                             <p><?= esc($activity['location'] ?? 'Randugarut RW 01') ?></p>
+
+                            <a href="<?= base_url('/kegiatan/' . $activity['id']) ?>" class="public-read-more">
+                                Lihat Detail
+                            </a>
                         </div>
                     </article>
                 <?php endforeach; ?>

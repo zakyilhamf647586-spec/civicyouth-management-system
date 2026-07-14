@@ -37,4 +37,37 @@ class PublicController extends BaseController
 
         return view('public/home', $data);
     }
+
+    public function activities()
+    {
+        $activityModel = new ActivityModel();
+
+        $data = [
+            'title' => 'Kegiatan Karang Taruna RW 01',
+            'activities' => $activityModel
+                ->orderBy('activity_date', 'DESC')
+                ->paginate(9, 'public_activities'),
+            'pager' => $activityModel->pager,
+        ];
+
+        return view('public/activities', $data);
+    }
+
+    public function activityDetail($id)
+    {
+        $activityModel = new ActivityModel();
+
+        $activity = $activityModel->find($id);
+
+        if (!$activity) {
+            return redirect()->to('/kegiatan')->with('error', 'Kegiatan tidak ditemukan.');
+        }
+
+        $data = [
+            'title' => $activity['title'],
+            'activity' => $activity,
+        ];
+
+        return view('public/activity_detail', $data);
+    }
 }
