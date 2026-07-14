@@ -22,6 +22,7 @@
         <nav class="public-nav-links">
             <a href="#profil">Profil</a>
             <a href="#program">Program</a>
+            <a href="<?= base_url('/pengurus') ?>">Pengurus</a>
             <a href="<?= base_url('/kegiatan') ?>">Kegiatan</a>
             <a href="<?= base_url('/login') ?>" class="public-login-btn">Masuk Sistem</a>
         </nav>

@@ -6,6 +6,7 @@ use App\Models\MemberModel;
 use App\Models\ActivityModel;
 use App\Models\MeetingModel;
 use App\Models\CashTransactionModel;
+use App\Models\OrganizationalStructureModel;
 
 class PublicController extends BaseController
 {
@@ -69,5 +70,21 @@ class PublicController extends BaseController
         ];
 
         return view('public/activity_detail', $data);
+    }
+
+    public function officials()
+    {
+        $structureModel = new OrganizationalStructureModel();
+
+        $officials = $structureModel
+            ->orderBy('id', 'ASC')
+            ->findAll();
+
+        $data = [
+            'title' => 'Struktur Pengurus Karang Taruna RW 01',
+            'officials' => $officials,
+        ];
+
+        return view('public/officials', $data);
     }
 }

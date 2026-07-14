@@ -6,6 +6,7 @@ use CodeIgniter\Router\RouteCollection;
 $routes->get('/', 'PublicController::index');
 $routes->get('/kegiatan', 'PublicController::activities');
 $routes->get('/kegiatan/(:num)', 'PublicController::activityDetail/$1');
+$routes->get('/pengurus', 'PublicController::officials');
 
 $routes->get('/', 'DashboardController::index', ['filter' => 'auth']);
 

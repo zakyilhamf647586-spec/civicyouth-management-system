@@ -2081,3 +2081,232 @@ textarea {
         grid-template-columns: 1fr;
     }
 }
+
+/* ===============================
+   Public Officials Page
+================================ */
+
+.org-chart-wrapper {
+    background: #ffffff;
+    border-radius: 30px;
+    padding: 34px;
+    box-shadow: 0 22px 60px rgba(8, 38, 74, 0.11);
+    border: 1px solid rgba(217, 163, 35, 0.18);
+}
+
+.org-chart-title {
+    text-align: center;
+    max-width: 720px;
+    margin: 0 auto 30px;
+}
+
+.org-chart-title h2 {
+    margin: 0 0 10px;
+    color: var(--navy-dark);
+    font-size: 32px;
+}
+
+.org-chart-title p {
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.7;
+}
+
+.org-chart {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.org-level {
+    display: flex;
+    justify-content: center;
+    gap: 18px;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.org-level-main {
+    max-width: 420px;
+}
+
+.org-level-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.org-node {
+    background: #f8fafc;
+    border-radius: 18px;
+    padding: 18px;
+    min-width: 220px;
+    text-align: center;
+    border: 1px solid #e5e7eb;
+    border-top: 5px solid var(--gold);
+    box-shadow: 0 10px 24px rgba(8, 38, 74, 0.07);
+}
+
+.org-node-primary {
+    background: linear-gradient(135deg, var(--navy-dark), var(--navy));
+    color: #ffffff;
+    border-color: var(--gold);
+    min-width: 320px;
+}
+
+.org-node span {
+    display: block;
+    color: var(--gold-dark);
+    font-weight: 900;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.9px;
+    margin-bottom: 8px;
+}
+
+.org-node-primary span {
+    color: var(--gold);
+}
+
+.org-node strong {
+    display: block;
+    color: var(--navy-dark);
+    font-size: 17px;
+    margin-bottom: 6px;
+}
+
+.org-node-primary strong {
+    color: #ffffff;
+}
+
+.org-node small {
+    color: var(--muted);
+}
+
+.org-node-primary small {
+    color: #dbe7f4;
+}
+
+.org-connector {
+    width: 3px;
+    height: 34px;
+    background: linear-gradient(180deg, var(--gold), var(--gold-dark));
+    margin: 10px 0;
+    border-radius: 99px;
+}
+
+.officials-carousel-wrapper {
+    position: relative;
+}
+
+.officials-carousel {
+    display: flex;
+    gap: 18px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 8px 4px 18px;
+    scrollbar-width: thin;
+}
+
+.official-card {
+    flex: 0 0 290px;
+    background: #ffffff;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 16px 42px rgba(8, 38, 74, 0.11);
+    border: 1px solid rgba(217, 163, 35, 0.18);
+}
+
+.official-avatar {
+    height: 190px;
+    background:
+        radial-gradient(circle at top right, rgba(217, 163, 35, 0.28), transparent 34%),
+        linear-gradient(135deg, var(--navy-dark), var(--navy));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold);
+    font-size: 72px;
+    font-weight: 900;
+}
+
+.official-card-body {
+    padding: 20px;
+}
+
+.official-card-body span {
+    color: var(--gold-dark);
+    font-size: 13px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+}
+
+.official-card-body h3 {
+    color: var(--navy-dark);
+    font-size: 20px;
+    margin: 8px 0;
+}
+
+.official-card-body p {
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.6;
+}
+
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: none;
+    background: var(--navy-dark);
+    color: #ffffff;
+    font-size: 30px;
+    line-height: 1;
+    cursor: pointer;
+    z-index: 5;
+    box-shadow: 0 10px 22px rgba(8, 38, 74, 0.22);
+}
+
+.carousel-btn:hover {
+    background: var(--gold-dark);
+}
+
+.carousel-prev {
+    left: -14px;
+}
+
+.carousel-next {
+    right: -14px;
+}
+
+@media (max-width: 900px) {
+    .org-level-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .carousel-btn {
+        display: none;
+    }
+}
+
+@media (max-width: 620px) {
+    .org-chart-wrapper {
+        padding: 24px;
+    }
+
+    .org-level-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .org-node,
+    .org-node-primary {
+        min-width: 100%;
+    }
+
+    .official-card {
+        flex-basis: 260px;
+    }
+}
