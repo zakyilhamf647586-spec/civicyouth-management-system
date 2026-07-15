@@ -129,6 +129,14 @@ _modules/*
 public/uploads/activities/*
 !public/uploads/activities/.gitkeep
 
+# Officials photos
+public/uploads/officials/*
+!public/uploads/officials/.gitkeep
+
+# Officials uploaded photos
+public/uploads/officials/*
+!public/uploads/officials/.gitkeep
+
 # AI Content Studio uploads
 public/uploads/content_studio/*
 !public/uploads/content_studio/.gitkeep

@@ -10,23 +10,9 @@
 <body>
 
 <div class="public-site">
-    <header class="public-navbar">
-        <div class="public-brand">
-            <img src="<?= base_url('assets/img/logo-rw01.png') ?>" alt="Logo Karang Taruna RW 01">
-            <div>
-                <strong>Karang Taruna RW 01</strong>
-                <span>Kelurahan Randugarut</span>
-            </div>
-        </div>
-
-        <nav class="public-nav-links">
-            <a href="#profil">Profil</a>
-            <a href="#program">Program</a>
-            <a href="<?= base_url('/pengurus') ?>">Pengurus</a>
-            <a href="<?= base_url('/kegiatan') ?>">Kegiatan</a>
-            <a href="<?= base_url('/login') ?>" class="public-login-btn">Masuk Sistem</a>
-        </nav>
-    </header>
+    <?= view('partials/public_navbar', [
+        'activePage' => 'home',
+    ]) ?>
 
     <section class="public-hero">
         <div class="public-hero-content">
@@ -161,10 +147,7 @@
         <a href="<?= base_url('/login') ?>" class="btn btn-primary">Masuk Sistem</a>
     </section>
 
-    <footer class="public-footer">
-        <span>© <?= date('Y') ?> Karang Taruna RW 01 Kelurahan Randugarut</span>
-        <strong>@kartar.rw01.randugarut</strong>
-    </footer>
+    <?= view('partials/public_footer') ?>
 </div>
 
 </body>

@@ -69,34 +69,9 @@ foreach ($officials as $official) {
 
 <div class="public-site officials-public-page">
 
-    <header class="public-navbar">
-        <a href="<?= base_url('/') ?>" class="public-brand">
-            <img
-                src="<?= base_url('assets/img/logo-rw01.png') ?>"
-                alt="Logo Karang Taruna RW 01"
-            >
-
-            <div>
-                <strong>Karang Taruna RW 01</strong>
-                <span>Kelurahan Randugarut</span>
-            </div>
-        </a>
-
-        <nav class="public-nav-links">
-            <a href="<?= base_url('/') ?>">Beranda</a>
-            <a href="<?= base_url('/#profil') ?>">Profil</a>
-            <a href="<?= base_url('/#program') ?>">Program</a>
-            <a href="<?= base_url('/pengurus') ?>" class="active">Pengurus</a>
-            <a href="<?= base_url('/kegiatan') ?>">Kegiatan</a>
-
-            <a
-                href="<?= base_url('/login') ?>"
-                class="public-login-btn"
-            >
-                Masuk Sistem
-            </a>
-        </nav>
-    </header>
+    <?= view('partials/public_navbar', [
+        'activePage' => 'officials',
+    ]) ?>
 
     <main>
 
@@ -453,13 +428,7 @@ foreach ($officials as $official) {
 
     </main>
 
-    <footer class="public-footer">
-        <span>
-            © <?= date('Y') ?> Karang Taruna RW 01 Kelurahan Randugarut
-        </span>
-
-        <strong>@kartar.rw01.randugarut</strong>
-    </footer>
+    <?= view('partials/public_footer') ?>
 </div>
 
 <script>
