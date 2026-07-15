@@ -7,6 +7,12 @@ $isActivityPage = in_array(
     ['activities', 'activity_detail'],
     true
 );
+
+$isProgramPage = in_array(
+    $activePage,
+    ['programs', 'program_detail'],
+    true
+);
 ?>
 
 <header class="public-navbar">
@@ -54,15 +60,21 @@ $isActivityPage = in_array(
             </a>
 
             <a
-                href="<?= base_url('/#profil') ?>"
+                href="<?= base_url('/profil') ?>"
                 class="<?= $activePage === 'profile' ? 'active' : '' ?>"
+                <?= $activePage === 'profile'
+                    ? 'aria-current="page"'
+                    : '' ?>
             >
                 Tentang
             </a>
 
             <a
-                href="<?= base_url('/#program') ?>"
-                class="<?= $activePage === 'programs' ? 'active' : '' ?>"
+                href="<?= base_url('/program') ?>"
+                class="<?= $isProgramPage ? 'active' : '' ?>"
+                <?= $isProgramPage
+                    ? 'aria-current="page"'
+                    : '' ?>
             >
                 Program
             </a>

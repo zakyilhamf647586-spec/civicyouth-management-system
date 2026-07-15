@@ -4,9 +4,17 @@ use CodeIgniter\Router\RouteCollection;
 
 /** @var RouteCollection $routes */
 $routes->get('/', 'PublicController::index');
+
+$routes->get('/profil', 'PublicController::profile');
+
+$routes->get('/program', 'PublicController::programs');
+$routes->get('/program/(:segment)', 'PublicController::programDetail/$1');
+
+$routes->get('/pengurus', 'PublicController::officials');
+
 $routes->get('/kegiatan', 'PublicController::activities');
 $routes->get('/kegiatan/(:num)', 'PublicController::activityDetail/$1');
-$routes->get('/pengurus', 'PublicController::officials');
+
 
 $routes->get('/', 'DashboardController::index', ['filter' => 'auth']);
 

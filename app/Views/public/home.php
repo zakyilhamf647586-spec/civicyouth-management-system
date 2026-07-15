@@ -25,7 +25,7 @@
 
             <div class="public-hero-actions">
                 <a href="<?= base_url('/kegiatan') ?>" class="btn btn-primary">Lihat Kegiatan</a>
-                <a href="<?= base_url('/login') ?>" class="btn btn-secondary">Masuk Dashboard</a>
+                <a href="<?= base_url('/profil') ?>" class="btn btn-secondary">Kenali GARDA 01</a>
             </div>
         </div>
 

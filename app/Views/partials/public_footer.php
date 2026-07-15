@@ -36,8 +36,8 @@
                 <h3>Navigasi</h3>
 
                 <a href="<?= base_url('/') ?>">Beranda</a>
-                <a href="<?= base_url('/#profil') ?>">Tentang</a>
-                <a href="<?= base_url('/#program') ?>">Program</a>
+                <a href="<?= base_url('/profil') ?>">Tentang</a>
+                <a href="<?= base_url('/program') ?>">Program</a>
                 <a href="<?= base_url('/kegiatan') ?>">Kegiatan</a>
                 <a href="<?= base_url('/pengurus') ?>">Pengurus</a>
             </section>
@@ -45,11 +45,25 @@
             <section class="garda-footer-column">
                 <h3>Program</h3>
 
-                <span>GARDA 01 Peduli</span>
-                <span>GARDA 01 Hijau</span>
-                <span>GARDA 01 Sport</span>
-                <span>GARDA 01 Creative</span>
-                <span>GARDA 01 Enterprise</span>
+                <a href="<?= base_url('/program/peduli') ?>">
+                    GARDA 01 Peduli
+                </a>
+
+                <a href="<?= base_url('/program/hijau') ?>">
+                    GARDA 01 Hijau
+                </a>
+
+                <a href="<?= base_url('/program/sport') ?>">
+                    GARDA 01 Sport
+                </a>
+
+                <a href="<?= base_url('/program/creative') ?>">
+                    GARDA 01 Creative
+                </a>
+
+                <a href="<?= base_url('/program/enterprise') ?>">
+                    GARDA 01 Enterprise
+                </a>
             </section>
 
             <section class="garda-footer-column">
