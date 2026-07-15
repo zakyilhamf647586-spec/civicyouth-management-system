@@ -52,7 +52,7 @@
                     $lainnya = [];
 
                     foreach ($officials as $official) {
-                        $position = strtolower($official['position'] ?? '');
+                        $position = strtolower($official['position_name'] ?? '');
 
                         if (str_contains($position, 'ketua') && !str_contains($position, 'wakil') && $ketua === null) {
                             $ketua = $official;
@@ -81,7 +81,7 @@
                         <div class="org-level">
                             <?php foreach ($wakil as $official) : ?>
                                 <div class="org-node">
-                                    <span><?= esc($official['position'] ?? '-') ?></span>
+                                    <span><?= esc($official['position_name'] ?? '-') ?></span>
                                     <strong><?= esc($official['name'] ?? $official['member_name'] ?? '-') ?></strong>
                                     <small><?= esc($official['division'] ?? '-') ?></small>
                                 </div>
@@ -95,7 +95,7 @@
                         <div class="org-level org-level-grid">
                             <?php foreach ($lainnya as $official) : ?>
                                 <div class="org-node">
-                                    <span><?= esc($official['position'] ?? '-') ?></span>
+                                    <span><?= esc($official['position_name'] ?? '-') ?></span>
                                     <strong><?= esc($official['name'] ?? $official['member_name'] ?? '-') ?></strong>
                                     <small><?= esc($official['division'] ?? '-') ?></small>
                                 </div>
@@ -133,14 +133,28 @@
                         ?>
 
                         <article class="official-card">
-                            <div class="official-avatar">
-                                <?= esc($initial) ?>
-                            </div>
+                            <?php if (!empty($official['photo'])) : ?>
+                                <img
+                                    src="<?= base_url('uploads/officials/' . $official['photo']) ?>"
+                                    alt="<?= esc($officialName) ?>"
+                                    class="official-photo"
+                                >
+                            <?php else : ?>
+                                <div class="official-avatar">
+                                    <?= esc($initial) ?>
+                                </div>
+                            <?php endif; ?>
 
                             <div class="official-card-body">
-                                <span><?= esc($official['position'] ?? '-') ?></span>
+                                <span><?= esc($official['position_name'] ?? '-') ?></span>
                                 <h3><?= esc($officialName) ?></h3>
                                 <p><?= esc($official['division'] ?? 'Karang Taruna RW 01') ?></p>
+
+                                <?php if (!empty($official['short_bio'])) : ?>
+                                    <small class="official-bio">
+                                        <?= esc($official['short_bio']) ?>
+                                    </small>
+                                <?php endif; ?>
                             </div>
                         </article>
                     <?php endforeach; ?>

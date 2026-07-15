@@ -20,7 +20,7 @@
 <?php endif; ?>
 
 <div class="form-card">
-    <form action="<?= base_url('/structures/store') ?>" method="post">
+    <form action="<?= base_url('/structures/store') ?>" method="post" enctype="multipart/form-data">
         <?= csrf_field() ?>
 
         <div class="form-group">
@@ -81,6 +81,17 @@
                 <option value="active" <?= old('status') === 'active' ? 'selected' : '' ?>>Aktif</option>
                 <option value="inactive" <?= old('status') === 'inactive' ? 'selected' : '' ?>>Tidak Aktif</option>
             </select>
+        </div>
+
+        <div class="form-group">
+            <label>Foto Pengurus</label>
+            <input type="file" name="photo" accept=".jpg,.jpeg,.png,.webp">
+            <small>Opsional. Format JPG, JPEG, PNG, atau WEBP. Maksimal 2MB.</small>
+        </div>
+
+        <div class="form-group">
+            <label>Biodata Singkat</label>
+            <textarea name="short_bio" rows="4" placeholder="Contoh: Aktif dalam kegiatan kepemudaan, sosial, dan koordinasi warga RW 01."><?= old('short_bio') ?></textarea>
         </div>
 
         <button type="submit" class="btn btn-primary">Simpan Data</button>

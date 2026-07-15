@@ -77,14 +77,22 @@ class PublicController extends BaseController
         $structureModel = new OrganizationalStructureModel();
 
         $officials = $structureModel
-            ->orderBy('id', 'ASC')
+            ->select(
+                'organizational_structures.*, ' .
+                'members.full_name AS member_name'
+            )
+            ->join(
+                'members',
+                'members.id = organizational_structures.member_id',
+                'left'
+            )
+            ->orderBy('organizational_structures.sort_order', 'ASC')
+            ->orderBy('organizational_structures.id', 'ASC')
             ->findAll();
 
-        $data = [
-            'title' => 'Struktur Pengurus Karang Taruna RW 01',
+        return view('public/officials', [
+            'title'     => 'Struktur Pengurus Karang Taruna RW 01',
             'officials' => $officials,
-        ];
-
-        return view('public/officials', $data);
+        ]);
     }
 }

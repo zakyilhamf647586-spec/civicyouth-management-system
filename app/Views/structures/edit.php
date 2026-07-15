@@ -20,7 +20,7 @@
 <?php endif; ?>
 
 <div class="form-card">
-    <form action="<?= base_url('/structures/update/' . $structure['id']) ?>" method="post">
+    <form action="<?= base_url('/structures/update/' . $structure['id']) ?>" method="post" enctype="multipart/form-data">
         <?= csrf_field() ?>
 
         <div class="form-group">
@@ -81,6 +81,28 @@
                 <option value="active" <?= old('status', $structure['status']) === 'active' ? 'selected' : '' ?>>Aktif</option>
                 <option value="inactive" <?= old('status', $structure['status']) === 'inactive' ? 'selected' : '' ?>>Tidak Aktif</option>
             </select>
+        </div>
+
+        <div class="form-group">
+            <label>Foto Pengurus Baru</label>
+            <input type="file" name="photo" accept=".jpg,.jpeg,.png,.webp">
+            <small>Kosongkan jika tidak ingin mengganti foto.</small>
+        </div>
+
+        <?php if (!empty($structure['photo'])) : ?>
+            <div class="form-group">
+                <label>Foto Saat Ini</label><br>
+                <img
+                    src="<?= base_url('uploads/officials/' . $structure['photo']) ?>"
+                    alt="Foto Pengurus"
+                    style="width: 130px; height: 130px; object-fit: cover; border-radius: 18px; border: 1px solid #ddd;"
+                >
+            </div>
+        <?php endif; ?>
+
+        <div class="form-group">
+            <label>Biodata Singkat</label>
+            <textarea name="short_bio" rows="4" placeholder="Biodata singkat pengurus"><?= old('short_bio', $structure['short_bio'] ?? '') ?></textarea>
         </div>
 
         <button type="submit" class="btn btn-primary">Update Data</button>

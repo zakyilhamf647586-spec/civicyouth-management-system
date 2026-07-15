@@ -28,6 +28,7 @@
         <thead>
             <tr>
                 <th>No</th>
+                <th>Foto</th>
                 <th>Jabatan</th>
                 <th>Nama Pengurus</th>
                 <th>Bidang/Seksi</th>
@@ -42,6 +43,19 @@
                 <?php $no = 1; foreach ($structures as $structure) : ?>
                     <tr>
                         <td><?= $no++ ?></td>
+                        <td>
+                            <?php if (!empty($structure['photo'])) : ?>
+                                <img
+                                    src="<?= base_url('uploads/officials/' . $structure['photo']) ?>"
+                                    alt="Foto Pengurus"
+                                    class="official-thumb"
+                                >
+                            <?php else : ?>
+                                <div class="official-thumb-placeholder">
+                                    <?= esc(strtoupper(mb_substr($structure['name'] ?? '-', 0, 1))) ?>
+                                </div>
+                            <?php endif; ?>
+                        </td>
                         <td><strong><?= esc($structure['position_name']) ?></strong></td>
                         <td><?= esc($structure['full_name'] ?? 'Belum ditentukan') ?></td>
                         <td><?= esc($structure['division'] ?? '-') ?></td>

@@ -16,7 +16,9 @@ class OrganizationalStructureModel extends Model
         'period',
         'description',
         'sort_order',
-        'status'
+        'status',
+        'photo',
+        'short_bio',
     ];
 
     protected $useTimestamps = true;
