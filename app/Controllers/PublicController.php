@@ -106,7 +106,8 @@ class PublicController extends BaseController
                 'activities.*, ' .
                 'programs.name AS program_name, ' .
                 'programs.slug AS program_slug, ' .
-                'programs.label AS program_label'
+                'programs.label AS program_label, ' .
+                'programs.tagline AS program_tagline'
             )
             ->join(
                 'programs',
@@ -121,12 +122,44 @@ class PublicController extends BaseController
                 ->with('error', 'Kegiatan tidak ditemukan.');
         }
 
+        $relatedModel = new ActivityModel();
+
+        $relatedModel
+            ->select(
+                'activities.*, ' .
+                'programs.name AS program_name, ' .
+                'programs.slug AS program_slug'
+            )
+            ->join(
+                'programs',
+                'programs.id = activities.program_id',
+                'left'
+            )
+            ->where('activities.id !=', $id);
+
+        if (!empty($activity['program_id'])) {
+            $relatedModel->where(
+                'activities.program_id',
+                $activity['program_id']
+            );
+        }
+
+        $relatedActivities = $relatedModel
+            ->orderBy('activities.activity_date', 'DESC')
+            ->orderBy('activities.id', 'DESC')
+            ->limit(3)
+            ->findAll();
+
         return view('public/activity_detail', [
             'title' => $activity['title'] . ' | GARDA 01',
-            'metaDescription' => $activity['description']
-                ?? 'Dokumentasi kegiatan GARDA 01.',
+
+            'metaDescription' => !empty($activity['description'])
+                ? mb_substr(strip_tags($activity['description']), 0, 155)
+                : 'Dokumentasi kegiatan GARDA 01 Randugarut.',
+
             'activePage' => 'activity_detail',
             'activity' => $activity,
+            'relatedActivities' => $relatedActivities,
         ]);
     }
 
