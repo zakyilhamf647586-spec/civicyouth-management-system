@@ -8,6 +8,7 @@ use App\Models\MeetingModel;
 use App\Models\CashTransactionModel;
 use App\Models\OrganizationalStructureModel;
 use App\Models\ProgramModel;
+use App\Models\ActivityImageModel;
 use CodeIgniter\Exceptions\PageNotFoundException;
 
 class PublicController extends BaseController
@@ -288,6 +289,15 @@ class PublicController extends BaseController
                 ->with('error', 'Kegiatan tidak ditemukan.');
         }
 
+        $imageModel = new ActivityImageModel();
+
+        $galleryImages = $imageModel
+            ->where('activity_id', $id)
+            ->orderBy('is_cover', 'DESC')
+            ->orderBy('display_order', 'ASC')
+            ->orderBy('id', 'ASC')
+            ->findAll();
+
         $relatedModel = new ActivityModel();
 
         $relatedModel
@@ -326,6 +336,7 @@ class PublicController extends BaseController
             'activePage' => 'activity_detail',
             'activity' => $activity,
             'relatedActivities' => $relatedActivities,
+            'galleryImages' => $galleryImages,
         ]);
     }
 

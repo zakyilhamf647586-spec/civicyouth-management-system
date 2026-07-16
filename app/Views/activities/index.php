@@ -121,6 +121,7 @@
                             <?php endif; ?>
                         </td>
                         <td>
+                            <a href="<?= base_url('/activities/gallery/' . $activity['id']) ?>" class="btn btn-primary">Galeri</a>
                             <a href="<?= base_url('/activities/edit/' . $activity['id']) ?>" class="btn btn-warning">Edit</a>
                             <a href="<?= base_url('/activities/delete/' . $activity['id']) ?>"
                                class="btn btn-danger"

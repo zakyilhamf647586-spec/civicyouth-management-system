@@ -72,6 +72,12 @@ $routes->get('/activities/edit/(:num)', 'ActivityController::edit/$1', ['filter'
 $routes->post('/activities/update/(:num)', 'ActivityController::update/$1', ['filter' => 'auth']);
 $routes->get('/activities/delete/(:num)', 'ActivityController::delete/$1', ['filter' => 'auth']);
 
+$routes->get('/activities/gallery/(:num)', 'ActivityGalleryController::index/$1', ['filter' => 'auth']);
+$routes->post('/activities/gallery/(:num)/upload', 'ActivityGalleryController::upload/$1', ['filter' => 'auth']);
+$routes->post('/activities/gallery/(:num)/image/(:num)/update', 'ActivityGalleryController::update/$1/$2', ['filter' => 'auth']);
+$routes->post('/activities/gallery/(:num)/image/(:num)/cover', 'ActivityGalleryController::setCover/$1/$2', ['filter' => 'auth']);
+$routes->post('/activities/gallery/(:num)/image/(:num)/delete', 'ActivityGalleryController::delete/$1/$2', ['filter' => 'auth']);
+
 $routes->get('/reports', 'ReportController::index', ['filter' => 'auth']);
 $routes->get('/reports/members', 'ReportController::members', ['filter' => 'auth']);
 $routes->get('/reports/cash', 'ReportController::cash', ['filter' => 'auth']);

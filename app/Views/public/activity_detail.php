@@ -228,6 +228,14 @@ $hasDocumentationImage =
 
 </section>
 
+<?= view(
+    'public/partials/activity_gallery',
+    [
+        'galleryImages' => $galleryImages ?? [],
+        'activity'      => $activity,
+    ]
+) ?>
+
 <?php if (!empty($activity['description'])) : ?>
     <section class="activity-editorial-section">
 
