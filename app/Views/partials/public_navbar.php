@@ -103,8 +103,39 @@ $isProgramPage = in_array(
                 href="<?= base_url('/login') ?>"
                 class="public-portal-button"
             >
-                <span class="public-portal-icon" aria-hidden="true">⌾</span>
-                Portal Pengurus
+                <svg
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                    class="public-portal-button-icon"
+                >
+                    <path
+                        d="M7 10V8a5 5 0 0 1 10 0v2"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                    />
+
+                    <rect
+                        x="5"
+                        y="10"
+                        width="14"
+                        height="10"
+                        rx="2.5"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                    />
+
+                    <circle
+                        cx="12"
+                        cy="15"
+                        r="1.2"
+                        fill="currentColor"
+                    />
+                </svg>
+
+                <span>Portal Pengurus</span>
             </a>
         </nav>
 

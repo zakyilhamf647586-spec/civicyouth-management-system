@@ -14,31 +14,197 @@ class PublicController extends BaseController
 {
     public function index()
     {
-        $memberModel   = new MemberModel();
-        $activityModel = new ActivityModel();
-        $meetingModel  = new MeetingModel();
+        $memberModel    = new MemberModel();
+        $activityModel  = new ActivityModel();
+        $structureModel = new OrganizationalStructureModel();
+        $programModel   = new ProgramModel();
 
+        /*
+        * Statistik organisasi
+        */
         $activeMembers = $memberModel
             ->where('membership_status', 'active')
             ->countAllResults();
 
-        $totalActivities = $activityModel->countAllResults(false);
-        $totalMeetings   = $meetingModel->countAllResults(false);
+        $connectedRt = $memberModel
+            ->select('rt')
+            ->where('membership_status', 'active')
+            ->where('rt IS NOT NULL', null, false)
+            ->where('rt !=', '')
+            ->groupBy('rt')
+            ->countAllResults();
 
-        $latestActivities = $activityModel
-            ->orderBy('activity_date', 'DESC')
+        $activeOfficials = $structureModel->countAllResults();
+
+        $completedActivities = (new ActivityModel())
+            ->where('status', 'completed')
+            ->countAllResults();
+
+        /*
+        * Tujuh pilar program publik
+        */
+        $programs = $programModel->getPublishedPrograms();
+
+        /*
+        * Kegiatan unggulan:
+        * mengambil kegiatan terbaru yang mempunyai dokumentasi.
+        */
+        $featuredActivity = (new ActivityModel())
+            ->select(
+                'activities.*, ' .
+                'programs.name AS program_name, ' .
+                'programs.slug AS program_slug, ' .
+                'programs.label AS program_label'
+            )
+            ->join(
+                'programs',
+                'programs.id = activities.program_id',
+                'left'
+            )
+            ->where(
+                'activities.documentation_file IS NOT NULL',
+                null,
+                false
+            )
+            ->where('activities.documentation_file !=', '')
+            ->orderBy('activities.activity_date', 'DESC')
+            ->orderBy('activities.id', 'DESC')
+            ->first();
+
+        /*
+        * Jika belum ada kegiatan yang memiliki foto,
+        * gunakan kegiatan terbaru sebagai fallback.
+        */
+        if (!$featuredActivity) {
+            $featuredActivity = (new ActivityModel())
+                ->select(
+                    'activities.*, ' .
+                    'programs.name AS program_name, ' .
+                    'programs.slug AS program_slug, ' .
+                    'programs.label AS program_label'
+                )
+                ->join(
+                    'programs',
+                    'programs.id = activities.program_id',
+                    'left'
+                )
+                ->orderBy('activities.activity_date', 'DESC')
+                ->orderBy('activities.id', 'DESC')
+                ->first();
+        }
+
+        /*
+        * Cerita dampak:
+        * prioritaskan kegiatan selesai yang memiliki hasil kegiatan.
+        */
+        $impactBuilder = (new ActivityModel())
+            ->select(
+                'activities.*, ' .
+                'programs.name AS program_name, ' .
+                'programs.slug AS program_slug, ' .
+                'programs.label AS program_label'
+            )
+            ->join(
+                'programs',
+                'programs.id = activities.program_id',
+                'left'
+            )
+            ->where('activities.status', 'completed')
+            ->where('activities.result IS NOT NULL', null, false)
+            ->where('activities.result !=', '');
+
+        if (!empty($featuredActivity['id'])) {
+            $impactBuilder->where(
+                'activities.id !=',
+                $featuredActivity['id']
+            );
+        }
+
+        $impactActivity = $impactBuilder
+            ->orderBy('activities.activity_date', 'DESC')
+            ->orderBy('activities.id', 'DESC')
+            ->first();
+
+        /*
+        * Bila belum ada field hasil yang terisi,
+        * gunakan kegiatan selesai lainnya.
+        */
+        if (!$impactActivity) {
+            $impactFallback = (new ActivityModel())
+                ->select(
+                    'activities.*, ' .
+                    'programs.name AS program_name, ' .
+                    'programs.slug AS program_slug, ' .
+                    'programs.label AS program_label'
+                )
+                ->join(
+                    'programs',
+                    'programs.id = activities.program_id',
+                    'left'
+                )
+                ->where('activities.status', 'completed');
+
+            if (!empty($featuredActivity['id'])) {
+                $impactFallback->where(
+                    'activities.id !=',
+                    $featuredActivity['id']
+                );
+            }
+
+            $impactActivity = $impactFallback
+                ->orderBy('activities.activity_date', 'DESC')
+                ->orderBy('activities.id', 'DESC')
+                ->first();
+        }
+
+        /*
+        * Tiga kegiatan terbaru.
+        * Kegiatan hero dikecualikan agar konten tidak berulang.
+        */
+        $latestBuilder = (new ActivityModel())
+            ->select(
+                'activities.*, ' .
+                'programs.name AS program_name, ' .
+                'programs.slug AS program_slug, ' .
+                'programs.label AS program_label'
+            )
+            ->join(
+                'programs',
+                'programs.id = activities.program_id',
+                'left'
+            );
+
+        if (!empty($featuredActivity['id'])) {
+            $latestBuilder->where(
+                'activities.id !=',
+                $featuredActivity['id']
+            );
+        }
+
+        $latestActivities = $latestBuilder
+            ->orderBy('activities.activity_date', 'DESC')
+            ->orderBy('activities.id', 'DESC')
             ->limit(3)
             ->findAll();
 
-        $data = [
-            'title'             => 'Karang Taruna RW 01 Randugarut',
-            'active_members'    => $activeMembers,
-            'total_activities'  => $totalActivities,
-            'total_meetings'    => $totalMeetings,
-            'latest_activities' => $latestActivities,
-        ];
+        return view('public/home', [
+            'title' =>
+                'GARDA 01 | Generasi Aktif Randugarut',
 
-        return view('public/home', $data);
+            'metaDescription' =>
+                'Website resmi GARDA 01, Generasi Aktif Randugarut, Karang Taruna RW 01 Kelurahan Randugarut.',
+
+            'activePage'          => 'home',
+            'activeMembers'       => $activeMembers,
+            'connectedRt'         => $connectedRt,
+            'activeOfficials'     => $activeOfficials,
+            'completedActivities' => $completedActivities,
+            'programCount'        => count($programs),
+            'programs'            => $programs,
+            'featuredActivity'    => $featuredActivity,
+            'impactActivity'      => $impactActivity,
+            'latestActivities'    => $latestActivities,
+        ]);
     }
 
     public function activities()

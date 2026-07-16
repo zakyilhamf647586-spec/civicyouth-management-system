@@ -1,154 +1,806 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title><?= esc($title) ?></title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+<?= $this->extend('layouts/public') ?>
 
-    <link rel="stylesheet" href="<?= base_url('assets/css/app.css') ?>">
-</head>
-<body>
+<?= $this->section('content') ?>
 
-<div class="public-site">
-    <?= view('partials/public_navbar', [
-        'activePage' => 'home',
-    ]) ?>
+<?php
+$formatPublicDate = static function (?string $date): string {
+    if (empty($date)) {
+        return '-';
+    }
 
-    <section class="public-hero">
-        <div class="public-hero-content">
-            <span class="public-kicker">Organisasi Pemuda RW 01</span>
-            <h1>Karang Taruna RW 01 Randugarut</h1>
-            <p>
-                Wadah pemuda untuk bergerak bersama dalam kegiatan sosial, kepemudaan,
-                olahraga, kreativitas, dan pengembangan lingkungan RW 01 Kelurahan Randugarut.
+    $timestamp = strtotime($date);
+
+    if (!$timestamp) {
+        return '-';
+    }
+
+    $months = [
+        1  => 'Januari',
+        2  => 'Februari',
+        3  => 'Maret',
+        4  => 'April',
+        5  => 'Mei',
+        6  => 'Juni',
+        7  => 'Juli',
+        8  => 'Agustus',
+        9  => 'September',
+        10 => 'Oktober',
+        11 => 'November',
+        12 => 'Desember',
+    ];
+
+    return date('d', $timestamp)
+        . ' '
+        . $months[(int) date('n', $timestamp)]
+        . ' '
+        . date('Y', $timestamp);
+};
+
+$activityHasImage = static function (?array $activity): bool {
+    if (
+        empty($activity)
+        || empty($activity['documentation_file'])
+    ) {
+        return false;
+    }
+
+    return is_file(
+        FCPATH
+        . 'uploads/activities/'
+        . $activity['documentation_file']
+    );
+};
+
+$programShortName = static function (?string $name): string {
+    if (empty($name)) {
+        return 'GARDA 01';
+    }
+
+    return trim(
+        str_replace('GARDA 01 ', '', $name)
+    );
+};
+
+$programClass = static function (?string $slug): string {
+    $slug = strtolower((string) $slug);
+
+    return preg_replace(
+        '/[^a-z0-9\-]/',
+        '',
+        $slug
+    ) ?: 'general';
+};
+
+$featuredHasImage = $activityHasImage(
+    $featuredActivity ?? null
+);
+
+$impactHasImage = $activityHasImage(
+    $impactActivity ?? null
+);
+?>
+
+<div class="garda-home">
+
+    <!-- HERO -->
+    <section class="garda-home-hero">
+
+        <div class="garda-home-hero-copy">
+
+            <span class="garda-home-eyebrow">
+                Karang Taruna RW 01 • Kelurahan Randugarut
+            </span>
+
+            <h1>GARDA 01</h1>
+
+            <h2>Generasi Aktif Randugarut</h2>
+
+            <p class="garda-home-manifesto">
+                Guyub dalam kebersamaan.<br>
+                Bergerak melalui karya.<br>
+                Berdampak bagi lingkungan.
             </p>
 
-            <div class="public-hero-actions">
-                <a href="<?= base_url('/kegiatan') ?>" class="btn btn-primary">Lihat Kegiatan</a>
-                <a href="<?= base_url('/profil') ?>" class="btn btn-secondary">Kenali GARDA 01</a>
-            </div>
-        </div>
-
-        <div class="public-hero-logo">
-            <img src="<?= base_url('assets/img/logo-rw01.png') ?>" alt="Logo Karang Taruna RW 01">
-            <strong>RW 01 Randugarut</strong>
-            <span>Aktif · Solid · Terdokumentasi</span>
-        </div>
-    </section>
-
-    <section class="public-stats">
-        <div>
-            <strong><?= esc($active_members) ?></strong>
-            <span>Anggota Aktif</span>
-        </div>
-
-        <div>
-            <strong><?= esc($total_activities) ?></strong>
-            <span>Kegiatan Tercatat</span>
-        </div>
-
-        <div>
-            <strong><?= esc($total_meetings) ?></strong>
-            <span>Agenda Rapat</span>
-        </div>
-    </section>
-
-    <section class="public-section" id="profil">
-        <div class="public-section-header">
-            <span class="public-kicker">Profil Organisasi</span>
-            <h2>Tumbuh bersama pemuda dan warga RW 01</h2>
-            <p>
-                Karang Taruna RW 01 hadir sebagai ruang kontribusi pemuda dalam membangun
-                kepedulian sosial, kedisiplinan organisasi, dan dokumentasi kegiatan yang lebih tertata.
+            <p class="garda-home-introduction">
+                Ruang tumbuh dan kolaborasi pemuda RW 01 dalam
+                kegiatan sosial, lingkungan, olahraga, kreativitas,
+                pendidikan, usaha, dan pemberdayaan masyarakat.
             </p>
-        </div>
 
-        <div class="public-feature-grid">
-            <div class="public-feature-card">
-                <h3>Sosial & Kepemudaan</h3>
-                <p>Mendorong keterlibatan pemuda dalam kegiatan sosial dan kemasyarakatan.</p>
+            <div class="garda-home-hero-actions">
+                <a
+                    href="<?= base_url('/kegiatan') ?>"
+                    class="btn btn-primary"
+                >
+                    Lihat Gerak Kami
+                </a>
+
+                <a
+                    href="<?= base_url('/profil') ?>"
+                    class="btn garda-home-outline-button"
+                >
+                    Kenali GARDA 01
+                </a>
             </div>
 
-            <div class="public-feature-card">
-                <h3>Administrasi Tertib</h3>
-                <p>Mengelola data anggota, rapat, absensi, kas, dan kegiatan secara lebih rapi.</p>
+            <div
+                class="garda-home-hero-watermark"
+                aria-hidden="true"
+            >
+                G01
             </div>
 
-            <div class="public-feature-card">
-                <h3>Media & Dokumentasi</h3>
-                <p>Mendukung dokumentasi kegiatan dan publikasi media sosial organisasi.</p>
-            </div>
-        </div>
-    </section>
-
-    <section class="public-section" id="program">
-        <div class="public-section-header">
-            <span class="public-kicker">Fokus Program</span>
-            <h2>Ruang gerak pemuda RW 01</h2>
         </div>
 
-        <div class="public-program-grid">
-            <div>Penguatan organisasi</div>
-            <div>Kegiatan sosial lingkungan</div>
-            <div>Olahraga dan kepemudaan</div>
-            <div>Dokumentasi dan publikasi</div>
-            <div>Kolaborasi warga</div>
-            <div>Pengembangan kreativitas</div>
-        </div>
-    </section>
+        <aside class="garda-home-featured">
 
-    <section class="public-section" id="kegiatan">
-        <div class="public-section-header">
-            <span class="public-kicker">Kegiatan Terbaru</span>
-            <h2>Dokumentasi aktivitas organisasi</h2>
-        </div>
+            <?php if (!empty($featuredActivity)) : ?>
 
-        <?php if (!empty($latest_activities)) : ?>
-            <div class="public-activity-grid">
-                <?php foreach ($latest_activities as $activity) : ?>
-                    <article class="public-activity-card">
-                        <?php if (!empty($activity['documentation_file'])) : ?>
-                            <img src="<?= base_url('uploads/activities/' . $activity['documentation_file']) ?>" alt="<?= esc($activity['title']) ?>">
-                        <?php else : ?>
-                            <div class="public-activity-placeholder">
-                                Karang Taruna RW 01
-                            </div>
-                        <?php endif; ?>
+                <a
+                    href="<?= base_url(
+                        '/kegiatan/' . $featuredActivity['id']
+                    ) ?>"
+                    class="garda-home-featured-media"
+                >
 
-                        <div>
-                            <span><?= date('d M Y', strtotime($activity['activity_date'])) ?></span>
-                            <h3><?= esc($activity['title']) ?></h3>
-                            <p><?= esc($activity['location'] ?? 'Randugarut RW 01') ?></p>
+                    <?php if ($featuredHasImage) : ?>
+                        <img
+                            src="<?= base_url(
+                                'uploads/activities/'
+                                . $featuredActivity['documentation_file']
+                            ) ?>"
+                            alt="<?= esc(
+                                $featuredActivity['title']
+                            ) ?>"
+                        >
+                    <?php else : ?>
+                        <div
+                            class="garda-home-activity-fallback
+                            program-<?= esc(
+                                $programClass(
+                                    $featuredActivity['program_slug']
+                                    ?? null
+                                )
+                            ) ?>"
+                        >
+                            <span>
+                                <?= esc(
+                                    $featuredActivity['program_name']
+                                    ?? 'GARDA 01'
+                                ) ?>
+                            </span>
 
-                            <a href="<?= base_url('/kegiatan/' . $activity['id']) ?>" class="public-read-more">
-                                Lihat Detail
-                            </a>
+                            <strong>Gerak Pemuda</strong>
+
+                            <small>
+                                Dokumentasi kegiatan GARDA 01
+                            </small>
                         </div>
-                    </article>
-                <?php endforeach; ?>
-            </div>
-        <?php else : ?>
-            <div class="public-empty">
-                Belum ada kegiatan yang ditampilkan.
-            </div>
-        <?php endif; ?>
+                    <?php endif; ?>
+
+                    <span class="garda-home-featured-label">
+                        Gerak Terbaru
+                    </span>
+
+                </a>
+
+                <div class="garda-home-featured-content">
+
+                    <span class="garda-home-program-label">
+                        <?= esc(
+                            $featuredActivity['program_name']
+                            ?? 'GARDA 01'
+                        ) ?>
+                    </span>
+
+                    <h3>
+                        <a
+                            href="<?= base_url(
+                                '/kegiatan/'
+                                . $featuredActivity['id']
+                            ) ?>"
+                        >
+                            <?= esc(
+                                $featuredActivity['title']
+                            ) ?>
+                        </a>
+                    </h3>
+
+                    <p>
+                        <?= esc(
+                            $formatPublicDate(
+                                $featuredActivity['activity_date']
+                                ?? null
+                            )
+                        ) ?>
+
+                        <span>•</span>
+
+                        <?= esc(
+                            $featuredActivity['location']
+                            ?? 'Randugarut RW 01'
+                        ) ?>
+                    </p>
+
+                    <a
+                        href="<?= base_url(
+                            '/kegiatan/'
+                            . $featuredActivity['id']
+                        ) ?>"
+                        class="garda-home-text-link"
+                    >
+                        Lihat dokumentasi
+                        <span aria-hidden="true">→</span>
+                    </a>
+
+                </div>
+
+            <?php else : ?>
+
+                <div class="garda-home-featured-empty">
+
+                    <img
+                        src="<?= base_url(
+                            'assets/img/logo-rw01.png'
+                        ) ?>"
+                        alt=""
+                    >
+
+                    <span>Gerak Terbaru</span>
+
+                    <strong>GARDA 01</strong>
+
+                    <p>
+                        Dokumentasi kegiatan akan segera ditampilkan.
+                    </p>
+
+                </div>
+
+            <?php endif; ?>
+
+        </aside>
+
     </section>
 
-    <section class="public-cta">
-        <div>
-            <span class="public-kicker">Sistem Internal</span>
-            <h2>CivicYouth Management System</h2>
+    <!-- STATISTIK DAMPAK -->
+    <section class="garda-home-statistics">
+
+        <article>
+            <strong><?= esc($connectedRt ?? 0) ?></strong>
+            <span>RT Terhubung</span>
+            <small>
+                Wilayah pemuda yang terdata dan terlibat.
+            </small>
+        </article>
+
+        <article>
+            <strong><?= esc($activeOfficials ?? 0) ?>+</strong>
+            <span>Pengurus Aktif</span>
+            <small>
+                Penggerak organisasi dan program GARDA 01.
+            </small>
+        </article>
+
+        <article>
+            <strong><?= esc($completedActivities ?? 0) ?></strong>
+            <span>Kegiatan Terlaksana</span>
+            <small>
+                Gerakan yang telah selesai dan terdokumentasi.
+            </small>
+        </article>
+
+        <article>
+            <strong><?= esc($programCount ?? 0) ?></strong>
+            <span>Pilar Gerakan</span>
+            <small>
+                Ruang kontribusi pemuda dalam berbagai bidang.
+            </small>
+        </article>
+
+    </section>
+
+    <!-- NILAI UTAMA -->
+    <section class="garda-home-section garda-home-values">
+
+        <div class="garda-home-section-heading">
+            <span class="public-kicker">
+                Semangat GARDA 01
+            </span>
+
+            <h2>
+                Bertumbuh melalui kebersamaan dan tindakan nyata
+            </h2>
+
             <p>
-                Sistem internal untuk mendukung pengelolaan organisasi Karang Taruna RW 01
-                secara lebih tertib, modern, dan terdokumentasi.
+                GARDA 01 hadir bukan sekadar sebagai struktur
+                organisasi, tetapi sebagai ruang bagi pemuda untuk
+                saling menguatkan, menciptakan karya, dan memberi
+                manfaat bagi lingkungan.
             </p>
         </div>
 
-        <a href="<?= base_url('/login') ?>" class="btn btn-primary">Masuk Sistem</a>
+        <div class="garda-home-value-grid">
+
+            <article>
+                <span class="garda-home-value-number">
+                    01
+                </span>
+
+                <h3>Guyub</h3>
+
+                <p>
+                    Menyatukan pemuda, warga, dan berbagai unsur
+                    masyarakat melalui kebersamaan yang sehat,
+                    terbuka, dan saling menguatkan.
+                </p>
+            </article>
+
+            <article>
+                <span class="garda-home-value-number">
+                    02
+                </span>
+
+                <h3>Bergerak</h3>
+
+                <p>
+                    Mengubah gagasan menjadi kegiatan nyata melalui
+                    kolaborasi, tanggung jawab, dan keberanian
+                    mengambil peran.
+                </p>
+            </article>
+
+            <article>
+                <span class="garda-home-value-number">
+                    03
+                </span>
+
+                <h3>Berdampak</h3>
+
+                <p>
+                    Menghadirkan program yang relevan,
+                    terdokumentasi, dan memberikan manfaat yang
+                    dapat dirasakan lingkungan.
+                </p>
+            </article>
+
+        </div>
+
     </section>
 
-    <?= view('partials/public_footer') ?>
+    <!-- PILAR PROGRAM -->
+    <section class="garda-home-section garda-home-programs">
+
+        <div class="garda-home-section-heading-row">
+
+            <div class="garda-home-section-heading">
+                <span class="public-kicker">
+                    Pilar Gerakan
+                </span>
+
+                <h2>Dari kepedulian menjadi aksi</h2>
+
+                <p>
+                    Setiap pilar GARDA 01 menjadi ruang bagi pemuda
+                    untuk berkontribusi sesuai minat, kemampuan,
+                    dan kebutuhan lingkungan.
+                </p>
+            </div>
+
+            <a
+                href="<?= base_url('/program') ?>"
+                class="garda-home-section-link"
+            >
+                Seluruh Program
+                <span aria-hidden="true">→</span>
+            </a>
+
+        </div>
+
+        <?php if (!empty($programs)) : ?>
+
+            <div class="garda-home-program-grid">
+
+                <?php foreach ($programs as $program) : ?>
+
+                    <article class="garda-home-program-card">
+
+                        <span class="garda-home-program-number">
+                            <?= esc(
+                                $program['number']
+                                ?? str_pad(
+                                    (string) (
+                                        $program['display_order']
+                                        ?? 0
+                                    ),
+                                    2,
+                                    '0',
+                                    STR_PAD_LEFT
+                                )
+                            ) ?>
+                        </span>
+
+                        <span class="garda-home-program-category">
+                            <?= esc(
+                                $program['label']
+                                ?? 'Pilar GARDA 01'
+                            ) ?>
+                        </span>
+
+                        <h3>
+                            <?= esc($program['name']) ?>
+                        </h3>
+
+                        <p>
+                            <?= esc(
+                                mb_strimwidth(
+                                    (string) (
+                                        $program['short_description']
+                                        ?? ''
+                                    ),
+                                    0,
+                                    145,
+                                    '…'
+                                )
+                            ) ?>
+                        </p>
+
+                        <a
+                            href="<?= base_url(
+                                '/program/' . $program['slug']
+                            ) ?>"
+                        >
+                            Pelajari program
+                            <span aria-hidden="true">→</span>
+                        </a>
+
+                    </article>
+
+                <?php endforeach; ?>
+
+            </div>
+
+        <?php else : ?>
+
+            <div class="public-empty">
+                Program GARDA 01 belum tersedia.
+            </div>
+
+        <?php endif; ?>
+
+    </section>
+
+    <!-- CERITA DAMPAK -->
+    <?php if (!empty($impactActivity)) : ?>
+
+        <section class="garda-home-impact">
+
+            <div class="garda-home-impact-media">
+
+                <?php if ($impactHasImage) : ?>
+                    <img
+                        src="<?= base_url(
+                            'uploads/activities/'
+                            . $impactActivity['documentation_file']
+                        ) ?>"
+                        alt="<?= esc(
+                            $impactActivity['title']
+                        ) ?>"
+                        loading="lazy"
+                    >
+                <?php else : ?>
+                    <div
+                        class="garda-home-activity-fallback
+                        program-<?= esc(
+                            $programClass(
+                                $impactActivity['program_slug']
+                                ?? null
+                            )
+                        ) ?>"
+                    >
+                        <span>
+                            <?= esc(
+                                $impactActivity['program_name']
+                                ?? 'GARDA 01'
+                            ) ?>
+                        </span>
+
+                        <strong>Cerita Dampak</strong>
+
+                        <small>
+                            Guyub • Bergerak • Berdampak
+                        </small>
+                    </div>
+                <?php endif; ?>
+
+            </div>
+
+            <div class="garda-home-impact-content">
+
+                <span class="public-kicker">
+                    Cerita Dampak
+                </span>
+
+                <?php if (
+                    !empty($impactActivity['program_name'])
+                ) : ?>
+                    <span class="garda-home-impact-program">
+                        <?= esc(
+                            $impactActivity['program_name']
+                        ) ?>
+                    </span>
+                <?php endif; ?>
+
+                <h2>
+                    <?= esc($impactActivity['title']) ?>
+                </h2>
+
+                <p>
+                    <?= esc(
+                        mb_strimwidth(
+                            (string) (
+                                $impactActivity['result']
+                                ?: $impactActivity['description']
+                                ?: 'Kegiatan pemuda GARDA 01 sebagai bentuk kontribusi nyata bagi lingkungan RW 01 Randugarut.'
+                            ),
+                            0,
+                            310,
+                            '…'
+                        )
+                    ) ?>
+                </p>
+
+                <div class="garda-home-impact-meta">
+                    <span>
+                        <?= esc(
+                            $formatPublicDate(
+                                $impactActivity['activity_date']
+                                ?? null
+                            )
+                        ) ?>
+                    </span>
+
+                    <span>
+                        <?= esc(
+                            $impactActivity['location']
+                            ?? 'Randugarut RW 01'
+                        ) ?>
+                    </span>
+                </div>
+
+                <a
+                    href="<?= base_url(
+                        '/kegiatan/' . $impactActivity['id']
+                    ) ?>"
+                    class="btn btn-primary"
+                >
+                    Baca Cerita Kegiatan
+                </a>
+
+            </div>
+
+        </section>
+
+    <?php endif; ?>
+
+    <!-- KEGIATAN TERBARU -->
+    <section class="garda-home-section garda-home-latest">
+
+        <div class="garda-home-section-heading-row">
+
+            <div class="garda-home-section-heading">
+                <span class="public-kicker">
+                    Jejak Gerak GARDA 01
+                </span>
+
+                <h2>Kegiatan terbaru</h2>
+
+                <p>
+                    Dokumentasi kegiatan, kolaborasi, dan kontribusi
+                    pemuda GARDA 01 bagi lingkungan.
+                </p>
+            </div>
+
+            <a
+                href="<?= base_url('/kegiatan') ?>"
+                class="garda-home-section-link"
+            >
+                Seluruh Kegiatan
+                <span aria-hidden="true">→</span>
+            </a>
+
+        </div>
+
+        <?php if (!empty($latestActivities)) : ?>
+
+            <div class="garda-home-activity-grid">
+
+                <?php foreach ($latestActivities as $activity) : ?>
+                    <?php
+                    $hasImage = $activityHasImage($activity);
+
+                    $shortProgram = $programShortName(
+                        $activity['program_name'] ?? null
+                    );
+                    ?>
+
+                    <article class="garda-home-activity-card">
+
+                        <a
+                            href="<?= base_url(
+                                '/kegiatan/' . $activity['id']
+                            ) ?>"
+                            class="garda-home-activity-media"
+                        >
+
+                            <?php if ($hasImage) : ?>
+                                <img
+                                    src="<?= base_url(
+                                        'uploads/activities/'
+                                        . $activity[
+                                            'documentation_file'
+                                        ]
+                                    ) ?>"
+                                    alt="<?= esc(
+                                        $activity['title']
+                                    ) ?>"
+                                    loading="lazy"
+                                >
+                            <?php else : ?>
+                                <div
+                                    class="garda-home-activity-fallback
+                                    program-<?= esc(
+                                        $programClass(
+                                            $activity['program_slug']
+                                            ?? null
+                                        )
+                                    ) ?>"
+                                >
+                                    <span>
+                                        GARDA 01
+                                        <?= esc($shortProgram) ?>
+                                    </span>
+
+                                    <strong>
+                                        Dokumentasi Kegiatan
+                                    </strong>
+
+                                    <small>
+                                        Guyub • Bergerak • Berdampak
+                                    </small>
+                                </div>
+                            <?php endif; ?>
+
+                        </a>
+
+                        <div class="garda-home-activity-content">
+
+                            <span class="garda-home-program-label">
+                                <?= esc(
+                                    $activity['program_name']
+                                    ?? 'GARDA 01'
+                                ) ?>
+                            </span>
+
+                            <span class="garda-home-activity-date">
+                                <?= esc(
+                                    $formatPublicDate(
+                                        $activity['activity_date']
+                                        ?? null
+                                    )
+                                ) ?>
+                            </span>
+
+                            <h3>
+                                <a
+                                    href="<?= base_url(
+                                        '/kegiatan/'
+                                        . $activity['id']
+                                    ) ?>"
+                                >
+                                    <?= esc($activity['title']) ?>
+                                </a>
+                            </h3>
+
+                            <p>
+                                <?= esc(
+                                    $activity['location']
+                                    ?? 'Randugarut RW 01'
+                                ) ?>
+                            </p>
+
+                            <a
+                                href="<?= base_url(
+                                    '/kegiatan/'
+                                    . $activity['id']
+                                ) ?>"
+                                class="garda-home-text-link"
+                            >
+                                Lihat Dokumentasi
+                                <span aria-hidden="true">→</span>
+                            </a>
+
+                        </div>
+
+                    </article>
+
+                <?php endforeach; ?>
+
+            </div>
+
+        <?php else : ?>
+
+            <div class="public-empty">
+                Dokumentasi kegiatan terbaru belum tersedia.
+            </div>
+
+        <?php endif; ?>
+
+    </section>
+
+    <!-- AJAKAN KOLABORASI -->
+    <section class="garda-home-collaboration">
+
+        <div class="garda-home-collaboration-copy">
+
+            <span class="public-kicker">
+                Bergerak Bersama
+            </span>
+
+            <h2>
+                Mari hadirkan lebih banyak dampak untuk lingkungan
+            </h2>
+
+            <p>
+                GARDA 01 terbuka untuk berkolaborasi dengan warga,
+                komunitas, UMKM, lembaga pendidikan, pemerintah,
+                serta mitra sosial dalam kegiatan yang bermanfaat
+                bagi masyarakat.
+            </p>
+
+            <div class="garda-home-collaboration-actions">
+
+                <a
+                    href="<?= base_url('/profil') ?>"
+                    class="btn btn-primary"
+                >
+                    Kenali GARDA 01
+                </a>
+
+                <a
+                    href="<?= base_url('/program') ?>"
+                    class="btn garda-home-outline-button"
+                >
+                    Lihat Program
+                </a>
+
+            </div>
+
+        </div>
+
+        <aside class="garda-home-collaboration-list">
+
+            <span>Terbuka untuk kolaborasi:</span>
+
+            <ul>
+                <li>Sosial dan kemanusiaan</li>
+                <li>Lingkungan dan kebersihan</li>
+                <li>Olahraga dan kepemudaan</li>
+                <li>Pendidikan dan keterampilan</li>
+                <li>Usaha produktif pemuda</li>
+                <li>Media dan kreativitas</li>
+            </ul>
+
+        </aside>
+
+        <div
+            class="garda-home-collaboration-watermark"
+            aria-hidden="true"
+        >
+            GARDA 01
+        </div>
+
+    </section>
+
 </div>
 
-</body>
-</html>
+<?= $this->endSection() ?>
