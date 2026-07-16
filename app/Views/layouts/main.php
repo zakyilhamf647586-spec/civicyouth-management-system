@@ -1,136 +1,684 @@
+<?php
+
+$currentPath = trim(service('uri')->getPath(), '/');
+$currentSegment = explode('/', $currentPath)[0] ?? 'dashboard';
+
+$isActive = static function (array $prefixes) use ($currentPath): string {
+    foreach ($prefixes as $prefix) {
+        if (
+            $currentPath === $prefix
+            || str_starts_with($currentPath, $prefix . '/')
+        ) {
+            return 'active';
+        }
+    }
+
+    return '';
+};
+
+$pageContexts = [
+    'dashboard' => [
+        'section' => 'Dashboard',
+        'label'   => 'Ringkasan Organisasi',
+    ],
+
+    'members' => [
+        'section' => 'Organisasi',
+        'label'   => 'Data Anggota',
+    ],
+
+    'structures' => [
+        'section' => 'Organisasi',
+        'label'   => 'Struktur Pengurus',
+    ],
+
+    'meetings' => [
+        'section' => 'Organisasi',
+        'label'   => 'Rapat dan Notulen',
+    ],
+
+    'attendances' => [
+        'section' => 'Organisasi',
+        'label'   => 'Absensi',
+    ],
+
+    'activities' => [
+        'section' => 'Organisasi',
+        'label'   => 'Kegiatan',
+    ],
+
+    'cash' => [
+        'section' => 'Keuangan',
+        'label'   => 'Kas Organisasi',
+    ],
+
+    'programs' => [
+        'section' => 'Website Publik',
+        'label'   => 'Program GARDA 01',
+    ],
+
+    'content-studio' => [
+        'section' => 'Media dan Publikasi',
+        'label'   => 'AI Content Studio',
+    ],
+
+    'messages' => [
+        'section' => 'Website Publik',
+        'label'   => 'Pesan Masuk',
+    ],
+
+    'reports' => [
+        'section' => 'Laporan',
+        'label'   => 'Laporan Organisasi',
+    ],
+];
+
+$pageContext = $pageContexts[$currentSegment] ?? [
+    'section' => 'GARDA 01 Portal',
+    'label'   => $title ?? 'Portal Manajemen',
+];
+
+$pageTitle = $title ?? $pageContext['label'];
+
+$userName =
+    session()->get('name')
+    ?? session()->get('full_name')
+    ?? session()->get('user_name')
+    ?? session()->get('email')
+    ?? 'Pengurus GARDA 01';
+
+$userRole =
+    session()->get('role_name')
+    ?? session()->get('role')
+    ?? 'Administrator';
+
+$nameParts = preg_split(
+    '/\s+/',
+    trim((string) $userName)
+);
+
+$userInitials = '';
+
+foreach (array_slice($nameParts ?: [], 0, 2) as $part) {
+    if ($part !== '') {
+        $userInitials .= mb_strtoupper(
+            mb_substr($part, 0, 1)
+        );
+    }
+}
+
+if ($userInitials === '') {
+    $userInitials = 'G01';
+}
+
+$dayNames = [
+    1 => 'Senin',
+    2 => 'Selasa',
+    3 => 'Rabu',
+    4 => 'Kamis',
+    5 => 'Jumat',
+    6 => 'Sabtu',
+    7 => 'Minggu',
+];
+
+$monthNames = [
+    1  => 'Januari',
+    2  => 'Februari',
+    3  => 'Maret',
+    4  => 'April',
+    5  => 'Mei',
+    6  => 'Juni',
+    7  => 'Juli',
+    8  => 'Agustus',
+    9  => 'September',
+    10 => 'Oktober',
+    11 => 'November',
+    12 => 'Desember',
+];
+
+$todayLabel =
+    $dayNames[(int) date('N')]
+    . ', '
+    . date('d')
+    . ' '
+    . $monthNames[(int) date('n')]
+    . ' '
+    . date('Y');
+?>
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title><?= esc($title ?? 'Karang Taruna RW 01') ?> - Karang Taruna RW 01</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" href="<?= base_url('assets/css/app.css') ?>">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1"
+    >
+
+    <meta
+        name="theme-color"
+        content="#04172d"
+    >
+
+    <title>
+        <?= esc($pageTitle) ?> — GARDA 01 Portal
+    </title>
+
+    <link
+        rel="icon"
+        type="image/png"
+        href="<?= base_url('assets/img/logo-rw01.png') ?>"
+    >
+
+    <link
+        rel="stylesheet"
+        href="<?= base_url('assets/css/app.css') ?>"
+    >
 </head>
-<body>
 
-<div class="app-shell">
-    <header class="app-topbar">
-        <div class="brand-area">
-            <img src="<?= base_url('assets/img/logo-rw01.png') ?>" alt="Logo Karang Taruna RW 01" class="brand-logo">
+<body class="garda-admin-body">
 
-            <div class="brand-text">
-                <strong>Karang Taruna RW 01</strong>
-                <span>Kelurahan Randugarut · Sistem Manajemen Organisasi Pemuda</span>
-            </div>
-        </div>
+<!-- SVG icon collection -->
+<svg
+    xmlns="http://www.w3.org/2000/svg"
+    style="display:none"
+    aria-hidden="true"
+>
+    <symbol id="icon-dashboard" viewBox="0 0 24 24">
+        <rect x="3" y="3" width="7" height="7" rx="2"></rect>
+        <rect x="14" y="3" width="7" height="7" rx="2"></rect>
+        <rect x="3" y="14" width="7" height="7" rx="2"></rect>
+        <rect x="14" y="14" width="7" height="7" rx="2"></rect>
+    </symbol>
 
-        <div class="topbar-actions">
-            <button type="button" class="menu-toggle" onclick="toggleMainMenu()">
-                <span class="menu-icon">☰</span>
-                <span>Menu</span>
+    <symbol id="icon-members" viewBox="0 0 24 24">
+        <circle cx="9" cy="8" r="4"></circle>
+        <path d="M3 21v-2a6 6 0 0 1 12 0v2"></path>
+        <circle cx="18" cy="9" r="3"></circle>
+        <path d="M17 15a5 5 0 0 1 4 5v1"></path>
+    </symbol>
+
+    <symbol id="icon-structure" viewBox="0 0 24 24">
+        <rect x="8" y="3" width="8" height="5" rx="1.5"></rect>
+        <rect x="2" y="16" width="7" height="5" rx="1.5"></rect>
+        <rect x="15" y="16" width="7" height="5" rx="1.5"></rect>
+        <path d="M12 8v4M5.5 16v-4h13v4"></path>
+    </symbol>
+
+    <symbol id="icon-meeting" viewBox="0 0 24 24">
+        <rect x="3" y="5" width="18" height="16" rx="2"></rect>
+        <path d="M7 3v4M17 3v4M3 10h18"></path>
+        <path d="M8 14h3M8 17h7"></path>
+    </symbol>
+
+    <symbol id="icon-attendance" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9"></circle>
+        <path d="m8 12 3 3 5-6"></path>
+    </symbol>
+
+    <symbol id="icon-activity" viewBox="0 0 24 24">
+        <path d="M5 21V4"></path>
+        <path d="M5 5h11l-2 4 2 4H5"></path>
+    </symbol>
+
+    <symbol id="icon-cash" viewBox="0 0 24 24">
+        <rect x="3" y="6" width="18" height="14" rx="3"></rect>
+        <path d="M16 10h5v6h-5a3 3 0 0 1 0-6Z"></path>
+        <circle cx="16" cy="13" r="1"></circle>
+        <path d="M5 6V4h12"></path>
+    </symbol>
+
+    <symbol id="icon-program" viewBox="0 0 24 24">
+        <path d="M12 3 3 8l9 5 9-5-9-5Z"></path>
+        <path d="m3 12 9 5 9-5"></path>
+        <path d="m3 16 9 5 9-5"></path>
+    </symbol>
+
+    <symbol id="icon-ai" viewBox="0 0 24 24">
+        <path d="m12 3 1.2 4.2L17 9l-3.8 1.8L12 15l-1.2-4.2L7 9l3.8-1.8L12 3Z"></path>
+        <path d="m19 14 .7 2.3L22 17l-2.3.7L19 20l-.7-2.3L16 17l2.3-.7L19 14Z"></path>
+        <path d="m5 13 .7 2.3L8 16l-2.3.7L5 19l-.7-2.3L2 16l2.3-.7L5 13Z"></path>
+    </symbol>
+
+    <symbol id="icon-message" viewBox="0 0 24 24">
+        <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+        <path d="m4 7 8 6 8-6"></path>
+    </symbol>
+
+    <symbol id="icon-report" viewBox="0 0 24 24">
+        <path d="M5 3h10l4 4v14H5V3Z"></path>
+        <path d="M15 3v5h5"></path>
+        <path d="M8 13h8M8 17h8M8 9h3"></path>
+    </symbol>
+
+    <symbol id="icon-globe" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="9"></circle>
+        <path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"></path>
+    </symbol>
+
+    <symbol id="icon-menu" viewBox="0 0 24 24">
+        <path d="M4 7h16M4 12h16M4 17h16"></path>
+    </symbol>
+
+    <symbol id="icon-bell" viewBox="0 0 24 24">
+        <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path>
+        <path d="M10 21h4"></path>
+    </symbol>
+
+    <symbol id="icon-user" viewBox="0 0 24 24">
+        <circle cx="12" cy="8" r="4"></circle>
+        <path d="M4 21a8 8 0 0 1 16 0"></path>
+    </symbol>
+
+    <symbol id="icon-logout" viewBox="0 0 24 24">
+        <path d="M10 5H5v14h5"></path>
+        <path d="m14 8 4 4-4 4M18 12H9"></path>
+    </symbol>
+
+    <symbol id="icon-collapse" viewBox="0 0 24 24">
+        <path d="m15 6-6 6 6 6"></path>
+    </symbol>
+
+    <symbol id="icon-chevron" viewBox="0 0 24 24">
+        <path d="m9 6 6 6-6 6"></path>
+    </symbol>
+</svg>
+
+<div class="garda-admin-shell">
+
+    <div
+        class="garda-admin-overlay"
+        id="adminSidebarOverlay"
+    ></div>
+
+    <aside
+        class="garda-admin-sidebar"
+        id="adminSidebar"
+        aria-label="Navigasi GARDA 01 Portal"
+    >
+        <div class="garda-admin-brand">
+
+            <a
+                href="<?= base_url('/dashboard') ?>"
+                class="garda-admin-brand-link"
+            >
+                <img
+                    src="<?= base_url('assets/img/logo-rw01.png') ?>"
+                    alt="Logo GARDA 01"
+                >
+
+                <div class="garda-admin-brand-copy">
+                    <strong>GARDA 01</strong>
+                    <span>Portal Manajemen</span>
+                </div>
+            </a>
+
+            <button
+                type="button"
+                class="garda-admin-collapse-button"
+                id="adminSidebarCollapse"
+                aria-label="Perkecil sidebar"
+                title="Perkecil sidebar"
+            >
+                <svg aria-hidden="true">
+                    <use href="#icon-collapse"></use>
+                </svg>
             </button>
 
-            <a href="<?= base_url('/logout') ?>" class="logout-btn">Logout</a>
         </div>
-    </header>
 
-    <nav class="app-menu-panel" id="mainMenuPanel">
-        <div class="menu-panel-header">
-            <div>
-                <strong>Menu Sistem</strong>
-                <span>Pilih modul pengelolaan organisasi</span>
+        <div class="garda-admin-organization-label">
+            <span>Karang Taruna RW 01</span>
+            <small>Kelurahan Randugarut</small>
+        </div>
+
+        <nav class="garda-admin-navigation">
+
+            <a
+                href="<?= base_url('/dashboard') ?>"
+                class="garda-admin-nav-link <?= $isActive(['dashboard']) ?>"
+                title="Dashboard"
+            >
+                <svg aria-hidden="true">
+                    <use href="#icon-dashboard"></use>
+                </svg>
+
+                <span>Dashboard</span>
+            </a>
+
+            <div class="garda-admin-nav-section">
+                <div class="garda-admin-nav-heading">
+                    Organisasi
+                </div>
+
+                <a
+                    href="<?= base_url('/members') ?>"
+                    class="garda-admin-nav-link <?= $isActive(['members']) ?>"
+                    title="Data Anggota"
+                >
+                    <svg aria-hidden="true">
+                        <use href="#icon-members"></use>
+                    </svg>
+
+                    <span>Data Anggota</span>
+                </a>
+
+                <a
+                    href="<?= base_url('/structures') ?>"
+                    class="garda-admin-nav-link <?= $isActive(['structures']) ?>"
+                    title="Struktur Pengurus"
+                >
+                    <svg aria-hidden="true">
+                        <use href="#icon-structure"></use>
+                    </svg>
+
+                    <span>Struktur Pengurus</span>
+                </a>
+
+                <a
+                    href="<?= base_url('/meetings') ?>"
+                    class="garda-admin-nav-link <?= $isActive(['meetings']) ?>"
+                    title="Rapat"
+                >
+                    <svg aria-hidden="true">
+                        <use href="#icon-meeting"></use>
+                    </svg>
+
+                    <span>Rapat</span>
+                </a>
+
+                <a
+                    href="<?= base_url('/attendances') ?>"
+                    class="garda-admin-nav-link <?= $isActive(['attendances']) ?>"
+                    title="Absensi"
+                >
+                    <svg aria-hidden="true">
+                        <use href="#icon-attendance"></use>
+                    </svg>
+
+                    <span>Absensi</span>
+                </a>
+
+                <a
+                    href="<?= base_url('/activities') ?>"
+                    class="garda-admin-nav-link <?= $isActive(['activities']) ?>"
+                    title="Kegiatan"
+                >
+                    <svg aria-hidden="true">
+                        <use href="#icon-activity"></use>
+                    </svg>
+
+                    <span>Kegiatan</span>
+                </a>
             </div>
 
-            <button type="button" class="menu-close" onclick="toggleMainMenu()">×</button>
+            <div class="garda-admin-nav-section">
+                <div class="garda-admin-nav-heading">
+                    Keuangan
+                </div>
+
+                <a
+                    href="<?= base_url('/cash') ?>"
+                    class="garda-admin-nav-link <?= $isActive(['cash']) ?>"
+                    title="Kas Organisasi"
+                >
+                    <svg aria-hidden="true">
+                        <use href="#icon-cash"></use>
+                    </svg>
+
+                    <span>Kas Organisasi</span>
+                </a>
+            </div>
+
+            <div class="garda-admin-nav-section">
+                <div class="garda-admin-nav-heading">
+                    Website & Publikasi
+                </div>
+
+                <a
+                    href="<?= base_url('/programs') ?>"
+                    class="garda-admin-nav-link <?= $isActive(['programs']) ?>"
+                    title="Program GARDA 01"
+                >
+                    <svg aria-hidden="true">
+                        <use href="#icon-program"></use>
+                    </svg>
+
+                    <span>Program GARDA 01</span>
+                </a>
+
+                <a
+                    href="<?= base_url('/content-studio') ?>"
+                    class="garda-admin-nav-link <?= $isActive(['content-studio']) ?>"
+                    title="AI Content Studio"
+                >
+                    <svg aria-hidden="true">
+                        <use href="#icon-ai"></use>
+                    </svg>
+
+                    <span>AI Content Studio</span>
+                </a>
+
+                <a
+                    href="<?= base_url('/messages') ?>"
+                    class="garda-admin-nav-link <?= $isActive(['messages']) ?>"
+                    title="Pesan Masuk"
+                >
+                    <svg aria-hidden="true">
+                        <use href="#icon-message"></use>
+                    </svg>
+
+                    <span>Pesan Masuk</span>
+                </a>
+            </div>
+
+            <div class="garda-admin-nav-section">
+                <div class="garda-admin-nav-heading">
+                    Laporan
+                </div>
+
+                <a
+                    href="<?= base_url('/reports') ?>"
+                    class="garda-admin-nav-link <?= $isActive(['reports']) ?>"
+                    title="Laporan Organisasi"
+                >
+                    <svg aria-hidden="true">
+                        <use href="#icon-report"></use>
+                    </svg>
+
+                    <span>Laporan Organisasi</span>
+                </a>
+            </div>
+
+        </nav>
+
+        <div class="garda-admin-sidebar-footer">
+
+            <div class="garda-admin-sidebar-user">
+                <div class="garda-admin-user-avatar">
+                    <?= esc($userInitials) ?>
+                </div>
+
+                <div class="garda-admin-sidebar-user-copy">
+                    <strong><?= esc($userName) ?></strong>
+                    <span><?= esc($userRole) ?></span>
+                </div>
+            </div>
+
+            <div class="garda-admin-sidebar-actions">
+
+                <a
+                    href="<?= base_url('/') ?>"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title="Lihat website publik"
+                >
+                    <svg aria-hidden="true">
+                        <use href="#icon-globe"></use>
+                    </svg>
+
+                    <span>Lihat Website</span>
+                </a>
+
+                <a
+                    href="<?= base_url('/logout') ?>"
+                    class="garda-admin-logout-link"
+                    title="Keluar"
+                >
+                    <svg aria-hidden="true">
+                        <use href="#icon-logout"></use>
+                    </svg>
+
+                    <span>Keluar</span>
+                </a>
+
+            </div>
+
         </div>
 
-        <div class="menu-grid">
-            <a href="<?= base_url('/dashboard') ?>" class="menu-card">
-                <span>Dashboard</span>
-                <small>Ringkasan organisasi</small>
-            </a>
+    </aside>
 
-            <a href="<?= base_url('/members') ?>" class="menu-card">
-                <span>Data Anggota</span>
-                <small>Kelola anggota RW 01</small>
-            </a>
+    <div class="garda-admin-workspace">
 
-            <a href="<?= base_url('/structures') ?>" class="menu-card">
-                <span>Struktur</span>
-                <small>Susunan pengurus</small>
-            </a>
+        <header class="garda-admin-topbar">
 
-            <a href="<?= base_url('/meetings') ?>" class="menu-card">
-                <span>Rapat</span>
-                <small>Agenda dan notulen</small>
-            </a>
+            <div class="garda-admin-topbar-left">
 
-            <a href="<?= base_url('/attendances') ?>" class="menu-card">
-                <span>Absensi</span>
-                <small>Kehadiran rapat</small>
-            </a>
+                <button
+                    type="button"
+                    class="garda-admin-mobile-menu"
+                    id="adminMobileMenu"
+                    aria-label="Buka menu"
+                    aria-expanded="false"
+                >
+                    <svg aria-hidden="true">
+                        <use href="#icon-menu"></use>
+                    </svg>
+                </button>
 
-            <a href="<?= base_url('/cash') ?>" class="menu-card">
-                <span>Kas</span>
-                <small>Keuangan organisasi</small>
-            </a>
+                <div class="garda-admin-page-context">
+                    <span>
+                        <?= esc($pageContext['section']) ?>
+                        <b>/</b>
+                        <?= esc($pageContext['label']) ?>
+                    </span>
 
-            <a href="<?= base_url('/activities') ?>" class="menu-card">
-                <span>Kegiatan</span>
-                <small>Agenda dan dokumentasi</small>
-            </a>
+                    <strong><?= esc($pageTitle) ?></strong>
+                </div>
 
-            <a href="<?= base_url('/messages') ?>" class="menu-card">
-                <span>Pesan Masuk</span>
-                <small>Kontak dan tawaran kolaborasi publik</small>
-            </a>
+            </div>
 
-            <a href="<?= base_url('/programs') ?>" class="menu-card">
-                <span>Program GARDA 01</span>
-                <small>Kelola pilar dan publikasi program</small>
-            </a>
+            <div class="garda-admin-topbar-actions">
 
-            <a href="<?= base_url('/content-studio') ?>" class="menu-card menu-card-highlight">
-                <span>AI Content Studio</span>
-                <small>Konten Instagram otomatis</small>
-            </a>
+                <div class="garda-admin-date">
+                    <?= esc($todayLabel) ?>
+                </div>
 
-            <a href="<?= base_url('/reports') ?>" class="menu-card">
-                <span>Laporan</span>
-                <small>Cetak dan rekap data</small>
-            </a>
-        </div>
-    </nav>
+                <a
+                    href="<?= base_url('/messages') ?>"
+                    class="garda-admin-icon-button"
+                    title="Pesan dan notifikasi"
+                    aria-label="Pesan dan notifikasi"
+                >
+                    <svg aria-hidden="true">
+                        <use href="#icon-bell"></use>
+                    </svg>
+                </a>
 
-    <main class="app-main">
-        <?= $this->renderSection('content') ?>
-    </main>
+                <a
+                    href="<?= base_url('/') ?>"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="garda-admin-public-button"
+                >
+                    <svg aria-hidden="true">
+                        <use href="#icon-globe"></use>
+                    </svg>
+
+                    <span>Lihat Website</span>
+                </a>
+
+                <div
+                    class="garda-admin-profile"
+                    id="adminProfile"
+                >
+                    <button
+                        type="button"
+                        class="garda-admin-profile-button"
+                        id="adminProfileButton"
+                        aria-expanded="false"
+                        aria-controls="adminProfileMenu"
+                    >
+                        <span class="garda-admin-profile-avatar">
+                            <?= esc($userInitials) ?>
+                        </span>
+
+                        <span class="garda-admin-profile-copy">
+                            <strong><?= esc($userName) ?></strong>
+                            <small><?= esc($userRole) ?></small>
+                        </span>
+
+                        <svg aria-hidden="true">
+                            <use href="#icon-chevron"></use>
+                        </svg>
+                    </button>
+
+                    <div
+                        class="garda-admin-profile-menu"
+                        id="adminProfileMenu"
+                    >
+                        <div class="garda-admin-profile-summary">
+                            <span class="garda-admin-profile-avatar large">
+                                <?= esc($userInitials) ?>
+                            </span>
+
+                            <div>
+                                <strong><?= esc($userName) ?></strong>
+                                <span><?= esc($userRole) ?></span>
+                            </div>
+                        </div>
+
+                        <a href="<?= base_url('/') ?>">
+                            <svg aria-hidden="true">
+                                <use href="#icon-globe"></use>
+                            </svg>
+
+                            Website Publik
+                        </a>
+
+                        <a
+                            href="<?= base_url('/logout') ?>"
+                            class="danger"
+                        >
+                            <svg aria-hidden="true">
+                                <use href="#icon-logout"></use>
+                            </svg>
+
+                            Keluar dari Portal
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+
+        </header>
+
+        <main class="garda-admin-content">
+            <div class="garda-admin-content-inner">
+                <?= $this->renderSection('content') ?>
+            </div>
+        </main>
+
+    </div>
+
 </div>
 
-<script>
-    function toggleMainMenu() {
-        const panel = document.getElementById('mainMenuPanel');
-        panel.classList.toggle('active');
-    }
+<script
+    src="<?= base_url('assets/js/admin-portal.js') ?>"
+></script>
 
-    document.addEventListener('click', function(event) {
-        const panel = document.getElementById('mainMenuPanel');
-        const toggle = document.querySelector('.menu-toggle');
-
-        if (!panel || !toggle) {
-            return;
-        }
-
-        if (!panel.contains(event.target) && !toggle.contains(event.target)) {
-            panel.classList.remove('active');
-        }
-    });
-
-    document.addEventListener('keydown', function(event) {
-        if (event.key === 'Escape') {
-            const panel = document.getElementById('mainMenuPanel');
-            if (panel) {
-                panel.classList.remove('active');
-            }
-        }
-    });
-</script>
+<?= $this->renderSection('scripts') ?>
 
 </body>
 </html>
