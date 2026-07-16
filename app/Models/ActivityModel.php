@@ -10,6 +10,7 @@ class ActivityModel extends Model
     protected $primaryKey    = 'id';
 
     protected $allowedFields = [
+        'program_id',
         'title',
         'activity_date',
         'location',

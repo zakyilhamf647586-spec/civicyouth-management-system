@@ -4529,3 +4529,105 @@ textarea {
         text-align: center;
     }
 }
+
+/* ==========================================
+   Activity and Program Integration
+========================================== */
+
+.activity-program-badge {
+    display: inline-flex;
+    padding: 7px 10px;
+    color: var(--gold-dark);
+    background: #fff8e5;
+    border: 1px solid rgba(217, 163, 22, 0.32);
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.activity-program-empty {
+    color: var(--muted);
+    font-size: 12px;
+}
+
+.activity-public-filter {
+    max-width: var(--container-width);
+    margin: 0 auto 30px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex-wrap: wrap;
+}
+
+.activity-public-filter a {
+    padding: 9px 14px;
+    color: var(--color-slate-600);
+    background: var(--color-white);
+    border: 1px solid var(--color-slate-200);
+    border-radius: var(--radius-pill);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 800;
+    transition:
+        color var(--transition-fast),
+        background var(--transition-fast),
+        border-color var(--transition-fast);
+}
+
+.activity-public-filter a:hover,
+.activity-public-filter a.active {
+    color: var(--color-navy-950);
+    background: var(--color-gold-400);
+    border-color: var(--color-gold-500);
+}
+
+.public-activity-program {
+    display: inline-block;
+    margin-bottom: 9px;
+    color: var(--color-gold-600);
+    text-decoration: none;
+    font-size: 10.5px;
+    font-weight: 900;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+}
+
+.public-activity-program:hover {
+    color: var(--color-navy-800);
+}
+
+.public-activity-program.muted {
+    color: var(--color-slate-600);
+}
+
+.activity-detail-program {
+    display: inline-flex;
+    margin-bottom: 14px;
+    color: var(--color-gold-600);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+}
+
+.activity-detail-program:hover {
+    color: var(--color-navy-800);
+}
+
+@media (max-width: 720px) {
+    .activity-public-filter {
+        padding: 0 16px;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        scrollbar-width: none;
+    }
+
+    .activity-public-filter::-webkit-scrollbar {
+        display: none;
+    }
+
+    .activity-public-filter a {
+        flex-shrink: 0;
+    }
+}

@@ -24,6 +24,30 @@
         <?= csrf_field() ?>
 
         <div class="form-group">
+            <label for="program_id">Pilar Program GARDA 01</label>
+
+            <select id="program_id" name="program_id">
+                <option value="">Belum Dikategorikan</option>
+
+                <?php foreach ($programs as $program) : ?>
+                    <option
+                        value="<?= $program['id'] ?>"
+                        <?= old('program_id') == $program['id']
+                            ? 'selected'
+                            : '' ?>
+                    >
+                        <?= esc($program['name']) ?>
+                        — <?= esc($program['label'] ?? '') ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+
+            <small>
+                Pilih pilar yang menjadi induk kegiatan ini.
+            </small>
+        </div>
+
+        <div class="form-group">
             <label>Nama Kegiatan</label>
             <input type="text" name="title" value="<?= old('title') ?>" placeholder="Contoh: Kerja Bakti RW 01" required>
         </div>

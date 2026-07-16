@@ -42,6 +42,18 @@
                 </div>
             <?php endif; ?>
 
+            <?php if (!empty($activity['program_name'])) : ?>
+                <a
+                    href="<?= base_url(
+                        '/program/' . $activity['program_slug']
+                    ) ?>"
+                    class="activity-detail-program"
+                >
+                    <?= esc($activity['program_name']) ?>
+                    · <?= esc($activity['program_label'] ?? '') ?>
+                </a>
+            <?php endif; ?>
+
             <div class="public-detail-content">
                 <span class="public-kicker">Detail Kegiatan</span>
                 <h1><?= esc($activity['title']) ?></h1>

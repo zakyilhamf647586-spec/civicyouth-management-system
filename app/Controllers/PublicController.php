@@ -44,34 +44,90 @@ class PublicController extends BaseController
     public function activities()
     {
         $activityModel = new ActivityModel();
+        $programModel  = new ProgramModel();
 
-        $data = [
-            'title' => 'Kegiatan Karang Taruna RW 01',
-            'activities' => $activityModel
-                ->orderBy('activity_date', 'DESC')
-                ->paginate(9, 'public_activities'),
+        $selectedProgram = trim(
+            (string) $this->request->getGet('program')
+        );
+
+        $activityModel
+            ->select(
+                'activities.*, ' .
+                'programs.name AS program_name, ' .
+                'programs.slug AS program_slug, ' .
+                'programs.label AS program_label'
+            )
+            ->join(
+                'programs',
+                'programs.id = activities.program_id',
+                'left'
+            )
+            ->orderBy('activities.activity_date', 'DESC')
+            ->orderBy('activities.id', 'DESC');
+
+        if ($selectedProgram !== '') {
+            $activityModel->where(
+                'programs.slug',
+                $selectedProgram
+            );
+        }
+
+        return view('public/activities', [
+            'title' => 'Kegiatan GARDA 01 | Randugarut',
+
+            'metaDescription' =>
+                'Dokumentasi kegiatan GARDA 01, Karang Taruna RW 01 Kelurahan Randugarut.',
+
+            'activePage' => 'activities',
+
+            'activities' => $activityModel->paginate(
+                9,
+                'public_activities'
+            ),
+
             'pager' => $activityModel->pager,
-        ];
 
-        return view('public/activities', $data);
+            'programs' => $programModel
+                ->where('status', 'published')
+                ->orderBy('display_order', 'ASC')
+                ->orderBy('id', 'ASC')
+                ->findAll(),
+
+            'selectedProgram' => $selectedProgram,
+        ]);
     }
 
     public function activityDetail($id)
     {
         $activityModel = new ActivityModel();
 
-        $activity = $activityModel->find($id);
+        $activity = $activityModel
+            ->select(
+                'activities.*, ' .
+                'programs.name AS program_name, ' .
+                'programs.slug AS program_slug, ' .
+                'programs.label AS program_label'
+            )
+            ->join(
+                'programs',
+                'programs.id = activities.program_id',
+                'left'
+            )
+            ->where('activities.id', $id)
+            ->first();
 
         if (!$activity) {
-            return redirect()->to('/kegiatan')->with('error', 'Kegiatan tidak ditemukan.');
+            return redirect()->to('/kegiatan')
+                ->with('error', 'Kegiatan tidak ditemukan.');
         }
 
-        $data = [
-            'title' => $activity['title'],
+        return view('public/activity_detail', [
+            'title' => $activity['title'] . ' | GARDA 01',
+            'metaDescription' => $activity['description']
+                ?? 'Dokumentasi kegiatan GARDA 01.',
+            'activePage' => 'activity_detail',
             'activity' => $activity,
-        ];
-
-        return view('public/activity_detail', $data);
+        ]);
     }
 
     public function officials()
