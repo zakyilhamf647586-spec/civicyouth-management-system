@@ -4368,3 +4368,164 @@ textarea {
         flex-direction: column;
     }
 }
+
+/* ==========================================
+   Internal GARDA 01 Program Management
+========================================== */
+
+.program-filter-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.8fr) minmax(210px, 0.7fr) auto;
+    gap: 16px;
+    align-items: end;
+}
+
+.program-filter-actions,
+.table-actions,
+.form-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.table-actions form {
+    margin: 0;
+}
+
+.program-order-badge {
+    width: 42px;
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold);
+    background: var(--navy-dark);
+    border-radius: 12px;
+    font-weight: 900;
+}
+
+.program-admin-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.program-admin-title img,
+.program-admin-placeholder {
+    width: 62px;
+    height: 48px;
+    flex-shrink: 0;
+    object-fit: cover;
+    border-radius: 11px;
+    border: 1px solid var(--border);
+}
+
+.program-admin-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold);
+    background: var(--navy-dark);
+    font-size: 12px;
+    font-weight: 900;
+}
+
+.program-admin-title strong {
+    display: block;
+    color: var(--navy-dark);
+}
+
+.program-admin-title span {
+    display: block;
+    margin-top: 5px;
+    color: var(--muted);
+    font-size: 11px;
+}
+
+.status-badge {
+    display: inline-flex;
+    padding: 7px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.status-published {
+    color: #0f5132;
+    background: #d1e7dd;
+}
+
+.status-draft {
+    color: #664d03;
+    background: #fff3cd;
+}
+
+.status-archived {
+    color: #41464b;
+    background: #e2e3e5;
+}
+
+.program-form-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(280px, 0.55fr);
+    gap: 24px;
+}
+
+.program-form-sidebar {
+    padding: 22px;
+    align-self: start;
+    border-radius: 20px;
+    background: #f8fafc;
+    border: 1px solid var(--border);
+}
+
+.program-current-cover {
+    margin-bottom: 20px;
+}
+
+.program-current-cover span {
+    display: block;
+    margin-bottom: 9px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 800;
+}
+
+.program-current-cover img {
+    width: 100%;
+    max-height: 220px;
+    object-fit: cover;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+}
+
+.program-form-note {
+    padding: 16px;
+    border-radius: 16px;
+    background: #fff8e5;
+    border-left: 4px solid var(--gold);
+}
+
+.program-form-note strong {
+    color: var(--navy-dark);
+}
+
+.program-form-note p {
+    margin: 7px 0 0;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+@media (max-width: 900px) {
+    .program-filter-grid,
+    .program-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .program-filter-actions .btn {
+        flex: 1;
+        text-align: center;
+    }
+}

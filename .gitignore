@@ -137,6 +137,10 @@ public/uploads/officials/*
 public/uploads/officials/*
 !public/uploads/officials/.gitkeep
 
+# Program cover uploads
+public/uploads/programs/*
+!public/uploads/programs/.gitkeep
+
 # AI Content Studio uploads
 public/uploads/content_studio/*
 !public/uploads/content_studio/.gitkeep

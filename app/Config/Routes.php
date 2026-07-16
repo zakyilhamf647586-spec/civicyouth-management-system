@@ -92,3 +92,11 @@ $routes->post('/content-studio/generate/(:num)', 'ContentStudioController::gener
 $routes->post('/content-studio/update-text/(:num)', 'ContentStudioController::updateText/$1', ['filter' => 'auth']);
 $routes->get('/content-studio/delete/(:num)', 'ContentStudioController::delete/$1', ['filter' => 'auth']);
 $routes->post('/content-studio/render-feed/(:num)', 'ContentStudioController::renderFeed/$1', ['filter' => 'auth']);
+
+$routes->get('/programs', 'ProgramController::index', ['filter' => 'auth']);
+$routes->get('/programs/create', 'ProgramController::create', ['filter' => 'auth']);
+$routes->post('/programs/store', 'ProgramController::store', ['filter' => 'auth']);
+$routes->get('/programs/edit/(:num)', 'ProgramController::edit/$1', ['filter' => 'auth']);
+$routes->post('/programs/update/(:num)', 'ProgramController::update/$1', ['filter' => 'auth']);
+$routes->post('/programs/publish/(:num)', 'ProgramController::publish/$1', ['filter' => 'auth']);
+$routes->post('/programs/archive/(:num)', 'ProgramController::archive/$1', ['filter' => 'auth']);

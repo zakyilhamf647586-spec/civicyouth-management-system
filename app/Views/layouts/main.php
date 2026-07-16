@@ -76,6 +76,11 @@
                 <small>Agenda dan dokumentasi</small>
             </a>
 
+            <a href="<?= base_url('/programs') ?>" class="menu-card">
+                <span>Program GARDA 01</span>
+                <small>Kelola pilar dan publikasi program</small>
+            </a>
+
             <a href="<?= base_url('/content-studio') ?>" class="menu-card menu-card-highlight">
                 <span>AI Content Studio</span>
                 <small>Konten Instagram otomatis</small>
