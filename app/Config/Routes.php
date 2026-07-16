@@ -15,6 +15,8 @@ $routes->get('/pengurus', 'PublicController::officials');
 $routes->get('/kegiatan', 'PublicController::activities');
 $routes->get('/kegiatan/(:num)', 'PublicController::activityDetail/$1');
 
+$routes->get('/kontak', 'PublicContactController::index');
+$routes->post('/kontak/kirim', 'PublicContactController::submit');
 
 $routes->get('/', 'DashboardController::index', ['filter' => 'auth']);
 
@@ -77,6 +79,10 @@ $routes->post('/activities/gallery/(:num)/upload', 'ActivityGalleryController::u
 $routes->post('/activities/gallery/(:num)/image/(:num)/update', 'ActivityGalleryController::update/$1/$2', ['filter' => 'auth']);
 $routes->post('/activities/gallery/(:num)/image/(:num)/cover', 'ActivityGalleryController::setCover/$1/$2', ['filter' => 'auth']);
 $routes->post('/activities/gallery/(:num)/image/(:num)/delete', 'ActivityGalleryController::delete/$1/$2', ['filter' => 'auth']);
+
+$routes->get('/messages', 'ContactMessageController::index', ['filter' => 'auth']);
+$routes->get('/messages/(:num)', 'ContactMessageController::show/$1', ['filter' => 'auth']);
+$routes->post('/messages/(:num)/status', 'ContactMessageController::updateStatus/$1',['filter' => 'auth']);
 
 $routes->get('/reports', 'ReportController::index', ['filter' => 'auth']);
 $routes->get('/reports/members', 'ReportController::members', ['filter' => 'auth']);

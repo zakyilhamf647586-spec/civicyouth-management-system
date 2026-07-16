@@ -76,6 +76,11 @@
                 <small>Agenda dan dokumentasi</small>
             </a>
 
+            <a href="<?= base_url('/messages') ?>" class="menu-card">
+                <span>Pesan Masuk</span>
+                <small>Kontak dan tawaran kolaborasi publik</small>
+            </a>
+
             <a href="<?= base_url('/programs') ?>" class="menu-card">
                 <span>Program GARDA 01</span>
                 <small>Kelola pilar dan publikasi program</small>

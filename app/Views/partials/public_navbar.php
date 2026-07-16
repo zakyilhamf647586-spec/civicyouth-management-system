@@ -100,6 +100,18 @@ $isProgramPage = in_array(
             </a>
 
             <a
+                href="<?= base_url('/kontak') ?>"
+                class="<?= $activePage === 'contact'
+                    ? 'active'
+                    : '' ?>"
+                <?= $activePage === 'contact'
+                    ? 'aria-current="page"'
+                    : '' ?>
+            >
+                Kontak
+            </a>
+
+            <a
                 href="<?= base_url('/login') ?>"
                 class="public-portal-button"
             >

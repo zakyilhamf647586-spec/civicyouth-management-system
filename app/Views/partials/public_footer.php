@@ -40,6 +40,7 @@
                 <a href="<?= base_url('/program') ?>">Program</a>
                 <a href="<?= base_url('/kegiatan') ?>">Kegiatan</a>
                 <a href="<?= base_url('/pengurus') ?>">Pengurus</a>
+                <a href="<?= base_url('/kontak') ?>">Kontak & Kolaborasi</a>
             </section>
 
             <section class="garda-footer-column">
