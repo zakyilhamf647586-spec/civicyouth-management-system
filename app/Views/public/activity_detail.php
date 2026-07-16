@@ -109,8 +109,8 @@ $hasDocumentationImage =
     <aside class="activity-detail-program-card">
 
         <img
-            src="<?= base_url('assets/img/logo-rw01.png') ?>"
-            alt="Logo GARDA 01"
+            src="<?= esc(site_asset_url('site_logo', 'assets/img/logo-rw01.png'), 'attr') ?>"
+            alt="Logo <?= esc(site_setting('organization_name', 'GARDA 01')) ?>"
         >
 
         <span>Dokumentasi Resmi</span>
@@ -143,7 +143,7 @@ $hasDocumentationImage =
         <?php else : ?>
             <div class="activity-detail-image-placeholder">
                 <img
-                    src="<?= base_url('assets/img/logo-rw01.png') ?>"
+                    src="<?= esc(site_asset_url('site_logo', 'assets/img/logo-rw01.png'), 'attr') ?>"
                     alt=""
                 >
 

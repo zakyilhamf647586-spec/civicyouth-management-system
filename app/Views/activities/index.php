@@ -123,11 +123,17 @@
                         <td>
                             <a href="<?= base_url('/activities/gallery/' . $activity['id']) ?>" class="btn btn-primary">Galeri</a>
                             <a href="<?= base_url('/activities/edit/' . $activity['id']) ?>" class="btn btn-warning">Edit</a>
-                            <a href="<?= base_url('/activities/delete/' . $activity['id']) ?>"
-                               class="btn btn-danger"
-                               onclick="return confirm('Yakin ingin menghapus data kegiatan ini?')">
-                                Hapus
-                            </a>
+                            <form
+                                action="<?= base_url('/activities/delete/' . $activity['id']) ?>"
+                                method="post"
+                                class="inline-action-form"
+                                onsubmit="return confirm('Yakin ingin menghapus data kegiatan ini?')"
+                            >
+                                <?= csrf_field() ?>
+                                <button type="submit" class="btn btn-danger">
+                                    Hapus
+                                </button>
+                            </form>
                         </td>
                     </tr>
                 <?php endforeach; ?>

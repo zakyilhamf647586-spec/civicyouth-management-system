@@ -58,11 +58,17 @@
                         <td><?= esc($attendance['note'] ?? '-') ?></td>
                         <td>
                             <a href="<?= base_url('/attendances/edit/' . $attendance['id']) ?>" class="btn btn-warning">Edit</a>
-                            <a href="<?= base_url('/attendances/delete/' . $attendance['id']) ?>"
-                               class="btn btn-danger"
-                               onclick="return confirm('Yakin ingin menghapus data absensi ini?')">
-                                Hapus
-                            </a>
+                            <form
+                                action="<?= base_url('/attendances/delete/' . $attendance['id']) ?>"
+                                method="post"
+                                class="inline-action-form"
+                                onsubmit="return confirm('Yakin ingin menghapus data absensi ini?')"
+                            >
+                                <?= csrf_field() ?>
+                                <button type="submit" class="btn btn-danger">
+                                    Hapus
+                                </button>
+                            </form>
                         </td>
                     </tr>
                 <?php endforeach; ?>

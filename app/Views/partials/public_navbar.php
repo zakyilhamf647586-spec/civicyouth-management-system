@@ -2,33 +2,58 @@
 
 $activePage = $activePage ?? '';
 
-$isActivityPage = in_array(
-    $activePage,
-    ['activities', 'activity_detail'],
-    true
+$organizationName = site_setting(
+    'organization_name',
+    'GARDA 01'
 );
 
-$isProgramPage = in_array(
-    $activePage,
-    ['programs', 'program_detail'],
-    true
+$organizationFullName = site_setting(
+    'organization_full_name',
+    'Generasi Aktif Randugarut'
 );
+
+$organizationLegalName = site_setting(
+    'organization_legal_name',
+    'Karang Taruna RW 01 Kelurahan Randugarut'
+);
+
+$organizationTagline = site_setting(
+    'organization_tagline',
+    'Guyub • Bergerak • Berdampak'
+);
+
+$logoUrl = site_asset_url(
+    'site_logo',
+    'assets/img/logo-rw01.png'
+);
+
+$isNavActive = static function (
+    array $pages
+) use ($activePage): string {
+    return in_array($activePage, $pages, true)
+        ? 'active'
+        : '';
+};
 ?>
 
-<header class="public-navbar">
+<header class="public-navbar" id="publicNavbar">
     <div class="public-navbar-inner">
 
-        <a href="<?= base_url('/') ?>" class="public-brand">
+        <a
+            href="<?= base_url('/') ?>"
+            class="public-brand"
+            aria-label="<?= esc($organizationName) ?> — Beranda"
+        >
             <img
-                src="<?= base_url('assets/img/logo-rw01.png') ?>"
-                alt="Logo GARDA 01"
+                src="<?= esc($logoUrl, 'attr') ?>"
+                alt="Logo <?= esc($organizationName) ?>"
                 class="public-brand-mark"
             >
 
-            <div class="public-brand-copy">
-                <strong>GARDA 01</strong>
-                <span>Karang Taruna RW 01 Randugarut</span>
-            </div>
+            <span class="public-brand-copy">
+                <strong><?= esc($organizationName) ?></strong>
+                <span><?= esc($organizationFullName) ?></span>
+            </span>
         </a>
 
         <button
@@ -36,8 +61,8 @@ $isProgramPage = in_array(
             class="public-mobile-toggle"
             id="publicMobileToggle"
             aria-label="Buka menu navigasi"
+            aria-controls="publicNavLinks"
             aria-expanded="false"
-            aria-controls="publicNavigation"
         >
             <span></span>
             <span></span>
@@ -46,12 +71,12 @@ $isProgramPage = in_array(
 
         <nav
             class="public-nav-links"
-            id="publicNavigation"
-            aria-label="Navigasi publik"
+            id="publicNavLinks"
+            aria-label="Navigasi utama"
         >
             <a
                 href="<?= base_url('/') ?>"
-                class="<?= $activePage === 'home' ? 'active' : '' ?>"
+                class="<?= $isNavActive(['home']) ?>"
                 <?= $activePage === 'home'
                     ? 'aria-current="page"'
                     : '' ?>
@@ -61,7 +86,7 @@ $isProgramPage = in_array(
 
             <a
                 href="<?= base_url('/profil') ?>"
-                class="<?= $activePage === 'profile' ? 'active' : '' ?>"
+                class="<?= $isNavActive(['profile']) ?>"
                 <?= $activePage === 'profile'
                     ? 'aria-current="page"'
                     : '' ?>
@@ -71,8 +96,15 @@ $isProgramPage = in_array(
 
             <a
                 href="<?= base_url('/program') ?>"
-                class="<?= $isProgramPage ? 'active' : '' ?>"
-                <?= $isProgramPage
+                class="<?= $isNavActive([
+                    'programs',
+                    'program_detail',
+                ]) ?>"
+                <?= in_array(
+                    $activePage,
+                    ['programs', 'program_detail'],
+                    true
+                )
                     ? 'aria-current="page"'
                     : '' ?>
             >
@@ -81,8 +113,15 @@ $isProgramPage = in_array(
 
             <a
                 href="<?= base_url('/kegiatan') ?>"
-                class="<?= $isActivityPage ? 'active' : '' ?>"
-                <?= $isActivityPage
+                class="<?= $isNavActive([
+                    'activities',
+                    'activity_detail',
+                ]) ?>"
+                <?= in_array(
+                    $activePage,
+                    ['activities', 'activity_detail'],
+                    true
+                )
                     ? 'aria-current="page"'
                     : '' ?>
             >
@@ -91,7 +130,7 @@ $isProgramPage = in_array(
 
             <a
                 href="<?= base_url('/pengurus') ?>"
-                class="<?= $activePage === 'officials' ? 'active' : '' ?>"
+                class="<?= $isNavActive(['officials']) ?>"
                 <?= $activePage === 'officials'
                     ? 'aria-current="page"'
                     : '' ?>
@@ -101,9 +140,7 @@ $isProgramPage = in_array(
 
             <a
                 href="<?= base_url('/kontak') ?>"
-                class="<?= $activePage === 'contact'
-                    ? 'active'
-                    : '' ?>"
+                class="<?= $isNavActive(['contact']) ?>"
                 <?= $activePage === 'contact'
                     ? 'aria-current="page"'
                     : '' ?>
@@ -118,7 +155,7 @@ $isProgramPage = in_array(
                 <svg
                     viewBox="0 0 24 24"
                     aria-hidden="true"
-                    class="public-portal-button-icon"
+                    class="public-portal-icon public-portal-button-icon"
                 >
                     <path
                         d="M7 10V8a5 5 0 0 1 10 0v2"
@@ -126,7 +163,7 @@ $isProgramPage = in_array(
                         stroke="currentColor"
                         stroke-width="1.8"
                         stroke-linecap="round"
-                    />
+                    ></path>
 
                     <rect
                         x="5"
@@ -137,18 +174,23 @@ $isProgramPage = in_array(
                         fill="none"
                         stroke="currentColor"
                         stroke-width="1.8"
-                    />
+                    ></rect>
 
                     <circle
                         cx="12"
                         cy="15"
                         r="1.2"
                         fill="currentColor"
-                    />
+                    ></circle>
                 </svg>
 
                 <span>Portal Pengurus</span>
             </a>
+
+            <div class="public-nav-mobile-identity">
+                <strong><?= esc($organizationLegalName) ?></strong>
+                <span><?= esc($organizationTagline) ?></span>
+            </div>
         </nav>
 
     </div>
@@ -157,32 +199,43 @@ $isProgramPage = in_array(
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const toggle = document.getElementById('publicMobileToggle');
-    const navigation = document.getElementById('publicNavigation');
+    const navigation = document.getElementById('publicNavLinks');
 
     if (!toggle || !navigation) {
         return;
     }
+
+    const closeNavigation = function () {
+        navigation.classList.remove('active');
+        toggle.classList.remove('active');
+        toggle.setAttribute('aria-expanded', 'false');
+        document.body.classList.remove('public-navigation-open');
+    };
 
     toggle.addEventListener('click', function () {
         const isOpen = navigation.classList.toggle('active');
 
         toggle.classList.toggle('active', isOpen);
         toggle.setAttribute('aria-expanded', String(isOpen));
+        document.body.classList.toggle(
+            'public-navigation-open',
+            isOpen
+        );
     });
 
     navigation.querySelectorAll('a').forEach(function (link) {
-        link.addEventListener('click', function () {
-            navigation.classList.remove('active');
-            toggle.classList.remove('active');
-            toggle.setAttribute('aria-expanded', 'false');
-        });
+        link.addEventListener('click', closeNavigation);
     });
 
     document.addEventListener('keydown', function (event) {
         if (event.key === 'Escape') {
-            navigation.classList.remove('active');
-            toggle.classList.remove('active');
-            toggle.setAttribute('aria-expanded', 'false');
+            closeNavigation();
+        }
+    });
+
+    window.addEventListener('resize', function () {
+        if (window.innerWidth > 920) {
+            closeNavigation();
         }
     });
 });

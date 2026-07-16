@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Models\ActivityImageModel;
 use App\Models\ActivityModel;
 use App\Models\ProgramModel;
 
@@ -112,7 +113,7 @@ class ActivityController extends BaseController
             ],
             'title' => [
                 'label' => 'Nama kegiatan',
-                'rules' => 'required|min_length[3]|max_length[255]',
+                'rules' => 'required|min_length[3]|max_length[150]',
             ],
             'activity_date' => [
                 'label' => 'Tanggal kegiatan',
@@ -120,7 +121,7 @@ class ActivityController extends BaseController
             ],
             'location' => [
                 'label' => 'Lokasi kegiatan',
-                'rules' => 'required|max_length[255]',
+                'rules' => 'required|max_length[200]',
             ],
             'status' => [
                 'label' => 'Status kegiatan',
@@ -228,7 +229,7 @@ class ActivityController extends BaseController
             ],
             'title' => [
                 'label' => 'Nama kegiatan',
-                'rules' => 'required|min_length[3]|max_length[255]',
+                'rules' => 'required|min_length[3]|max_length[150]',
             ],
             'activity_date' => [
                 'label' => 'Tanggal kegiatan',
@@ -236,7 +237,7 @@ class ActivityController extends BaseController
             ],
             'location' => [
                 'label' => 'Lokasi kegiatan',
-                'rules' => 'required|max_length[255]',
+                'rules' => 'required|max_length[200]',
             ],
             'status' => [
                 'label' => 'Status kegiatan',
@@ -311,19 +312,45 @@ class ActivityController extends BaseController
                 ->with('error', 'Data kegiatan tidak ditemukan.');
         }
 
-        $oldFile = $activity['documentation_file'] ?? null;
+        $imageModel = new ActivityImageModel();
 
-        if (!empty($oldFile)) {
+        $galleryImages = $imageModel
+            ->where('activity_id', $id)
+            ->findAll();
+
+        $filesToDelete = [];
+
+        if (!empty($activity['documentation_file'])) {
+            $filesToDelete[] = $activity['documentation_file'];
+        }
+
+        foreach ($galleryImages as $image) {
+            if (!empty($image['image_file'])) {
+                $filesToDelete[] = $image['image_file'];
+            }
+        }
+
+        $filesToDelete = array_values(
+            array_unique($filesToDelete)
+        );
+
+        if (!$this->activityModel->delete($id)) {
+            return redirect()->to('/activities')
+                ->with(
+                    'error',
+                    'Data kegiatan gagal dihapus.'
+                );
+        }
+
+        foreach ($filesToDelete as $fileName) {
             $filePath = FCPATH
                 . 'uploads/activities/'
-                . $oldFile;
+                . basename($fileName);
 
             if (is_file($filePath)) {
                 unlink($filePath);
             }
         }
-
-        $this->activityModel->delete($id);
 
         return redirect()->to('/activities')
             ->with('success', 'Data kegiatan berhasil dihapus.');

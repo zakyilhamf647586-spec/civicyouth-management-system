@@ -1,92 +1,207 @@
+<?php
+
+$organizationName = site_setting(
+    'organization_name',
+    'GARDA 01'
+);
+
+$organizationFullName = site_setting(
+    'organization_full_name',
+    'Generasi Aktif Randugarut'
+);
+
+$organizationLegalName = site_setting(
+    'organization_legal_name',
+    'Karang Taruna RW 01 Kelurahan Randugarut'
+);
+
+$organizationTagline = site_setting(
+    'organization_tagline',
+    'Guyub • Bergerak • Berdampak'
+);
+
+$footerHeading = site_setting(
+    'footer_heading',
+    $organizationName
+);
+
+$footerDescription = site_setting(
+    'footer_description',
+    'Generasi Aktif Randugarut. Ruang kolaborasi pemuda untuk tumbuh, bergerak, dan memberi dampak bagi lingkungan.'
+);
+
+$footerNote = site_setting(
+    'footer_note',
+    'Website resmi Karang Taruna RW 01 Kelurahan Randugarut.'
+);
+
+$footerCopyright = site_setting(
+    'footer_copyright',
+    'Karang Taruna RW 01 Randugarut'
+);
+
+$contactEmail = site_setting('contact_email', '');
+$contactWhatsapp = site_setting('contact_whatsapp', '');
+$contactAddress = site_setting(
+    'contact_address',
+    'RW 01 Kelurahan Randugarut'
+);
+$contactVillage = site_setting('contact_village', 'Randugarut');
+$contactDistrict = site_setting('contact_district', 'Tugu');
+$contactCity = site_setting('contact_city', 'Kota Semarang');
+$contactProvince = site_setting('contact_province', 'Jawa Tengah');
+
+$instagramUrl = site_setting('instagram_url', '');
+$tiktokUrl = site_setting('tiktok_url', '');
+$youtubeUrl = site_setting('youtube_url', '');
+$facebookUrl = site_setting('facebook_url', '');
+
+$logoUrl = site_asset_url(
+    'site_logo',
+    'assets/img/logo-rw01.png'
+);
+
+$whatsappUrl = site_whatsapp_url(
+    'Halo GARDA 01, saya ingin menghubungi pengurus.'
+);
+?>
+
 <footer class="garda-public-footer">
     <div class="garda-footer-watermark" aria-hidden="true">
-        GARDA 01
+        <?= esc($organizationName) ?>
     </div>
 
     <div class="garda-footer-inner">
-
         <div class="garda-footer-grid">
 
             <section class="garda-footer-identity">
-                <div class="garda-footer-brand">
+                <a
+                    href="<?= base_url('/') ?>"
+                    class="garda-footer-brand"
+                    aria-label="<?= esc($organizationName) ?> — Beranda"
+                >
                     <img
-                        src="<?= base_url('assets/img/logo-rw01.png') ?>"
-                        alt="Logo GARDA 01"
+                        src="<?= esc($logoUrl, 'attr') ?>"
+                        alt="Logo <?= esc($organizationName) ?>"
                     >
 
                     <div>
-                        <strong>GARDA 01</strong>
-                        <span>Generasi Aktif Randugarut</span>
+                        <strong><?= esc($footerHeading) ?></strong>
+                        <span><?= esc($organizationFullName) ?></span>
                     </div>
-                </div>
+                </a>
 
-                <p>
-                    Karang Taruna RW 01 Kelurahan Randugarut<br>
-                    Kecamatan Tugu, Kota Semarang
-                </p>
+                <p><?= esc($footerDescription) ?></p>
 
                 <div class="garda-footer-slogan">
-                    Guyub <span>•</span>
-                    Bergerak <span>•</span>
-                    Berdampak
+                    <?= esc($organizationTagline) ?>
                 </div>
             </section>
 
-            <section class="garda-footer-column">
+            <nav
+                class="garda-footer-column"
+                aria-label="Navigasi footer"
+            >
                 <h3>Navigasi</h3>
 
                 <a href="<?= base_url('/') ?>">Beranda</a>
-                <a href="<?= base_url('/profil') ?>">Tentang</a>
-                <a href="<?= base_url('/program') ?>">Program</a>
+                <a href="<?= base_url('/profil') ?>">Tentang GARDA 01</a>
+                <a href="<?= base_url('/program') ?>">Pilar Program</a>
                 <a href="<?= base_url('/kegiatan') ?>">Kegiatan</a>
                 <a href="<?= base_url('/pengurus') ?>">Pengurus</a>
                 <a href="<?= base_url('/kontak') ?>">Kontak & Kolaborasi</a>
+            </nav>
+
+            <section class="garda-footer-column">
+                <h3>Organisasi</h3>
+
+                <span class="garda-footer-legal-name">
+                    <?= esc($organizationLegalName) ?>
+                </span>
+
+                <span><?= nl2br(esc($contactAddress)) ?></span>
+
+                <span>
+                    Kelurahan <?= esc($contactVillage) ?><br>
+                    Kecamatan <?= esc($contactDistrict) ?><br>
+                    <?= esc($contactCity) ?><br>
+                    <?= esc($contactProvince) ?>
+                </span>
             </section>
 
             <section class="garda-footer-column">
-                <h3>Program</h3>
+                <h3>Hubungi Kami</h3>
 
-                <a href="<?= base_url('/program/peduli') ?>">
-                    GARDA 01 Peduli
+                <span>
+                    Sampaikan undangan, gagasan, informasi,
+                    atau tawaran kolaborasi melalui kanal resmi
+                    <?= esc($organizationName) ?>.
+                </span>
+
+                <?php if ($contactEmail !== '') : ?>
+                    <a
+                        href="mailto:<?= esc($contactEmail, 'attr') ?>"
+                    >
+                        <?= esc($contactEmail) ?>
+                    </a>
+                <?php endif; ?>
+
+                <?php if (
+                    $contactWhatsapp !== ''
+                    && $whatsappUrl
+                ) : ?>
+                    <a
+                        href="<?= esc($whatsappUrl, 'attr') ?>"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        WhatsApp: <?= esc($contactWhatsapp) ?>
+                    </a>
+                <?php endif; ?>
+
+                <a href="<?= base_url('/kontak') ?>">
+                    Formulir Kontak
                 </a>
 
-                <a href="<?= base_url('/program/hijau') ?>">
-                    GARDA 01 Hijau
-                </a>
+                <?php if ($instagramUrl !== '') : ?>
+                    <a
+                        href="<?= esc($instagramUrl, 'attr') ?>"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Instagram
+                    </a>
+                <?php endif; ?>
 
-                <a href="<?= base_url('/program/sport') ?>">
-                    GARDA 01 Sport
-                </a>
+                <?php if ($tiktokUrl !== '') : ?>
+                    <a
+                        href="<?= esc($tiktokUrl, 'attr') ?>"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        TikTok
+                    </a>
+                <?php endif; ?>
 
-                <a href="<?= base_url('/program/creative') ?>">
-                    GARDA 01 Creative
-                </a>
+                <?php if ($youtubeUrl !== '') : ?>
+                    <a
+                        href="<?= esc($youtubeUrl, 'attr') ?>"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        YouTube
+                    </a>
+                <?php endif; ?>
 
-                <a href="<?= base_url('/program/enterprise') ?>">
-                    GARDA 01 Enterprise
-                </a>
-            </section>
-
-            <section class="garda-footer-column">
-                <h3>Terhubung</h3>
-
-                <a href="#" aria-label="Instagram GARDA 01">
-                    Instagram
-                </a>
-
-                <a href="#" aria-label="TikTok GARDA 01">
-                    TikTok
-                </a>
-
-                <a href="#" aria-label="WhatsApp GARDA 01">
-                    WhatsApp
-                </a>
-
-                <a href="#" aria-label="Email GARDA 01">
-                    Email
-                </a>
-
-                <span>Randugarut, Tugu, Semarang</span>
+                <?php if ($facebookUrl !== '') : ?>
+                    <a
+                        href="<?= esc($facebookUrl, 'attr') ?>"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Facebook
+                    </a>
+                <?php endif; ?>
             </section>
 
         </div>
@@ -94,19 +209,25 @@
         <div class="garda-footer-bottom">
             <div>
                 <span>
-                    © <?= date('Y') ?> GARDA 01 — Karang Taruna RW 01 Randugarut.
+                    © <?= date('Y') ?> <?= esc($footerCopyright) ?>.
                 </span>
 
-                <small>
-                    Dikelola oleh Tim Media dan Administrasi GARDA 01.
-                </small>
+                <small><?= esc($footerNote) ?></small>
             </div>
 
             <div class="garda-footer-bottom-links">
-                <a href="#">Kebijakan Privasi</a>
-                <a href="<?= base_url('/login') ?>">Portal Pengurus</a>
+                <a href="<?= base_url('/profil') ?>">
+                    Profil Organisasi
+                </a>
+
+                <a href="<?= base_url('/kontak') ?>">
+                    Kontak
+                </a>
+
+                <a href="<?= base_url('/login') ?>">
+                    Portal Internal
+                </a>
             </div>
         </div>
-
     </div>
 </footer>

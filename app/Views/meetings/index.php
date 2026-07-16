@@ -113,11 +113,17 @@
                         <td>
                             <a href="<?= base_url('/attendances/recap/' . $meeting['id']) ?>" class="btn btn-primary">Rekap</a>
                             <a href="<?= base_url('/meetings/edit/' . $meeting['id']) ?>" class="btn btn-warning">Edit</a>
-                            <a href="<?= base_url('/meetings/delete/' . $meeting['id']) ?>"
-                            class="btn btn-danger"
-                            onclick="return confirm('Yakin ingin menghapus agenda rapat ini?')">
-                                Hapus
-                            </a>
+                            <form
+                                action="<?= base_url('/meetings/delete/' . $meeting['id']) ?>"
+                                method="post"
+                                class="inline-action-form"
+                                onsubmit="return confirm('Yakin ingin menghapus agenda rapat ini?')"
+                            >
+                                <?= csrf_field() ?>
+                                <button type="submit" class="btn btn-danger">
+                                    Hapus
+                                </button>
+                            </form>
                         </td>
                     </tr>
                 <?php endforeach; ?>

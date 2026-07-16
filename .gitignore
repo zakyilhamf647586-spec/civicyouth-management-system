@@ -1,52 +1,32 @@
 #-------------------------
-# Operating Specific Junk Files
+# Operating System Junk
 #-------------------------
-
-# OS X
 .DS_Store
 .AppleDouble
 .LSOverride
-
-# OS X Thumbnails
 ._*
-
-# Windows image file caches
 Thumbs.db
 ehthumbs.db
 Desktop.ini
-
-# Recycle Bin used on file shares
 $RECYCLE.BIN/
-
-# Windows Installer files
 *.cab
 *.msi
 *.msm
 *.msp
-
-# Windows shortcuts
 *.lnk
-
-# Linux
 *~
-
-# KDE directory preferences
 .directory
-
-# Linux trash folder which might appear on any partition or disk
 .Trash-*
 
 #-------------------------
-# Environment Files
+# Environment & Secrets
 #-------------------------
-# These should never be under version control,
-# as it poses a security risk.
 .env
 .vagrant
 Vagrantfile
 
 #-------------------------
-# Temporary Files
+# CodeIgniter Writable Data
 #-------------------------
 /writable/cache/*
 !/writable/cache/index.html
@@ -66,41 +46,40 @@ Vagrantfile
 php_errors.log
 
 #-------------------------
-# User Guide Temp Files
+# User-generated Public Uploads
 #-------------------------
-/user_guide_src/build/*
-/user_guide_src/cilexer/build/*
-/user_guide_src/cilexer/dist/*
-/user_guide_src/cilexer/pycilexer.egg-info/*
+/public/uploads/activities/*
+!/public/uploads/activities/.gitkeep
+
+/public/uploads/officials/*
+!/public/uploads/officials/.gitkeep
+
+/public/uploads/programs/*
+!/public/uploads/programs/.gitkeep
+
+/public/uploads/content_studio/*
+!/public/uploads/content_studio/.gitkeep
+
+/public/uploads/settings/*
+!/public/uploads/settings/.gitignore
 
 #-------------------------
-# Test Files
+# Composer / Testing
 #-------------------------
-/tests/coverage*
-
-# Don't save phpunit under version control.
+/vendor/
 /phpunit
+/tests/coverage*
+/results/
+/phpunit.xml
 
 #-------------------------
-# Composer
+# IDE / Build Artifacts
 #-------------------------
-vendor/
-
-#-------------------------
-# IDE / Development Files
-#-------------------------
-
-# Modules Testing
-_modules/*
-
-# phpenv local config
-.php-version
-
-# Jetbrains editors (PHPStorm, etc)
 .idea/
 *.iml
-
-# NetBeans
+.vscode/
+_modules/*
+.php-version
 /nbproject/
 /build/
 /nbbuild/
@@ -109,8 +88,6 @@ _modules/*
 /nbactions.xml
 /nb-configuration.xml
 /.nb-gradle/
-
-# Sublime Text
 *.tmlanguage.cache
 *.tmPreferences.cache
 *.stTheme.cache
@@ -118,29 +95,3 @@ _modules/*
 *.sublime-project
 .phpintel
 /api/
-
-# Visual Studio Code
-.vscode/
-
-/results/
-/phpunit.xml
-
-# Uploaded files
-public/uploads/activities/*
-!public/uploads/activities/.gitkeep
-
-# Officials photos
-public/uploads/officials/*
-!public/uploads/officials/.gitkeep
-
-# Officials uploaded photos
-public/uploads/officials/*
-!public/uploads/officials/.gitkeep
-
-# Program cover uploads
-public/uploads/programs/*
-!public/uploads/programs/.gitkeep
-
-# AI Content Studio uploads
-public/uploads/content_studio/*
-!public/uploads/content_studio/.gitkeep

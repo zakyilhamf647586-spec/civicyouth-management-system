@@ -1,0 +1,17 @@
+GARDA 01 PORTAL — CARA MENERAPKAN HASIL AUDIT
+
+1. Backup folder proyek aktif Anda terlebih dahulu.
+2. Ekstrak civicyouth-management-system-reviewed-fixed.zip.
+3. Pertahankan file .env dari proyek aktif Anda. ZIP ini tidak menyertakan .env.
+4. Pertahankan folder vendor dari proyek aktif, atau jalankan composer install.
+5. Salin seluruh isi hasil audit ke proyek aktif.
+6. Jalankan:
+   php spark cache:clear
+   php spark serve
+7. Buka http://localhost:8080/ lalu tekan Ctrl + F5.
+8. Uji halaman publik, login, dashboard, kegiatan, galeri, kontak, dan pengaturan website.
+
+Catatan:
+- Route hapus sekarang menggunakan POST demi keamanan; gunakan tombol Hapus pada portal.
+- CSRF sudah diaktifkan secara global.
+- Jangan menambahkan kembali blok CSS "FINAL LOCK" lama.

@@ -4,6 +4,36 @@ $flashError   = session()->getFlashdata('error');
 $flashErrors  = session()->getFlashdata('errors');
 $flashSuccess = session()->getFlashdata('success');
 
+$portalOrganizationName = site_setting(
+    'organization_name',
+    'GARDA 01'
+);
+
+$portalOrganizationFullName = site_setting(
+    'organization_full_name',
+    'Generasi Aktif Randugarut'
+);
+
+$portalTagline = site_setting(
+    'organization_tagline',
+    'Guyub • Bergerak • Berdampak'
+);
+
+$portalLogoUrl = site_asset_url(
+    'site_logo',
+    'assets/img/logo-rw01.png'
+);
+
+$portalFaviconUrl = site_asset_url(
+    'site_favicon',
+    'assets/img/logo-rw01.png'
+);
+
+$portalStylesheetPath = FCPATH . 'assets/css/app.css';
+$portalStylesheetVersion = is_file($portalStylesheetPath)
+    ? (string) filemtime($portalStylesheetPath)
+    : '1';
+
 $displayErrors = [];
 
 if (is_array($flashErrors)) {
@@ -32,22 +62,21 @@ if (is_string($flashError) && trim($flashError) !== '') {
 
     <meta
         name="description"
-        content="Portal manajemen internal GARDA 01, Karang Taruna RW 01 Kelurahan Randugarut."
+        content="Portal manajemen internal <?= esc($portalOrganizationName, 'attr') ?>, Karang Taruna RW 01 Kelurahan Randugarut."
     >
 
     <title>
-        Masuk — GARDA 01 Portal
+        Masuk — <?= esc($portalOrganizationName) ?> Portal
     </title>
 
     <link
         rel="icon"
-        type="image/png"
-        href="<?= base_url('assets/img/logo-rw01.png') ?>"
+        href="<?= esc($portalFaviconUrl, 'attr') ?>"
     >
 
     <link
         rel="stylesheet"
-        href="<?= base_url('assets/css/app.css') ?>"
+        href="<?= base_url('assets/css/app.css') ?>?v=<?= esc($portalStylesheetVersion, 'attr') ?>"
     >
 </head>
 
@@ -78,12 +107,12 @@ if (is_string($flashError) && trim($flashError) !== '') {
                 aria-label="Kembali ke website GARDA 01"
             >
                 <img
-                    src="<?= base_url('assets/img/logo-rw01.png') ?>"
-                    alt="Logo GARDA 01"
+                    src="<?= esc($portalLogoUrl, 'attr') ?>"
+                    alt="Logo <?= esc($portalOrganizationName) ?>"
                 >
 
                 <div>
-                    <strong>GARDA 01</strong>
+                    <strong><?= esc($portalOrganizationName) ?></strong>
                     <span>Portal Manajemen</span>
                 </div>
             </a>
@@ -160,10 +189,10 @@ if (is_string($flashError) && trim($flashError) !== '') {
         <footer class="garda-login-brand-footer">
 
             <div>
-                <span>GARDA 01</span>
+                <span><?= esc($portalOrganizationName) ?></span>
 
                 <small>
-                    Generasi Aktif Randugarut
+                    <?= esc($portalOrganizationFullName) ?>
                 </small>
             </div>
 
@@ -181,12 +210,12 @@ if (is_string($flashError) && trim($flashError) !== '') {
         <div class="garda-login-mobile-brand">
 
             <img
-                src="<?= base_url('assets/img/logo-rw01.png') ?>"
-                alt="Logo GARDA 01"
+                src="<?= esc($portalLogoUrl, 'attr') ?>"
+                alt="Logo <?= esc($portalOrganizationName) ?>"
             >
 
             <div>
-                <strong>GARDA 01</strong>
+                <strong><?= esc($portalOrganizationName) ?></strong>
                 <span>Portal Manajemen</span>
             </div>
 
@@ -445,11 +474,11 @@ if (is_string($flashError) && trim($flashError) !== '') {
         <div class="garda-login-form-footer">
 
             <a href="<?= base_url('/') ?>">
-                ← Kembali ke Website GARDA 01
+                ← Kembali ke Website <?= esc($portalOrganizationName) ?>
             </a>
 
             <span>
-                Guyub • Bergerak • Berdampak
+                <?= esc($portalTagline) ?>
             </span>
 
         </div>

@@ -1,0 +1,299 @@
+<?php
+
+namespace App\Database\Seeds;
+
+use CodeIgniter\Database\Seeder;
+
+class SiteSettingSeeder extends Seeder
+{
+    public function run()
+    {
+        $settings = [
+            [
+                'setting_key'   => 'organization_name',
+                'setting_value' => 'GARDA 01',
+                'setting_group' => 'identity',
+                'setting_type'  => 'text',
+                'label'         => 'Nama Utama',
+                'description'   => 'Nama utama yang tampil pada website.',
+                'sort_order'    => 1,
+                'is_public'     => 1,
+            ],
+            [
+                'setting_key'   => 'organization_full_name',
+                'setting_value' => 'Generasi Aktif Randugarut',
+                'setting_group' => 'identity',
+                'setting_type'  => 'text',
+                'label'         => 'Kepanjangan GARDA 01',
+                'description'   => 'Nama lengkap atau kepanjangan branding.',
+                'sort_order'    => 2,
+                'is_public'     => 1,
+            ],
+            [
+                'setting_key'   => 'organization_legal_name',
+                'setting_value' => 'Karang Taruna RW 01 Kelurahan Randugarut',
+                'setting_group' => 'identity',
+                'setting_type'  => 'text',
+                'label'         => 'Nama Resmi Organisasi',
+                'description'   => 'Identitas formal organisasi.',
+                'sort_order'    => 3,
+                'is_public'     => 1,
+            ],
+            [
+                'setting_key'   => 'organization_tagline',
+                'setting_value' => 'Guyub • Bergerak • Berdampak',
+                'setting_group' => 'identity',
+                'setting_type'  => 'text',
+                'label'         => 'Slogan',
+                'description'   => 'Slogan utama GARDA 01.',
+                'sort_order'    => 4,
+                'is_public'     => 1,
+            ],
+            [
+                'setting_key'   => 'organization_description',
+                'setting_value' => 'Ruang tumbuh, kolaborasi, dan kontribusi pemuda RW 01 Kelurahan Randugarut.',
+                'setting_group' => 'identity',
+                'setting_type'  => 'textarea',
+                'label'         => 'Deskripsi Singkat',
+                'description'   => 'Ringkasan organisasi untuk website publik.',
+                'sort_order'    => 5,
+                'is_public'     => 1,
+            ],
+            [
+                'setting_key'   => 'site_logo',
+                'setting_value' => 'assets/img/logo-rw01.png',
+                'setting_group' => 'identity',
+                'setting_type'  => 'file',
+                'label'         => 'Logo Website',
+                'description'   => 'Logo utama website dan portal.',
+                'sort_order'    => 6,
+                'is_public'     => 1,
+            ],
+            [
+                'setting_key'   => 'site_favicon',
+                'setting_value' => 'assets/img/logo-rw01.png',
+                'setting_group' => 'identity',
+                'setting_type'  => 'file',
+                'label'         => 'Favicon',
+                'description'   => 'Ikon kecil pada tab browser.',
+                'sort_order'    => 7,
+                'is_public'     => 1,
+            ],
+
+            [
+                'setting_key'   => 'contact_email',
+                'setting_value' => '',
+                'setting_group' => 'contact',
+                'setting_type'  => 'email',
+                'label'         => 'Email Resmi',
+                'description'   => 'Email yang dapat dihubungi masyarakat.',
+                'sort_order'    => 1,
+                'is_public'     => 1,
+            ],
+            [
+                'setting_key'   => 'contact_whatsapp',
+                'setting_value' => '',
+                'setting_group' => 'contact',
+                'setting_type'  => 'tel',
+                'label'         => 'Nomor WhatsApp',
+                'description'   => 'Gunakan format 628xxxxxxxxxx.',
+                'sort_order'    => 2,
+                'is_public'     => 1,
+            ],
+            [
+                'setting_key'   => 'contact_address',
+                'setting_value' => 'RW 01 Kelurahan Randugarut',
+                'setting_group' => 'contact',
+                'setting_type'  => 'textarea',
+                'label'         => 'Alamat',
+                'description'   => 'Alamat atau wilayah organisasi.',
+                'sort_order'    => 3,
+                'is_public'     => 1,
+            ],
+            [
+                'setting_key'   => 'contact_village',
+                'setting_value' => 'Randugarut',
+                'setting_group' => 'contact',
+                'setting_type'  => 'text',
+                'label'         => 'Kelurahan',
+                'description'   => null,
+                'sort_order'    => 4,
+                'is_public'     => 1,
+            ],
+            [
+                'setting_key'   => 'contact_district',
+                'setting_value' => 'Tugu',
+                'setting_group' => 'contact',
+                'setting_type'  => 'text',
+                'label'         => 'Kecamatan',
+                'description'   => null,
+                'sort_order'    => 5,
+                'is_public'     => 1,
+            ],
+            [
+                'setting_key'   => 'contact_city',
+                'setting_value' => 'Kota Semarang',
+                'setting_group' => 'contact',
+                'setting_type'  => 'text',
+                'label'         => 'Kota',
+                'description'   => null,
+                'sort_order'    => 6,
+                'is_public'     => 1,
+            ],
+            [
+                'setting_key'   => 'contact_province',
+                'setting_value' => 'Jawa Tengah',
+                'setting_group' => 'contact',
+                'setting_type'  => 'text',
+                'label'         => 'Provinsi',
+                'description'   => null,
+                'sort_order'    => 7,
+                'is_public'     => 1,
+            ],
+
+            [
+                'setting_key'   => 'instagram_url',
+                'setting_value' => '',
+                'setting_group' => 'social',
+                'setting_type'  => 'url',
+                'label'         => 'Instagram',
+                'description'   => 'Tautan lengkap akun Instagram.',
+                'sort_order'    => 1,
+                'is_public'     => 1,
+            ],
+            [
+                'setting_key'   => 'tiktok_url',
+                'setting_value' => '',
+                'setting_group' => 'social',
+                'setting_type'  => 'url',
+                'label'         => 'TikTok',
+                'description'   => 'Tautan lengkap akun TikTok.',
+                'sort_order'    => 2,
+                'is_public'     => 1,
+            ],
+            [
+                'setting_key'   => 'youtube_url',
+                'setting_value' => '',
+                'setting_group' => 'social',
+                'setting_type'  => 'url',
+                'label'         => 'YouTube',
+                'description'   => 'Tautan kanal YouTube bila tersedia.',
+                'sort_order'    => 3,
+                'is_public'     => 1,
+            ],
+            [
+                'setting_key'   => 'facebook_url',
+                'setting_value' => '',
+                'setting_group' => 'social',
+                'setting_type'  => 'url',
+                'label'         => 'Facebook',
+                'description'   => 'Tautan halaman Facebook bila tersedia.',
+                'sort_order'    => 4,
+                'is_public'     => 1,
+            ],
+
+            [
+                'setting_key'   => 'footer_heading',
+                'setting_value' => 'GARDA 01',
+                'setting_group' => 'footer',
+                'setting_type'  => 'text',
+                'label'         => 'Judul Footer',
+                'description'   => 'Judul identitas pada bagian footer.',
+                'sort_order'    => 1,
+                'is_public'     => 1,
+            ],
+            [
+                'setting_key'   => 'footer_description',
+                'setting_value' => 'Generasi Aktif Randugarut. Ruang kolaborasi pemuda untuk tumbuh, bergerak, dan memberi dampak bagi lingkungan.',
+                'setting_group' => 'footer',
+                'setting_type'  => 'textarea',
+                'label'         => 'Deskripsi Footer',
+                'description'   => 'Teks ringkas pada bagian bawah website.',
+                'sort_order'    => 2,
+                'is_public'     => 1,
+            ],
+            [
+                'setting_key'   => 'footer_note',
+                'setting_value' => 'Website resmi Karang Taruna RW 01 Kelurahan Randugarut.',
+                'setting_group' => 'footer',
+                'setting_type'  => 'text',
+                'label'         => 'Catatan Footer',
+                'description'   => 'Keterangan resmi pada bagian footer.',
+                'sort_order'    => 3,
+                'is_public'     => 1,
+            ],
+            [
+                'setting_key'   => 'footer_copyright',
+                'setting_value' => 'Karang Taruna RW 01 Randugarut',
+                'setting_group' => 'footer',
+                'setting_type'  => 'text',
+                'label'         => 'Teks Hak Cipta',
+                'description'   => 'Tahun ditambahkan secara otomatis.',
+                'sort_order'    => 4,
+                'is_public'     => 1,
+            ],
+
+            [
+                'setting_key'   => 'seo_title',
+                'setting_value' => 'GARDA 01 | Generasi Aktif Randugarut',
+                'setting_group' => 'seo',
+                'setting_type'  => 'text',
+                'label'         => 'Judul SEO Default',
+                'description'   => 'Judul default tab dan mesin pencari.',
+                'sort_order'    => 1,
+                'is_public'     => 1,
+            ],
+            [
+                'setting_key'   => 'seo_description',
+                'setting_value' => 'Website resmi GARDA 01, Generasi Aktif Randugarut, Karang Taruna RW 01 Kelurahan Randugarut.',
+                'setting_group' => 'seo',
+                'setting_type'  => 'textarea',
+                'label'         => 'Deskripsi SEO',
+                'description'   => 'Deskripsi default mesin pencari.',
+                'sort_order'    => 2,
+                'is_public'     => 1,
+            ],
+            [
+                'setting_key'   => 'seo_keywords',
+                'setting_value' => 'GARDA 01, Karang Taruna, Randugarut, RW 01, pemuda, Semarang',
+                'setting_group' => 'seo',
+                'setting_type'  => 'text',
+                'label'         => 'Kata Kunci SEO',
+                'description'   => 'Pisahkan kata kunci menggunakan koma.',
+                'sort_order'    => 3,
+                'is_public'     => 1,
+            ],
+            [
+                'setting_key'   => 'seo_og_image',
+                'setting_value' => 'assets/img/logo-rw01.png',
+                'setting_group' => 'seo',
+                'setting_type'  => 'file',
+                'label'         => 'Gambar Berbagi Sosial',
+                'description'   => 'Gambar ketika website dibagikan.',
+                'sort_order'    => 4,
+                'is_public'     => 1,
+            ],
+        ];
+
+        $builder = $this->db->table('site_settings');
+
+        foreach ($settings as $setting) {
+            $existing = $builder
+                ->where(
+                    'setting_key',
+                    $setting['setting_key']
+                )
+                ->get()
+                ->getRowArray();
+
+            if ($existing) {
+                continue;
+            }
+
+            $setting['created_at'] = date('Y-m-d H:i:s');
+            $setting['updated_at'] = date('Y-m-d H:i:s');
+
+            $builder->insert($setting);
+        }
+    }
+}

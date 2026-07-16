@@ -106,7 +106,7 @@
 </div>
 
 <div class="kop">
-    <img src="<?= base_url('assets/img/logo-rw01.png') ?>" alt="Logo Karang Taruna RW 01">
+    <img src="<?= esc(site_asset_url('site_logo', 'assets/img/logo-rw01.png'), 'attr') ?>" alt="Logo Karang Taruna RW 01">
 
     <div class="kop-text">
         <h2>KARANG TARUNA RW 01</h2>

@@ -71,6 +71,11 @@ $pageContexts = [
         'section' => 'Laporan',
         'label'   => 'Laporan Organisasi',
     ],
+
+    'settings' => [
+        'section' => 'Pengaturan',
+        'label'   => 'Pengaturan Website',
+    ],
 ];
 
 $pageContext = $pageContexts[$currentSegment] ?? [
@@ -79,6 +84,26 @@ $pageContext = $pageContexts[$currentSegment] ?? [
 ];
 
 $pageTitle = $title ?? $pageContext['label'];
+
+$portalOrganizationName = site_setting(
+    'organization_name',
+    'GARDA 01'
+);
+
+$portalLogoUrl = site_asset_url(
+    'site_logo',
+    'assets/img/logo-rw01.png'
+);
+
+$portalFaviconUrl = site_asset_url(
+    'site_favicon',
+    'assets/img/logo-rw01.png'
+);
+
+$portalStylesheetPath = FCPATH . 'assets/css/app.css';
+$portalStylesheetVersion = is_file($portalStylesheetPath)
+    ? (string) filemtime($portalStylesheetPath)
+    : '1';
 
 $userName =
     session()->get('name')
@@ -162,18 +187,17 @@ $todayLabel =
     >
 
     <title>
-        <?= esc($pageTitle) ?> — GARDA 01 Portal
+        <?= esc($pageTitle) ?> — <?= esc($portalOrganizationName) ?> Portal
     </title>
 
     <link
         rel="icon"
-        type="image/png"
-        href="<?= base_url('assets/img/logo-rw01.png') ?>"
+        href="<?= esc($portalFaviconUrl, 'attr') ?>"
     >
 
     <link
         rel="stylesheet"
-        href="<?= base_url('assets/css/app.css') ?>"
+        href="<?= base_url('assets/css/app.css') ?>?v=<?= esc($portalStylesheetVersion, 'attr') ?>"
     >
 </head>
 
@@ -283,6 +307,14 @@ $todayLabel =
     <symbol id="icon-chevron" viewBox="0 0 24 24">
         <path d="m9 6 6 6-6 6"></path>
     </symbol>
+
+    <symbol id="icon-settings" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="3"></circle>
+
+        <path
+            d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3A1.7 1.7 0 0 0 10 3V2.8h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z"
+        ></path>
+    </symbol>
 </svg>
 
 <div class="garda-admin-shell">
@@ -304,12 +336,12 @@ $todayLabel =
                 class="garda-admin-brand-link"
             >
                 <img
-                    src="<?= base_url('assets/img/logo-rw01.png') ?>"
-                    alt="Logo GARDA 01"
+                    src="<?= esc($portalLogoUrl, 'attr') ?>"
+                    alt="Logo <?= esc($portalOrganizationName) ?>"
                 >
 
                 <div class="garda-admin-brand-copy">
-                    <strong>GARDA 01</strong>
+                    <strong><?= esc($portalOrganizationName) ?></strong>
                     <span>Portal Manajemen</span>
                 </div>
             </a>
@@ -446,6 +478,19 @@ $todayLabel =
                     </svg>
 
                     <span>Program GARDA 01</span>
+                </a>
+
+                <a
+                    href="<?= base_url('/settings/website') ?>"
+                    class="garda-admin-nav-link
+                    <?= $isActive(['settings']) ?>"
+                    title="Pengaturan Website"
+                >
+                    <svg aria-hidden="true">
+                        <use href="#icon-settings"></use>
+                    </svg>
+
+                    <span>Pengaturan Website</span>
                 </a>
 
                 <a

@@ -1,15 +1,6 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
+<?= $this->extend('layouts/public') ?>
 
-    <title><?= esc($title) ?></title>
-
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link rel="stylesheet" href="<?= base_url('assets/css/app.css') ?>">
-</head>
-<body>
+<?= $this->section('content') ?>
 
 <?php
 $officialName = static function (array $official): string {
@@ -67,14 +58,7 @@ foreach ($officials as $official) {
 }
 ?>
 
-<div class="public-site officials-public-page">
-
-    <?= view('partials/public_navbar', [
-        'activePage' => 'officials',
-    ]) ?>
-
-    <main>
-
+<div class="officials-public-page">
         <section class="officials-hero">
             <div class="officials-hero-copy">
                 <span class="public-kicker">Struktur Organisasi</span>
@@ -107,8 +91,8 @@ foreach ($officials as $official) {
 
             <div class="officials-hero-emblem">
                 <img
-                    src="<?= base_url('assets/img/logo-rw01.png') ?>"
-                    alt="Logo Karang Taruna RW 01"
+                    src="<?= esc(site_asset_url('site_logo', 'assets/img/logo-rw01.png'), 'attr') ?>"
+                    alt="Logo <?= esc(site_setting('organization_name', 'GARDA 01')) ?>"
                 >
 
                 <strong>Karang Taruna RW 01</strong>
@@ -405,7 +389,7 @@ foreach ($officials as $official) {
         <section class="officials-public-cta">
             <div class="officials-public-cta-icon">
                 <img
-                    src="<?= base_url('assets/img/logo-rw01.png') ?>"
+                    src="<?= esc(site_asset_url('site_logo', 'assets/img/logo-rw01.png'), 'attr') ?>"
                     alt=""
                 >
             </div>
@@ -425,12 +409,11 @@ foreach ($officials as $official) {
                 Masuk Sistem
             </a>
         </section>
-
-    </main>
-
-    <?= view('partials/public_footer') ?>
 </div>
 
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const carousel = document.getElementById('officialsCarousel');
@@ -575,6 +558,4 @@ document.addEventListener('DOMContentLoaded', function () {
     updateCarouselState();
 });
 </script>
-
-</body>
-</html>
+<?= $this->endSection() ?>

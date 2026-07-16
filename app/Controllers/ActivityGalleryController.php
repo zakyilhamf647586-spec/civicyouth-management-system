@@ -95,12 +95,23 @@ class ActivityGalleryController extends BaseController
 
         $directory = FCPATH . 'uploads/activities';
 
-        if (!is_dir($directory)) {
-            mkdir($directory, 0775, true);
+        if (
+            !is_dir($directory)
+            && !mkdir($directory, 0775, true)
+            && !is_dir($directory)
+        ) {
+            return redirect()->back()
+                ->with(
+                    'error',
+                    'Folder penyimpanan galeri tidak dapat dibuat.'
+                );
         }
 
         $uploadedFiles = [];
         $firstNewFile  = null;
+        $database      = db_connect();
+
+        $database->transBegin();
 
         try {
             foreach ($validFiles as $file) {
@@ -138,34 +149,53 @@ class ActivityGalleryController extends BaseController
                 $newName = $file->getRandomName();
                 $file->move($directory, $newName);
 
+                if (!is_file($directory . DIRECTORY_SEPARATOR . $newName)) {
+                    throw new \RuntimeException(
+                        'Salah satu foto gagal disimpan.'
+                    );
+                }
+
                 $uploadedFiles[] = $newName;
                 $firstNewFile ??= $newName;
-
                 $nextOrder++;
 
                 $isCover = empty($existingCover)
                     && $firstNewFile === $newName;
 
-                $this->imageModel->insert([
-                    'activity_id'  => $activityId,
-                    'image_file'   => $newName,
-                    'caption'      => null,
-                    'is_cover'     => $isCover ? 1 : 0,
-                    'display_order'=> $nextOrder,
+                $insertedId = $this->imageModel->insert([
+                    'activity_id'   => $activityId,
+                    'image_file'    => $newName,
+                    'caption'       => null,
+                    'is_cover'      => $isCover ? 1 : 0,
+                    'display_order' => $nextOrder,
                 ]);
+
+                if ($insertedId === false) {
+                    throw new \RuntimeException(
+                        'Data salah satu foto gagal disimpan.'
+                    );
+                }
 
                 if ($isCover) {
                     $existingCover = [
                         'image_file' => $newName,
                     ];
 
-                    $this->activityModel->update(
+                    if (!$this->activityModel->update(
                         $activityId,
-                        [
-                            'documentation_file' => $newName,
-                        ]
-                    );
+                        ['documentation_file' => $newName]
+                    )) {
+                        throw new \RuntimeException(
+                            'Foto utama kegiatan gagal diperbarui.'
+                        );
+                    }
                 }
+            }
+
+            if (!$database->transCommit()) {
+                throw new \RuntimeException(
+                    'Transaksi upload galeri gagal disimpan.'
+                );
             }
 
             return redirect()
@@ -175,19 +205,25 @@ class ActivityGalleryController extends BaseController
                     count($uploadedFiles)
                     . ' foto berhasil ditambahkan.'
                 );
-        } catch (\RuntimeException $e) {
+        } catch (\Throwable $exception) {
+            $database->transRollback();
+
             foreach ($uploadedFiles as $uploadedFile) {
                 $filePath = $directory
                     . DIRECTORY_SEPARATOR
-                    . $uploadedFile;
+                    . basename($uploadedFile);
 
                 if (is_file($filePath)) {
                     unlink($filePath);
                 }
             }
 
+            $message = $exception instanceof \RuntimeException
+                ? $exception->getMessage()
+                : 'Galeri gagal diunggah. Silakan coba kembali.';
+
             return redirect()->back()
-                ->with('error', $e->getMessage());
+                ->with('error', $message);
         }
     }
 

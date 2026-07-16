@@ -359,7 +359,10 @@ class PublicController extends BaseController
             ->findAll();
 
         return view('public/officials', [
-            'title'     => 'Struktur Pengurus Karang Taruna RW 01',
+            'title' => 'Pengurus GARDA 01 | Karang Taruna RW 01',
+            'metaDescription' =>
+                'Struktur dan profil pengurus GARDA 01, Karang Taruna RW 01 Kelurahan Randugarut.',
+            'activePage' => 'officials',
             'officials' => $officials,
         ]);
     }

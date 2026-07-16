@@ -113,11 +113,17 @@
                         </td>
                         <td>
                             <a href="<?= base_url('/members/edit/' . $member['id']) ?>" class="btn btn-warning">Edit</a>
-                            <a href="<?= base_url('/members/delete/' . $member['id']) ?>"
-                               class="btn btn-danger"
-                               onclick="return confirm('Yakin ingin menghapus data ini?')">
-                                Hapus
-                            </a>
+                            <form
+                                action="<?= base_url('/members/delete/' . $member['id']) ?>"
+                                method="post"
+                                class="inline-action-form"
+                                onsubmit="return confirm('Yakin ingin menghapus data ini?')"
+                            >
+                                <?= csrf_field() ?>
+                                <button type="submit" class="btn btn-danger">
+                                    Hapus
+                                </button>
+                            </form>
                         </td>
                     </tr>
                 <?php endforeach; ?>

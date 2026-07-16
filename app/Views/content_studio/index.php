@@ -65,11 +65,17 @@
                         <td><?= esc($post['created_at'] ?? '-') ?></td>
                         <td>
                             <a href="<?= base_url('/content-studio/show/' . $post['id']) ?>" class="btn btn-primary">Buka</a>
-                            <a href="<?= base_url('/content-studio/delete/' . $post['id']) ?>"
-                               class="btn btn-danger"
-                               onclick="return confirm('Yakin ingin menghapus konten ini?')">
-                                Hapus
-                            </a>
+                            <form
+                                action="<?= base_url('/content-studio/delete/' . $post['id']) ?>"
+                                method="post"
+                                class="inline-action-form"
+                                onsubmit="return confirm('Yakin ingin menghapus konten ini?')"
+                            >
+                                <?= csrf_field() ?>
+                                <button type="submit" class="btn btn-danger">
+                                    Hapus
+                                </button>
+                            </form>
                         </td>
                     </tr>
                 <?php endforeach; ?>

@@ -31,8 +31,8 @@
 
     <aside class="contact-public-identity">
         <img
-            src="<?= base_url('assets/img/logo-rw01.png') ?>"
-            alt="Logo GARDA 01"
+            src="<?= esc(site_asset_url('site_logo', 'assets/img/logo-rw01.png'), 'attr') ?>"
+            alt="Logo <?= esc(site_setting('organization_name', 'GARDA 01')) ?>"
         >
 
         <span>Kanal Resmi Organisasi</span>

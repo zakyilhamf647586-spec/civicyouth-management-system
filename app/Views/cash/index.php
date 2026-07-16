@@ -126,11 +126,17 @@
                         <td><?= esc($transaction['created_by'] ?? '-') ?></td>
                         <td>
                             <a href="<?= base_url('/cash/edit/' . $transaction['id']) ?>" class="btn btn-warning">Edit</a>
-                            <a href="<?= base_url('/cash/delete/' . $transaction['id']) ?>"
-                               class="btn btn-danger"
-                               onclick="return confirm('Yakin ingin menghapus transaksi ini?')">
-                                Hapus
-                            </a>
+                            <form
+                                action="<?= base_url('/cash/delete/' . $transaction['id']) ?>"
+                                method="post"
+                                class="inline-action-form"
+                                onsubmit="return confirm('Yakin ingin menghapus transaksi ini?')"
+                            >
+                                <?= csrf_field() ?>
+                                <button type="submit" class="btn btn-danger">
+                                    Hapus
+                                </button>
+                            </form>
                         </td>
                     </tr>
                 <?php endforeach; ?>

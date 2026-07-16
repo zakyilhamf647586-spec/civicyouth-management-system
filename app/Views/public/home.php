@@ -240,8 +240,12 @@ $impactHasImage = $activityHasImage(
                 <div class="garda-home-featured-empty">
 
                     <img
-                        src="<?= base_url(
-                            'assets/img/logo-rw01.png'
+                        src="<?= esc(
+                            site_asset_url(
+                                'site_logo',
+                                'assets/img/logo-rw01.png'
+                            ),
+                            'attr'
                         ) ?>"
                         alt=""
                     >
