@@ -8809,3 +8809,805 @@ textarea {
         grid-column: 2;
     }
 }
+
+/* ==========================================
+   GARDA 01 Portal — Premium Login Gateway
+========================================== */
+
+.garda-login-body {
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+    color: #102a43;
+    background: #f7f3e9;
+}
+
+.garda-login-body *,
+.garda-login-body *::before,
+.garda-login-body *::after {
+    box-sizing: border-box;
+}
+
+.garda-login-shell {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1.12fr)
+        minmax(460px, 0.88fr);
+}
+
+/* Brand panel */
+
+.garda-login-brand-panel {
+    position: relative;
+    min-height: 100vh;
+    padding: 34px 46px 30px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    color: #ffffff;
+    background:
+        radial-gradient(
+            circle at 92% 4%,
+            rgba(217, 163, 22, 0.25),
+            transparent 30%
+        ),
+        radial-gradient(
+            circle at 5% 96%,
+            rgba(217, 163, 22, 0.10),
+            transparent 27%
+        ),
+        linear-gradient(
+            145deg,
+            #031327 0%,
+            #061f3b 55%,
+            #082d50 100%
+        );
+    border-right: 1px solid rgba(217, 163, 22, 0.30);
+}
+
+.garda-login-brand-glow {
+    position: absolute;
+    top: 12%;
+    right: -170px;
+    width: 430px;
+    height: 430px;
+    border: 1px solid rgba(231, 187, 71, 0.15);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.garda-login-brand-glow::before,
+.garda-login-brand-glow::after {
+    content: "";
+    position: absolute;
+    border: 1px solid rgba(231, 187, 71, 0.10);
+    border-radius: 50%;
+}
+
+.garda-login-brand-glow::before {
+    inset: 48px;
+}
+
+.garda-login-brand-glow::after {
+    inset: 102px;
+}
+
+.garda-login-brand-watermark {
+    position: absolute;
+    right: -40px;
+    bottom: -55px;
+    color: rgba(255, 255, 255, 0.025);
+    font-size: clamp(190px, 24vw, 360px);
+    font-weight: 900;
+    line-height: 0.78;
+    letter-spacing: -22px;
+    pointer-events: none;
+    user-select: none;
+}
+
+.garda-login-brand-header {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.garda-login-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 13px;
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.garda-login-brand img {
+    width: 56px;
+    height: 56px;
+    padding: 4px;
+    object-fit: contain;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 1px solid rgba(231, 187, 71, 0.84);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.16);
+}
+
+.garda-login-brand div {
+    display: flex;
+    flex-direction: column;
+}
+
+.garda-login-brand strong {
+    color: #ffffff;
+    font-size: 21px;
+    font-weight: 900;
+    letter-spacing: 0.8px;
+}
+
+.garda-login-brand span {
+    margin-top: 5px;
+    color: #e7bb47;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.garda-login-public-link {
+    min-height: 40px;
+    padding: 9px 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255, 255, 255, 0.78);
+    border: 1px solid rgba(255, 255, 255, 0.17);
+    border-radius: 11px;
+    background: rgba(255, 255, 255, 0.055);
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 800;
+    transition:
+        color 0.18s ease,
+        background 0.18s ease,
+        border-color 0.18s ease,
+        transform 0.18s ease;
+}
+
+.garda-login-public-link svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.garda-login-public-link:hover {
+    color: #04172d;
+    background: #e7bb47;
+    border-color: #e7bb47;
+    transform: translateY(-2px);
+}
+
+.garda-login-brand-content {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 720px;
+    margin: auto 0;
+    padding: 55px 0;
+}
+
+.garda-login-eyebrow {
+    display: block;
+    color: #e7bb47;
+    font-size: 10.5px;
+    font-weight: 900;
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+}
+
+.garda-login-brand-content h1 {
+    max-width: 760px;
+    margin: 20px 0 20px;
+    color: #ffffff;
+    font-size: clamp(43px, 5.4vw, 72px);
+    line-height: 1.04;
+    letter-spacing: -2px;
+}
+
+.garda-login-brand-content > p {
+    max-width: 690px;
+    margin: 0;
+    color: rgba(219, 231, 244, 0.79);
+    font-size: 14.5px;
+    line-height: 1.85;
+}
+
+.garda-login-values {
+    max-width: 700px;
+    margin-top: 35px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.garda-login-values article {
+    min-height: 105px;
+    padding: 17px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.055);
+    backdrop-filter: blur(10px);
+}
+
+.garda-login-values article > span {
+    color: #e7bb47;
+    font-size: 10px;
+    font-weight: 900;
+}
+
+.garda-login-values strong {
+    display: block;
+    color: #ffffff;
+    font-size: 14px;
+}
+
+.garda-login-values small {
+    display: block;
+    margin-top: 6px;
+    color: rgba(219, 231, 244, 0.59);
+    font-size: 9.5px;
+    line-height: 1.5;
+}
+
+.garda-login-brand-footer {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    color: rgba(255, 255, 255, 0.53);
+}
+
+.garda-login-brand-footer div {
+    display: flex;
+    flex-direction: column;
+}
+
+.garda-login-brand-footer div > span {
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 900;
+}
+
+.garda-login-brand-footer small {
+    margin-top: 4px;
+    color: rgba(255, 255, 255, 0.46);
+    font-size: 9.5px;
+}
+
+.garda-login-brand-footer p {
+    margin: 0;
+    font-size: 9.5px;
+}
+
+/* Form panel */
+
+.garda-login-form-panel {
+    min-height: 100vh;
+    padding: 38px clamp(28px, 5vw, 80px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background:
+        radial-gradient(
+            circle at 100% 0%,
+            rgba(217, 163, 22, 0.09),
+            transparent 29%
+        ),
+        #f7f3e9;
+}
+
+.garda-login-mobile-brand {
+    display: none;
+}
+
+.garda-login-card {
+    width: 100%;
+    max-width: 495px;
+    padding: 39px;
+    border: 1px solid rgba(16, 42, 67, 0.08);
+    border-top: 5px solid #d9a316;
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow:
+        0 30px 85px rgba(4, 23, 45, 0.13),
+        0 8px 25px rgba(4, 23, 45, 0.05);
+}
+
+.garda-login-card-heading {
+    margin-bottom: 28px;
+}
+
+.garda-login-card-kicker {
+    display: block;
+    color: #b88408;
+    font-size: 9.5px;
+    font-weight: 900;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+
+.garda-login-card-heading h2 {
+    margin: 9px 0 10px;
+    color: #04172d;
+    font-size: clamp(27px, 3vw, 34px);
+    line-height: 1.15;
+    letter-spacing: -0.5px;
+}
+
+.garda-login-card-heading p {
+    margin: 0;
+    color: #627d98;
+    font-size: 12.5px;
+    line-height: 1.7;
+}
+
+/* Alerts */
+
+.garda-login-alert {
+    margin-bottom: 21px;
+    padding: 13px 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    border-radius: 13px;
+    font-size: 11.5px;
+    line-height: 1.55;
+}
+
+.garda-login-alert svg {
+    width: 19px;
+    height: 19px;
+    flex-shrink: 0;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.garda-login-alert p {
+    margin: 0;
+}
+
+.garda-login-alert p + p {
+    margin-top: 4px;
+}
+
+.garda-login-alert.error {
+    color: #842029;
+    background: #fbeaec;
+    border: 1px solid #f2c4ca;
+}
+
+.garda-login-alert.success {
+    color: #0f5132;
+    background: #e7f4ed;
+    border: 1px solid #badbcc;
+}
+
+/* Form fields */
+
+.garda-login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 19px;
+}
+
+.garda-login-field label {
+    display: block;
+    margin-bottom: 8px;
+    color: #102a43;
+    font-size: 11px;
+    font-weight: 850;
+}
+
+.garda-login-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.garda-login-label-row label {
+    margin-bottom: 8px;
+}
+
+.garda-login-label-row > span {
+    margin-bottom: 8px;
+    color: #829ab1;
+    font-size: 9.5px;
+}
+
+.garda-login-input-wrapper {
+    position: relative;
+}
+
+.garda-login-input-wrapper > svg {
+    position: absolute;
+    top: 50%;
+    left: 15px;
+    width: 18px;
+    height: 18px;
+    color: #829ab1;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transform: translateY(-50%);
+    pointer-events: none;
+    transition: color 0.18s ease;
+}
+
+.garda-login-input-wrapper input {
+    width: 100%;
+    height: 51px;
+    padding: 0 47px 0 46px;
+    color: #102a43;
+    background: #f8fafc;
+    border: 1px solid #d9e2ec;
+    border-radius: 13px;
+    outline: none;
+    font: inherit;
+    font-size: 12.5px;
+    transition:
+        background 0.18s ease,
+        border-color 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+.garda-login-input-wrapper input::placeholder {
+    color: #9fb3c8;
+}
+
+.garda-login-input-wrapper input:hover {
+    border-color: #bcccdc;
+}
+
+.garda-login-input-wrapper input:focus {
+    background: #ffffff;
+    border-color: #d9a316;
+    box-shadow: 0 0 0 4px rgba(217, 163, 22, 0.12);
+}
+
+.garda-login-input-wrapper:focus-within > svg {
+    color: #b88408;
+}
+
+.garda-login-password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 9px;
+    width: 36px;
+    height: 36px;
+    padding: 8px;
+    color: #829ab1;
+    background: transparent;
+    border: none;
+    border-radius: 9px;
+    cursor: pointer;
+    transform: translateY(-50%);
+}
+
+.garda-login-password-toggle:hover {
+    color: #04172d;
+    background: #edf2f7;
+}
+
+.garda-login-password-toggle svg {
+    width: 100%;
+    height: 100%;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.garda-password-eye-closed {
+    display: none;
+}
+
+.garda-login-password-toggle.password-visible
+.garda-password-eye-open {
+    display: none;
+}
+
+.garda-login-password-toggle.password-visible
+.garda-password-eye-closed {
+    display: block;
+}
+
+/* Submit */
+
+.garda-login-submit {
+    position: relative;
+    width: 100%;
+    min-height: 51px;
+    margin-top: 3px;
+    padding: 12px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    overflow: hidden;
+    color: #ffffff;
+    background:
+        linear-gradient(
+            135deg,
+            #04172d,
+            #082f55
+        );
+    border: 1px solid rgba(217, 163, 22, 0.34);
+    border-radius: 13px;
+    box-shadow: 0 13px 30px rgba(4, 23, 45, 0.18);
+    cursor: pointer;
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 900;
+    transition:
+        color 0.18s ease,
+        background 0.18s ease,
+        transform 0.18s ease,
+        box-shadow 0.18s ease;
+}
+
+.garda-login-submit:hover:not(:disabled) {
+    color: #04172d;
+    background: #e7bb47;
+    border-color: #e7bb47;
+    transform: translateY(-2px);
+    box-shadow: 0 17px 35px rgba(4, 23, 45, 0.20);
+}
+
+.garda-login-submit:disabled {
+    cursor: wait;
+    opacity: 0.82;
+}
+
+.garda-login-submit-arrow {
+    position: absolute;
+    right: 17px;
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: transform 0.18s ease;
+}
+
+.garda-login-submit:hover
+.garda-login-submit-arrow {
+    transform: translateX(3px);
+}
+
+.garda-login-submit-loader {
+    width: 17px;
+    height: 17px;
+    display: none;
+    border: 2px solid rgba(255, 255, 255, 0.32);
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: gardaLoginSpin 0.75s linear infinite;
+}
+
+.garda-login-submit.loading
+.garda-login-submit-loader {
+    display: inline-block;
+}
+
+.garda-login-submit.loading
+.garda-login-submit-arrow {
+    display: none;
+}
+
+@keyframes gardaLoginSpin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Security note */
+
+.garda-login-security-note {
+    margin-top: 25px;
+    padding: 15px;
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    border-radius: 13px;
+    background: #fff9e9;
+    border-left: 4px solid #d9a316;
+}
+
+.garda-login-security-note > svg {
+    width: 21px;
+    height: 21px;
+    flex-shrink: 0;
+    color: #b88408;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.garda-login-security-note strong {
+    display: block;
+    color: #102a43;
+    font-size: 10.5px;
+}
+
+.garda-login-security-note p {
+    margin: 5px 0 0;
+    color: #627d98;
+    font-size: 9.5px;
+    line-height: 1.55;
+}
+
+.garda-login-form-footer {
+    width: 100%;
+    max-width: 495px;
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.garda-login-form-footer a {
+    color: #486581;
+    text-decoration: none;
+    font-size: 10.5px;
+    font-weight: 750;
+}
+
+.garda-login-form-footer a:hover {
+    color: #b88408;
+}
+
+.garda-login-form-footer span {
+    color: #9fb3c8;
+    font-size: 9.5px;
+    font-weight: 750;
+}
+
+/* Responsive */
+
+@media (max-width: 1080px) {
+    .garda-login-shell {
+        grid-template-columns:
+            minmax(0, 0.95fr)
+            minmax(430px, 1.05fr);
+    }
+
+    .garda-login-brand-panel {
+        padding-inline: 34px;
+    }
+
+    .garda-login-values {
+        grid-template-columns: 1fr;
+    }
+
+    .garda-login-values article {
+        min-height: 78px;
+    }
+
+    .garda-login-brand-content h1 {
+        font-size: 48px;
+    }
+}
+
+@media (max-width: 840px) {
+    .garda-login-shell {
+        display: block;
+    }
+
+    .garda-login-brand-panel {
+        display: none;
+    }
+
+    .garda-login-form-panel {
+        min-height: 100vh;
+        padding: 28px 20px;
+    }
+
+    .garda-login-mobile-brand {
+        width: 100%;
+        max-width: 495px;
+        margin-bottom: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+    }
+
+    .garda-login-mobile-brand img {
+        width: 51px;
+        height: 51px;
+        padding: 3px;
+        object-fit: contain;
+        border-radius: 50%;
+        background: #ffffff;
+        border: 1px solid #d9a316;
+    }
+
+    .garda-login-mobile-brand div {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .garda-login-mobile-brand strong {
+        color: #04172d;
+        font-size: 19px;
+        font-weight: 900;
+        letter-spacing: 0.5px;
+    }
+
+    .garda-login-mobile-brand span {
+        margin-top: 4px;
+        color: #b88408;
+        font-size: 10px;
+        font-weight: 750;
+    }
+}
+
+@media (max-width: 540px) {
+    .garda-login-form-panel {
+        justify-content: flex-start;
+        padding: 22px 15px;
+    }
+
+    .garda-login-card {
+        padding: 29px 21px;
+        border-radius: 20px;
+    }
+
+    .garda-login-card-heading h2 {
+        font-size: 28px;
+    }
+
+    .garda-login-form-footer {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .garda-login-label-row {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .garda-login-body *,
+    .garda-login-body *::before,
+    .garda-login-body *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
