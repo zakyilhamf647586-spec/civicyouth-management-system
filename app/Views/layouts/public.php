@@ -117,9 +117,12 @@ $publicStylesheets = [
     <?php foreach ($publicStylesheets as $stylesheet) : ?>
         <?php
         $stylesheetPath = FCPATH . $stylesheet;
-        $stylesheetVersion = is_file($stylesheetPath)
-            ? (string) filemtime($stylesheetPath)
-            : '1';
+
+        if (!is_file($stylesheetPath)) {
+            continue;
+        }
+
+        $stylesheetVersion = (string) filemtime($stylesheetPath);
         ?>
         <link
             rel="stylesheet"

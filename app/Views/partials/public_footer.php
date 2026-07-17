@@ -42,14 +42,14 @@ $footerCopyright = site_setting(
 
 $contactEmail = trim((string) site_setting('contact_email', ''));
 $contactWhatsapp = trim((string) site_setting('contact_whatsapp', ''));
-$contactAddress = site_setting(
+$contactAddress = trim((string) site_setting(
     'contact_address',
     'RW 01 Kelurahan Randugarut'
-);
-$contactVillage = site_setting('contact_village', 'Randugarut');
-$contactDistrict = site_setting('contact_district', 'Tugu');
-$contactCity = site_setting('contact_city', 'Kota Semarang');
-$contactProvince = site_setting('contact_province', 'Jawa Tengah');
+));
+$contactVillage = trim((string) site_setting('contact_village', 'Randugarut'));
+$contactDistrict = trim((string) site_setting('contact_district', 'Tugu'));
+$contactCity = trim((string) site_setting('contact_city', 'Kota Semarang'));
+$contactProvince = trim((string) site_setting('contact_province', 'Jawa Tengah'));
 
 $instagramUrl = trim((string) site_setting('instagram_url', ''));
 $tiktokUrl = trim((string) site_setting('tiktok_url', ''));
@@ -128,6 +128,49 @@ $otherSocials = array_values(array_filter([
         'url' => $facebookUrl,
     ] : null,
 ]));
+
+$locationDescription = trim((string) site_setting(
+    'contact_location_description',
+    'Basis gerakan pemuda GARDA 01 di wilayah Randugarut.'
+));
+
+$mapQueryParts = array_values(array_filter([
+    $contactAddress,
+    $contactVillage !== '' ? 'Kelurahan ' . $contactVillage : '',
+    $contactDistrict !== '' ? 'Kecamatan ' . $contactDistrict : '',
+    $contactCity,
+    $contactProvince,
+]));
+
+$mapQuery = implode(', ', array_unique($mapQueryParts));
+$mapsUrl = trim((string) site_setting('contact_maps_url', ''));
+
+if ($mapsUrl === '') {
+    $mapsUrl = 'https://www.google.com/maps/search/?api=1&query='
+        . rawurlencode($mapQuery);
+}
+
+$cityChip = preg_replace(
+    '/^(Kota|Kabupaten)\s+/i',
+    '',
+    $contactCity
+) ?: $contactCity;
+
+$locationTags = array_values(array_unique(array_filter([
+    'RW 01',
+    $contactVillage,
+    $contactDistrict,
+    $cityChip,
+])));
+
+$mapLabelParts = array_values(array_filter([
+    $contactVillage,
+    $contactDistrict,
+]));
+
+$mapLabel = $mapLabelParts !== []
+    ? implode(', ', $mapLabelParts)
+    : 'Randugarut, Tugu';
 ?>
 
 <footer class="g01-footer">
@@ -180,19 +223,80 @@ $otherSocials = array_values(array_filter([
                 <a href="<?= base_url('/kontak') ?>">Kontak & Kolaborasi</a>
             </nav>
 
-            <section class="g01-footer__column g01-footer__organization">
-                <h2>Organisasi</h2>
+            <section class="g01-footer__location">
+                <h2>Organisasi & Lokasi</h2>
 
-                <strong><?= esc($organizationLegalName) ?></strong>
+                <div class="g01-footer__location-card">
+                    <div class="g01-footer__location-heading">
+                        <span class="g01-footer__location-icon">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M12 21s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11Z"></path>
+                                <circle cx="12" cy="10" r="2.2"></circle>
+                            </svg>
+                        </span>
 
-                <p><?= nl2br(esc($contactAddress)) ?></p>
+                        <span class="g01-footer__location-copy">
+                            <strong><?= esc($organizationLegalName) ?></strong>
+                            <small><?= esc($locationDescription) ?></small>
+                        </span>
+                    </div>
 
-                <address>
-                    Kelurahan <?= esc($contactVillage) ?><br>
-                    Kecamatan <?= esc($contactDistrict) ?><br>
-                    <?= esc($contactCity) ?><br>
-                    <?= esc($contactProvince) ?>
-                </address>
+                    <div class="g01-footer__location-address">
+                        <span><?= esc($contactAddress) ?></span>
+
+                        <?php if ($contactDistrict !== '') : ?>
+                            <span>Kecamatan <?= esc($contactDistrict) ?></span>
+                        <?php endif; ?>
+
+                        <?php if ($contactCity !== '') : ?>
+                            <span><?= esc($contactCity) ?></span>
+                        <?php endif; ?>
+
+                        <?php if ($contactProvince !== '') : ?>
+                            <span><?= esc($contactProvince) ?></span>
+                        <?php endif; ?>
+                    </div>
+
+                    <div class="g01-footer__location-tags">
+                        <?php foreach ($locationTags as $tag) : ?>
+                            <span><?= esc($tag) ?></span>
+                        <?php endforeach; ?>
+                    </div>
+                </div>
+
+                <a
+                    href="<?= esc($mapsUrl, 'attr') ?>"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="g01-footer__map-preview"
+                    aria-label="Buka lokasi <?= esc($organizationName) ?> di Google Maps"
+                >
+                    <span class="g01-footer__map-visual">
+                        <span class="g01-footer__map-road road-one"></span>
+                        <span class="g01-footer__map-road road-two"></span>
+                        <span class="g01-footer__map-road road-three"></span>
+
+                        <span class="g01-footer__map-pin">
+                            <svg viewBox="0 0 24 24" aria-hidden="true">
+                                <path d="M12 21s6-5.1 6-11a6 6 0 1 0-12 0c0 5.9 6 11 6 11Z"></path>
+                                <circle cx="12" cy="10" r="2.1"></circle>
+                            </svg>
+                        </span>
+
+                        <span class="g01-footer__map-label">
+                            <?= esc($mapLabel) ?>
+                        </span>
+                    </span>
+
+                    <span class="g01-footer__map-action">
+                        <span>
+                            <small>Lokasi Organisasi</small>
+                            <strong>Buka di Google Maps</strong>
+                        </span>
+
+                        <span aria-hidden="true">↗</span>
+                    </span>
+                </a>
             </section>
 
             <section class="g01-footer__contact">
