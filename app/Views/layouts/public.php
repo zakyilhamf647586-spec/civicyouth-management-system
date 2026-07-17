@@ -41,10 +41,11 @@ $organizationName = site_setting(
 $activePage = $activePage ?? '';
 $currentUrl = current_url();
 
-$stylesheetPath = FCPATH . 'assets/css/app.css';
-$stylesheetVersion = is_file($stylesheetPath)
-    ? (string) filemtime($stylesheetPath)
-    : '1';
+$publicStylesheets = [
+    'assets/css/app.css',
+    'assets/css/public-footer-refinement.css',
+    'assets/css/public-home-impact.css',
+];
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -113,13 +114,21 @@ $stylesheetVersion = is_file($stylesheetPath)
         href="<?= esc($faviconUrl, 'attr') ?>"
     >
 
-    <link
-        rel="stylesheet"
-        href="<?= base_url('assets/css/app.css') ?>?v=<?= esc(
-            $stylesheetVersion,
-            'attr'
-        ) ?>"
-    >
+    <?php foreach ($publicStylesheets as $stylesheet) : ?>
+        <?php
+        $stylesheetPath = FCPATH . $stylesheet;
+        $stylesheetVersion = is_file($stylesheetPath)
+            ? (string) filemtime($stylesheetPath)
+            : '1';
+        ?>
+        <link
+            rel="stylesheet"
+            href="<?= base_url($stylesheet) ?>?v=<?= esc(
+                $stylesheetVersion,
+                'attr'
+            ) ?>"
+        >
+    <?php endforeach; ?>
 
     <?= $this->renderSection('head') ?>
 </head>

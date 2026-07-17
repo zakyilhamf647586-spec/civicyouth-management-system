@@ -475,86 +475,83 @@ $impactHasImage = $activityHasImage(
 
     <!-- CERITA DAMPAK -->
     <?php if (!empty($impactActivity)) : ?>
+        <?php
+        $impactProgramName = $impactActivity['program_name']
+            ?? 'GARDA 01';
 
-        <section class="garda-home-impact">
+        $impactProgramLabel = $impactActivity['program_label']
+            ?? 'Gerakan Pemuda';
 
-            <div class="garda-home-impact-media">
+        $impactSummary = trim(
+            (string) ($impactActivity['result'] ?? '')
+        );
 
+        if (mb_strlen($impactSummary) < 60) {
+            $impactSummary = trim(
+                (string) ($impactActivity['description'] ?? '')
+            );
+        }
+
+        if (mb_strlen($impactSummary) < 60) {
+            $impactSummary =
+                'Gerakan bersama pemuda dan warga untuk menghadirkan manfaat nyata, memperkuat kepedulian, serta menjaga kebersamaan di lingkungan RW 01 Randugarut.';
+        }
+        ?>
+
+        <section class="g01-impact-story">
+            <div class="g01-impact-story__media">
                 <?php if ($impactHasImage) : ?>
                     <img
                         src="<?= base_url(
                             'uploads/activities/'
                             . $impactActivity['documentation_file']
                         ) ?>"
-                        alt="<?= esc(
-                            $impactActivity['title']
-                        ) ?>"
+                        alt="<?= esc($impactActivity['title']) ?>"
                         loading="lazy"
                     >
                 <?php else : ?>
-                    <div
-                        class="garda-home-activity-fallback
-                        program-<?= esc(
-                            $programClass(
-                                $impactActivity['program_slug']
-                                ?? null
-                            )
-                        ) ?>"
-                    >
-                        <span>
-                            <?= esc(
-                                $impactActivity['program_name']
-                                ?? 'GARDA 01'
-                            ) ?>
-                        </span>
-
+                    <div class="g01-impact-story__fallback">
+                        <span><?= esc($impactProgramName) ?></span>
                         <strong>Cerita Dampak</strong>
-
-                        <small>
-                            Guyub • Bergerak • Berdampak
-                        </small>
+                        <small>Guyub • Bergerak • Berdampak</small>
                     </div>
                 <?php endif; ?>
 
+                <div class="g01-impact-story__media-label">
+                    <span><?= esc($impactProgramName) ?></span>
+                    <small><?= esc($impactProgramLabel) ?></small>
+                </div>
             </div>
 
-            <div class="garda-home-impact-content">
-
-                <span class="public-kicker">
+            <div class="g01-impact-story__content">
+                <span class="g01-impact-story__eyebrow">
                     Cerita Dampak
                 </span>
 
-                <?php if (
-                    !empty($impactActivity['program_name'])
-                ) : ?>
-                    <span class="garda-home-impact-program">
-                        <?= esc(
-                            $impactActivity['program_name']
-                        ) ?>
-                    </span>
-                <?php endif; ?>
+                <span class="g01-impact-story__program">
+                    <?= esc($impactProgramName) ?>
+                </span>
 
-                <h2>
-                    <?= esc($impactActivity['title']) ?>
-                </h2>
+                <h2><?= esc($impactActivity['title']) ?></h2>
 
-                <p>
+                <p class="g01-impact-story__summary">
                     <?= esc(
                         mb_strimwidth(
-                            (string) (
-                                $impactActivity['result']
-                                ?: $impactActivity['description']
-                                ?: 'Kegiatan pemuda GARDA 01 sebagai bentuk kontribusi nyata bagi lingkungan RW 01 Randugarut.'
-                            ),
+                            $impactSummary,
                             0,
-                            310,
+                            360,
                             '…'
                         )
                     ) ?>
                 </p>
 
-                <div class="garda-home-impact-meta">
+                <div class="g01-impact-story__meta">
                     <span>
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <rect x="3" y="5" width="18" height="16" rx="3"></rect>
+                            <path d="M7 3v4M17 3v4M3 10h18"></path>
+                        </svg>
+
                         <?= esc(
                             $formatPublicDate(
                                 $impactActivity['activity_date']
@@ -564,6 +561,11 @@ $impactHasImage = $activityHasImage(
                     </span>
 
                     <span>
+                        <svg viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"></path>
+                            <circle cx="12" cy="10" r="2.5"></circle>
+                        </svg>
+
                         <?= esc(
                             $impactActivity['location']
                             ?? 'Randugarut RW 01'
@@ -575,13 +577,19 @@ $impactHasImage = $activityHasImage(
                     href="<?= base_url(
                         '/kegiatan/' . $impactActivity['id']
                     ) ?>"
-                    class="btn btn-primary"
+                    class="g01-impact-story__button"
                 >
-                    Baca Cerita Kegiatan
+                    <span>Baca Cerita Kegiatan</span>
+                    <span aria-hidden="true">→</span>
                 </a>
 
+                <div
+                    class="g01-impact-story__watermark"
+                    aria-hidden="true"
+                >
+                    01
+                </div>
             </div>
-
         </section>
 
     <?php endif; ?>
