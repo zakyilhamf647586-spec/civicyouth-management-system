@@ -1,0 +1,201 @@
+/* ==========================================================
+   GARDA 01 Portal — Activity Workflow Responsive Fix
+   Isolated to activity workflow pages only.
+========================================================== */
+
+.activity-workflow-page {
+    min-width: 0;
+    width: 100%;
+}
+
+.activity-workflow-page .table-card {
+    min-width: 0;
+    overflow: hidden;
+}
+
+.activity-workflow-page .activity-table-scroll-hint {
+    display: none;
+    margin: 0 0 10px;
+    padding: 9px 12px;
+    color: #486581;
+    background: #f4f7fa;
+    border: 1px solid #d9e2ec;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 750;
+    line-height: 1.4;
+}
+
+.activity-workflow-page .table-responsive {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto !important;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-inline: contain;
+    touch-action: pan-x pan-y;
+    scrollbar-width: thin;
+    scrollbar-color: #8ba0b5 #edf2f7;
+}
+
+.activity-workflow-page .table-responsive::-webkit-scrollbar {
+    height: 12px;
+}
+
+.activity-workflow-page .table-responsive::-webkit-scrollbar-track {
+    background: #edf2f7;
+    border-radius: 999px;
+}
+
+.activity-workflow-page .table-responsive::-webkit-scrollbar-thumb {
+    background: #8ba0b5;
+    border: 3px solid #edf2f7;
+    border-radius: 999px;
+}
+
+.activity-workflow-page .table-responsive::-webkit-scrollbar-thumb:hover {
+    background: #486581;
+}
+
+.activity-workflow-page .table-responsive table {
+    width: max-content !important;
+    min-width: 1180px;
+    margin: 0;
+    table-layout: auto;
+}
+
+.activity-workflow-page .table-responsive th,
+.activity-workflow-page .table-responsive td {
+    vertical-align: top;
+}
+
+.activity-workflow-page .table-responsive th:nth-child(1),
+.activity-workflow-page .table-responsive td:nth-child(1) {
+    width: 48px;
+    min-width: 48px;
+    text-align: center;
+}
+
+.activity-workflow-page .table-responsive th:nth-child(2),
+.activity-workflow-page .table-responsive td:nth-child(2) {
+    width: 220px;
+    min-width: 220px;
+}
+
+.activity-workflow-page .table-responsive th:nth-child(3),
+.activity-workflow-page .table-responsive td:nth-child(3) {
+    width: 165px;
+    min-width: 165px;
+}
+
+.activity-workflow-page .table-responsive th:nth-child(4),
+.activity-workflow-page .table-responsive td:nth-child(4) {
+    width: 145px;
+    min-width: 145px;
+}
+
+.activity-workflow-page .table-responsive th:nth-child(5),
+.activity-workflow-page .table-responsive td:nth-child(5),
+.activity-workflow-page .table-responsive th:nth-child(6),
+.activity-workflow-page .table-responsive td:nth-child(6) {
+    width: 135px;
+    min-width: 135px;
+}
+
+.activity-workflow-page .table-responsive th:nth-child(7),
+.activity-workflow-page .table-responsive td:nth-child(7) {
+    width: 90px;
+    min-width: 90px;
+}
+
+.activity-workflow-page .table-responsive th:last-child,
+.activity-workflow-page .table-responsive td:last-child {
+    width: 320px;
+    min-width: 320px;
+}
+
+.activity-workflow-page .table-responsive td:last-child .btn,
+.activity-workflow-page .inline-action-form {
+    white-space: nowrap;
+}
+
+.activity-workflow-page .inline-action-form {
+    display: inline-block;
+    margin: 2px 3px 2px 0;
+    vertical-align: top;
+}
+
+.activity-workflow-page .table-responsive td:last-child > .btn {
+    margin: 2px 3px 2px 0;
+}
+
+.activity-workflow-page input[type="checkbox"] {
+    width: 18px !important;
+    min-width: 18px;
+    height: 18px !important;
+    margin: 1px 0 0;
+    padding: 0;
+    flex: 0 0 18px;
+    accent-color: #d9a316;
+}
+
+.activity-workflow-page .activity-feature-toggle {
+    display: flex !important;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 0;
+    cursor: pointer;
+}
+
+.activity-workflow-page .activity-workflow-action-panel {
+    margin-bottom: 0;
+}
+
+.activity-workflow-page .activity-workflow-action-buttons {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.activity-workflow-page .activity-workflow-action-buttons .btn {
+    margin: 0;
+    white-space: nowrap;
+}
+
+@media (max-width: 1100px) {
+    .activity-workflow-page .activity-table-scroll-hint {
+        display: block;
+    }
+}
+
+@media (max-width: 760px) {
+    .activity-workflow-page .table-responsive table {
+        min-width: 1080px;
+    }
+
+    .activity-workflow-page .activity-workflow-action-buttons {
+        align-items: stretch;
+    }
+
+    .activity-workflow-page .activity-workflow-action-buttons .btn {
+        min-height: 42px;
+        flex: 1 1 calc(50% - 8px);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        white-space: normal;
+    }
+
+    .activity-workflow-page .activity-workflow-action-buttons .btn:last-child {
+        flex-basis: 100%;
+    }
+}
+
+@media (max-width: 440px) {
+    .activity-workflow-page .activity-workflow-action-buttons .btn {
+        flex-basis: 100%;
+    }
+}

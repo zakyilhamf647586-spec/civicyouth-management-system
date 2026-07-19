@@ -1,0 +1,209 @@
+/* ==========================================================
+   GARDA 01 Portal — Global Responsive Admin Tables
+   Loaded only by the internal admin layout.
+========================================================== */
+
+:root {
+    --g01-table-border: #d9e2ec;
+    --g01-table-head: #f7f9fc;
+    --g01-table-text: #102a43;
+    --g01-table-muted: #627d98;
+    --g01-table-navy: #062744;
+    --g01-table-gold: #d9a316;
+}
+
+html,
+body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+.g01-admin-table-scroll {
+    position: relative;
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    overflow-x: auto !important;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-inline: contain;
+    scrollbar-gutter: stable;
+    touch-action: pan-x pan-y;
+    border-radius: 0 0 14px 14px;
+    outline: none;
+    scrollbar-width: auto;
+    scrollbar-color: #8aa2b8 #edf2f7;
+}
+
+.g01-admin-table-scroll:focus-visible {
+    box-shadow: inset 0 0 0 2px rgba(217, 163, 22, 0.45);
+}
+
+.g01-admin-table-scroll::-webkit-scrollbar {
+    height: 12px;
+}
+
+.g01-admin-table-scroll::-webkit-scrollbar-track {
+    background: #edf2f7;
+    border-radius: 999px;
+}
+
+.g01-admin-table-scroll::-webkit-scrollbar-thumb {
+    background: #8aa2b8;
+    border: 3px solid #edf2f7;
+    border-radius: 999px;
+}
+
+.g01-admin-table-scroll::-webkit-scrollbar-thumb:hover {
+    background: #627d98;
+}
+
+.g01-admin-table-scroll > table.g01-admin-table {
+    width: 100% !important;
+    min-width: var(--g01-table-min-width, 820px) !important;
+    margin: 0 !important;
+    border-collapse: collapse;
+    table-layout: auto;
+}
+
+.g01-admin-table th,
+.g01-admin-table td {
+    min-width: 72px;
+    vertical-align: middle;
+}
+
+.g01-admin-table th {
+    white-space: nowrap;
+}
+
+.g01-admin-table td {
+    overflow-wrap: normal;
+    word-break: normal;
+}
+
+.g01-admin-table th:nth-child(2),
+.g01-admin-table td:nth-child(2) {
+    min-width: 180px;
+}
+
+.g01-admin-table th:first-child,
+.g01-admin-table td:first-child {
+    min-width: 46px;
+    width: 46px;
+    text-align: center;
+}
+
+.g01-admin-table th:last-child,
+.g01-admin-table td:last-child {
+    min-width: 165px;
+    white-space: nowrap;
+}
+
+.g01-admin-table td:last-child > form,
+.g01-admin-table td:last-child > a,
+.g01-admin-table td:last-child > button {
+    display: inline-flex;
+    vertical-align: middle;
+    margin: 3px 2px;
+}
+
+.g01-admin-table td:last-child form {
+    align-items: center;
+}
+
+.g01-admin-table a.btn,
+.g01-admin-table button,
+.g01-admin-table input[type="submit"] {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+.g01-admin-table-hint {
+    width: 100%;
+    margin: 0 0 9px;
+    padding: 9px 12px;
+    display: none;
+    align-items: center;
+    gap: 8px;
+    color: #486581;
+    background: #f4f7fb;
+    border: 1px solid #d6e0ea;
+    border-radius: 9px;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 1.45;
+}
+
+.g01-admin-table-hint::before {
+    content: "↔";
+    color: var(--g01-table-gold);
+    font-size: 15px;
+    font-weight: 900;
+}
+
+.g01-admin-table-hint.is-visible {
+    display: flex;
+}
+
+.table-card,
+.card,
+.content-card,
+.panel,
+.data-card,
+.garda-admin-content,
+.portal-content,
+.main-content {
+    min-width: 0;
+}
+
+@media (max-width: 1100px) {
+    .g01-admin-table-scroll {
+        border-radius: 0 0 12px 12px;
+    }
+
+    .g01-admin-table-scroll > table.g01-admin-table {
+        min-width: var(--g01-table-min-width, 900px) !important;
+    }
+}
+
+@media (max-width: 700px) {
+    .g01-admin-table-scroll {
+        margin-inline: 0;
+        padding-bottom: 2px;
+    }
+
+    .g01-admin-table-scroll::-webkit-scrollbar {
+        height: 10px;
+    }
+
+    .g01-admin-table th,
+    .g01-admin-table td {
+        padding-inline: 12px;
+    }
+
+    .g01-admin-table th:last-child,
+    .g01-admin-table td:last-child {
+        min-width: 190px;
+    }
+}
+
+@media print {
+    html,
+    body {
+        overflow: visible !important;
+    }
+
+    .g01-admin-table-hint {
+        display: none !important;
+    }
+
+    .g01-admin-table-scroll {
+        overflow: visible !important;
+    }
+
+    .g01-admin-table-scroll > table.g01-admin-table {
+        min-width: 0 !important;
+        width: 100% !important;
+    }
+}

@@ -2,6 +2,13 @@
 
 <?= $this->section('content') ?>
 
+<link
+    rel="stylesheet"
+    href="<?= base_url('assets/css/admin-activity-workflow.css') ?>?v=<?= filemtime(FCPATH . 'assets/css/admin-activity-workflow.css') ?>"
+>
+
+<div class="activity-workflow-page">
+
 <div class="page-header">
     <div>
         <h2>Tambah Kegiatan</h2>
@@ -217,7 +224,7 @@
         <div class="form-group">
             <input type="hidden" name="is_featured" value="0">
 
-            <label>
+            <label class="activity-feature-toggle">
                 <input
                     type="checkbox"
                     name="is_featured"
@@ -246,13 +253,15 @@
             ><?= esc(old('review_notes')) ?></textarea>
         </div>
 
-        <div class="filter-card">
+        <div class="filter-card activity-workflow-action-panel">
             <strong>Pilih tindakan penyimpanan</strong>
             <p>
                 Simpan Draft untuk melanjutkan nanti. Kirim Review untuk
                 pemeriksaan. Terbitkan Sekarang untuk langsung tampil.
                 Jadwalkan memakai waktu publikasi di atas.
             </p>
+
+            <div class="activity-workflow-action-buttons">
 
             <button
                 type="submit"
@@ -296,8 +305,12 @@
             >
                 Batal
             </a>
+
+            </div>
         </div>
     </form>
+</div>
+
 </div>
 
 <?= $this->endSection() ?>

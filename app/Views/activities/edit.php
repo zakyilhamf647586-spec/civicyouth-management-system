@@ -2,6 +2,11 @@
 
 <?= $this->section('content') ?>
 
+<link
+    rel="stylesheet"
+    href="<?= base_url('assets/css/admin-activity-workflow.css') ?>?v=<?= filemtime(FCPATH . 'assets/css/admin-activity-workflow.css') ?>"
+>
+
 <?php
 $currentPublicationStatus =
     $activity['publication_status'] ?? 'draft';
@@ -31,6 +36,8 @@ $publicationBadgeClass = match (
     default => 'badge-secondary',
 };
 ?>
+
+<div class="activity-workflow-page">
 
 <div class="page-header">
     <div>
@@ -348,7 +355,7 @@ $publicationBadgeClass = match (
         <div class="form-group">
             <input type="hidden" name="is_featured" value="0">
 
-            <label>
+            <label class="activity-feature-toggle">
                 <input
                     type="checkbox"
                     name="is_featured"
@@ -380,13 +387,15 @@ $publicationBadgeClass = match (
             ) ?></textarea>
         </div>
 
-        <div class="filter-card">
+        <div class="filter-card activity-workflow-action-panel">
             <strong>Kelola penyimpanan dan publikasi</strong>
             <p>
                 Simpan Perubahan mempertahankan status publikasi saat ini.
                 Gunakan tombol lain untuk memindahkan kegiatan ke tahap
                 workflow yang berbeda.
             </p>
+
+            <div class="activity-workflow-action-buttons">
 
             <button
                 type="submit"
@@ -439,8 +448,12 @@ $publicationBadgeClass = match (
             >
                 Batal
             </a>
+
+            </div>
         </div>
     </form>
+</div>
+
 </div>
 
 <?= $this->endSection() ?>

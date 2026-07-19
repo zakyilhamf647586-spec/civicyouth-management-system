@@ -199,6 +199,16 @@ $todayLabel =
         rel="stylesheet"
         href="<?= base_url('assets/css/app.css') ?>?v=<?= esc($portalStylesheetVersion, 'attr') ?>"
     >
+
+    <link
+        rel="stylesheet"
+        href="<?= base_url(
+            'assets/css/admin-tables-responsive.css'
+        ) ?>?v=<?= filemtime(
+            FCPATH
+            . 'assets/css/admin-tables-responsive.css'
+        ) ?>"
+    >
 </head>
 
 <body class="garda-admin-body">
@@ -721,6 +731,16 @@ $todayLabel =
 
 <script
     src="<?= base_url('assets/js/admin-portal.js') ?>"
+></script>
+
+<script
+    src="<?= base_url(
+        'assets/js/admin-tables-responsive.js'
+    ) ?>?v=<?= filemtime(
+        FCPATH
+        . 'assets/js/admin-tables-responsive.js'
+    ) ?>"
+    defer
 ></script>
 
 <?= $this->renderSection('scripts') ?>

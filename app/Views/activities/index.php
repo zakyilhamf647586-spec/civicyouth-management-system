@@ -2,6 +2,11 @@
 
 <?= $this->section('content') ?>
 
+<link
+    rel="stylesheet"
+    href="<?= base_url('assets/css/admin-activity-workflow.css') ?>?v=<?= filemtime(FCPATH . 'assets/css/admin-activity-workflow.css') ?>"
+>
+
 <?php
 $publicationBadgeClasses = [
     'draft' => 'badge-secondary',
@@ -11,6 +16,8 @@ $publicationBadgeClasses = [
     'archived' => 'badge-secondary',
 ];
 ?>
+
+<div class="activity-workflow-page">
 
 <div class="page-header">
     <div>
@@ -166,7 +173,11 @@ $publicationBadgeClasses = [
 </div>
 
 <div class="table-card">
-    <div class="table-responsive">
+    <div class="activity-table-scroll-hint">
+        Geser tabel ke samping untuk melihat seluruh kolom dan tindakan.
+    </div>
+
+    <div class="table-responsive" tabindex="0" aria-label="Tabel kegiatan dapat digeser ke samping">
         <table>
             <thead>
                 <tr>
@@ -550,6 +561,8 @@ $publicationBadgeClasses = [
                 ->links('activities', 'default_full') ?>
         </div>
     <?php endif; ?>
+</div>
+
 </div>
 
 <?= $this->endSection() ?>
