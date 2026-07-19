@@ -73,6 +73,11 @@ $routes->get('/activities/edit/(:num)', 'ActivityController::edit/$1', ['filter'
 $routes->post('/activities/update/(:num)', 'ActivityController::update/$1', ['filter' => 'auth']);
 $routes->post('/activities/delete/(:num)', 'ActivityController::delete/$1', ['filter' => 'auth']);
 
+$routes->post('/activities/submit-review/(:num)', 'ActivityController::submitReview/$1', ['filter' => 'auth']);
+$routes->post('/activities/publish/(:num)', 'ActivityController::publish/$1', ['filter' => 'auth']);
+$routes->post('/activities/draft/(:num)', 'ActivityController::draft/$1', ['filter' => 'auth']);
+$routes->post('/activities/archive/(:num)', 'ActivityController::archive/$1', ['filter' => 'auth']);
+
 $routes->get('/activities/gallery/(:num)', 'ActivityGalleryController::index/$1', ['filter' => 'auth']);
 $routes->post('/activities/gallery/(:num)/upload', 'ActivityGalleryController::upload/$1', ['filter' => 'auth']);
 $routes->post('/activities/gallery/(:num)/image/(:num)/update', 'ActivityGalleryController::update/$1/$2', ['filter' => 'auth']);

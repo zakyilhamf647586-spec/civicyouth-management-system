@@ -38,6 +38,7 @@ class PublicController extends BaseController
         $activeOfficials = $structureModel->countAllResults();
 
         $completedActivities = (new ActivityModel())
+            ->applyPublicVisibility()
             ->where('status', 'completed')
             ->countAllResults();
 
@@ -51,6 +52,7 @@ class PublicController extends BaseController
         * mengambil kegiatan terbaru yang mempunyai dokumentasi.
         */
         $featuredActivity = (new ActivityModel())
+            ->applyPublicVisibility()
             ->select(
                 'activities.*, ' .
                 'programs.name AS program_name, ' .
@@ -68,6 +70,7 @@ class PublicController extends BaseController
                 false
             )
             ->where('activities.documentation_file !=', '')
+            ->orderBy('activities.is_featured', 'DESC')
             ->orderBy('activities.activity_date', 'DESC')
             ->orderBy('activities.id', 'DESC')
             ->first();
@@ -78,6 +81,7 @@ class PublicController extends BaseController
         */
         if (!$featuredActivity) {
             $featuredActivity = (new ActivityModel())
+                ->applyPublicVisibility()
                 ->select(
                     'activities.*, ' .
                     'programs.name AS program_name, ' .
@@ -99,6 +103,7 @@ class PublicController extends BaseController
         * prioritaskan kegiatan selesai yang memiliki hasil kegiatan.
         */
         $impactBuilder = (new ActivityModel())
+            ->applyPublicVisibility()
             ->select(
                 'activities.*, ' .
                 'programs.name AS program_name, ' .
@@ -122,6 +127,7 @@ class PublicController extends BaseController
         }
 
         $impactActivity = $impactBuilder
+            ->orderBy('activities.is_featured', 'DESC')
             ->orderBy('activities.activity_date', 'DESC')
             ->orderBy('activities.id', 'DESC')
             ->first();
@@ -132,6 +138,7 @@ class PublicController extends BaseController
         */
         if (!$impactActivity) {
             $impactFallback = (new ActivityModel())
+                ->applyPublicVisibility()
                 ->select(
                     'activities.*, ' .
                     'programs.name AS program_name, ' .
@@ -163,6 +170,7 @@ class PublicController extends BaseController
         * Kegiatan hero dikecualikan agar konten tidak berulang.
         */
         $latestBuilder = (new ActivityModel())
+            ->applyPublicVisibility()
             ->select(
                 'activities.*, ' .
                 'programs.name AS program_name, ' .
@@ -218,6 +226,7 @@ class PublicController extends BaseController
         );
 
         $activityModel
+            ->applyPublicVisibility()
             ->select(
                 'activities.*, ' .
                 'programs.name AS program_name, ' .
@@ -269,6 +278,7 @@ class PublicController extends BaseController
         $activityModel = new ActivityModel();
 
         $activity = $activityModel
+            ->applyPublicVisibility()
             ->select(
                 'activities.*, ' .
                 'programs.name AS program_name, ' .
@@ -301,6 +311,7 @@ class PublicController extends BaseController
         $relatedModel = new ActivityModel();
 
         $relatedModel
+            ->applyPublicVisibility()
             ->select(
                 'activities.*, ' .
                 'programs.name AS program_name, ' .
