@@ -3,20 +3,42 @@
 namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
+use RuntimeException;
 
 class AddPublicationWorkflowToActivities extends Migration
 {
+    private string $table = 'activities';
+
     public function up()
     {
-        $this->forge->addColumn('activities', [
-            'summary' => [
-                'type'       => 'VARCHAR',
-                'constraint' => 220,
-                'null'       => true,
-                'after'      => 'description',
-            ],
+        if (!$this->db->tableExists($this->table)) {
+            throw new RuntimeException(
+                'Tabel activities tidak ditemukan.'
+            );
+        }
 
-            'publication_status' => [
+        /*
+         * Ringkasan pendek untuk card dan halaman publik.
+         */
+        $this->addColumnIfMissing('summary', [
+            'type'       => 'VARCHAR',
+            'constraint' => 220,
+            'null'       => true,
+            'after'      => 'description',
+        ]);
+
+        /*
+         * Status publikasi dipisahkan dari status pelaksanaan.
+         *
+         * status:
+         * planned, completed, cancelled
+         *
+         * publication_status:
+         * draft, review, published, scheduled, archived
+         */
+        $this->addColumnIfMissing(
+            'publication_status',
+            [
                 'type'       => 'ENUM',
                 'constraint' => [
                     'draft',
@@ -26,53 +48,66 @@ class AddPublicationWorkflowToActivities extends Migration
                     'archived',
                 ],
                 /*
-                 * Default published digunakan untuk menjaga
-                 * kegiatan lama tetap tampil setelah migration.
-                 *
-                 * Kegiatan baru nantinya dibuat sebagai draft
-                 * melalui ActivityController.
+                 * Data lama tetap tampil di website
+                 * setelah migration dijalankan.
                  */
                 'default' => 'published',
                 'after'   => 'status',
-            ],
+            ]
+        );
 
-            'is_public' => [
-                'type'       => 'TINYINT',
-                'constraint' => 1,
-                'unsigned'   => true,
-                'default'    => 1,
-                'after'      => 'publication_status',
-            ],
-
-            'is_featured' => [
-                'type'       => 'TINYINT',
-                'constraint' => 1,
-                'unsigned'   => true,
-                'default'    => 0,
-                'after'      => 'is_public',
-            ],
-
-            'scheduled_at' => [
-                'type'  => 'DATETIME',
-                'null'  => true,
-                'after' => 'is_featured',
-            ],
-
-            'published_at' => [
-                'type'  => 'DATETIME',
-                'null'  => true,
-                'after' => 'scheduled_at',
-            ],
-
-            'review_notes' => [
-                'type'  => 'TEXT',
-                'null'  => true,
-                'after' => 'published_at',
-            ],
+        /*
+         * Kontrol visibilitas publik.
+         */
+        $this->addColumnIfMissing('is_public', [
+            'type'       => 'TINYINT',
+            'constraint' => 1,
+            'unsigned'   => true,
+            'default'    => 1,
+            'after'      => 'publication_status',
         ]);
 
         /*
-         * Menjaga data lama tetap dianggap telah dipublikasikan.
+         * Penanda kegiatan unggulan / Cerita Dampak.
+         */
+        $this->addColumnIfMissing('is_featured', [
+            'type'       => 'TINYINT',
+            'constraint' => 1,
+            'unsigned'   => true,
+            'default'    => 0,
+            'after'      => 'is_public',
+        ]);
+
+        /*
+         * Jadwal penayangan otomatis.
+         */
+        $this->addColumnIfMissing('scheduled_at', [
+            'type'  => 'DATETIME',
+            'null'  => true,
+            'after' => 'is_featured',
+        ]);
+
+        /*
+         * Waktu kegiatan benar-benar diterbitkan.
+         */
+        $this->addColumnIfMissing('published_at', [
+            'type'  => 'DATETIME',
+            'null'  => true,
+            'after' => 'scheduled_at',
+        ]);
+
+        /*
+         * Catatan pemeriksaan dari reviewer.
+         */
+        $this->addColumnIfMissing('review_notes', [
+            'type'  => 'TEXT',
+            'null'  => true,
+            'after' => 'published_at',
+        ]);
+
+        /*
+         * Seluruh kegiatan lama dianggap sudah dipublikasikan
+         * agar konten publik yang ada tidak tiba-tiba hilang.
          */
         $this->db->query(
             "
@@ -81,6 +116,7 @@ class AddPublicationWorkflowToActivities extends Migration
                 publication_status = 'published',
                 is_public = 1,
                 published_at = COALESCE(
+                    published_at,
                     created_at,
                     updated_at,
                     NOW()
@@ -92,6 +128,13 @@ class AddPublicationWorkflowToActivities extends Migration
 
     public function down()
     {
+        if (!$this->db->tableExists($this->table)) {
+            return;
+        }
+
+        /*
+         * Urutan dibalik agar kolom terakhir dihapus dahulu.
+         */
         $columns = [
             'review_notes',
             'published_at',
@@ -103,18 +146,34 @@ class AddPublicationWorkflowToActivities extends Migration
         ];
 
         foreach ($columns as $column) {
-            if (
-                in_array(
-                    $column,
-                    $this->db->getFieldNames('activities'),
-                    true
-                )
-            ) {
+            if ($this->db->fieldExists(
+                $column,
+                $this->table
+            )) {
                 $this->forge->dropColumn(
-                    'activities',
+                    $this->table,
                     $column
                 );
             }
         }
+    }
+
+    private function addColumnIfMissing(
+        string $column,
+        array $definition
+    ): void {
+        if ($this->db->fieldExists(
+            $column,
+            $this->table
+        )) {
+            return;
+        }
+
+        $this->forge->addColumn(
+            $this->table,
+            [
+                $column => $definition,
+            ]
+        );
     }
 }
