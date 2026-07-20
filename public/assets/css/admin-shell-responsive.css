@@ -1,0 +1,295 @@
+/* ==========================================================
+   GARDA 01 Portal — Isolated Responsive Admin Shell
+   Loaded after app.css. It only refines the internal portal
+   shell, topbar, page heading, and page-level action area.
+========================================================== */
+
+.garda-admin-body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+.garda-admin-shell,
+.garda-admin-workspace,
+.garda-admin-content,
+.garda-admin-content-inner,
+.garda-admin-content-inner > * {
+    min-width: 0;
+    max-width: 100%;
+}
+
+/* ----------------------------------------------------------
+   Consistent page heading and actions
+---------------------------------------------------------- */
+
+.garda-admin-body .page-header {
+    width: 100%;
+    min-width: 0;
+    text-align: left;
+}
+
+.garda-admin-body .page-header > :first-child {
+    min-width: 0;
+    margin: 0 !important;
+    text-align: left !important;
+}
+
+.garda-admin-body .page-header h1,
+.garda-admin-body .page-header h2,
+.garda-admin-body .page-header p {
+    text-align: left !important;
+}
+
+.garda-admin-body .page-header > div:last-child:not(:first-child) {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.garda-admin-body .page-header > a.btn,
+.garda-admin-body .page-header > button.btn,
+.garda-admin-body .page-header > div:last-child:not(:first-child) .btn {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+/* ----------------------------------------------------------
+   Wide desktop: preserve the premium full sidebar
+---------------------------------------------------------- */
+
+@media (min-width: 1280px) {
+    .garda-admin-sidebar:not(.is-mobile-drawer) {
+        will-change: width;
+    }
+}
+
+/* ----------------------------------------------------------
+   Medium windows / compact laptops
+   Automatic icon sidebar without turning the portal into a
+   mobile drawer too early.
+---------------------------------------------------------- */
+
+@media (min-width: 961px) and (max-width: 1279px) {
+    .garda-admin-sidebar {
+        width: 86px !important;
+        transform: translateX(0) !important;
+    }
+
+    .garda-admin-workspace,
+    .garda-admin-sidebar-collapsed .garda-admin-workspace {
+        margin-left: 86px !important;
+    }
+
+    .garda-admin-overlay {
+        display: none !important;
+    }
+
+    .garda-admin-mobile-menu,
+    .garda-admin-collapse-button {
+        display: none !important;
+    }
+
+    .garda-admin-brand {
+        padding-inline: 16px !important;
+        justify-content: center;
+    }
+
+    .garda-admin-brand-link {
+        flex: 0 0 auto;
+        justify-content: center;
+    }
+
+    .garda-admin-brand-copy,
+    .garda-admin-organization-label,
+    .garda-admin-nav-heading,
+    .garda-admin-nav-link span,
+    .garda-admin-sidebar-user-copy,
+    .garda-admin-sidebar-actions span {
+        display: none !important;
+    }
+
+    .garda-admin-navigation {
+        padding-inline: 12px !important;
+    }
+
+    .garda-admin-nav-link {
+        padding: 10px !important;
+        justify-content: center;
+    }
+
+    .garda-admin-nav-link:hover {
+        transform: none !important;
+    }
+
+    .garda-admin-sidebar-user {
+        justify-content: center;
+    }
+
+    .garda-admin-sidebar-actions {
+        grid-template-columns: 1fr !important;
+    }
+
+    .garda-admin-sidebar-actions a {
+        padding: 9px !important;
+    }
+
+    .garda-admin-content {
+        padding: 24px 22px;
+    }
+
+    .garda-admin-topbar {
+        padding-inline: 20px;
+    }
+
+    .garda-admin-date {
+        display: none;
+    }
+}
+
+/* ----------------------------------------------------------
+   Tablet and small window: real drawer + stacked page heading
+---------------------------------------------------------- */
+
+@media (max-width: 960px) {
+    .garda-admin-sidebar {
+        width: min(292px, 88vw);
+    }
+
+    .garda-admin-content {
+        padding: 22px 18px;
+    }
+
+    .garda-admin-content-inner {
+        width: 100%;
+    }
+
+    .garda-admin-body .page-header {
+        margin-bottom: 20px;
+        display: flex !important;
+        align-items: stretch !important;
+        justify-content: flex-start !important;
+        flex-direction: column !important;
+        gap: 15px !important;
+    }
+
+    .garda-admin-body .page-header > :first-child {
+        width: 100%;
+    }
+
+    .garda-admin-body .page-header > :last-child:not(:first-child) {
+        width: 100%;
+        margin: 0 !important;
+        align-self: stretch;
+    }
+
+    .garda-admin-body .page-header > a.btn,
+    .garda-admin-body .page-header > button.btn {
+        width: max-content;
+        max-width: 100%;
+        align-self: flex-start;
+        text-align: center;
+    }
+
+    .garda-admin-body .page-header > div:last-child:not(:first-child) {
+        justify-content: flex-start;
+    }
+
+    .garda-admin-body .page-header h1,
+    .garda-admin-body .page-header h2 {
+        font-size: clamp(24px, 5vw, 29px);
+    }
+
+    .garda-admin-topbar {
+        gap: 12px;
+    }
+
+    .garda-admin-topbar-left {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .garda-admin-topbar-actions {
+        flex-shrink: 0;
+    }
+}
+
+/* ----------------------------------------------------------
+   Phone: compact topbar and full-width primary page actions
+---------------------------------------------------------- */
+
+@media (max-width: 640px) {
+    .garda-admin-topbar {
+        min-height: 66px;
+        padding: 9px 14px;
+    }
+
+    .garda-admin-content {
+        padding: 19px 14px 24px;
+    }
+
+    .garda-admin-page-context > span {
+        display: none;
+    }
+
+    .garda-admin-page-context > strong {
+        max-width: min(48vw, 230px);
+        margin-top: 0;
+        font-size: 15.5px;
+    }
+
+    .garda-admin-icon-button {
+        width: 39px;
+        height: 39px;
+        padding: 9px;
+    }
+
+    .garda-admin-profile-avatar {
+        width: 37px;
+        height: 37px;
+    }
+
+    .garda-admin-body .page-header {
+        gap: 13px !important;
+    }
+
+    .garda-admin-body .page-header h1,
+    .garda-admin-body .page-header h2 {
+        font-size: 24px;
+    }
+
+    .garda-admin-body .page-header p {
+        font-size: 12px;
+        line-height: 1.55;
+    }
+}
+
+@media (max-width: 520px) {
+    .garda-admin-body .page-header > a.btn,
+    .garda-admin-body .page-header > button.btn,
+    .garda-admin-body .page-header > div:last-child:not(:first-child) {
+        width: 100%;
+    }
+
+    .garda-admin-body .page-header > div:last-child:not(:first-child) {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+
+    .garda-admin-body .page-header > a.btn,
+    .garda-admin-body .page-header > button.btn,
+    .garda-admin-body .page-header > div:last-child:not(:first-child) .btn {
+        width: 100%;
+        justify-content: center;
+        text-align: center;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .garda-admin-sidebar,
+    .garda-admin-workspace {
+        transition-duration: 0.01ms !important;
+    }
+}
