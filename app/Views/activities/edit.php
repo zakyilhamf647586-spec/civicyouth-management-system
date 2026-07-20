@@ -333,23 +333,30 @@ $publicationBadgeClass = match (
                 </select>
             </div>
 
-            <div class="form-group">
-                <label for="scheduled_at">Jadwal Publikasi</label>
-                <input
-                    type="datetime-local"
-                    id="scheduled_at"
-                    name="scheduled_at"
-                    value="<?= esc(
-                        old(
-                            'scheduled_at',
-                            $scheduledInputValue
-                        )
-                    ) ?>"
-                >
-                <small>
-                    Wajib diisi ketika memilih Jadwalkan Publikasi.
-                </small>
-            </div>
+            <?php if (auth_can(
+                'activities.publish'
+            )) : ?>
+                <div class="form-group">
+                    <label for="scheduled_at">
+                        Jadwal Publikasi
+                    </label>
+                    <input
+                        type="datetime-local"
+                        id="scheduled_at"
+                        name="scheduled_at"
+                        value="<?= esc(
+                            old(
+                                'scheduled_at',
+                                $scheduledInputValue
+                            )
+                        ) ?>"
+                    >
+                    <small>
+                        Wajib diisi ketika memilih
+                        Jadwalkan Publikasi.
+                    </small>
+                </div>
+            <?php endif; ?>
         </div>
 
         <div class="form-group">
@@ -389,66 +396,76 @@ $publicationBadgeClass = match (
 
         <div class="filter-card activity-workflow-action-panel">
             <strong>Kelola penyimpanan dan publikasi</strong>
+
             <p>
-                Simpan Perubahan mempertahankan status publikasi saat ini.
-                Gunakan tombol lain untuk memindahkan kegiatan ke tahap
-                workflow yang berbeda.
+                Tombol yang tersedia mengikuti izin peran Anda.
+                Perlindungan yang sama juga diterapkan pada server.
             </p>
 
             <div class="activity-workflow-action-buttons">
+                <button
+                    type="submit"
+                    name="workflow_action"
+                    value="save_changes"
+                    class="btn btn-primary"
+                >
+                    Simpan Perubahan
+                </button>
 
-            <button
-                type="submit"
-                name="workflow_action"
-                value="save_changes"
-                class="btn btn-primary"
-            >
-                Simpan Perubahan
-            </button>
+                <?php if (auth_can(
+                    'activities.return_to_draft'
+                )) : ?>
+                    <button
+                        type="submit"
+                        name="workflow_action"
+                        value="save_draft"
+                        class="btn btn-secondary"
+                    >
+                        Simpan sebagai Draft
+                    </button>
+                <?php endif; ?>
 
-            <button
-                type="submit"
-                name="workflow_action"
-                value="save_draft"
-                class="btn btn-secondary"
-            >
-                Simpan sebagai Draft
-            </button>
+                <?php if (auth_can(
+                    'activities.submit_review'
+                )) : ?>
+                    <button
+                        type="submit"
+                        name="workflow_action"
+                        value="submit_review"
+                        class="btn btn-warning"
+                    >
+                        Kirim untuk Ditinjau
+                    </button>
+                <?php endif; ?>
 
-            <button
-                type="submit"
-                name="workflow_action"
-                value="submit_review"
-                class="btn btn-warning"
-            >
-                Kirim untuk Ditinjau
-            </button>
+                <?php if (auth_can(
+                    'activities.publish'
+                )) : ?>
+                    <button
+                        type="submit"
+                        name="workflow_action"
+                        value="publish_now"
+                        class="btn btn-primary"
+                    >
+                        Terbitkan Sekarang
+                    </button>
 
-            <button
-                type="submit"
-                name="workflow_action"
-                value="publish_now"
-                class="btn btn-primary"
-            >
-                Terbitkan Sekarang
-            </button>
+                    <button
+                        type="submit"
+                        name="workflow_action"
+                        value="schedule"
+                        class="btn btn-secondary"
+                    >
+                        Jadwalkan Publikasi
+                    </button>
+                <?php endif; ?>
 
-            <button
-                type="submit"
-                name="workflow_action"
-                value="schedule"
-                class="btn btn-secondary"
-            >
-                Jadwalkan Publikasi
-            </button>
-
-            <a
-                href="<?= base_url('/activities') ?>"
-                class="btn btn-secondary"
-            >
-                Batal
-            </a>
-
+                <a
+                    href="<?= base_url('/activities') ?>"
+                    class="btn btn-secondary"
+                >
+                    Batal
+                </a>
             </div>
         </div>
     </form>

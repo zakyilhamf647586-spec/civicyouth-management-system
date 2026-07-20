@@ -444,35 +444,48 @@ $formatRelativeTime = static function (
                                     </div>
                                 </div>
 
-                                <div class="g01-publication-review-actions">
-                                    <a
-                                        href="<?= base_url(
-                                            '/activities/edit/'
-                                            . $item['id']
-                                        ) ?>"
-                                        class="btn btn-secondary"
-                                    >
-                                        Tinjau
-                                    </a>
+                                <?php if (auth_can_any([
+                                    'activities.update',
+                                    'activities.publish',
+                                ])) : ?>
+                                    <div class="g01-publication-review-actions">
+                                        <?php if (auth_can(
+                                            'activities.update'
+                                        )) : ?>
+                                            <a
+                                                href="<?= base_url(
+                                                    '/activities/edit/'
+                                                    . $item['id']
+                                                ) ?>"
+                                                class="btn btn-secondary"
+                                            >
+                                                Tinjau
+                                            </a>
+                                        <?php endif; ?>
 
-                                    <form
-                                        action="<?= base_url(
-                                            '/activities/publish/'
-                                            . $item['id']
-                                        ) ?>"
-                                        method="post"
-                                        onsubmit="return confirm('Terbitkan kegiatan ini sekarang?')"
-                                    >
-                                        <?= csrf_field() ?>
+                                        <?php if (auth_can(
+                                            'activities.publish'
+                                        )) : ?>
+                                            <form
+                                                action="<?= base_url(
+                                                    '/activities/publish/'
+                                                    . $item['id']
+                                                ) ?>"
+                                                method="post"
+                                                onsubmit="return confirm('Terbitkan kegiatan ini sekarang?')"
+                                            >
+                                                <?= csrf_field() ?>
 
-                                        <button
-                                            type="submit"
-                                            class="btn btn-primary"
-                                        >
-                                            Terbitkan
-                                        </button>
-                                    </form>
-                                </div>
+                                                <button
+                                                    type="submit"
+                                                    class="btn btn-primary"
+                                                >
+                                                    Terbitkan
+                                                </button>
+                                            </form>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         <?php endforeach; ?>
                     </div>
@@ -514,13 +527,21 @@ $formatRelativeTime = static function (
                         <?php foreach (
                             $scheduledPublicationQueue as $item
                         ) : ?>
-                            <a
-                                href="<?= base_url(
-                                    '/activities/edit/'
-                                    . $item['id']
-                                ) ?>"
-                                class="g01-publication-schedule-item"
-                            >
+                            <?php if (auth_can(
+                                'activities.update'
+                            )) : ?>
+                                <a
+                                    href="<?= base_url(
+                                        '/activities/edit/'
+                                        . $item['id']
+                                    ) ?>"
+                                    class="g01-publication-schedule-item"
+                                >
+                            <?php else : ?>
+                                <div
+                                    class="g01-publication-schedule-item"
+                                >
+                            <?php endif; ?>
                                 <time>
                                     <strong>
                                         <?= !empty(
@@ -573,8 +594,19 @@ $formatRelativeTime = static function (
                                     </small>
                                 </div>
 
-                                <b aria-hidden="true">→</b>
-                            </a>
+                                <?php if (auth_can(
+                                    'activities.update'
+                                )) : ?>
+                                    <b aria-hidden="true">→</b>
+                                <?php endif; ?>
+
+                            <?php if (auth_can(
+                                'activities.update'
+                            )) : ?>
+                                </a>
+                            <?php else : ?>
+                                </div>
+                            <?php endif; ?>
                         <?php endforeach; ?>
                     </div>
                 <?php else : ?>

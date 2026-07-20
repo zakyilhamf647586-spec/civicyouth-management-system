@@ -182,6 +182,13 @@ class ActivityController extends BaseController
             false
         );
 
+        if ($deniedResponse = $this->denyUnauthorizedWorkflowAction(
+            $action,
+            false
+        )) {
+            return $deniedResponse;
+        }
+
         try {
             $programId = $this->normalizeProgramId(
                 $this->request->getPost('program_id')
@@ -302,6 +309,13 @@ class ActivityController extends BaseController
             ),
             true
         );
+
+        if ($deniedResponse = $this->denyUnauthorizedWorkflowAction(
+            $action,
+            true
+        )) {
+            return $deniedResponse;
+        }
 
         $newFile = null;
 
@@ -799,6 +813,39 @@ class ActivityController extends BaseController
                 . implode(' ', $errors)
             );
         }
+    }
+
+    private function denyUnauthorizedWorkflowAction(
+        string $action,
+        bool $isUpdate
+    ) {
+        $requiredPermission = match ($action) {
+            'submit_review' => 'activities.submit_review',
+            'publish_now',
+            'schedule' => 'activities.publish',
+            'save_draft' => $isUpdate
+                ? 'activities.return_to_draft'
+                : null,
+            default => null,
+        };
+
+        if (
+            $requiredPermission === null
+            || auth_can($requiredPermission)
+        ) {
+            return null;
+        }
+
+        $permissionLabel = authorization()
+            ->permissionLabel($requiredPermission);
+
+        return redirect()->to('/activities')
+            ->with(
+                'error',
+                'Akses ditolak. Peran Anda tidak memiliki izin untuk '
+                . $permissionLabel
+                . '.'
+            );
     }
 
     private function normalizeWorkflowAction(

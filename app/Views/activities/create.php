@@ -207,18 +207,25 @@
                 </small>
             </div>
 
-            <div class="form-group">
-                <label for="scheduled_at">Jadwal Publikasi</label>
-                <input
-                    type="datetime-local"
-                    id="scheduled_at"
-                    name="scheduled_at"
-                    value="<?= esc(old('scheduled_at')) ?>"
-                >
-                <small>
-                    Wajib diisi hanya ketika memilih tombol Jadwalkan.
-                </small>
-            </div>
+            <?php if (auth_can(
+                'activities.publish'
+            )) : ?>
+                <div class="form-group">
+                    <label for="scheduled_at">
+                        Jadwal Publikasi
+                    </label>
+                    <input
+                        type="datetime-local"
+                        id="scheduled_at"
+                        name="scheduled_at"
+                        value="<?= esc(old('scheduled_at')) ?>"
+                    >
+                    <small>
+                        Wajib diisi hanya ketika memilih
+                        tombol Jadwalkan.
+                    </small>
+                </div>
+            <?php endif; ?>
         </div>
 
         <div class="form-group">
@@ -255,57 +262,64 @@
 
         <div class="filter-card activity-workflow-action-panel">
             <strong>Pilih tindakan penyimpanan</strong>
+
             <p>
-                Simpan Draft untuk melanjutkan nanti. Kirim Review untuk
-                pemeriksaan. Terbitkan Sekarang untuk langsung tampil.
-                Jadwalkan memakai waktu publikasi di atas.
+                Simpan sebagai draft untuk melanjutkan nanti.
+                Tindakan editorial lain hanya ditampilkan apabila
+                peran Anda mempunyai izin yang sesuai.
             </p>
 
             <div class="activity-workflow-action-buttons">
+                <button
+                    type="submit"
+                    name="workflow_action"
+                    value="save_draft"
+                    class="btn btn-secondary"
+                >
+                    Simpan Draft
+                </button>
 
-            <button
-                type="submit"
-                name="workflow_action"
-                value="save_draft"
-                class="btn btn-secondary"
-            >
-                Simpan Draft
-            </button>
+                <?php if (auth_can(
+                    'activities.submit_review'
+                )) : ?>
+                    <button
+                        type="submit"
+                        name="workflow_action"
+                        value="submit_review"
+                        class="btn btn-warning"
+                    >
+                        Kirim untuk Ditinjau
+                    </button>
+                <?php endif; ?>
 
-            <button
-                type="submit"
-                name="workflow_action"
-                value="submit_review"
-                class="btn btn-warning"
-            >
-                Kirim untuk Ditinjau
-            </button>
+                <?php if (auth_can(
+                    'activities.publish'
+                )) : ?>
+                    <button
+                        type="submit"
+                        name="workflow_action"
+                        value="publish_now"
+                        class="btn btn-primary"
+                    >
+                        Terbitkan Sekarang
+                    </button>
 
-            <button
-                type="submit"
-                name="workflow_action"
-                value="publish_now"
-                class="btn btn-primary"
-            >
-                Terbitkan Sekarang
-            </button>
+                    <button
+                        type="submit"
+                        name="workflow_action"
+                        value="schedule"
+                        class="btn btn-secondary"
+                    >
+                        Jadwalkan Publikasi
+                    </button>
+                <?php endif; ?>
 
-            <button
-                type="submit"
-                name="workflow_action"
-                value="schedule"
-                class="btn btn-secondary"
-            >
-                Jadwalkan Publikasi
-            </button>
-
-            <a
-                href="<?= base_url('/activities') ?>"
-                class="btn btn-secondary"
-            >
-                Batal
-            </a>
-
+                <a
+                    href="<?= base_url('/activities') ?>"
+                    class="btn btn-secondary"
+                >
+                    Batal
+                </a>
             </div>
         </div>
     </form>

@@ -28,12 +28,14 @@ $publicationBadgeClasses = [
         </p>
     </div>
 
-    <a
-        href="<?= base_url('/activities/create') ?>"
-        class="btn btn-primary"
-    >
-        + Tambah Kegiatan
-    </a>
+    <?php if (auth_can('activities.create')) : ?>
+        <a
+            href="<?= base_url('/activities/create') ?>"
+            class="btn btn-primary"
+        >
+            + Tambah Kegiatan
+        </a>
+    <?php endif; ?>
 </div>
 
 <?php if (session()->getFlashdata('success')) : ?>
@@ -385,28 +387,51 @@ $publicationBadgeClasses = [
                             </td>
 
                             <td>
-                                <a
-                                    href="<?= base_url(
-                                        '/activities/gallery/'
-                                        . $activity['id']
-                                    ) ?>"
-                                    class="btn btn-primary"
-                                >
-                                    Galeri
-                                </a>
+                                <?php
+                                $hasVisibleAction = auth_can_any([
+                                    'activities.gallery.view',
+                                    'activities.update',
+                                    'activities.submit_review',
+                                    'activities.publish',
+                                    'activities.return_to_draft',
+                                    'activities.archive',
+                                    'activities.delete',
+                                ]);
+                                ?>
 
-                                <a
-                                    href="<?= base_url(
-                                        '/activities/edit/'
-                                        . $activity['id']
-                                    ) ?>"
-                                    class="btn btn-warning"
-                                >
-                                    Edit
-                                </a>
+                                <?php if (auth_can(
+                                    'activities.gallery.view'
+                                )) : ?>
+                                    <a
+                                        href="<?= base_url(
+                                            '/activities/gallery/'
+                                            . $activity['id']
+                                        ) ?>"
+                                        class="btn btn-primary"
+                                    >
+                                        Galeri
+                                    </a>
+                                <?php endif; ?>
+
+                                <?php if (auth_can(
+                                    'activities.update'
+                                )) : ?>
+                                    <a
+                                        href="<?= base_url(
+                                            '/activities/edit/'
+                                            . $activity['id']
+                                        ) ?>"
+                                        class="btn btn-warning"
+                                    >
+                                        Edit
+                                    </a>
+                                <?php endif; ?>
 
                                 <?php if (
-                                    in_array(
+                                    auth_can(
+                                        'activities.submit_review'
+                                    )
+                                    && in_array(
                                         $publication,
                                         ['draft', 'archived'],
                                         true
@@ -431,7 +456,8 @@ $publicationBadgeClasses = [
                                 <?php endif; ?>
 
                                 <?php if (
-                                    in_array(
+                                    auth_can('activities.publish')
+                                    && in_array(
                                         $publication,
                                         [
                                             'draft',
@@ -461,7 +487,10 @@ $publicationBadgeClasses = [
                                 <?php endif; ?>
 
                                 <?php if (
-                                    in_array(
+                                    auth_can(
+                                        'activities.return_to_draft'
+                                    )
+                                    && in_array(
                                         $publication,
                                         [
                                             'review',
@@ -491,7 +520,8 @@ $publicationBadgeClasses = [
                                 <?php endif; ?>
 
                                 <?php if (
-                                    in_array(
+                                    auth_can('activities.archive')
+                                    && in_array(
                                         $publication,
                                         ['published', 'scheduled'],
                                         true
@@ -516,23 +546,33 @@ $publicationBadgeClasses = [
                                     </form>
                                 <?php endif; ?>
 
-                                <form
-                                    action="<?= base_url(
-                                        '/activities/delete/'
-                                        . $activity['id']
-                                    ) ?>"
-                                    method="post"
-                                    class="inline-action-form"
-                                    onsubmit="return confirm('Yakin ingin menghapus data kegiatan ini secara permanen?')"
-                                >
-                                    <?= csrf_field() ?>
-                                    <button
-                                        type="submit"
-                                        class="btn btn-danger"
+                                <?php if (auth_can(
+                                    'activities.delete'
+                                )) : ?>
+                                    <form
+                                        action="<?= base_url(
+                                            '/activities/delete/'
+                                            . $activity['id']
+                                        ) ?>"
+                                        method="post"
+                                        class="inline-action-form"
+                                        onsubmit="return confirm('Yakin ingin menghapus data kegiatan ini secara permanen?')"
                                     >
-                                        Hapus
-                                    </button>
-                                </form>
+                                        <?= csrf_field() ?>
+                                        <button
+                                            type="submit"
+                                            class="btn btn-danger"
+                                        >
+                                            Hapus
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
+
+                                <?php if (!$hasVisibleAction) : ?>
+                                    <span class="badge badge-secondary">
+                                        Akses baca
+                                    </span>
+                                <?php endif; ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>
