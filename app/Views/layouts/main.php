@@ -407,174 +407,212 @@ $todayLabel =
 
         <nav class="garda-admin-navigation">
 
-            <a
-                href="<?= base_url('/dashboard') ?>"
-                class="garda-admin-nav-link <?= $isActive(['dashboard']) ?>"
-                title="Dashboard"
-            >
-                <svg aria-hidden="true">
-                    <use href="#icon-dashboard"></use>
-                </svg>
+            <?php if (auth_can('dashboard.view')) : ?>
+                <a
+                    href="<?= base_url('/dashboard') ?>"
+                    class="garda-admin-nav-link <?= $isActive(['dashboard']) ?>"
+                    title="Dashboard"
+                >
+                    <svg aria-hidden="true">
+                        <use href="#icon-dashboard"></use>
+                    </svg>
 
-                <span>Dashboard</span>
-            </a>
+                    <span>Dashboard</span>
+                </a>
+            <?php endif; ?>
 
-            <div class="garda-admin-nav-section">
-                <div class="garda-admin-nav-heading">
-                    Organisasi
+            <?php if (auth_can_any([
+                'members.view',
+                'structures.view',
+                'meetings.view',
+                'attendances.view',
+                'activities.view',
+            ])) : ?>
+                <div class="garda-admin-nav-section">
+                    <div class="garda-admin-nav-heading">
+                        Organisasi
+                    </div>
+
+                    <?php if (auth_can('members.view')) : ?>
+                        <a
+                            href="<?= base_url('/members') ?>"
+                            class="garda-admin-nav-link <?= $isActive(['members']) ?>"
+                            title="Data Anggota"
+                        >
+                            <svg aria-hidden="true">
+                                <use href="#icon-members"></use>
+                            </svg>
+
+                            <span>Data Anggota</span>
+                        </a>
+                    <?php endif; ?>
+
+                    <?php if (auth_can('structures.view')) : ?>
+                        <a
+                            href="<?= base_url('/structures') ?>"
+                            class="garda-admin-nav-link <?= $isActive(['structures']) ?>"
+                            title="Struktur Pengurus"
+                        >
+                            <svg aria-hidden="true">
+                                <use href="#icon-structure"></use>
+                            </svg>
+
+                            <span>Struktur Pengurus</span>
+                        </a>
+                    <?php endif; ?>
+
+                    <?php if (auth_can('meetings.view')) : ?>
+                        <a
+                            href="<?= base_url('/meetings') ?>"
+                            class="garda-admin-nav-link <?= $isActive(['meetings']) ?>"
+                            title="Rapat"
+                        >
+                            <svg aria-hidden="true">
+                                <use href="#icon-meeting"></use>
+                            </svg>
+
+                            <span>Rapat</span>
+                        </a>
+                    <?php endif; ?>
+
+                    <?php if (auth_can('attendances.view')) : ?>
+                        <a
+                            href="<?= base_url('/attendances') ?>"
+                            class="garda-admin-nav-link <?= $isActive(['attendances']) ?>"
+                            title="Absensi"
+                        >
+                            <svg aria-hidden="true">
+                                <use href="#icon-attendance"></use>
+                            </svg>
+
+                            <span>Absensi</span>
+                        </a>
+                    <?php endif; ?>
+
+                    <?php if (auth_can('activities.view')) : ?>
+                        <a
+                            href="<?= base_url('/activities') ?>"
+                            class="garda-admin-nav-link <?= $isActive(['activities']) ?>"
+                            title="Kegiatan"
+                        >
+                            <svg aria-hidden="true">
+                                <use href="#icon-activity"></use>
+                            </svg>
+
+                            <span>Kegiatan</span>
+                        </a>
+                    <?php endif; ?>
                 </div>
+            <?php endif; ?>
 
-                <a
-                    href="<?= base_url('/members') ?>"
-                    class="garda-admin-nav-link <?= $isActive(['members']) ?>"
-                    title="Data Anggota"
-                >
-                    <svg aria-hidden="true">
-                        <use href="#icon-members"></use>
-                    </svg>
+            <?php if (auth_can('cash.view')) : ?>
+                <div class="garda-admin-nav-section">
+                    <div class="garda-admin-nav-heading">
+                        Keuangan
+                    </div>
 
-                    <span>Data Anggota</span>
-                </a>
+                    <a
+                        href="<?= base_url('/cash') ?>"
+                        class="garda-admin-nav-link <?= $isActive(['cash']) ?>"
+                        title="Kas Organisasi"
+                    >
+                        <svg aria-hidden="true">
+                            <use href="#icon-cash"></use>
+                        </svg>
 
-                <a
-                    href="<?= base_url('/structures') ?>"
-                    class="garda-admin-nav-link <?= $isActive(['structures']) ?>"
-                    title="Struktur Pengurus"
-                >
-                    <svg aria-hidden="true">
-                        <use href="#icon-structure"></use>
-                    </svg>
-
-                    <span>Struktur Pengurus</span>
-                </a>
-
-                <a
-                    href="<?= base_url('/meetings') ?>"
-                    class="garda-admin-nav-link <?= $isActive(['meetings']) ?>"
-                    title="Rapat"
-                >
-                    <svg aria-hidden="true">
-                        <use href="#icon-meeting"></use>
-                    </svg>
-
-                    <span>Rapat</span>
-                </a>
-
-                <a
-                    href="<?= base_url('/attendances') ?>"
-                    class="garda-admin-nav-link <?= $isActive(['attendances']) ?>"
-                    title="Absensi"
-                >
-                    <svg aria-hidden="true">
-                        <use href="#icon-attendance"></use>
-                    </svg>
-
-                    <span>Absensi</span>
-                </a>
-
-                <a
-                    href="<?= base_url('/activities') ?>"
-                    class="garda-admin-nav-link <?= $isActive(['activities']) ?>"
-                    title="Kegiatan"
-                >
-                    <svg aria-hidden="true">
-                        <use href="#icon-activity"></use>
-                    </svg>
-
-                    <span>Kegiatan</span>
-                </a>
-            </div>
-
-            <div class="garda-admin-nav-section">
-                <div class="garda-admin-nav-heading">
-                    Keuangan
+                        <span>Kas Organisasi</span>
+                    </a>
                 </div>
+            <?php endif; ?>
 
-                <a
-                    href="<?= base_url('/cash') ?>"
-                    class="garda-admin-nav-link <?= $isActive(['cash']) ?>"
-                    title="Kas Organisasi"
-                >
-                    <svg aria-hidden="true">
-                        <use href="#icon-cash"></use>
-                    </svg>
+            <?php if (auth_can_any([
+                'programs.view',
+                'settings.website.manage',
+                'content_studio.view',
+                'messages.view',
+            ])) : ?>
+                <div class="garda-admin-nav-section">
+                    <div class="garda-admin-nav-heading">
+                        Website & Publikasi
+                    </div>
 
-                    <span>Kas Organisasi</span>
-                </a>
-            </div>
+                    <?php if (auth_can('programs.view')) : ?>
+                        <a
+                            href="<?= base_url('/programs') ?>"
+                            class="garda-admin-nav-link <?= $isActive(['programs']) ?>"
+                            title="Program GARDA 01"
+                        >
+                            <svg aria-hidden="true">
+                                <use href="#icon-program"></use>
+                            </svg>
 
-            <div class="garda-admin-nav-section">
-                <div class="garda-admin-nav-heading">
-                    Website & Publikasi
+                            <span>Program GARDA 01</span>
+                        </a>
+                    <?php endif; ?>
+
+                    <?php if (auth_can('settings.website.manage')) : ?>
+                        <a
+                            href="<?= base_url('/settings/website') ?>"
+                            class="garda-admin-nav-link <?= $isActive(['settings']) ?>"
+                            title="Pengaturan Website"
+                        >
+                            <svg aria-hidden="true">
+                                <use href="#icon-settings"></use>
+                            </svg>
+
+                            <span>Pengaturan Website</span>
+                        </a>
+                    <?php endif; ?>
+
+                    <?php if (auth_can('content_studio.view')) : ?>
+                        <a
+                            href="<?= base_url('/content-studio') ?>"
+                            class="garda-admin-nav-link <?= $isActive(['content-studio']) ?>"
+                            title="AI Content Studio"
+                        >
+                            <svg aria-hidden="true">
+                                <use href="#icon-ai"></use>
+                            </svg>
+
+                            <span>AI Content Studio</span>
+                        </a>
+                    <?php endif; ?>
+
+                    <?php if (auth_can('messages.view')) : ?>
+                        <a
+                            href="<?= base_url('/messages') ?>"
+                            class="garda-admin-nav-link <?= $isActive(['messages']) ?>"
+                            title="Pesan Masuk"
+                        >
+                            <svg aria-hidden="true">
+                                <use href="#icon-message"></use>
+                            </svg>
+
+                            <span>Pesan Masuk</span>
+                        </a>
+                    <?php endif; ?>
                 </div>
+            <?php endif; ?>
 
-                <a
-                    href="<?= base_url('/programs') ?>"
-                    class="garda-admin-nav-link <?= $isActive(['programs']) ?>"
-                    title="Program GARDA 01"
-                >
-                    <svg aria-hidden="true">
-                        <use href="#icon-program"></use>
-                    </svg>
+            <?php if (auth_can('reports.view')) : ?>
+                <div class="garda-admin-nav-section">
+                    <div class="garda-admin-nav-heading">
+                        Laporan
+                    </div>
 
-                    <span>Program GARDA 01</span>
-                </a>
+                    <a
+                        href="<?= base_url('/reports') ?>"
+                        class="garda-admin-nav-link <?= $isActive(['reports']) ?>"
+                        title="Laporan Organisasi"
+                    >
+                        <svg aria-hidden="true">
+                            <use href="#icon-report"></use>
+                        </svg>
 
-                <a
-                    href="<?= base_url('/settings/website') ?>"
-                    class="garda-admin-nav-link
-                    <?= $isActive(['settings']) ?>"
-                    title="Pengaturan Website"
-                >
-                    <svg aria-hidden="true">
-                        <use href="#icon-settings"></use>
-                    </svg>
-
-                    <span>Pengaturan Website</span>
-                </a>
-
-                <a
-                    href="<?= base_url('/content-studio') ?>"
-                    class="garda-admin-nav-link <?= $isActive(['content-studio']) ?>"
-                    title="AI Content Studio"
-                >
-                    <svg aria-hidden="true">
-                        <use href="#icon-ai"></use>
-                    </svg>
-
-                    <span>AI Content Studio</span>
-                </a>
-
-                <a
-                    href="<?= base_url('/messages') ?>"
-                    class="garda-admin-nav-link <?= $isActive(['messages']) ?>"
-                    title="Pesan Masuk"
-                >
-                    <svg aria-hidden="true">
-                        <use href="#icon-message"></use>
-                    </svg>
-
-                    <span>Pesan Masuk</span>
-                </a>
-            </div>
-
-            <div class="garda-admin-nav-section">
-                <div class="garda-admin-nav-heading">
-                    Laporan
+                        <span>Laporan Organisasi</span>
+                    </a>
                 </div>
-
-                <a
-                    href="<?= base_url('/reports') ?>"
-                    class="garda-admin-nav-link <?= $isActive(['reports']) ?>"
-                    title="Laporan Organisasi"
-                >
-                    <svg aria-hidden="true">
-                        <use href="#icon-report"></use>
-                    </svg>
-
-                    <span>Laporan Organisasi</span>
-                </a>
-            </div>
+            <?php endif; ?>
 
         </nav>
 
@@ -660,16 +698,18 @@ $todayLabel =
                     <?= esc($todayLabel) ?>
                 </div>
 
-                <a
-                    href="<?= base_url('/messages') ?>"
-                    class="garda-admin-icon-button"
-                    title="Pesan dan notifikasi"
-                    aria-label="Pesan dan notifikasi"
-                >
-                    <svg aria-hidden="true">
-                        <use href="#icon-bell"></use>
-                    </svg>
-                </a>
+                <?php if (auth_can('messages.view')) : ?>
+                    <a
+                        href="<?= base_url('/messages') ?>"
+                        class="garda-admin-icon-button"
+                        title="Pesan dan notifikasi"
+                        aria-label="Pesan dan notifikasi"
+                    >
+                        <svg aria-hidden="true">
+                            <use href="#icon-bell"></use>
+                        </svg>
+                    </a>
+                <?php endif; ?>
 
                 <a
                     href="<?= base_url('/') ?>"

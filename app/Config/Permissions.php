@@ -1,0 +1,184 @@
+<?php
+
+namespace Config;
+
+use CodeIgniter\Config\BaseConfig;
+
+class Permissions extends BaseConfig
+{
+    /**
+     * Permission map GARDA 01 Portal.
+     *
+     * Security principle:
+     * - unknown roles receive no permission;
+     * - Admin receives all permissions;
+     * - every other role receives only explicit permissions.
+     *
+     * Wildcards are supported, for example "meetings.*".
+     *
+     * @var array<string, list<string>>
+     */
+    public array $rolePermissions = [
+        'admin' => [
+            '*',
+        ],
+
+        'ketua' => [
+            'dashboard.view',
+
+            'members.*',
+            'structures.*',
+            'meetings.*',
+            'attendances.*',
+
+            'cash.view',
+            'cash.export',
+
+            'activities.*',
+            'programs.*',
+            'content_studio.*',
+            'messages.*',
+
+            'reports.*',
+            'settings.website.manage',
+        ],
+
+        'sekretaris' => [
+            'dashboard.view',
+
+            'members.view',
+            'members.create',
+            'members.update',
+            'members.import',
+            'members.export',
+
+            'structures.view',
+            'structures.create',
+            'structures.update',
+
+            'meetings.*',
+            'attendances.*',
+
+            'activities.view',
+            'activities.create',
+            'activities.update',
+            'activities.delete',
+            'activities.submit_review',
+            'activities.return_to_draft',
+            'activities.gallery.view',
+            'activities.gallery.manage',
+
+            'programs.view',
+            'programs.create',
+            'programs.update',
+
+            'content_studio.*',
+            'messages.*',
+
+            'reports.view',
+            'reports.members',
+            'reports.meetings',
+        ],
+
+        'bendahara' => [
+            'dashboard.view',
+
+            'members.view',
+            'structures.view',
+            'meetings.view',
+            'attendances.view',
+            'attendances.recap',
+
+            'cash.*',
+
+            'activities.view',
+            'activities.gallery.view',
+            'programs.view',
+
+            'reports.view',
+            'reports.cash',
+        ],
+
+        'pengurus' => [
+            'dashboard.view',
+            'members.view',
+            'structures.view',
+            'meetings.view',
+            'attendances.view',
+            'activities.view',
+            'activities.gallery.view',
+            'programs.view',
+        ],
+    ];
+
+    /**
+     * Friendly labels used on the access-denied page.
+     *
+     * @var array<string, string>
+     */
+    public array $permissionLabels = [
+        'dashboard.view' => 'melihat dashboard',
+
+        'members.view'   => 'melihat data anggota',
+        'members.create' => 'menambah anggota',
+        'members.update' => 'mengubah anggota',
+        'members.delete' => 'menghapus anggota',
+        'members.import' => 'mengimpor data anggota',
+        'members.export' => 'mengekspor data anggota',
+
+        'structures.view'   => 'melihat struktur pengurus',
+        'structures.create' => 'menambah struktur pengurus',
+        'structures.update' => 'mengubah struktur pengurus',
+        'structures.delete' => 'menghapus struktur pengurus',
+
+        'meetings.view'   => 'melihat agenda rapat',
+        'meetings.create' => 'menambah agenda rapat',
+        'meetings.update' => 'mengubah agenda rapat',
+        'meetings.delete' => 'menghapus agenda rapat',
+
+        'attendances.view'   => 'melihat absensi',
+        'attendances.create' => 'menambah absensi',
+        'attendances.update' => 'mengubah absensi',
+        'attendances.delete' => 'menghapus absensi',
+        'attendances.recap'  => 'melihat rekap absensi',
+        'attendances.bulk'   => 'mengisi absensi massal',
+
+        'cash.view'   => 'melihat kas organisasi',
+        'cash.create' => 'mencatat transaksi kas',
+        'cash.update' => 'mengubah transaksi kas',
+        'cash.delete' => 'menghapus transaksi kas',
+        'cash.export' => 'mengekspor laporan kas',
+
+        'activities.view'            => 'melihat kegiatan',
+        'activities.create'          => 'menambah kegiatan',
+        'activities.update'          => 'mengubah kegiatan',
+        'activities.delete'          => 'menghapus kegiatan',
+        'activities.submit_review'   => 'mengirim kegiatan untuk ditinjau',
+        'activities.publish'         => 'menerbitkan kegiatan',
+        'activities.return_to_draft' => 'mengembalikan kegiatan menjadi draft',
+        'activities.archive'         => 'mengarsipkan kegiatan',
+        'activities.gallery.view'    => 'melihat galeri kegiatan',
+        'activities.gallery.manage'  => 'mengelola galeri kegiatan',
+
+        'programs.view'    => 'melihat program GARDA 01',
+        'programs.create'  => 'menambah program',
+        'programs.update'  => 'mengubah program',
+        'programs.publish' => 'menerbitkan program',
+        'programs.archive' => 'mengarsipkan program',
+
+        'content_studio.view'     => 'melihat AI Content Studio',
+        'content_studio.create'   => 'membuat konten',
+        'content_studio.update'   => 'mengubah dan menghasilkan konten',
+        'content_studio.delete'   => 'menghapus konten',
+
+        'messages.view'   => 'melihat pesan masuk',
+        'messages.manage' => 'mengelola status pesan',
+
+        'reports.view'     => 'melihat pusat laporan',
+        'reports.members'  => 'melihat laporan anggota',
+        'reports.cash'     => 'melihat laporan kas',
+        'reports.meetings' => 'melihat laporan rapat',
+
+        'settings.website.manage' => 'mengelola pengaturan website',
+    ];
+}

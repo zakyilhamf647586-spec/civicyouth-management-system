@@ -39,18 +39,11 @@ class AuthController extends BaseController
         );
 
         $password = (string) $this->request->getPost('password');
-
-        $userModel = new UserModel();
-
-        $user = $userModel
-            ->select('users.*, roles.role_name')
-            ->join('roles', 'roles.id = users.role_id', 'left')
-            ->where('users.email', $email)
-            ->first();
+        $user = (new UserModel())->findByEmailWithRole($email);
 
         if (
             !$user
-            || !password_verify($password, $user['password'])
+            || !password_verify($password, (string) $user['password'])
         ) {
             return redirect()->back()
                 ->withInput()
@@ -66,15 +59,25 @@ class AuthController extends BaseController
                 ->with('error', 'Akun Anda sedang tidak aktif.');
         }
 
+        if (empty($user['role_name'])) {
+            return redirect()->back()
+                ->withInput()
+                ->with(
+                    'error',
+                    'Peran akun belum dikonfigurasi. Hubungi administrator.'
+                );
+        }
+
         session()->regenerate(true);
 
         session()->set([
-            'user_id'    => $user['id'],
-            'name'       => $user['name'],
-            'email'      => $user['email'],
-            'role_id'    => $user['role_id'],
-            'role_name'  => $user['role_name'] ?? 'Pengurus',
-            'isLoggedIn' => true,
+            'user_id'         => (int) $user['id'],
+            'name'            => $user['name'],
+            'email'           => $user['email'],
+            'role_id'         => (int) $user['role_id'],
+            'role_name'       => $user['role_name'],
+            'auth_checked_at' => time(),
+            'isLoggedIn'      => true,
         ]);
 
         return redirect()->to('/dashboard');

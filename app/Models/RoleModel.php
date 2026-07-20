@@ -6,8 +6,16 @@ use CodeIgniter\Model;
 
 class RoleModel extends Model
 {
-    protected $table            = 'roles';
-    protected $primaryKey       = 'id';
-    protected $allowedFields    = ['role_name', 'description'];
-    protected $useTimestamps    = true;
+    protected $table      = 'roles';
+    protected $primaryKey = 'id';
+    protected $returnType = 'array';
+
+    protected $allowedFields = [
+        'role_name',
+        'description',
+    ];
+
+    protected $useTimestamps = true;
+    protected $createdField  = 'created_at';
+    protected $updatedField  = 'updated_at';
 }
