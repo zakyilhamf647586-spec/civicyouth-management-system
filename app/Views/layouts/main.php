@@ -229,6 +229,16 @@ $todayLabel =
             'attr'
         ) ?>"
     >
+
+    <link
+        rel="stylesheet"
+        href="<?= base_url(
+            'assets/css/admin-shell-responsive.css'
+        ) ?>?v=<?= filemtime(
+            FCPATH
+            . 'assets/css/admin-shell-responsive.css'
+        ) ?>"
+    >
 </head>
 
 <body class="garda-admin-body">
