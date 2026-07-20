@@ -293,6 +293,327 @@ $formatRelativeTime = static function (
 
     </section>
 
+
+    <!-- WORKFLOW PUBLIKASI KEGIATAN -->
+    <section class="g01-publication-dashboard">
+        <div class="g01-publication-heading">
+            <div>
+                <span class="portal-dashboard-section-label">
+                    CMS Publikasi
+                </span>
+
+                <h2>Alur publikasi kegiatan</h2>
+
+                <p>
+                    Pantau konten dari tahap penyusunan hingga
+                    siap tampil pada website publik GARDA 01.
+                </p>
+            </div>
+
+            <a
+                href="<?= base_url('/activities') ?>"
+                class="g01-publication-heading-link"
+            >
+                Kelola Semua Kegiatan →
+            </a>
+        </div>
+
+        <?php
+        $publicationCards = [
+            'draft' => [
+                'label' => 'Draft',
+                'description' => 'Masih dalam penyusunan',
+            ],
+            'review' => [
+                'label' => 'Menunggu Tinjauan',
+                'description' => 'Perlu diperiksa pengurus',
+            ],
+            'published' => [
+                'label' => 'Dipublikasikan',
+                'description' => 'Sedang tampil di website',
+            ],
+            'scheduled' => [
+                'label' => 'Dijadwalkan',
+                'description' => 'Menunggu waktu penayangan',
+            ],
+            'archived' => [
+                'label' => 'Diarsipkan',
+                'description' => 'Tidak tampil di website',
+            ],
+        ];
+        ?>
+
+        <div class="g01-publication-stat-grid">
+            <?php foreach (
+                $publicationCards as $statusKey => $card
+            ) : ?>
+                <a
+                    href="<?= base_url(
+                        '/activities?publication_status='
+                        . $statusKey
+                    ) ?>"
+                    class="g01-publication-stat-card status-<?= esc(
+                        $statusKey
+                    ) ?>"
+                >
+                    <span><?= esc($card['label']) ?></span>
+
+                    <strong>
+                        <?= esc(
+                            $publicationSummary[$statusKey]
+                            ?? 0
+                        ) ?>
+                    </strong>
+
+                    <small>
+                        <?= esc($card['description']) ?>
+                    </small>
+
+                    <b aria-hidden="true">→</b>
+                </a>
+            <?php endforeach; ?>
+        </div>
+
+        <div class="g01-publication-queue-grid">
+            <article class="g01-publication-queue-panel review-panel">
+                <div class="g01-publication-panel-header">
+                    <div>
+                        <span>Antrean Editorial</span>
+                        <h3>Menunggu tinjauan</h3>
+                        <p>
+                            Konten yang sudah diajukan dan perlu
+                            dipastikan kelayakannya sebelum terbit.
+                        </p>
+                    </div>
+
+                    <a
+                        href="<?= base_url(
+                            '/activities?publication_status=review'
+                        ) ?>"
+                    >
+                        Lihat Semua
+                    </a>
+                </div>
+
+                <?php if (!empty($reviewQueue)) : ?>
+                    <div class="g01-publication-review-list">
+                        <?php foreach ($reviewQueue as $item) : ?>
+                            <div class="g01-publication-review-item">
+                                <div class="g01-publication-review-copy">
+                                    <div class="g01-publication-review-meta">
+                                        <span>
+                                            <?= esc(
+                                                $item['program_name']
+                                            ) ?>
+                                        </span>
+
+                                        <small>
+                                            Diperbarui
+                                            <?= esc(
+                                                $formatRelativeTime(
+                                                    $item['updated_at']
+                                                    ?? null
+                                                )
+                                            ) ?>
+                                        </small>
+                                    </div>
+
+                                    <h4>
+                                        <?= esc($item['title']) ?>
+                                    </h4>
+
+                                    <p>
+                                        <?= esc($item['summary']) ?>
+                                    </p>
+
+                                    <div class="g01-publication-detail-row">
+                                        <span>
+                                            <?= esc(
+                                                $formatDate(
+                                                    $item['activity_date']
+                                                    ?? null
+                                                )
+                                            ) ?>
+                                        </span>
+
+                                        <span>
+                                            <?= esc(
+                                                $item['location'] ?? '-'
+                                            ) ?>
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div class="g01-publication-review-actions">
+                                    <a
+                                        href="<?= base_url(
+                                            '/activities/edit/'
+                                            . $item['id']
+                                        ) ?>"
+                                        class="btn btn-secondary"
+                                    >
+                                        Tinjau
+                                    </a>
+
+                                    <form
+                                        action="<?= base_url(
+                                            '/activities/publish/'
+                                            . $item['id']
+                                        ) ?>"
+                                        method="post"
+                                        onsubmit="return confirm('Terbitkan kegiatan ini sekarang?')"
+                                    >
+                                        <?= csrf_field() ?>
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-primary"
+                                        >
+                                            Terbitkan
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php else : ?>
+                    <div class="g01-publication-empty-state">
+                        <span aria-hidden="true">✓</span>
+
+                        <div>
+                            <strong>Antrean review kosong</strong>
+                            <p>
+                                Tidak ada kegiatan yang menunggu
+                                pemeriksaan saat ini.
+                            </p>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            </article>
+
+            <aside class="g01-publication-queue-panel schedule-panel">
+                <div class="g01-publication-panel-header compact">
+                    <div>
+                        <span>Kalender Konten</span>
+                        <h3>Publikasi terjadwal</h3>
+                    </div>
+
+                    <a
+                        href="<?= base_url(
+                            '/activities?publication_status=scheduled'
+                        ) ?>"
+                    >
+                        Semua Jadwal
+                    </a>
+                </div>
+
+                <?php if (!empty(
+                    $scheduledPublicationQueue
+                )) : ?>
+                    <div class="g01-publication-schedule-list">
+                        <?php foreach (
+                            $scheduledPublicationQueue as $item
+                        ) : ?>
+                            <a
+                                href="<?= base_url(
+                                    '/activities/edit/'
+                                    . $item['id']
+                                ) ?>"
+                                class="g01-publication-schedule-item"
+                            >
+                                <time>
+                                    <strong>
+                                        <?= !empty(
+                                            $item['scheduled_at']
+                                        )
+                                            ? date(
+                                                'd',
+                                                strtotime(
+                                                    $item['scheduled_at']
+                                                )
+                                            )
+                                            : '--' ?>
+                                    </strong>
+
+                                    <span>
+                                        <?= !empty(
+                                            $item['scheduled_at']
+                                        )
+                                            ? strtoupper(
+                                                date(
+                                                    'M',
+                                                    strtotime(
+                                                        $item['scheduled_at']
+                                                    )
+                                                )
+                                            )
+                                            : '---' ?>
+                                    </span>
+                                </time>
+
+                                <div>
+                                    <span>
+                                        <?= esc(
+                                            $item['program_name']
+                                        ) ?>
+                                    </span>
+
+                                    <strong>
+                                        <?= esc($item['title']) ?>
+                                    </strong>
+
+                                    <small>
+                                        <?= esc(
+                                            $formatDate(
+                                                $item['scheduled_at']
+                                                ?? null,
+                                                true
+                                            )
+                                        ) ?>
+                                    </small>
+                                </div>
+
+                                <b aria-hidden="true">→</b>
+                            </a>
+                        <?php endforeach; ?>
+                    </div>
+                <?php else : ?>
+                    <div class="g01-publication-empty-state compact">
+                        <span aria-hidden="true">◷</span>
+
+                        <div>
+                            <strong>Belum ada jadwal publikasi</strong>
+                            <p>
+                                Jadwalkan konten untuk penayangan
+                                pada waktu tertentu.
+                            </p>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
+                <div class="g01-publication-health-note">
+                    <span>
+                        <?= esc(
+                            $activitiesWithoutProgram ?? 0
+                        ) ?>
+                    </span>
+
+                    <div>
+                        <strong>Belum memiliki pilar program</strong>
+                        <p>
+                            Kategorikan kegiatan agar arsip dan
+                            publikasi lebih terstruktur.
+                        </p>
+                    </div>
+
+                    <a href="<?= base_url('/activities') ?>">
+                        Periksa
+                    </a>
+                </div>
+            </aside>
+        </div>
+    </section>
+
     <!-- PERHATIAN + AKSI CEPAT -->
     <section class="portal-dashboard-primary-grid">
 

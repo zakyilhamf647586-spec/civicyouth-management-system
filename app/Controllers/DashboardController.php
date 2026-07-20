@@ -31,6 +31,18 @@ class DashboardController extends BaseController
         $missingActivityCovers =
             $this->countActivitiesWithoutCover();
 
+        $publicationSummary =
+            $this->getActivityPublicationSummary();
+
+        $reviewQueue =
+            $this->getActivityReviewQueue(5);
+
+        $scheduledPublicationQueue =
+            $this->getScheduledPublicationQueue(3);
+
+        $activitiesWithoutProgram =
+            $this->countActivitiesWithoutProgram();
+
         $publishedPrograms = $this->countProgramsByStatus([
             'published',
         ]);
@@ -48,6 +60,8 @@ class DashboardController extends BaseController
             $missingActivityCovers,
             $unreadMessages,
             $draftPrograms,
+            $publicationSummary,
+            $activitiesWithoutProgram,
             $nextMeeting
         );
 
@@ -70,6 +84,17 @@ class DashboardController extends BaseController
 
             'missingActivityCovers' =>
                 $missingActivityCovers,
+
+            'publicationSummary' =>
+                $publicationSummary,
+
+            'reviewQueue' => $reviewQueue,
+
+            'scheduledPublicationQueue' =>
+                $scheduledPublicationQueue,
+
+            'activitiesWithoutProgram' =>
+                $activitiesWithoutProgram,
 
             'unreadMessages' => $unreadMessages,
 
@@ -592,14 +617,348 @@ class DashboardController extends BaseController
             ->countAllResults();
     }
 
+
+    /**
+     * Ringkasan seluruh status publikasi kegiatan.
+     */
+    private function getActivityPublicationSummary(): array
+    {
+        $summary = [
+            'total'     => 0,
+            'draft'     => 0,
+            'review'    => 0,
+            'published' => 0,
+            'scheduled' => 0,
+            'archived'  => 0,
+        ];
+
+        if (
+            !$this->tableExists('activities')
+            || !$this->firstExistingField(
+                'activities',
+                ['publication_status']
+            )
+        ) {
+            return $summary;
+        }
+
+        try {
+            $rows = $this->db
+                ->table('activities')
+                ->select(
+                    'publication_status, COUNT(*) AS total',
+                    false
+                )
+                ->groupBy('publication_status')
+                ->get()
+                ->getResultArray();
+
+            foreach ($rows as $row) {
+                $status = (string) (
+                    $row['publication_status'] ?? ''
+                );
+
+                $total = (int) ($row['total'] ?? 0);
+
+                if (array_key_exists($status, $summary)) {
+                    $summary[$status] = $total;
+                }
+
+                $summary['total'] += $total;
+            }
+        } catch (\Throwable $e) {
+            return $summary;
+        }
+
+        return $summary;
+    }
+
+    /**
+     * Antrean konten yang menunggu pemeriksaan pengurus.
+     */
+    private function getActivityReviewQueue(
+        int $limit = 5
+    ): array {
+        return $this->getActivityPublicationQueue(
+            'review',
+            $limit,
+            'ASC'
+        );
+    }
+
+    /**
+     * Daftar publikasi terjadwal terdekat.
+     */
+    private function getScheduledPublicationQueue(
+        int $limit = 3
+    ): array {
+        return $this->getActivityPublicationQueue(
+            'scheduled',
+            $limit,
+            'ASC'
+        );
+    }
+
+    /**
+     * Query bersama untuk antrean review dan publikasi terjadwal.
+     */
+    private function getActivityPublicationQueue(
+        string $status,
+        int $limit,
+        string $direction = 'ASC'
+    ): array {
+        if (
+            !$this->tableExists('activities')
+            || !$this->firstExistingField(
+                'activities',
+                ['publication_status']
+            )
+        ) {
+            return [];
+        }
+
+        $activityFields = $this->getFields('activities');
+
+        $selectedFields = [
+            'activities.id',
+            'activities.title',
+            'activities.publication_status',
+        ];
+
+        foreach ([
+            'summary',
+            'description',
+            'activity_date',
+            'location',
+            'updated_at',
+            'scheduled_at',
+            'program_id',
+        ] as $field) {
+            if (in_array($field, $activityFields, true)) {
+                $selectedFields[] = 'activities.' . $field;
+            }
+        }
+
+        $builder = $this->db
+            ->table('activities')
+            ->select(implode(', ', $selectedFields))
+            ->where(
+                'activities.publication_status',
+                $status
+            );
+
+        $programNameField = $this->firstExistingField(
+            'programs',
+            ['name', 'title', 'label']
+        );
+
+        if (
+            $this->tableExists('programs')
+            && $programNameField
+            && in_array('program_id', $activityFields, true)
+        ) {
+            $builder
+                ->select(
+                    'programs.'
+                    . $programNameField
+                    . ' AS program_name'
+                )
+                ->join(
+                    'programs',
+                    'programs.id = activities.program_id',
+                    'left'
+                );
+        }
+
+        if (
+            $status === 'scheduled'
+            && in_array('scheduled_at', $activityFields, true)
+        ) {
+            $builder
+                ->where(
+                    'activities.scheduled_at IS NOT NULL',
+                    null,
+                    false
+                )
+                ->orderBy(
+                    'activities.scheduled_at',
+                    $direction
+                );
+        } elseif (in_array('updated_at', $activityFields, true)) {
+            $builder->orderBy(
+                'activities.updated_at',
+                $direction
+            );
+        } else {
+            $builder->orderBy(
+                'activities.id',
+                $direction
+            );
+        }
+
+        try {
+            $rows = $builder
+                ->limit(max(1, $limit))
+                ->get()
+                ->getResultArray();
+        } catch (\Throwable $e) {
+            return [];
+        }
+
+        $result = [];
+
+        foreach ($rows as $row) {
+            $summary = trim(
+                (string) ($row['summary'] ?? '')
+            );
+
+            if ($summary === '') {
+                $summary = trim(
+                    strip_tags(
+                        (string) ($row['description'] ?? '')
+                    )
+                );
+            }
+
+            if (mb_strlen($summary) > 150) {
+                $summary = mb_substr($summary, 0, 147)
+                    . '...';
+            }
+
+            $result[] = [
+                'id' => (int) ($row['id'] ?? 0),
+                'title' => (string) (
+                    $row['title'] ?? 'Kegiatan GARDA 01'
+                ),
+                'summary' => $summary !== ''
+                    ? $summary
+                    : 'Ringkasan kegiatan belum tersedia.',
+                'program_name' => (string) (
+                    $row['program_name']
+                    ?? 'Belum dikategorikan'
+                ),
+                'activity_date' =>
+                    $row['activity_date'] ?? null,
+                'location' => (string) (
+                    $row['location'] ?? '-'
+                ),
+                'updated_at' => $row['updated_at'] ?? null,
+                'scheduled_at' =>
+                    $row['scheduled_at'] ?? null,
+                'publication_status' => (string) (
+                    $row['publication_status'] ?? $status
+                ),
+            ];
+        }
+
+        return $result;
+    }
+
+    private function countActivitiesWithoutProgram(): int
+    {
+        if (!$this->tableExists('activities')) {
+            return 0;
+        }
+
+        $programField = $this->firstExistingField(
+            'activities',
+            ['program_id']
+        );
+
+        if (!$programField) {
+            return 0;
+        }
+
+        try {
+            return $this->db
+                ->table('activities')
+                ->groupStart()
+                    ->where(
+                        $programField . ' IS NULL',
+                        null,
+                        false
+                    )
+                    ->orWhere($programField, 0)
+                ->groupEnd()
+                ->countAllResults();
+        } catch (\Throwable $e) {
+            return 0;
+        }
+    }
+
     private function buildAttentionItems(
         int $membersWithoutPhone,
         int $missingActivityCovers,
         int $unreadMessages,
         int $draftPrograms,
+        array $publicationSummary,
+        int $activitiesWithoutProgram,
         ?array $nextMeeting
     ): array {
         $items = [];
+
+        $reviewActivities = (int) (
+            $publicationSummary['review'] ?? 0
+        );
+
+        $draftActivities = (int) (
+            $publicationSummary['draft'] ?? 0
+        );
+
+        $scheduledActivities = (int) (
+            $publicationSummary['scheduled'] ?? 0
+        );
+
+        if ($reviewActivities > 0) {
+            $items[] = [
+                'tone' => 'danger',
+                'title' => $reviewActivities
+                    . ' kegiatan menunggu tinjauan',
+                'description' =>
+                    'Periksa narasi dan dokumentasi sebelum konten diterbitkan.',
+                'url' =>
+                    '/activities?publication_status=review',
+                'action' => 'Buka Antrean',
+            ];
+        }
+
+        if ($draftActivities > 0) {
+            $items[] = [
+                'tone' => 'info',
+                'title' => $draftActivities
+                    . ' kegiatan masih berupa draft',
+                'description' =>
+                    'Lengkapi konten agar dapat dikirim untuk ditinjau.',
+                'url' =>
+                    '/activities?publication_status=draft',
+                'action' => 'Lihat Draft',
+            ];
+        }
+
+        if ($scheduledActivities > 0) {
+            $items[] = [
+                'tone' => 'info',
+                'title' => $scheduledActivities
+                    . ' kegiatan dijadwalkan terbit',
+                'description' =>
+                    'Pastikan waktu publikasi dan isi konten sudah tepat.',
+                'url' =>
+                    '/activities?publication_status=scheduled',
+                'action' => 'Periksa Jadwal',
+            ];
+        }
+
+        if ($activitiesWithoutProgram > 0) {
+            $items[] = [
+                'tone' => 'warning',
+                'title' => $activitiesWithoutProgram
+                    . ' kegiatan belum memiliki pilar program',
+                'description' =>
+                    'Hubungkan kegiatan ke pilar GARDA 01 agar arsip lebih terstruktur.',
+                'url' => '/activities',
+                'action' => 'Kategorikan',
+            ];
+        }
 
         if ($membersWithoutPhone > 0) {
             $items[] = [

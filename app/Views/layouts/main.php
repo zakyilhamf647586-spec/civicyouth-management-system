@@ -105,6 +105,16 @@ $portalStylesheetVersion = is_file($portalStylesheetPath)
     ? (string) filemtime($portalStylesheetPath)
     : '1';
 
+$dashboardPublicationStylesheetPath =
+    FCPATH . 'assets/css/admin-dashboard-publication.css';
+
+$dashboardPublicationStylesheetVersion =
+    is_file($dashboardPublicationStylesheetPath)
+        ? (string) filemtime(
+            $dashboardPublicationStylesheetPath
+        )
+        : '1';
+
 $userName =
     session()->get('name')
     ?? session()->get('full_name')
@@ -207,6 +217,16 @@ $todayLabel =
         ) ?>?v=<?= filemtime(
             FCPATH
             . 'assets/css/admin-tables-responsive.css'
+        ) ?>"
+    >
+
+    <link
+        rel="stylesheet"
+        href="<?= base_url(
+            'assets/css/admin-dashboard-publication.css'
+        ) ?>?v=<?= esc(
+            $dashboardPublicationStylesheetVersion,
+            'attr'
         ) ?>"
     >
 </head>
