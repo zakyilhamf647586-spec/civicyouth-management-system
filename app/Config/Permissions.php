@@ -119,6 +119,12 @@ class Permissions extends BaseConfig
     public array $permissionLabels = [
         'dashboard.view' => 'melihat dashboard',
 
+        'users.view'           => 'melihat manajemen akun',
+        'users.create'         => 'membuat akun pengguna',
+        'users.update'         => 'mengubah akun pengguna',
+        'users.status'         => 'mengaktifkan atau menonaktifkan akun',
+        'users.reset_password' => 'mereset kata sandi pengguna',
+
         'members.view'   => 'melihat data anggota',
         'members.create' => 'menambah anggota',
         'members.update' => 'mengubah anggota',

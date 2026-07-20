@@ -1,0 +1,404 @@
+/* ==========================================================
+   GARDA 01 Portal — User Account Management
+========================================================== */
+
+.user-management-page {
+    min-width: 0;
+}
+
+.user-management-kicker {
+    display: block;
+    margin-bottom: 7px;
+    color: #b88408;
+    font-size: 9.5px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.user-account-summary-grid {
+    margin-bottom: 20px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 13px;
+}
+
+.user-account-summary-grid article {
+    min-height: 124px;
+    padding: 19px;
+    border-radius: 17px;
+    background: #ffffff;
+    border: 1px solid rgba(16, 42, 67, 0.08);
+    box-shadow: 0 12px 34px rgba(4, 23, 45, 0.055);
+}
+
+.user-account-summary-grid article.featured {
+    color: #ffffff;
+    background:
+        radial-gradient(
+            circle at 90% 6%,
+            rgba(217, 163, 22, 0.22),
+            transparent 32%
+        ),
+        linear-gradient(135deg, #04172d, #082f55);
+    border-color: rgba(217, 163, 22, 0.35);
+}
+
+.user-account-summary-grid span,
+.user-account-summary-grid small {
+    display: block;
+}
+
+.user-account-summary-grid span {
+    color: #627d98;
+    font-size: 9.5px;
+    font-weight: 800;
+}
+
+.user-account-summary-grid strong {
+    display: block;
+    margin-top: 9px;
+    color: #04172d;
+    font-size: 30px;
+    line-height: 1;
+}
+
+.user-account-summary-grid small {
+    margin-top: 10px;
+    color: #829ab1;
+    font-size: 9px;
+    line-height: 1.5;
+}
+
+.user-account-summary-grid .featured span,
+.user-account-summary-grid .featured small {
+    color: rgba(255, 255, 255, 0.62);
+}
+
+.user-account-summary-grid .featured strong {
+    color: #ffffff;
+}
+
+.user-account-filter-grid {
+    grid-template-columns:
+        minmax(220px, 1.3fr)
+        minmax(160px, 0.7fr)
+        minmax(150px, 0.6fr)
+        auto;
+}
+
+.user-account-identity {
+    min-width: 220px;
+    display: flex;
+    align-items: center;
+    gap: 11px;
+}
+
+.user-account-identity > span {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #04172d;
+    background: #fff4ce;
+    border: 1px solid rgba(217, 163, 22, 0.38);
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.user-account-identity strong,
+.user-account-identity p,
+.user-account-identity small {
+    display: block;
+}
+
+.user-account-identity p {
+    margin: 5px 0 0;
+    color: #627d98;
+    font-size: 9.5px;
+}
+
+.current-account {
+    margin-top: 4px;
+    color: #b88408;
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.user-role-badge {
+    display: inline-flex;
+    padding: 7px 9px;
+    border-radius: 999px;
+    font-size: 8.5px;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.role-admin {
+    color: #ffffff;
+    background: #04172d;
+}
+
+.role-ketua {
+    color: #725300;
+    background: #fff0b8;
+}
+
+.role-sekretaris {
+    color: #084c61;
+    background: #d9f3fb;
+}
+
+.role-bendahara {
+    color: #0f5132;
+    background: #dff3e8;
+}
+
+.role-pengurus,
+.role-default {
+    color: #486581;
+    background: #edf2f7;
+}
+
+.user-role-description {
+    max-width: 230px;
+    margin-top: 7px;
+    display: block;
+    color: #829ab1;
+    font-size: 8.5px;
+    line-height: 1.45;
+}
+
+.user-account-empty-state {
+    min-height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+}
+
+.user-account-empty-state strong {
+    color: #04172d;
+}
+
+.user-account-empty-state p {
+    margin: 7px 0 0;
+    color: #627d98;
+    font-size: 10px;
+}
+
+.user-account-form {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.user-role-guide {
+    padding: 23px;
+    border-radius: 19px;
+    background: #ffffff;
+    border: 1px solid rgba(16, 42, 67, 0.08);
+    box-shadow: 0 13px 38px rgba(4, 23, 45, 0.055);
+}
+
+.user-role-guide > strong {
+    color: #04172d;
+    font-size: 13px;
+}
+
+.user-role-guide > div {
+    margin-top: 15px;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 9px;
+}
+
+.user-role-guide article {
+    padding: 13px;
+    border-radius: 12px;
+    background: #f8fafc;
+    border: 1px solid #e7edf3;
+}
+
+.user-role-guide span {
+    color: #b88408;
+    font-size: 9px;
+    font-weight: 900;
+}
+
+.user-role-guide p {
+    margin: 7px 0 0;
+    color: #627d98;
+    font-size: 8.5px;
+    line-height: 1.5;
+}
+
+.user-account-current-notice {
+    margin-bottom: 18px;
+    padding: 15px 17px;
+    border-radius: 14px;
+    background: #fff9e7;
+    border-left: 4px solid #d9a316;
+}
+
+.user-account-current-notice strong {
+    color: #102a43;
+    font-size: 11px;
+}
+
+.user-account-current-notice p {
+    margin: 5px 0 0;
+    color: #627d98;
+    font-size: 9.5px;
+    line-height: 1.55;
+}
+
+.user-account-edit-layout {
+    display: grid;
+    grid-template-columns:
+        minmax(0, 1fr)
+        minmax(270px, 0.34fr);
+    gap: 18px;
+    align-items: start;
+}
+
+.user-account-security-panel {
+    position: sticky;
+    top: 96px;
+    padding: 22px;
+    border-radius: 19px;
+    color: #ffffff;
+    background:
+        radial-gradient(
+            circle at 92% 6%,
+            rgba(217, 163, 22, 0.2),
+            transparent 30%
+        ),
+        linear-gradient(135deg, #04172d, #082f55);
+    border: 1px solid rgba(217, 163, 22, 0.34);
+    box-shadow: 0 17px 45px rgba(4, 23, 45, 0.16);
+}
+
+.user-account-security-panel > span {
+    color: #e7bb47;
+    font-size: 8.5px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.user-account-security-panel h3 {
+    margin: 7px 0 8px;
+    color: #ffffff;
+    font-size: 19px;
+}
+
+.user-account-security-panel > p {
+    margin: 0 0 17px;
+    color: rgba(255, 255, 255, 0.62);
+    font-size: 9.5px;
+    line-height: 1.6;
+}
+
+.user-account-security-panel label {
+    color: rgba(255, 255, 255, 0.78);
+}
+
+.user-account-security-panel input {
+    color: #102a43;
+    background: #ffffff;
+}
+
+.user-account-security-panel .form-group {
+    margin-bottom: 13px;
+}
+
+.user-account-security-panel .btn {
+    width: 100%;
+    justify-content: center;
+}
+
+.user-account-metadata {
+    margin-top: 18px;
+    padding-top: 16px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 9px;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.user-account-metadata div {
+    padding: 10px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.user-account-metadata span,
+.user-account-metadata strong {
+    display: block;
+}
+
+.user-account-metadata span {
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 7.5px;
+    font-weight: 850;
+    text-transform: uppercase;
+}
+
+.user-account-metadata strong {
+    margin-top: 5px;
+    color: #ffffff;
+    font-size: 9.5px;
+}
+
+@media (max-width: 1100px) {
+    .user-account-summary-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .user-role-guide > div {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .user-account-edit-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .user-account-security-panel {
+        position: static;
+    }
+}
+
+@media (max-width: 760px) {
+    .user-account-filter-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .user-role-guide > div {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 520px) {
+    .user-account-summary-grid,
+    .user-role-guide > div {
+        grid-template-columns: 1fr;
+    }
+
+    .user-account-form .form-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .user-account-form .form-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+}

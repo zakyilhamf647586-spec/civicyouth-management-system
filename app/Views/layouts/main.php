@@ -22,6 +22,11 @@ $pageContexts = [
         'label'   => 'Ringkasan Organisasi',
     ],
 
+    'users' => [
+        'section' => 'Sistem',
+        'label'   => 'Manajemen Akun',
+    ],
+
     'members' => [
         'section' => 'Organisasi',
         'label'   => 'Data Anggota',
@@ -610,6 +615,26 @@ $todayLabel =
                         </svg>
 
                         <span>Laporan Organisasi</span>
+                    </a>
+                </div>
+            <?php endif; ?>
+
+            <?php if (auth_can('users.view')) : ?>
+                <div class="garda-admin-nav-section">
+                    <div class="garda-admin-nav-heading">
+                        Sistem
+                    </div>
+
+                    <a
+                        href="<?= base_url('/users') ?>"
+                        class="garda-admin-nav-link <?= $isActive(['users']) ?>"
+                        title="Manajemen Akun"
+                    >
+                        <svg aria-hidden="true">
+                            <use href="#icon-user"></use>
+                        </svg>
+
+                        <span>Manajemen Akun</span>
                     </a>
                 </div>
             <?php endif; ?>

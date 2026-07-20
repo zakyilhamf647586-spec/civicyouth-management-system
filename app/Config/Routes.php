@@ -36,6 +36,15 @@ $routes->get(
     $guard('dashboard.view')
 );
 
+/* User account management */
+$routes->get('/users', 'UserManagementController::index', $guard('users.view'));
+$routes->get('/users/create', 'UserManagementController::create', $guard('users.create'));
+$routes->post('/users/store', 'UserManagementController::store', $guard('users.create'));
+$routes->get('/users/edit/(:num)', 'UserManagementController::edit/$1', $guard('users.update'));
+$routes->post('/users/update/(:num)', 'UserManagementController::update/$1', $guard('users.update'));
+$routes->post('/users/(:num)/status', 'UserManagementController::updateStatus/$1', $guard('users.status'));
+$routes->post('/users/(:num)/reset-password', 'UserManagementController::resetPassword/$1', $guard('users.reset_password'));
+
 /* Members */
 $routes->get('/members', 'MemberController::index', $guard('members.view'));
 $routes->get('/members/create', 'MemberController::create', $guard('members.create'));
