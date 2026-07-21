@@ -98,7 +98,16 @@ class ContentStudioController extends BaseController
                 ->with('error', 'Maksimal upload 5 gambar.');
         }
 
+        $owner = session()->get('name')
+            ?? session()->get('full_name')
+            ?? session()->get('user_name')
+            ?? session()->get('email')
+            ?? 'Tim Media GARDA 01';
+
         $postId = $this->postModel->insert([
+            'channel' => 'instagram',
+            'publication_type' => 'carousel',
+            'canva_template_code' => 'DOC-01A',
             'category' => $this->request->getPost('category'),
             'template_type' => 'feed_portrait_permanent',
             'event_title' => $this->request->getPost('event_title'),
@@ -108,7 +117,24 @@ class ContentStudioController extends BaseController
             'activity_description' => $this->request->getPost('activity_description'),
             'notes' => $this->request->getPost('notes'),
             'status' => 'draft',
-            'created_by' => session()->get('user_name') ?? 'Admin',
+            'workflow_status' => 'draft',
+            'priority' => 'normal',
+            'owner' => $owner,
+            'created_by' => $owner,
+        ]);
+
+        if (!$postId) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Draft konten belum dapat disimpan.');
+        }
+
+        $this->postModel->update($postId, [
+            'content_code' => sprintf(
+                'PUB-%s-%04d',
+                date('Ym'),
+                (int) $postId
+            ),
         ]);
 
         $sortOrder = 1;
@@ -176,7 +202,7 @@ class ContentStudioController extends BaseController
             $service = new OpenAIContentService();
             $result = $service->generateSocialContent($post, $assets);
 
-            $this->postModel->update($id, [
+            $update = [
                 'category'   => $result['category'] ?? $post['category'],
                 'title'      => $result['title'] ?? null,
                 'caption'    => $result['caption'] ?? null,
@@ -185,7 +211,20 @@ class ContentStudioController extends BaseController
                 'alt_text'   => $result['alt_text'] ?? null,
                 'ai_summary' => $result['ai_summary'] ?? null,
                 'status'     => 'generated',
-            ]);
+            ];
+
+            if (
+                auth_can('publications.workflow')
+                && in_array(
+                    $post['workflow_status'] ?? 'draft',
+                    ['brief', 'draft', 'revision'],
+                    true
+                )
+            ) {
+                $update['workflow_status'] = 'design';
+            }
+
+            $this->postModel->update($id, $update);
 
             return redirect()->to('/content-studio/show/' . $id)
                 ->with('success', 'Konten berhasil digenerate oleh AI.');
@@ -264,10 +303,23 @@ class ContentStudioController extends BaseController
             $templateService = new ContentTemplateService();
             $generatedImage = $templateService->renderFeedPortraitPermanent($post, $assets);
 
-            $this->postModel->update($id, [
+            $update = [
                 'generated_image' => $generatedImage,
                 'status' => 'rendered',
-            ]);
+            ];
+
+            if (
+                auth_can('publications.workflow')
+                && in_array(
+                    $post['workflow_status'] ?? 'draft',
+                    ['brief', 'draft', 'revision'],
+                    true
+                )
+            ) {
+                $update['workflow_status'] = 'design';
+            }
+
+            $this->postModel->update($id, $update);
 
             return redirect()->to('/content-studio/show/' . $id)
                 ->with('success', 'Feed visual 4:5 berhasil dibuat.');

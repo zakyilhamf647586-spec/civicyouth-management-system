@@ -129,23 +129,27 @@ $formatRelativeTime = static function (
         </div>
 
         <div class="portal-dashboard-header-actions">
-            <a
-                href="<?= base_url('/activities/create') ?>"
-                class="btn btn-primary"
-            >
-                + Catat Kegiatan
-            </a>
+            <?php if (auth_can('activities.create')) : ?>
+                <a
+                    href="<?= base_url('/activities/create') ?>"
+                    class="btn btn-primary"
+                >
+                    + Catat Kegiatan
+                </a>
+            <?php endif; ?>
 
-            <a
-                href="<?= base_url('/content-studio') ?>"
-                class="btn portal-dashboard-ai-button"
-            >
-                <svg aria-hidden="true">
-                    <use href="#icon-ai"></use>
-                </svg>
+            <?php if (auth_can('publications.view')) : ?>
+                <a
+                    href="<?= base_url('/publications') ?>"
+                    class="btn portal-dashboard-ai-button"
+                >
+                    <svg aria-hidden="true">
+                        <use href="#icon-publication"></use>
+                    </svg>
 
-                Buat Konten AI
-            </a>
+                    Kelola Publikasi
+                </a>
+            <?php endif; ?>
         </div>
     </header>
 

@@ -62,6 +62,11 @@ $pageContexts = [
         'label'   => 'Program GARDA 01',
     ],
 
+    'publications' => [
+        'section' => 'Media dan Publikasi',
+        'label'   => 'Publikasi Sosial',
+    ],
+
     'content-studio' => [
         'section' => 'Media dan Publikasi',
         'label'   => 'AI Content Studio',
@@ -118,6 +123,22 @@ $dashboardPublicationStylesheetVersion =
         ? (string) filemtime(
             $dashboardPublicationStylesheetPath
         )
+        : '1';
+
+$socialPublicationStylesheetPath =
+    FCPATH . 'assets/css/admin-publications.css';
+
+$socialPublicationStylesheetVersion =
+    is_file($socialPublicationStylesheetPath)
+        ? (string) filemtime($socialPublicationStylesheetPath)
+        : '1';
+
+$socialPublicationScriptPath =
+    FCPATH . 'assets/js/admin-publications.js';
+
+$socialPublicationScriptVersion =
+    is_file($socialPublicationScriptPath)
+        ? (string) filemtime($socialPublicationScriptPath)
         : '1';
 
 $userName =
@@ -244,6 +265,18 @@ $todayLabel =
             . 'assets/css/admin-shell-responsive.css'
         ) ?>"
     >
+
+    <?php if ($currentSegment === 'publications') : ?>
+        <link
+            rel="stylesheet"
+            href="<?= base_url(
+                'assets/css/admin-publications.css'
+            ) ?>?v=<?= esc(
+                $socialPublicationStylesheetVersion,
+                'attr'
+            ) ?>"
+        >
+    <?php endif; ?>
 </head>
 
 <body class="garda-admin-body">
@@ -302,6 +335,12 @@ $todayLabel =
         <path d="M12 3 3 8l9 5 9-5-9-5Z"></path>
         <path d="m3 12 9 5 9-5"></path>
         <path d="m3 16 9 5 9-5"></path>
+    </symbol>
+
+    <symbol id="icon-publication" viewBox="0 0 24 24">
+        <path d="M4 4h16v13H7l-3 3V4Z"></path>
+        <path d="M8 8h8M8 12h5"></path>
+        <path d="m16 15 4 4M20 15v4h-4"></path>
     </symbol>
 
     <symbol id="icon-ai" viewBox="0 0 24 24">
@@ -533,6 +572,7 @@ $todayLabel =
             <?php if (auth_can_any([
                 'programs.view',
                 'settings.website.manage',
+                'publications.view',
                 'content_studio.view',
                 'messages.view',
             ])) : ?>
@@ -566,6 +606,20 @@ $todayLabel =
                             </svg>
 
                             <span>Pengaturan Website</span>
+                        </a>
+                    <?php endif; ?>
+
+                    <?php if (auth_can('publications.view')) : ?>
+                        <a
+                            href="<?= base_url('/publications') ?>"
+                            class="garda-admin-nav-link <?= $isActive(['publications']) ?>"
+                            title="Publikasi Sosial"
+                        >
+                            <svg aria-hidden="true">
+                                <use href="#icon-publication"></use>
+                            </svg>
+
+                            <span>Publikasi Sosial</span>
                         </a>
                     <?php endif; ?>
 
@@ -837,6 +891,18 @@ $todayLabel =
     ) ?>"
     defer
 ></script>
+
+<?php if ($currentSegment === 'publications') : ?>
+    <script
+        src="<?= base_url(
+            'assets/js/admin-publications.js'
+        ) ?>?v=<?= esc(
+            $socialPublicationScriptVersion,
+            'attr'
+        ) ?>"
+        defer
+    ></script>
+<?php endif; ?>
 
 <?= $this->renderSection('scripts') ?>
 

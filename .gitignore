@@ -95,3 +95,7 @@ _modules/*
 *.sublime-project
 .phpintel
 /api/
+/backups/
+/_rbac-review-source/
+/GARDA01-rbac-review-source.zip
+/docs/RBAC-DATABASE-AUDIT.txt

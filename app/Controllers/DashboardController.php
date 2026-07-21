@@ -103,51 +103,7 @@ class DashboardController extends BaseController
             'recentActivities' =>
                 $this->getRecentPortalActivities(),
 
-            'quickActions' => [
-                [
-                    'label' => 'Tambah Anggota',
-                    'description' =>
-                        'Daftarkan anggota GARDA 01.',
-                    'url' => '/members/create',
-                    'icon' => 'icon-members',
-                ],
-                [
-                    'label' => 'Catat Kegiatan',
-                    'description' =>
-                        'Tambahkan agenda atau dokumentasi.',
-                    'url' => '/activities/create',
-                    'icon' => 'icon-activity',
-                ],
-                [
-                    'label' => 'Buat Rapat',
-                    'description' =>
-                        'Jadwalkan rapat organisasi.',
-                    'url' => '/meetings/create',
-                    'icon' => 'icon-meeting',
-                ],
-                [
-                    'label' => 'Catat Transaksi',
-                    'description' =>
-                        'Tambahkan kas masuk atau keluar.',
-                    'url' => '/cash/create',
-                    'icon' => 'icon-cash',
-                ],
-                [
-                    'label' => 'Buat Konten AI',
-                    'description' =>
-                        'Siapkan konten media sosial.',
-                    'url' => '/content-studio',
-                    'icon' => 'icon-ai',
-                ],
-                [
-                    'label' => 'Lihat Website',
-                    'description' =>
-                        'Buka website publik GARDA 01.',
-                    'url' => '/',
-                    'icon' => 'icon-globe',
-                    'newTab' => true,
-                ],
-            ],
+            'quickActions' => $this->getQuickActions(),
         ]);
     }
 
@@ -1451,4 +1407,73 @@ class DashboardController extends BaseController
 
         return $items;
     }
+    private function getQuickActions(): array
+    {
+        $actions = [];
+
+        if (auth_can('members.create')) {
+            $actions[] = [
+                'label' => 'Tambah Anggota',
+                'description' => 'Daftarkan anggota GARDA 01.',
+                'url' => '/members/create',
+                'icon' => 'icon-members',
+            ];
+        }
+
+        if (auth_can('activities.create')) {
+            $actions[] = [
+                'label' => 'Catat Kegiatan',
+                'description' => 'Tambahkan agenda atau dokumentasi.',
+                'url' => '/activities/create',
+                'icon' => 'icon-activity',
+            ];
+        }
+
+        if (auth_can('meetings.create')) {
+            $actions[] = [
+                'label' => 'Buat Rapat',
+                'description' => 'Jadwalkan rapat organisasi.',
+                'url' => '/meetings/create',
+                'icon' => 'icon-meeting',
+            ];
+        }
+
+        if (auth_can('cash.create')) {
+            $actions[] = [
+                'label' => 'Catat Transaksi',
+                'description' => 'Tambahkan kas masuk atau keluar.',
+                'url' => '/cash/create',
+                'icon' => 'icon-cash',
+            ];
+        }
+
+        if (auth_can('publications.view')) {
+            $actions[] = [
+                'label' => 'Kelola Publikasi',
+                'description' => 'Kelola brief, Canva, review, dan jadwal.',
+                'url' => '/publications',
+                'icon' => 'icon-publication',
+            ];
+        }
+
+        if (auth_can('content_studio.view')) {
+            $actions[] = [
+                'label' => 'Buat Konten AI',
+                'description' => 'Bantu siapkan caption dan materi.',
+                'url' => '/content-studio',
+                'icon' => 'icon-ai',
+            ];
+        }
+
+        $actions[] = [
+            'label' => 'Lihat Website',
+            'description' => 'Buka website publik GARDA 01.',
+            'url' => '/',
+            'icon' => 'icon-globe',
+            'newTab' => true,
+        ];
+
+        return $actions;
+    }
+
 }

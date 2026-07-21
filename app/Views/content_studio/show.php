@@ -8,7 +8,14 @@
         <p>Preview gambar, hasil caption, hashtag, dan teks yang bisa diedit sebelum dipakai.</p>
     </div>
 
-    <a href="<?= base_url('/content-studio') ?>" class="btn btn-secondary">Kembali</a>
+    <div>
+        <?php if (auth_can('publications.view')) : ?>
+            <a href="<?= base_url('/publications/' . $post['id']) ?>" class="btn btn-primary">
+                Buka Publikasi
+            </a>
+        <?php endif; ?>
+        <a href="<?= base_url('/content-studio') ?>" class="btn btn-secondary">Kembali</a>
+    </div>
 </div>
 
 <?php if (session()->getFlashdata('success')) : ?>
