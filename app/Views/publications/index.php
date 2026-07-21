@@ -41,6 +41,17 @@ $formatDateTime = static function (?string $value): string {
 
     <div class="publication-header-actions">
         <?php if (auth_can(
+            'publications.audit.view'
+        )) : ?>
+            <a
+                href="<?= base_url('/publications/audit') ?>"
+                class="btn btn-secondary"
+            >
+                Audit Trail
+            </a>
+        <?php endif; ?>
+
+        <?php if (auth_can(
             'publications.metrics.view'
         )) : ?>
             <a

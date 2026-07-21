@@ -45,6 +45,23 @@ $formatDateTime = static function (?string $value): string {
 
     <div class="publication-header-actions">
         <?php if (auth_can(
+            'publications.audit.view'
+        )) : ?>
+            <a
+                href="<?= base_url('/publications/audit?q='
+                    . urlencode(
+                        $post['content_code']
+                        ?: $post['event_title']
+                        ?: ''
+                    )
+                ) ?>"
+                class="btn btn-secondary"
+            >
+                Audit Trail
+            </a>
+        <?php endif; ?>
+
+        <?php if (auth_can(
             'publications.metrics.view'
         )) : ?>
             <a
@@ -671,6 +688,212 @@ $formatDateTime = static function (?string $value): string {
                 <?php endif; ?>
             <?php endif; ?>
         </section>
+
+
+        <?php if (auth_can(
+            'publications.audit.view'
+        )) : ?>
+            <section class="publication-detail-card publication-audit-card">
+                <div class="publication-card-heading">
+                    <div>
+                        <span>Audit Trail</span>
+                        <h2>Riwayat perubahan publikasi</h2>
+                    </div>
+
+                    <a
+                        href="<?= base_url(
+                            '/publications/audit?q='
+                            . urlencode(
+                                $post['content_code']
+                                ?: $post['event_title']
+                                ?: ''
+                            )
+                        ) ?>"
+                        class="btn btn-secondary"
+                    >
+                        Lihat Semua
+                    </a>
+                </div>
+
+                <?php if (!$auditReady) : ?>
+                    <div class="publication-notice">
+                        <strong>
+                            Tabel audit belum tersedia
+                        </strong>
+
+                        <p>
+                            Jalankan migration terbaru agar perubahan
+                            publikasi dapat direkam otomatis.
+                        </p>
+                    </div>
+                <?php elseif (!empty($auditHistory)) : ?>
+                    <div class="publication-audit-timeline">
+                        <?php foreach (
+                            $auditHistory as $log
+                        ) : ?>
+                            <?php
+                            $changedFields = json_decode(
+                                (string) (
+                                    $log['changed_fields']
+                                    ?? ''
+                                ),
+                                true
+                            );
+
+                            $changedLabels = [];
+
+                            if (is_array($changedFields)) {
+                                foreach (
+                                    $changedFields as $change
+                                ) {
+                                    $changedLabels[] =
+                                        $change['label']
+                                        ?? 'Field';
+                                }
+                            }
+                            ?>
+
+                            <article
+                                class="publication-audit-event publication-audit-event--<?= esc(
+                                    $log['event_type'],
+                                    'attr'
+                                ) ?>"
+                            >
+                                <span
+                                    class="publication-audit-event__dot"
+                                    aria-hidden="true"
+                                ></span>
+
+                                <div>
+                                    <header>
+                                        <div>
+                                            <strong>
+                                                <?= esc(
+                                                    $auditEventLabels[
+                                                        $log[
+                                                            'event_type'
+                                                        ]
+                                                    ]
+                                                    ?? ucfirst(
+                                                        str_replace(
+                                                            '_',
+                                                            ' ',
+                                                            $log[
+                                                                'event_type'
+                                                            ]
+                                                        )
+                                                    )
+                                                ) ?>
+                                            </strong>
+
+                                            <small>
+                                                <?= esc(
+                                                    $log[
+                                                        'actor_name'
+                                                    ] ?? 'Sistem'
+                                                ) ?>
+                                                ·
+                                                <?= esc(
+                                                    $log[
+                                                        'actor_role'
+                                                    ] ?? '-'
+                                                ) ?>
+                                            </small>
+                                        </div>
+
+                                        <time>
+                                            <?= esc(
+                                                $formatDateTime(
+                                                    $log[
+                                                        'created_at'
+                                                    ] ?? null
+                                                )
+                                            ) ?>
+                                        </time>
+                                    </header>
+
+                                    <p>
+                                        <?= esc(
+                                            $log['summary']
+                                            ?? 'Aktivitas tercatat.'
+                                        ) ?>
+                                    </p>
+
+                                    <?php if (
+                                        !empty($log['from_status'])
+                                        || !empty($log['to_status'])
+                                    ) : ?>
+                                        <div class="publication-audit-transition">
+                                            <span>
+                                                <?= esc(
+                                                    $workflowStatuses[
+                                                        $log[
+                                                            'from_status'
+                                                        ]
+                                                    ]
+                                                    ?? (
+                                                        $log[
+                                                            'from_status'
+                                                        ] ?: '-'
+                                                    )
+                                                ) ?>
+                                            </span>
+
+                                            <b>→</b>
+
+                                            <span>
+                                                <?= esc(
+                                                    $workflowStatuses[
+                                                        $log[
+                                                            'to_status'
+                                                        ]
+                                                    ]
+                                                    ?? (
+                                                        $log[
+                                                            'to_status'
+                                                        ] ?: '-'
+                                                    )
+                                                ) ?>
+                                            </span>
+                                        </div>
+                                    <?php endif; ?>
+
+                                    <?php if (!empty(
+                                        $changedLabels
+                                    )) : ?>
+                                        <div class="publication-audit-chips">
+                                            <?php foreach (
+                                                array_slice(
+                                                    $changedLabels,
+                                                    0,
+                                                    8
+                                                ) as $label
+                                            ) : ?>
+                                                <span>
+                                                    <?= esc($label) ?>
+                                                </span>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    <?php endif; ?>
+                                </div>
+                            </article>
+                        <?php endforeach; ?>
+                    </div>
+                <?php else : ?>
+                    <div class="publication-empty-state compact">
+                        <strong>
+                            Belum ada aktivitas audit
+                        </strong>
+
+                        <p>
+                            Aktivitas baru akan muncul setelah
+                            migration dijalankan dan record ini
+                            mengalami perubahan berikutnya.
+                        </p>
+                    </div>
+                <?php endif; ?>
+            </section>
+        <?php endif; ?>
 
     </div>
 

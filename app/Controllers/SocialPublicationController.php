@@ -6,6 +6,7 @@ use App\Models\ActivityModel;
 use App\Models\ContentAssetModel;
 use App\Models\ContentPostModel;
 use App\Models\ContentPostMetricModel;
+use App\Models\ContentPostAuditLogModel;
 use App\Models\ProgramModel;
 use Config\SocialMedia;
 
@@ -13,6 +14,7 @@ class SocialPublicationController extends BaseController
 {
     protected ContentPostModel $postModel;
     protected ContentPostMetricModel $metricModel;
+    protected ContentPostAuditLogModel $auditModel;
     protected ContentAssetModel $assetModel;
     protected ProgramModel $programModel;
     protected ActivityModel $activityModel;
@@ -23,6 +25,7 @@ class SocialPublicationController extends BaseController
     {
         $this->postModel = new ContentPostModel();
         $this->metricModel = new ContentPostMetricModel();
+        $this->auditModel = new ContentPostAuditLogModel();
         $this->assetModel = new ContentAssetModel();
         $this->programModel = new ProgramModel();
         $this->activityModel = new ActivityModel();
@@ -456,6 +459,10 @@ class SocialPublicationController extends BaseController
                 'type' => $type,
             ],
             'metricsReady' => $this->metricsTableReady(),
+            'auditHistory' => $auditHistory,
+            'auditReady' => $this->auditTableReady(),
+            'auditEventLabels' =>
+                $this->auditEventLabels(),
         ]);
     }
 
@@ -706,7 +713,12 @@ class SocialPublicationController extends BaseController
             );
         }
 
-        if (!$this->metricModel->insert($payload)) {
+        $metricId = $this->metricModel->insert(
+            $payload,
+            true
+        );
+
+        if (!$metricId) {
             return redirect()->to(
                 '/publications/' . $id
             )->with(
@@ -714,6 +726,24 @@ class SocialPublicationController extends BaseController
                 'Snapshot performa belum dapat disimpan.'
             );
         }
+
+        $this->recordAudit(
+            (int) $id,
+            'metric_added',
+            'Snapshot performa Instagram ditambahkan.',
+            [
+                'metadata' => [
+                    'metric_id' => (int) $metricId,
+                    'recorded_at' => $recordedAt,
+                    'reach' => $payload['reach'],
+                    'interactions' =>
+                        $payload['likes']
+                        + $payload['comments']
+                        + $payload['shares']
+                        + $payload['saves'],
+                ],
+            ]
+        );
 
         return redirect()->to(
             '/publications/' . $id
@@ -750,12 +780,162 @@ class SocialPublicationController extends BaseController
 
         $this->metricModel->delete($metricId);
 
+        $this->recordAudit(
+            (int) $id,
+            'metric_deleted',
+            'Snapshot performa Instagram dihapus.',
+            [
+                'metadata' => [
+                    'metric_id' => (int) $metricId,
+                    'recorded_at' =>
+                        $metric['recorded_at'] ?? null,
+                    'reach' => (int) (
+                        $metric['reach'] ?? 0
+                    ),
+                ],
+            ]
+        );
+
         return redirect()->to(
             '/publications/' . $id
         )->with(
             'success',
             'Snapshot performa berhasil dihapus.'
         );
+    }
+
+    public function audit()
+    {
+        $eventType = trim(
+            (string) $this->request->getGet('event_type')
+        );
+
+        $search = trim(
+            (string) $this->request->getGet('q')
+        );
+
+        $actor = trim(
+            (string) $this->request->getGet('actor')
+        );
+
+        $dateFrom = trim(
+            (string) $this->request->getGet('date_from')
+        );
+
+        $dateTo = trim(
+            (string) $this->request->getGet('date_to')
+        );
+
+        $logs = [];
+        $pager = null;
+
+        if ($this->auditTableReady()) {
+            $model = new ContentPostAuditLogModel();
+
+            $model
+                ->select(
+                    'content_post_audit_logs.*, '
+                    . 'content_posts.content_code, '
+                    . 'content_posts.event_title, '
+                    . 'content_posts.title'
+                )
+                ->join(
+                    'content_posts',
+                    'content_posts.id = '
+                    . 'content_post_audit_logs.content_post_id',
+                    'left'
+                );
+
+            if (isset(
+                $this->auditEventLabels()[$eventType]
+            )) {
+                $model->where(
+                    'content_post_audit_logs.event_type',
+                    $eventType
+                );
+            }
+
+            if ($actor !== '') {
+                $model
+                    ->groupStart()
+                    ->like(
+                        'content_post_audit_logs.actor_name',
+                        $actor
+                    )
+                    ->orLike(
+                        'content_post_audit_logs.actor_role',
+                        $actor
+                    )
+                    ->groupEnd();
+            }
+
+            if ($search !== '') {
+                $model
+                    ->groupStart()
+                    ->like(
+                        'content_post_audit_logs.summary',
+                        $search
+                    )
+                    ->orLike(
+                        'content_posts.content_code',
+                        $search
+                    )
+                    ->orLike(
+                        'content_posts.event_title',
+                        $search
+                    )
+                    ->orLike(
+                        'content_posts.title',
+                        $search
+                    )
+                    ->groupEnd();
+            }
+
+            if ($this->isValidDate($dateFrom)) {
+                $model->where(
+                    'content_post_audit_logs.created_at >=',
+                    $dateFrom . ' 00:00:00'
+                );
+            }
+
+            if ($this->isValidDate($dateTo)) {
+                $model->where(
+                    'content_post_audit_logs.created_at <=',
+                    $dateTo . ' 23:59:59'
+                );
+            }
+
+            $logs = $model
+                ->orderBy(
+                    'content_post_audit_logs.created_at',
+                    'DESC'
+                )
+                ->orderBy(
+                    'content_post_audit_logs.id',
+                    'DESC'
+                )
+                ->paginate(30, 'publication_audit');
+
+            $pager = $model->pager;
+        }
+
+        return view('publications/audit', [
+            'title' => 'Audit Trail Publikasi',
+            'logs' => $logs,
+            'pager' => $pager,
+            'auditReady' => $this->auditTableReady(),
+            'eventLabels' => $this->auditEventLabels(),
+            'summary' => $this->auditSummary(),
+            'filters' => [
+                'event_type' => $eventType,
+                'q' => $search,
+                'actor' => $actor,
+                'date_from' => $dateFrom,
+                'date_to' => $dateTo,
+            ],
+            'workflowStatuses' =>
+                $this->socialMedia->workflowStatuses,
+        ]);
     }
 
     public function store()
@@ -787,11 +967,44 @@ class SocialPublicationController extends BaseController
             'content_code' => $this->buildContentCode((int) $postId),
         ]);
 
+        $this->recordAudit(
+            (int) $postId,
+            'created',
+            'Brief publikasi dibuat.',
+            [
+                'to_status' => 'brief',
+                'metadata' => [
+                    'activity_id' =>
+                        $payload['activity_id'] ?? null,
+                    'program_id' =>
+                        $payload['program_id'] ?? null,
+                    'publication_type' =>
+                        $payload['publication_type'] ?? null,
+                ],
+            ]
+        );
+
         try {
-            $this->saveUploadedAssets((int) $postId);
+            $savedAssets = $this->saveUploadedAssets(
+                (int) $postId
+            );
         } catch (\RuntimeException $e) {
             return redirect()->to('/publications/' . $postId)
                 ->with('error', $e->getMessage());
+        }
+
+        if ($savedAssets > 0) {
+            $this->recordAudit(
+                (int) $postId,
+                'assets_uploaded',
+                $savedAssets
+                . ' aset awal ditambahkan.',
+                [
+                    'metadata' => [
+                        'asset_count' => $savedAssets,
+                    ],
+                ]
+            );
         }
 
         return redirect()->to('/publications/' . $postId)
@@ -823,6 +1036,13 @@ class SocialPublicationController extends BaseController
             : [];
 
         $latestMetric = $metricHistory[0] ?? null;
+
+        $auditHistory = $this->auditTableReady()
+            ? $this->auditModel->historyForPost(
+                (int) $id,
+                30
+            )
+            : [];
 
         $allowedTransitions = array_values(array_filter(
             $this->socialMedia->transitions[$currentStatus] ?? [],
@@ -895,13 +1115,49 @@ class SocialPublicationController extends BaseController
                 );
         }
 
-        $this->postModel->update($id, $this->publicationPayload());
+        $payload = $this->publicationPayload();
+        $changedFields = $this->changedFields(
+            $post,
+            $payload
+        );
+
+        $this->postModel->update($id, $payload);
 
         try {
-            $this->saveUploadedAssets((int) $id);
+            $savedAssets = $this->saveUploadedAssets(
+                (int) $id
+            );
         } catch (\RuntimeException $e) {
             return redirect()->to('/publications/' . $id)
                 ->with('error', $e->getMessage());
+        }
+
+        if (!empty($changedFields)) {
+            $this->recordAudit(
+                (int) $id,
+                'updated',
+                'Data publikasi diperbarui: '
+                . $this->changedFieldSummary(
+                    $changedFields
+                )
+                . '.',
+                [
+                    'changed_fields' => $changedFields,
+                ]
+            );
+        }
+
+        if ($savedAssets > 0) {
+            $this->recordAudit(
+                (int) $id,
+                'assets_uploaded',
+                $savedAssets . ' aset ditambahkan.',
+                [
+                    'metadata' => [
+                        'asset_count' => $savedAssets,
+                    ],
+                ]
+            );
         }
 
         return redirect()->to('/publications/' . $id)
@@ -985,6 +1241,32 @@ class SocialPublicationController extends BaseController
 
         $this->postModel->update($id, $update);
 
+        $this->recordAudit(
+            (int) $id,
+            'status_changed',
+            'Status publikasi berubah dari '
+            . (
+                $this->socialMedia->workflowStatuses[
+                    $currentStatus
+                ] ?? ucfirst($currentStatus)
+            )
+            . ' menjadi '
+            . (
+                $this->socialMedia->workflowStatuses[
+                    $targetStatus
+                ] ?? ucfirst($targetStatus)
+            )
+            . '.',
+            [
+                'from_status' => $currentStatus,
+                'to_status' => $targetStatus,
+                'metadata' => [
+                    'approval_notes' =>
+                        $update['approval_notes'] ?? null,
+                ],
+            ]
+        );
+
         return redirect()->to('/publications/' . $id)
             ->with('success', 'Status publikasi berhasil diperbarui.');
     }
@@ -1006,6 +1288,17 @@ class SocialPublicationController extends BaseController
             return redirect()->back()
                 ->with('error', 'Pilih minimal satu gambar yang valid.');
         }
+
+        $this->recordAudit(
+            (int) $id,
+            'assets_uploaded',
+            $saved . ' aset ditambahkan.',
+            [
+                'metadata' => [
+                    'asset_count' => $saved,
+                ],
+            ]
+        );
 
         return redirect()->to('/publications/' . $id)
             ->with('success', $saved . ' aset berhasil ditambahkan.');
@@ -1029,6 +1322,21 @@ class SocialPublicationController extends BaseController
         }
 
         $this->assetModel->delete($assetId);
+
+        $this->recordAudit(
+            (int) $id,
+            'asset_deleted',
+            'Aset publikasi dihapus.',
+            [
+                'metadata' => [
+                    'asset_id' => (int) $assetId,
+                    'original_name' =>
+                        $asset['original_name'] ?? null,
+                    'image_path' =>
+                        $asset['image_path'] ?? null,
+                ],
+            ]
+        );
 
         return redirect()->to('/publications/' . $id)
             ->with('success', 'Aset berhasil dihapus.');
@@ -1214,6 +1522,257 @@ class SocialPublicationController extends BaseController
                 ->where('workflow_status', 'published')
                 ->countAllResults(),
         ];
+    }
+
+    private function recordAudit(
+        int $postId,
+        string $eventType,
+        string $summary,
+        array $options = []
+    ): void {
+        if (!$this->auditTableReady()) {
+            return;
+        }
+
+        $payload = [
+            'content_post_id' => $postId,
+            'event_type' => $eventType,
+            'summary' => mb_strimwidth(
+                trim($summary),
+                0,
+                255,
+                '…'
+            ),
+            'from_status' =>
+                $options['from_status'] ?? null,
+            'to_status' =>
+                $options['to_status'] ?? null,
+            'changed_fields' => $this->encodeAuditData(
+                $options['changed_fields'] ?? null
+            ),
+            'metadata' => $this->encodeAuditData(
+                $options['metadata'] ?? null
+            ),
+            'user_id' => session()->has('user_id')
+                ? (int) session()->get('user_id')
+                : null,
+            'actor_name' => $this->currentUser(),
+            'actor_role' => session()->get('role_name')
+                ?: 'Tidak diketahui',
+            'ip_address' =>
+                $this->request->getIPAddress(),
+            'user_agent' => mb_strimwidth(
+                (string) $this->request
+                    ->getUserAgent(),
+                0,
+                500,
+                '…'
+            ),
+            'created_at' => date('Y-m-d H:i:s'),
+        ];
+
+        try {
+            $this->auditModel->insert($payload);
+        } catch (\Throwable $e) {
+            log_message(
+                'error',
+                'Publication audit log failed: '
+                . $e->getMessage()
+            );
+        }
+    }
+
+    private function changedFields(
+        array $before,
+        array $after
+    ): array {
+        $changes = [];
+
+        foreach ($after as $field => $newValue) {
+            $oldValue = $before[$field] ?? null;
+
+            if (
+                $this->comparableValue($oldValue)
+                === $this->comparableValue($newValue)
+            ) {
+                continue;
+            }
+
+            $changes[$field] = [
+                'label' => $this->auditFieldLabels()[
+                    $field
+                ] ?? str_replace('_', ' ', $field),
+                'before' => $oldValue,
+                'after' => $newValue,
+            ];
+        }
+
+        return $changes;
+    }
+
+    private function changedFieldSummary(
+        array $changes
+    ): string {
+        $labels = array_map(
+            static fn (array $change): string =>
+                (string) ($change['label'] ?? 'field'),
+            array_values($changes)
+        );
+
+        if (count($labels) > 5) {
+            $remaining = count($labels) - 5;
+            $labels = array_slice($labels, 0, 5);
+            $labels[] = $remaining . ' field lainnya';
+        }
+
+        return implode(', ', $labels);
+    }
+
+    private function comparableValue($value): string
+    {
+        if ($value === null || $value === '') {
+            return '';
+        }
+
+        if (is_bool($value)) {
+            return $value ? '1' : '0';
+        }
+
+        if (is_array($value)) {
+            return json_encode(
+                $value,
+                JSON_UNESCAPED_UNICODE
+                | JSON_UNESCAPED_SLASHES
+            ) ?: '';
+        }
+
+        return trim((string) $value);
+    }
+
+    private function encodeAuditData($value): ?string
+    {
+        if ($value === null || $value === []) {
+            return null;
+        }
+
+        $json = json_encode(
+            $value,
+            JSON_UNESCAPED_UNICODE
+            | JSON_UNESCAPED_SLASHES
+        );
+
+        return $json === false ? null : $json;
+    }
+
+    private function auditTableReady(): bool
+    {
+        return db_connect()->tableExists(
+            'content_post_audit_logs'
+        );
+    }
+
+    private function auditSummary(): array
+    {
+        if (!$this->auditTableReady()) {
+            return [
+                'total' => 0,
+                'today' => 0,
+                'status_changes' => 0,
+                'updates' => 0,
+            ];
+        }
+
+        $db = db_connect();
+
+        return [
+            'total' => $db
+                ->table('content_post_audit_logs')
+                ->countAllResults(),
+            'today' => $db
+                ->table('content_post_audit_logs')
+                ->where(
+                    'created_at >=',
+                    date('Y-m-d') . ' 00:00:00'
+                )
+                ->countAllResults(),
+            'status_changes' => $db
+                ->table('content_post_audit_logs')
+                ->where('event_type', 'status_changed')
+                ->countAllResults(),
+            'updates' => $db
+                ->table('content_post_audit_logs')
+                ->where('event_type', 'updated')
+                ->countAllResults(),
+        ];
+    }
+
+    private function auditEventLabels(): array
+    {
+        return [
+            'created' => 'Brief Dibuat',
+            'updated' => 'Data Diperbarui',
+            'status_changed' => 'Status Berubah',
+            'assets_uploaded' => 'Aset Ditambahkan',
+            'asset_deleted' => 'Aset Dihapus',
+            'metric_added' => 'Metrik Ditambahkan',
+            'metric_deleted' => 'Metrik Dihapus',
+        ];
+    }
+
+    private function auditFieldLabels(): array
+    {
+        return [
+            'program_id' => 'Pilar',
+            'activity_id' => 'Sumber kegiatan',
+            'publication_type' => 'Format publikasi',
+            'canva_template_code' => 'Master Canva',
+            'category' => 'Kategori',
+            'event_title' => 'Judul internal',
+            'event_date' => 'Tanggal kegiatan',
+            'event_time' => 'Waktu kegiatan',
+            'event_location' => 'Lokasi',
+            'activity_description' => 'Deskripsi kegiatan',
+            'cover_hook' => 'Hook cover',
+            'content_goal' => 'Tujuan konten',
+            'target_audience' => 'Target audiens',
+            'call_to_action' => 'Call to action',
+            'canva_url' => 'Tautan desain Canva',
+            'owner' => 'PIC',
+            'reviewer' => 'Reviewer',
+            'priority' => 'Prioritas',
+            'title' => 'Judul konten',
+            'caption' => 'Caption',
+            'hashtags' => 'Hashtag',
+            'mentions' => 'Mention',
+            'alt_text' => 'Alt text',
+            'notes' => 'Catatan produksi',
+            'scheduled_at' => 'Jadwal tayang',
+            'instagram_url' => 'Tautan Instagram',
+            'approval_notes' => 'Catatan approval',
+        ];
+    }
+
+    private function isValidDate(string $value): bool
+    {
+        if ($value === '') {
+            return false;
+        }
+
+        $date = \DateTimeImmutable::createFromFormat(
+            '!Y-m-d',
+            $value
+        );
+
+        $errors = \DateTimeImmutable::getLastErrors();
+
+        return $date !== false
+            && (
+                $errors === false
+                || (
+                    ($errors['warning_count'] ?? 0) === 0
+                    && ($errors['error_count'] ?? 0) === 0
+                )
+            );
     }
 
     private function resolveAnalyticsMonth(
