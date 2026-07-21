@@ -126,6 +126,19 @@ $routes->get('/imports/members', 'ImportController::membersForm', $guard('member
 $routes->get('/imports/members/template', 'ImportController::membersTemplate', $guard('members.import'));
 $routes->post('/imports/members', 'ImportController::membersImport', $guard('members.import'));
 
+/* Social publication and Canva workflow */
+$routes->get('/publications', 'SocialPublicationController::index', $guard('publications.view'));
+$routes->get('/publications/calendar', 'SocialPublicationController::calendar', $guard('publications.view'));
+$routes->get('/publications/create', 'SocialPublicationController::create', $guard('publications.create'));
+$routes->get('/publications/create/activity/(:num)', 'SocialPublicationController::createFromActivity/$1', $guard('publications.create'));
+$routes->post('/publications/store', 'SocialPublicationController::store', $guard('publications.create'));
+$routes->get('/publications/(:num)', 'SocialPublicationController::show/$1', $guard('publications.view'));
+$routes->get('/publications/edit/(:num)', 'SocialPublicationController::edit/$1', $guard('publications.update'));
+$routes->post('/publications/update/(:num)', 'SocialPublicationController::update/$1', $guard('publications.update'));
+$routes->post('/publications/status/(:num)', 'SocialPublicationController::changeStatus/$1', $guard('publications.workflow'));
+$routes->post('/publications/(:num)/assets', 'SocialPublicationController::uploadAssets/$1', $guard('publications.assets'));
+$routes->post('/publications/(:num)/assets/(:num)/delete', 'SocialPublicationController::deleteAsset/$1/$2', $guard('publications.assets'));
+
 /* AI Content Studio */
 $routes->get('/content-studio', 'ContentStudioController::index', $guard('content_studio.view'));
 $routes->get('/content-studio/create', 'ContentStudioController::create', $guard('content_studio.create'));

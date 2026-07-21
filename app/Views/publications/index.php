@@ -7,6 +7,18 @@
 <div class="publication-admin-page">
 
 <?php
+$formatActivityDate = static function (?string $value): string {
+    if (empty($value)) {
+        return 'Tanggal belum ditentukan';
+    }
+
+    $timestamp = strtotime($value);
+
+    return $timestamp
+        ? date('d M Y', $timestamp)
+        : 'Tanggal belum ditentukan';
+};
+
 $formatDateTime = static function (?string $value): string {
     if (empty($value)) {
         return 'Belum dijadwalkan';
@@ -28,6 +40,13 @@ $formatDateTime = static function (?string $value): string {
     </div>
 
     <div class="publication-header-actions">
+        <a
+            href="<?= base_url('/publications/calendar') ?>"
+            class="btn btn-secondary"
+        >
+            Kalender Konten
+        </a>
+
         <?php if (auth_can('content_studio.view')) : ?>
             <a href="<?= base_url('/content-studio') ?>" class="btn btn-secondary">AI Content Studio</a>
         <?php endif; ?>
@@ -73,6 +92,103 @@ $formatDateTime = static function (?string $value): string {
         <small>Tautan tayang tercatat</small>
     </article>
 </section>
+
+
+<?php if (
+    auth_can('publications.create')
+    && !empty($activityCandidates)
+) : ?>
+    <section class="publication-activity-candidates">
+        <div class="publication-activity-candidates__heading">
+            <div>
+                <span>Brief Otomatis</span>
+                <h3>Kegiatan yang siap diolah menjadi konten</h3>
+                <p>
+                    Data judul, tanggal, lokasi, program, ringkasan,
+                    caption awal, dan master Canva akan diisi otomatis.
+                </p>
+            </div>
+
+            <a
+                href="<?= base_url('/activities') ?>"
+                class="btn btn-secondary"
+            >
+                Lihat Data Kegiatan
+            </a>
+        </div>
+
+        <div class="publication-activity-candidate-grid">
+            <?php foreach (
+                $activityCandidates as $activity
+            ) : ?>
+                <?php
+                $isCompleted =
+                    ($activity['status'] ?? '') === 'completed';
+                ?>
+
+                <article class="publication-activity-candidate">
+                    <div class="publication-activity-candidate__meta">
+                        <span class="<?= $isCompleted
+                            ? 'completed'
+                            : 'planned' ?>">
+                            <?= $isCompleted
+                                ? 'Selesai'
+                                : 'Direncanakan' ?>
+                        </span>
+
+                        <small>
+                            <?= esc(
+                                $formatActivityDate(
+                                    $activity['activity_date']
+                                    ?? null
+                                )
+                            ) ?>
+                        </small>
+                    </div>
+
+                    <h4><?= esc($activity['title']) ?></h4>
+
+                    <p>
+                        <?= esc(
+                            $activity['program_name']
+                            ?: 'Tanpa pilar khusus'
+                        ) ?>
+                        ·
+                        <?= esc(
+                            $activity['location']
+                            ?: 'Lokasi belum dicatat'
+                        ) ?>
+                    </p>
+
+                    <?php if (!empty(
+                        $activity['summary']
+                    )) : ?>
+                        <small>
+                            <?= esc(
+                                mb_strimwidth(
+                                    $activity['summary'],
+                                    0,
+                                    110,
+                                    '…'
+                                )
+                            ) ?>
+                        </small>
+                    <?php endif; ?>
+
+                    <a
+                        href="<?= base_url(
+                            '/publications/create/activity/'
+                            . $activity['id']
+                        ) ?>"
+                        class="btn btn-primary"
+                    >
+                        Buat Brief Otomatis
+                    </a>
+                </article>
+            <?php endforeach; ?>
+        </div>
+    </section>
+<?php endif; ?>
 
 <section class="publication-filter-card">
     <form method="get" action="<?= base_url('/publications') ?>">
