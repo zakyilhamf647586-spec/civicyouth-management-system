@@ -5,12 +5,14 @@ namespace App\Controllers;
 use App\Models\ActivityModel;
 use App\Models\ContentAssetModel;
 use App\Models\ContentPostModel;
+use App\Models\ContentPostMetricModel;
 use App\Models\ProgramModel;
 use Config\SocialMedia;
 
 class SocialPublicationController extends BaseController
 {
     protected ContentPostModel $postModel;
+    protected ContentPostMetricModel $metricModel;
     protected ContentAssetModel $assetModel;
     protected ProgramModel $programModel;
     protected ActivityModel $activityModel;
@@ -20,6 +22,7 @@ class SocialPublicationController extends BaseController
     public function __construct()
     {
         $this->postModel = new ContentPostModel();
+        $this->metricModel = new ContentPostMetricModel();
         $this->assetModel = new ContentAssetModel();
         $this->programModel = new ProgramModel();
         $this->activityModel = new ActivityModel();
@@ -376,6 +379,385 @@ class SocialPublicationController extends BaseController
         ]);
     }
 
+    public function analytics()
+    {
+        $period = $this->resolveAnalyticsMonth(
+            (string) $this->request->getGet('month')
+        );
+
+        $programId = (int) $this->request->getGet(
+            'program_id'
+        );
+
+        $type = trim(
+            (string) $this->request->getGet('type')
+        );
+
+        if (!isset(
+            $this->socialMedia->publicationTypes[$type]
+        )) {
+            $type = '';
+        }
+
+        $rows = $this->analyticsDataset(
+            $period['start'],
+            $period['end'],
+            $programId,
+            $type
+        );
+
+        $topPosts = $rows;
+
+        usort(
+            $topPosts,
+            static function (
+                array $left,
+                array $right
+            ): int {
+                $reachComparison =
+                    ($right['reach'] ?? 0)
+                    <=> ($left['reach'] ?? 0);
+
+                return $reachComparison !== 0
+                    ? $reachComparison
+                    : (
+                        ($right['interactions'] ?? 0)
+                        <=> ($left['interactions'] ?? 0)
+                    );
+            }
+        );
+
+        return view('publications/analytics', [
+            'title' => 'Analitik Instagram',
+            'monthValue' => $period['start']->format('Y-m'),
+            'monthLabel' => $this->indonesianMonthLabel(
+                $period['start']
+            ),
+            'previousMonth' => $period['start']
+                ->modify('-1 month')
+                ->format('Y-m'),
+            'nextMonth' => $period['start']
+                ->modify('+1 month')
+                ->format('Y-m'),
+            'rows' => $rows,
+            'topPosts' => array_slice($topPosts, 0, 10),
+            'summary' => $this->analyticsSummary($rows),
+            'formatPerformance' =>
+                $this->formatPerformance($rows),
+            'programPerformance' =>
+                $this->programPerformance($rows),
+            'programs' => $this->programModel
+                ->orderBy('display_order', 'ASC')
+                ->findAll(),
+            'publicationTypes' =>
+                $this->socialMedia->publicationTypes,
+            'filters' => [
+                'program_id' => $programId,
+                'type' => $type,
+            ],
+            'metricsReady' => $this->metricsTableReady(),
+        ]);
+    }
+
+    public function exportAnalytics()
+    {
+        $period = $this->resolveAnalyticsMonth(
+            (string) $this->request->getGet('month')
+        );
+
+        $programId = (int) $this->request->getGet(
+            'program_id'
+        );
+
+        $type = trim(
+            (string) $this->request->getGet('type')
+        );
+
+        if (!isset(
+            $this->socialMedia->publicationTypes[$type]
+        )) {
+            $type = '';
+        }
+
+        $rows = $this->analyticsDataset(
+            $period['start'],
+            $period['end'],
+            $programId,
+            $type
+        );
+
+        $stream = fopen('php://temp', 'w+');
+
+        if ($stream === false) {
+            return redirect()->to('/publications/analytics')
+                ->with(
+                    'error',
+                    'File analitik belum dapat dibuat.'
+                );
+        }
+
+        fwrite($stream, "\xEF\xBB\xBF");
+
+        fputcsv($stream, [
+            'Content ID',
+            'Judul',
+            'Pilar',
+            'Format',
+            'Tanggal Tayang',
+            'Snapshot Terakhir',
+            'Reach',
+            'Impressions',
+            'Likes',
+            'Comments',
+            'Shares',
+            'Saves',
+            'Interactions',
+            'Engagement Rate (%)',
+            'Profile Visits',
+            'Follows',
+            'Link Clicks',
+            'Video Views',
+            'Instagram URL',
+        ]);
+
+        foreach ($rows as $row) {
+            fputcsv($stream, [
+                $row['content_code'] ?? '',
+                $row['display_title'] ?? '',
+                $row['program_name'] ?? 'Umum',
+                $this->socialMedia->publicationTypes[
+                    $row['publication_type'] ?? ''
+                ] ?? ($row['publication_type'] ?? ''),
+                $row['published_at'] ?? '',
+                $row['metric_recorded_at'] ?? '',
+                $row['reach'] ?? 0,
+                $row['impressions'] ?? 0,
+                $row['likes'] ?? 0,
+                $row['comments'] ?? 0,
+                $row['shares'] ?? 0,
+                $row['saves'] ?? 0,
+                $row['interactions'] ?? 0,
+                number_format(
+                    (float) (
+                        $row['engagement_rate'] ?? 0
+                    ),
+                    2,
+                    '.',
+                    ''
+                ),
+                $row['profile_visits'] ?? 0,
+                $row['follows'] ?? 0,
+                $row['link_clicks'] ?? 0,
+                $row['video_views'] ?? 0,
+                $row['instagram_url'] ?? '',
+            ]);
+        }
+
+        rewind($stream);
+        $csv = stream_get_contents($stream);
+        fclose($stream);
+
+        $filename = sprintf(
+            'GARDA01-Instagram-Analytics-%s.csv',
+            $period['start']->format('Y-m')
+        );
+
+        return $this->response
+            ->setHeader(
+                'Content-Type',
+                'text/csv; charset=UTF-8'
+            )
+            ->setHeader(
+                'Content-Disposition',
+                'attachment; filename="' . $filename . '"'
+            )
+            ->setBody((string) $csv);
+    }
+
+    public function storeMetrics($id)
+    {
+        $post = $this->postModel->find($id);
+
+        if (!$post) {
+            return redirect()->to('/publications')
+                ->with(
+                    'error',
+                    'Publikasi tidak ditemukan.'
+                );
+        }
+
+        if (
+            ($post['workflow_status'] ?? '') !== 'published'
+        ) {
+            return redirect()->to(
+                '/publications/' . $id
+            )->with(
+                'error',
+                'Metrik hanya dapat dicatat setelah '
+                . 'konten berstatus Dipublikasikan.'
+            );
+        }
+
+        if (!$this->metricsTableReady()) {
+            return redirect()->to(
+                '/publications/' . $id
+            )->with(
+                'error',
+                'Tabel metrik belum tersedia. '
+                . 'Jalankan php spark migrate.'
+            );
+        }
+
+        $rules = [
+            'recorded_at' => [
+                'label' => 'Waktu snapshot',
+                'rules' => 'required',
+            ],
+        ];
+
+        foreach ([
+            'reach',
+            'impressions',
+            'likes',
+            'comments',
+            'shares',
+            'saves',
+            'profile_visits',
+            'follows',
+            'link_clicks',
+            'video_views',
+        ] as $field) {
+            $rules[$field] = [
+                'label' => ucfirst(
+                    str_replace('_', ' ', $field)
+                ),
+                'rules' =>
+                    'permit_empty|integer'
+                    . '|greater_than_equal_to[0]',
+            ];
+        }
+
+        if (!$this->validate($rules)) {
+            return redirect()->to(
+                '/publications/' . $id
+            )->withInput()->with(
+                'error',
+                implode(
+                    ' ',
+                    $this->validator->getErrors()
+                )
+            );
+        }
+
+        $recordedAt = $this->normalizeDateTime(
+            $this->request->getPost('recorded_at')
+        );
+
+        if ($recordedAt === null) {
+            return redirect()->to(
+                '/publications/' . $id
+            )->withInput()->with(
+                'error',
+                'Waktu snapshot tidak valid.'
+            );
+        }
+
+        $payload = [
+            'content_post_id' => (int) $id,
+            'recorded_at' => $recordedAt,
+            'reach' => $this->metricInteger('reach'),
+            'impressions' =>
+                $this->metricInteger('impressions'),
+            'likes' => $this->metricInteger('likes'),
+            'comments' => $this->metricInteger('comments'),
+            'shares' => $this->metricInteger('shares'),
+            'saves' => $this->metricInteger('saves'),
+            'profile_visits' =>
+                $this->metricInteger('profile_visits'),
+            'follows' => $this->metricInteger('follows'),
+            'link_clicks' =>
+                $this->metricInteger('link_clicks'),
+            'video_views' =>
+                $this->metricInteger('video_views'),
+            'notes' => $this->nullableString('metric_notes'),
+            'recorded_by' => $this->currentUser(),
+        ];
+
+        $metricTotal = array_sum([
+            $payload['reach'],
+            $payload['impressions'],
+            $payload['likes'],
+            $payload['comments'],
+            $payload['shares'],
+            $payload['saves'],
+            $payload['profile_visits'],
+            $payload['follows'],
+            $payload['link_clicks'],
+            $payload['video_views'],
+        ]);
+
+        if ($metricTotal < 1) {
+            return redirect()->to(
+                '/publications/' . $id
+            )->withInput()->with(
+                'error',
+                'Isi minimal satu angka performa '
+                . 'sebelum menyimpan snapshot.'
+            );
+        }
+
+        if (!$this->metricModel->insert($payload)) {
+            return redirect()->to(
+                '/publications/' . $id
+            )->with(
+                'error',
+                'Snapshot performa belum dapat disimpan.'
+            );
+        }
+
+        return redirect()->to(
+            '/publications/' . $id
+        )->with(
+            'success',
+            'Snapshot performa Instagram berhasil dicatat.'
+        );
+    }
+
+    public function deleteMetric($id, $metricId)
+    {
+        if (!$this->metricsTableReady()) {
+            return redirect()->to(
+                '/publications/' . $id
+            )->with(
+                'error',
+                'Tabel metrik belum tersedia.'
+            );
+        }
+
+        $metric = $this->metricModel->find($metricId);
+
+        if (
+            !$metric
+            || (int) $metric['content_post_id'] !== (int) $id
+        ) {
+            return redirect()->to(
+                '/publications/' . $id
+            )->with(
+                'error',
+                'Snapshot performa tidak ditemukan.'
+            );
+        }
+
+        $this->metricModel->delete($metricId);
+
+        return redirect()->to(
+            '/publications/' . $id
+        )->with(
+            'success',
+            'Snapshot performa berhasil dihapus.'
+        );
+    }
+
     public function store()
     {
         if (!$this->validatePublicationRequest()) {
@@ -436,6 +818,12 @@ class SocialPublicationController extends BaseController
         $templateCode = $post['canva_template_code'] ?? '';
         $currentStatus = $post['workflow_status'] ?: 'brief';
 
+        $metricHistory = $this->metricsTableReady()
+            ? $this->metricModel->historyForPost((int) $id)
+            : [];
+
+        $latestMetric = $metricHistory[0] ?? null;
+
         $allowedTransitions = array_values(array_filter(
             $this->socialMedia->transitions[$currentStatus] ?? [],
             fn (string $targetStatus): bool => $this->canTransitionTo(
@@ -460,6 +848,11 @@ class SocialPublicationController extends BaseController
             'publicationTypes' => $this->socialMedia->publicationTypes,
             'priorities' => $this->socialMedia->priorities,
             'categories' => $this->socialMedia->categories,
+            'metricHistory' => $metricHistory,
+            'latestMetric' => $latestMetric,
+            'latestMetricSummary' =>
+                $this->metricSnapshotSummary($latestMetric),
+            'metricsReady' => $this->metricsTableReady(),
         ]);
     }
 
@@ -821,6 +1214,406 @@ class SocialPublicationController extends BaseController
                 ->where('workflow_status', 'published')
                 ->countAllResults(),
         ];
+    }
+
+    private function resolveAnalyticsMonth(
+        string $value
+    ): array {
+        $month = \DateTimeImmutable::createFromFormat(
+            '!Y-m',
+            trim($value)
+        );
+
+        $errors = \DateTimeImmutable::getLastErrors();
+        $hasErrors = is_array($errors)
+            && (
+                ($errors['warning_count'] ?? 0) > 0
+                || ($errors['error_count'] ?? 0) > 0
+            );
+
+        if (!$month || $hasErrors) {
+            $month = new \DateTimeImmutable(
+                'first day of this month'
+            );
+        }
+
+        return [
+            'start' => $month->modify(
+                'first day of this month'
+            ),
+            'end' => $month->modify(
+                'last day of this month'
+            ),
+        ];
+    }
+
+    private function analyticsDataset(
+        \DateTimeImmutable $start,
+        \DateTimeImmutable $end,
+        int $programId = 0,
+        string $type = ''
+    ): array {
+        $db = db_connect();
+
+        $builder = $db
+            ->table('content_posts')
+            ->select(
+                'content_posts.id, '
+                . 'content_posts.content_code, '
+                . 'content_posts.event_title, '
+                . 'content_posts.title, '
+                . 'content_posts.publication_type, '
+                . 'content_posts.program_id, '
+                . 'content_posts.published_at, '
+                . 'content_posts.instagram_url, '
+                . 'programs.name AS program_name'
+            )
+            ->join(
+                'programs',
+                'programs.id = content_posts.program_id',
+                'left'
+            );
+
+        if ($this->metricsTableReady()) {
+            $builder
+                ->select(
+                    'metric.id AS metric_id, '
+                    . 'metric.recorded_at '
+                    . 'AS metric_recorded_at, '
+                    . 'metric.reach, '
+                    . 'metric.impressions, '
+                    . 'metric.likes, '
+                    . 'metric.comments, '
+                    . 'metric.shares, '
+                    . 'metric.saves, '
+                    . 'metric.profile_visits, '
+                    . 'metric.follows, '
+                    . 'metric.link_clicks, '
+                    . 'metric.video_views'
+                )
+                ->join(
+                    'content_post_metrics AS metric',
+                    "metric.id = (
+                        SELECT metric_inner.id
+                        FROM content_post_metrics
+                            AS metric_inner
+                        WHERE metric_inner.content_post_id
+                            = content_posts.id
+                        ORDER BY
+                            metric_inner.recorded_at DESC,
+                            metric_inner.id DESC
+                        LIMIT 1
+                    )",
+                    'left',
+                    false
+                );
+        } else {
+            $builder->select(
+                'NULL AS metric_id, '
+                . 'NULL AS metric_recorded_at, '
+                . '0 AS reach, '
+                . '0 AS impressions, '
+                . '0 AS likes, '
+                . '0 AS comments, '
+                . '0 AS shares, '
+                . '0 AS saves, '
+                . '0 AS profile_visits, '
+                . '0 AS follows, '
+                . '0 AS link_clicks, '
+                . '0 AS video_views',
+                false
+            );
+        }
+
+        $builder
+            ->where(
+                'content_posts.workflow_status',
+                'published'
+            )
+            ->where(
+                'content_posts.published_at >=',
+                $start->format('Y-m-d') . ' 00:00:00'
+            )
+            ->where(
+                'content_posts.published_at <=',
+                $end->format('Y-m-d') . ' 23:59:59'
+            );
+
+        if ($programId > 0) {
+            $builder->where(
+                'content_posts.program_id',
+                $programId
+            );
+        }
+
+        if ($type !== '') {
+            $builder->where(
+                'content_posts.publication_type',
+                $type
+            );
+        }
+
+        $rows = $builder
+            ->orderBy(
+                'content_posts.published_at',
+                'DESC'
+            )
+            ->orderBy('content_posts.id', 'DESC')
+            ->get()
+            ->getResultArray();
+
+        $numericFields = [
+            'reach',
+            'impressions',
+            'likes',
+            'comments',
+            'shares',
+            'saves',
+            'profile_visits',
+            'follows',
+            'link_clicks',
+            'video_views',
+        ];
+
+        foreach ($rows as &$row) {
+            foreach ($numericFields as $field) {
+                $row[$field] = (int) (
+                    $row[$field] ?? 0
+                );
+            }
+
+            $row['display_title'] =
+                $row['event_title']
+                ?: $row['title']
+                ?: 'Tanpa judul';
+
+            $row['interactions'] =
+                $row['likes']
+                + $row['comments']
+                + $row['shares']
+                + $row['saves'];
+
+            $row['engagement_rate'] =
+                $row['reach'] > 0
+                    ? (
+                        $row['interactions']
+                        / $row['reach']
+                    ) * 100
+                    : 0.0;
+        }
+
+        unset($row);
+
+        return $rows;
+    }
+
+    private function analyticsSummary(array $rows): array
+    {
+        $summary = [
+            'published' => count($rows),
+            'tracked' => 0,
+            'reach' => 0,
+            'interactions' => 0,
+            'engagement_rate' => 0.0,
+            'coverage_rate' => 0.0,
+        ];
+
+        foreach ($rows as $row) {
+            if (!empty($row['metric_id'])) {
+                $summary['tracked']++;
+            }
+
+            $summary['reach'] +=
+                (int) ($row['reach'] ?? 0);
+
+            $summary['interactions'] +=
+                (int) ($row['interactions'] ?? 0);
+        }
+
+        if ($summary['reach'] > 0) {
+            $summary['engagement_rate'] =
+                (
+                    $summary['interactions']
+                    / $summary['reach']
+                ) * 100;
+        }
+
+        if ($summary['published'] > 0) {
+            $summary['coverage_rate'] =
+                (
+                    $summary['tracked']
+                    / $summary['published']
+                ) * 100;
+        }
+
+        return $summary;
+    }
+
+    private function formatPerformance(array $rows): array
+    {
+        $groups = [];
+
+        foreach ($rows as $row) {
+            $key = $row['publication_type'] ?: 'other';
+
+            if (!isset($groups[$key])) {
+                $groups[$key] = [
+                    'key' => $key,
+                    'label' =>
+                        $this->socialMedia->publicationTypes[
+                            $key
+                        ] ?? ucfirst($key),
+                    'posts' => 0,
+                    'tracked' => 0,
+                    'reach' => 0,
+                    'interactions' => 0,
+                    'engagement_rate' => 0.0,
+                ];
+            }
+
+            $groups[$key]['posts']++;
+
+            if (!empty($row['metric_id'])) {
+                $groups[$key]['tracked']++;
+            }
+
+            $groups[$key]['reach'] +=
+                (int) ($row['reach'] ?? 0);
+
+            $groups[$key]['interactions'] +=
+                (int) ($row['interactions'] ?? 0);
+        }
+
+        foreach ($groups as &$group) {
+            if ($group['reach'] > 0) {
+                $group['engagement_rate'] =
+                    (
+                        $group['interactions']
+                        / $group['reach']
+                    ) * 100;
+            }
+        }
+
+        unset($group);
+
+        usort(
+            $groups,
+            static fn (
+                array $left,
+                array $right
+            ): int =>
+                $right['reach'] <=> $left['reach']
+        );
+
+        return array_values($groups);
+    }
+
+    private function programPerformance(array $rows): array
+    {
+        $groups = [];
+
+        foreach ($rows as $row) {
+            $key = $row['program_name'] ?: 'Umum';
+
+            if (!isset($groups[$key])) {
+                $groups[$key] = [
+                    'label' => $key,
+                    'posts' => 0,
+                    'tracked' => 0,
+                    'reach' => 0,
+                    'interactions' => 0,
+                    'engagement_rate' => 0.0,
+                ];
+            }
+
+            $groups[$key]['posts']++;
+
+            if (!empty($row['metric_id'])) {
+                $groups[$key]['tracked']++;
+            }
+
+            $groups[$key]['reach'] +=
+                (int) ($row['reach'] ?? 0);
+
+            $groups[$key]['interactions'] +=
+                (int) ($row['interactions'] ?? 0);
+        }
+
+        foreach ($groups as &$group) {
+            if ($group['reach'] > 0) {
+                $group['engagement_rate'] =
+                    (
+                        $group['interactions']
+                        / $group['reach']
+                    ) * 100;
+            }
+        }
+
+        unset($group);
+
+        usort(
+            $groups,
+            static fn (
+                array $left,
+                array $right
+            ): int =>
+                $right['reach'] <=> $left['reach']
+        );
+
+        return array_slice(
+            array_values($groups),
+            0,
+            8
+        );
+    }
+
+    private function metricSnapshotSummary(
+        ?array $metric
+    ): array {
+        if (!$metric) {
+            return [
+                'reach' => 0,
+                'interactions' => 0,
+                'engagement_rate' => 0.0,
+                'saves' => 0,
+                'shares' => 0,
+            ];
+        }
+
+        $reach = (int) ($metric['reach'] ?? 0);
+        $interactions =
+            (int) ($metric['likes'] ?? 0)
+            + (int) ($metric['comments'] ?? 0)
+            + (int) ($metric['shares'] ?? 0)
+            + (int) ($metric['saves'] ?? 0);
+
+        return [
+            'reach' => $reach,
+            'interactions' => $interactions,
+            'engagement_rate' => $reach > 0
+                ? ($interactions / $reach) * 100
+                : 0.0,
+            'saves' => (int) ($metric['saves'] ?? 0),
+            'shares' => (int) ($metric['shares'] ?? 0),
+        ];
+    }
+
+    private function metricsTableReady(): bool
+    {
+        return db_connect()->tableExists(
+            'content_post_metrics'
+        );
+    }
+
+    private function metricInteger(string $field): int
+    {
+        $value = $this->request->getPost($field);
+
+        if ($value === null || $value === '') {
+            return 0;
+        }
+
+        return max(0, (int) $value);
     }
 
     private function publicationCandidates(): array

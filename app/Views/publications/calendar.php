@@ -33,6 +33,17 @@ $weekdays = [
     </div>
 
     <div class="publication-header-actions">
+        <?php if (auth_can(
+            'publications.metrics.view'
+        )) : ?>
+            <a
+                href="<?= base_url('/publications/analytics') ?>"
+                class="btn btn-secondary"
+            >
+                Analitik Instagram
+            </a>
+        <?php endif; ?>
+
         <a
             href="<?= base_url('/publications') ?>"
             class="btn btn-secondary"

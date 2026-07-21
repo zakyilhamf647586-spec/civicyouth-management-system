@@ -36,6 +36,7 @@ class Permissions extends BaseConfig
 
             'activities.*',
             'programs.*',
+            'publications.*',
             'content_studio.*',
             'messages.*',
 
@@ -72,6 +73,15 @@ class Permissions extends BaseConfig
             'programs.create',
             'programs.update',
 
+            'publications.view',
+            'publications.create',
+            'publications.update',
+            'publications.assets',
+            'publications.workflow',
+            'publications.metrics.view',
+            'publications.metrics.manage',
+            'publications.metrics.export',
+
             'content_studio.*',
             'messages.*',
 
@@ -94,6 +104,8 @@ class Permissions extends BaseConfig
             'activities.view',
             'activities.gallery.view',
             'programs.view',
+            'publications.view',
+            'publications.metrics.view',
 
             'reports.view',
             'reports.cash',
@@ -108,6 +120,8 @@ class Permissions extends BaseConfig
             'activities.view',
             'activities.gallery.view',
             'programs.view',
+            'publications.view',
+            'publications.metrics.view',
         ],
     ];
 
@@ -171,6 +185,19 @@ class Permissions extends BaseConfig
         'programs.update'  => 'mengubah program',
         'programs.publish' => 'menerbitkan program',
         'programs.archive' => 'mengarsipkan program',
+
+        'publications.view'     => 'melihat publikasi sosial',
+        'publications.create'   => 'membuat brief publikasi',
+        'publications.update'   => 'mengubah brief publikasi',
+        'publications.assets'   => 'mengelola aset publikasi',
+        'publications.workflow' => 'menjalankan alur produksi publikasi',
+        'publications.review'   => 'meminta revisi publikasi',
+        'publications.approve'  => 'menyetujui publikasi',
+        'publications.publish'  => 'menjadwalkan atau menandai publikasi tayang',
+        'publications.archive'  => 'mengarsipkan atau membuka kembali publikasi',
+        'publications.metrics.view' => 'melihat analitik performa publikasi',
+        'publications.metrics.manage' => 'mencatat atau menghapus metrik Instagram',
+        'publications.metrics.export' => 'mengekspor analitik performa publikasi',
 
         'content_studio.view'     => 'melihat AI Content Studio',
         'content_studio.create'   => 'membuat konten',

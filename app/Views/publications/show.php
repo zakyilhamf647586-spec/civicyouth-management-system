@@ -44,6 +44,17 @@ $formatDateTime = static function (?string $value): string {
     </div>
 
     <div class="publication-header-actions">
+        <?php if (auth_can(
+            'publications.metrics.view'
+        )) : ?>
+            <a
+                href="<?= base_url('/publications/analytics') ?>"
+                class="btn btn-secondary"
+            >
+                Analitik
+            </a>
+        <?php endif; ?>
+
         <?php if (!empty($post['canva_url'])) : ?>
             <a
                 href="<?= esc($post['canva_url'], 'attr') ?>"
@@ -247,6 +258,420 @@ $formatDateTime = static function (?string $value): string {
                 </form>
             <?php endif; ?>
         </section>
+
+        <section class="publication-detail-card publication-metrics-card">
+            <div class="publication-card-heading">
+                <div>
+                    <span>Instagram Insights</span>
+                    <h2>Performa publikasi</h2>
+                </div>
+
+                <?php if (!empty($latestMetric)) : ?>
+                    <small>
+                        Snapshot
+                        <?= esc(
+                            $formatDateTime(
+                                $latestMetric['recorded_at']
+                                ?? null
+                            )
+                        ) ?>
+                    </small>
+                <?php endif; ?>
+            </div>
+
+            <?php if (!$metricsReady) : ?>
+                <div class="publication-notice">
+                    <strong>Tabel metrik belum tersedia</strong>
+                    <p>
+                        Jalankan migration terbaru agar statistik
+                        performa dapat dicatat.
+                    </p>
+                </div>
+            <?php elseif (
+                ($post['workflow_status'] ?? '') !== 'published'
+            ) : ?>
+                <div class="publication-notice">
+                    <strong>Menunggu publikasi tayang</strong>
+                    <p>
+                        Statistik dapat dicatat setelah konten
+                        berstatus Dipublikasikan.
+                    </p>
+                </div>
+            <?php else : ?>
+                <?php if (!empty($latestMetric)) : ?>
+                    <div class="publication-metric-summary-grid">
+                        <article>
+                            <span>Reach</span>
+                            <strong>
+                                <?= number_format(
+                                    $latestMetricSummary['reach']
+                                    ?? 0,
+                                    0,
+                                    ',',
+                                    '.'
+                                ) ?>
+                            </strong>
+                            <small>Akun unik terjangkau</small>
+                        </article>
+
+                        <article>
+                            <span>Interaksi</span>
+                            <strong>
+                                <?= number_format(
+                                    $latestMetricSummary[
+                                        'interactions'
+                                    ] ?? 0,
+                                    0,
+                                    ',',
+                                    '.'
+                                ) ?>
+                            </strong>
+                            <small>
+                                Like, komentar, bagikan, simpan
+                            </small>
+                        </article>
+
+                        <article>
+                            <span>Engagement Rate</span>
+                            <strong>
+                                <?= number_format(
+                                    $latestMetricSummary[
+                                        'engagement_rate'
+                                    ] ?? 0,
+                                    2,
+                                    ',',
+                                    '.'
+                                ) ?>%
+                            </strong>
+                            <small>Interaksi ÷ reach</small>
+                        </article>
+
+                        <article>
+                            <span>Simpan + Bagikan</span>
+                            <strong>
+                                <?= number_format(
+                                    (
+                                        $latestMetricSummary[
+                                            'saves'
+                                        ] ?? 0
+                                    )
+                                    + (
+                                        $latestMetricSummary[
+                                            'shares'
+                                        ] ?? 0
+                                    ),
+                                    0,
+                                    ',',
+                                    '.'
+                                ) ?>
+                            </strong>
+                            <small>Sinyal nilai konten</small>
+                        </article>
+                    </div>
+                <?php else : ?>
+                    <div class="publication-empty-state compact">
+                        <strong>Belum ada snapshot performa</strong>
+                        <p>
+                            Salin angka dari Instagram Insights,
+                            lalu simpan sebagai baseline pertama.
+                        </p>
+                    </div>
+                <?php endif; ?>
+
+                <?php if (auth_can(
+                    'publications.metrics.manage'
+                )) : ?>
+                    <form
+                        method="post"
+                        action="<?= base_url(
+                            '/publications/'
+                            . $post['id']
+                            . '/metrics'
+                        ) ?>"
+                        class="publication-metric-form"
+                    >
+                        <?= csrf_field() ?>
+
+                        <div class="publication-metric-form__heading">
+                            <div>
+                                <span>Input Manual</span>
+                                <strong>Catat snapshot terbaru</strong>
+                            </div>
+
+                            <small>
+                                Ambil data dari Instagram Insights.
+                            </small>
+                        </div>
+
+                        <div class="publication-metric-input-grid">
+                            <div class="form-group wide">
+                                <label for="recorded_at">
+                                    Waktu Snapshot
+                                </label>
+                                <input
+                                    type="datetime-local"
+                                    id="recorded_at"
+                                    name="recorded_at"
+                                    value="<?= esc(
+                                        old(
+                                            'recorded_at',
+                                            date('Y-m-d\TH:i')
+                                        ),
+                                        'attr'
+                                    ) ?>"
+                                    required
+                                >
+                            </div>
+
+                            <?php
+                            $metricInputs = [
+                                'reach' => 'Reach',
+                                'impressions' => 'Impressions',
+                                'likes' => 'Likes',
+                                'comments' => 'Comments',
+                                'shares' => 'Shares',
+                                'saves' => 'Saves',
+                                'profile_visits' => 'Profile Visits',
+                                'follows' => 'Follows',
+                                'link_clicks' => 'Link Clicks',
+                                'video_views' => 'Video Views',
+                            ];
+                            ?>
+
+                            <?php foreach (
+                                $metricInputs as $field => $label
+                            ) : ?>
+                                <div class="form-group">
+                                    <label for="<?= esc(
+                                        $field,
+                                        'attr'
+                                    ) ?>">
+                                        <?= esc($label) ?>
+                                    </label>
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        step="1"
+                                        id="<?= esc(
+                                            $field,
+                                            'attr'
+                                        ) ?>"
+                                        name="<?= esc(
+                                            $field,
+                                            'attr'
+                                        ) ?>"
+                                        value="<?= esc(
+                                            old($field, ''),
+                                            'attr'
+                                        ) ?>"
+                                        placeholder="0"
+                                    >
+                                </div>
+                            <?php endforeach; ?>
+
+                            <div class="form-group full">
+                                <label for="metric_notes">
+                                    Catatan Snapshot
+                                </label>
+                                <textarea
+                                    id="metric_notes"
+                                    name="metric_notes"
+                                    rows="3"
+                                    placeholder="Contoh: data 7 hari setelah tayang."
+                                ><?= esc(
+                                    old('metric_notes', '')
+                                ) ?></textarea>
+                            </div>
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                        >
+                            Simpan Snapshot
+                        </button>
+                    </form>
+                <?php endif; ?>
+
+                <?php if (!empty($metricHistory)) : ?>
+                    <div class="publication-metric-history">
+                        <div class="publication-table-heading">
+                            <div>
+                                <span>Riwayat</span>
+                                <h3>Snapshot performa</h3>
+                            </div>
+
+                            <small>
+                                <?= count($metricHistory) ?> catatan
+                            </small>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Waktu</th>
+                                        <th>Reach</th>
+                                        <th>Impressions</th>
+                                        <th>Interaksi</th>
+                                        <th>Simpan</th>
+                                        <th>Bagikan</th>
+                                        <th>Follows</th>
+                                        <th>Pencatat</th>
+                                        <?php if (auth_can(
+                                            'publications.metrics.manage'
+                                        )) : ?>
+                                            <th>Aksi</th>
+                                        <?php endif; ?>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    <?php foreach (
+                                        $metricHistory as $metric
+                                    ) : ?>
+                                        <?php
+                                        $interactionTotal =
+                                            (int) (
+                                                $metric['likes']
+                                                ?? 0
+                                            )
+                                            + (int) (
+                                                $metric['comments']
+                                                ?? 0
+                                            )
+                                            + (int) (
+                                                $metric['shares']
+                                                ?? 0
+                                            )
+                                            + (int) (
+                                                $metric['saves']
+                                                ?? 0
+                                            );
+                                        ?>
+
+                                        <tr>
+                                            <td>
+                                                <?= esc(
+                                                    $formatDateTime(
+                                                        $metric[
+                                                            'recorded_at'
+                                                        ] ?? null
+                                                    )
+                                                ) ?>
+                                            </td>
+                                            <td>
+                                                <?= number_format(
+                                                    (int) (
+                                                        $metric[
+                                                            'reach'
+                                                        ] ?? 0
+                                                    ),
+                                                    0,
+                                                    ',',
+                                                    '.'
+                                                ) ?>
+                                            </td>
+                                            <td>
+                                                <?= number_format(
+                                                    (int) (
+                                                        $metric[
+                                                            'impressions'
+                                                        ] ?? 0
+                                                    ),
+                                                    0,
+                                                    ',',
+                                                    '.'
+                                                ) ?>
+                                            </td>
+                                            <td>
+                                                <?= number_format(
+                                                    $interactionTotal,
+                                                    0,
+                                                    ',',
+                                                    '.'
+                                                ) ?>
+                                            </td>
+                                            <td>
+                                                <?= number_format(
+                                                    (int) (
+                                                        $metric[
+                                                            'saves'
+                                                        ] ?? 0
+                                                    ),
+                                                    0,
+                                                    ',',
+                                                    '.'
+                                                ) ?>
+                                            </td>
+                                            <td>
+                                                <?= number_format(
+                                                    (int) (
+                                                        $metric[
+                                                            'shares'
+                                                        ] ?? 0
+                                                    ),
+                                                    0,
+                                                    ',',
+                                                    '.'
+                                                ) ?>
+                                            </td>
+                                            <td>
+                                                <?= number_format(
+                                                    (int) (
+                                                        $metric[
+                                                            'follows'
+                                                        ] ?? 0
+                                                    ),
+                                                    0,
+                                                    ',',
+                                                    '.'
+                                                ) ?>
+                                            </td>
+                                            <td>
+                                                <?= esc(
+                                                    $metric[
+                                                        'recorded_by'
+                                                    ] ?? '-'
+                                                ) ?>
+                                            </td>
+
+                                            <?php if (auth_can(
+                                                'publications.metrics.manage'
+                                            )) : ?>
+                                                <td>
+                                                    <form
+                                                        method="post"
+                                                        action="<?= base_url(
+                                                            '/publications/'
+                                                            . $post['id']
+                                                            . '/metrics/'
+                                                            . $metric['id']
+                                                            . '/delete'
+                                                        ) ?>"
+                                                        onsubmit="return confirm('Hapus snapshot performa ini?')"
+                                                    >
+                                                        <?= csrf_field() ?>
+
+                                                        <button
+                                                            type="submit"
+                                                            class="btn btn-danger"
+                                                        >
+                                                            Hapus
+                                                        </button>
+                                                    </form>
+                                                </td>
+                                            <?php endif; ?>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                <?php endif; ?>
+            <?php endif; ?>
+        </section>
+
     </div>
 
     <aside class="publication-detail-sidebar">
