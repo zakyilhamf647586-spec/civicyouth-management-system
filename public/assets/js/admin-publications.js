@@ -21,6 +21,40 @@
             return;
         }
 
+        var scheduledInput = form.querySelector(
+            '#scheduled_at'
+        );
+
+        form.querySelectorAll(
+            '[data-recommended-datetime]'
+        ).forEach(function (button) {
+            button.addEventListener('click', function () {
+                var value = button.getAttribute(
+                    'data-recommended-datetime'
+                );
+
+                if (!scheduledInput || !value) {
+                    return;
+                }
+
+                scheduledInput.value = value;
+                scheduledInput.dispatchEvent(
+                    new Event('change', {
+                        bubbles: true
+                    })
+                );
+
+                form.querySelectorAll(
+                    '[data-recommended-datetime]'
+                ).forEach(function (item) {
+                    item.classList.remove('is-selected');
+                });
+
+                button.classList.add('is-selected');
+                scheduledInput.focus();
+            });
+        });
+
         var catalogElement = form.querySelector('[data-template-catalog]');
         var templateSelect = form.querySelector('[data-template-select]');
         var typeSelect = form.querySelector('#publication_type');

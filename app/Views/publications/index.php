@@ -41,6 +41,19 @@ $formatDateTime = static function (?string $value): string {
 
     <div class="publication-header-actions">
         <?php if (auth_can(
+            'publications.recommendations.view'
+        )) : ?>
+            <a
+                href="<?= base_url(
+                    '/publications/recommendations'
+                ) ?>"
+                class="btn btn-secondary"
+            >
+                Waktu Tayang
+            </a>
+        <?php endif; ?>
+
+        <?php if (auth_can(
             'publications.deadlines.view'
         )) : ?>
             <a

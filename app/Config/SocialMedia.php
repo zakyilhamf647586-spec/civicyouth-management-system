@@ -197,6 +197,41 @@ class SocialMedia extends BaseConfig
     public int $deadlineWarningHours = 48;
 
     /**
+     * Jangka waktu data historis untuk rekomendasi jam tayang.
+     */
+    public int $recommendationLookbackDays = 180;
+
+    /**
+     * Jumlah minimal konten dengan metrik agar rekomendasi
+     * dianggap cukup representatif.
+     */
+    public int $recommendationMinimumSamples = 3;
+
+    /**
+     * Baseline eksperimen internal.
+     *
+     * Digunakan hanya ketika data performa internal belum cukup.
+     * Nilai ini bukan klaim "jam terbaik Instagram" secara umum.
+     */
+    public array $baselinePostingSlots = [
+        [
+            'weekday' => 2,
+            'time' => '19:30',
+            'label' => 'Selasa malam',
+        ],
+        [
+            'weekday' => 4,
+            'time' => '19:30',
+            'label' => 'Kamis malam',
+        ],
+        [
+            'weekday' => 7,
+            'time' => '09:00',
+            'label' => 'Minggu pagi',
+        ],
+    ];
+
+    /**
      * Deadline setiap tahap dihitung mundur dari Rencana Tayang.
      *
      * offset_hours:

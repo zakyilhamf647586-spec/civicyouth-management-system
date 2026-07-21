@@ -827,6 +827,33 @@ class SocialPublicationController extends BaseController
         );
     }
 
+    public function recommendations()
+    {
+        $type = trim(
+            (string) $this->request->getGet('type')
+        );
+
+        if (!isset(
+            $this->socialMedia->publicationTypes[$type]
+        )) {
+            $type = '';
+        }
+
+        $data = $this->postingRecommendationData(
+            $type
+        );
+
+        return view('publications/recommendations', [
+            'title' => 'Rekomendasi Waktu Tayang',
+            'recommendationData' => $data,
+            'publicationTypes' =>
+                $this->socialMedia->publicationTypes,
+            'selectedType' => $type,
+            'weekdayLabels' =>
+                $this->weekdayLabels(),
+        ]);
+    }
+
     public function deadlines()
     {
         $urgency = trim(
@@ -1632,6 +1659,10 @@ class SocialPublicationController extends BaseController
             'categories' => $this->socialMedia->categories,
             'publicationTypes' => $this->socialMedia->publicationTypes,
             'priorities' => $this->socialMedia->priorities,
+            'postingRecommendations' =>
+                $this->formPostingRecommendations(),
+            'postingRecommendationMeta' =>
+                $this->postingRecommendationMeta(),
         ];
     }
 
@@ -1659,6 +1690,484 @@ class SocialPublicationController extends BaseController
                 ->where('workflow_status', 'published')
                 ->countAllResults(),
         ];
+    }
+
+    private function postingRecommendationData(
+        string $type = ''
+    ): array {
+        $lookbackDays = max(
+            30,
+            (int) $this->socialMedia
+                ->recommendationLookbackDays
+        );
+
+        $minimumSamples = max(
+            1,
+            (int) $this->socialMedia
+                ->recommendationMinimumSamples
+        );
+
+        $end = new \DateTimeImmutable('now');
+        $start = $end->modify(
+            '-' . $lookbackDays . ' days'
+        );
+
+        $rows = $this->analyticsDataset(
+            $start,
+            $end,
+            0,
+            $type
+        );
+
+        $trackedRows = array_values(array_filter(
+            $rows,
+            static fn (array $row): bool =>
+                !empty($row['metric_id'])
+                && !empty($row['published_at'])
+        ));
+
+        $groups = [];
+
+        foreach ($trackedRows as $row) {
+            $publishedAt = $this->dateTimeFromValue(
+                $row['published_at'] ?? null
+            );
+
+            if ($publishedAt === null) {
+                continue;
+            }
+
+            $weekday = (int) $publishedAt->format('N');
+            $hour = (int) $publishedAt->format('G');
+            $minute = (int) $publishedAt->format('i');
+            $slot = $this->postingTimeSlot($hour);
+
+            $key = $weekday . ':' . $slot['key'];
+
+            if (!isset($groups[$key])) {
+                $groups[$key] = [
+                    'weekday' => $weekday,
+                    'weekday_label' =>
+                        $this->weekdayLabels()[$weekday]
+                        ?? 'Hari',
+                    'slot_key' => $slot['key'],
+                    'slot_label' => $slot['label'],
+                    'period_label' => $slot['period'],
+                    'posts' => 0,
+                    'total_minutes' => 0,
+                    'reach' => 0,
+                    'interactions' => 0,
+                    'saves_shares' => 0,
+                    'engagement_rate' => 0.0,
+                    'average_reach' => 0.0,
+                    'average_interactions' => 0.0,
+                    'average_saves_shares' => 0.0,
+                    'score' => 0.0,
+                    'confidence' => 'low',
+                    'confidence_label' => 'Data Awal',
+                    'time' => '19:00',
+                    'next_datetime_local' => '',
+                ];
+            }
+
+            $groups[$key]['posts']++;
+            $groups[$key]['total_minutes'] +=
+                ($hour * 60) + $minute;
+            $groups[$key]['reach'] +=
+                (int) ($row['reach'] ?? 0);
+            $groups[$key]['interactions'] +=
+                (int) ($row['interactions'] ?? 0);
+            $groups[$key]['saves_shares'] +=
+                (int) ($row['saves'] ?? 0)
+                + (int) ($row['shares'] ?? 0);
+        }
+
+        foreach ($groups as &$group) {
+            $posts = max(
+                1,
+                (int) $group['posts']
+            );
+
+            $group['average_reach'] =
+                $group['reach'] / $posts;
+
+            $group['average_interactions'] =
+                $group['interactions'] / $posts;
+
+            $group['average_saves_shares'] =
+                $group['saves_shares'] / $posts;
+
+            $group['engagement_rate'] =
+                $group['reach'] > 0
+                    ? (
+                        $group['interactions']
+                        / $group['reach']
+                    ) * 100
+                    : 0.0;
+
+            $averageMinutes = (int) round(
+                ($group['total_minutes'] / $posts)
+                / 15
+            ) * 15;
+
+            $averageMinutes = min(
+                1439,
+                max(0, $averageMinutes)
+            );
+
+            $hours = intdiv($averageMinutes, 60);
+            $minutes = $averageMinutes % 60;
+
+            $group['time'] = sprintf(
+                '%02d:%02d',
+                $hours,
+                $minutes
+            );
+
+            $group['next_datetime_local'] =
+                $this->nextPostingOccurrence(
+                    (int) $group['weekday'],
+                    $group['time']
+                );
+
+            if ($posts >= 6) {
+                $group['confidence'] = 'high';
+                $group['confidence_label'] =
+                    'Keyakinan Tinggi';
+            } elseif ($posts >= 3) {
+                $group['confidence'] = 'medium';
+                $group['confidence_label'] =
+                    'Keyakinan Sedang';
+            } else {
+                $group['confidence'] = 'low';
+                $group['confidence_label'] =
+                    'Data Awal';
+            }
+        }
+
+        unset($group);
+
+        $groups = array_values($groups);
+
+        $maxReach = max(
+            1.0,
+            ...array_map(
+                static fn (array $group): float =>
+                    (float) $group['average_reach'],
+                $groups ?: [[
+                    'average_reach' => 0,
+                ]]
+            )
+        );
+
+        $maxEngagement = max(
+            0.01,
+            ...array_map(
+                static fn (array $group): float =>
+                    (float) $group['engagement_rate'],
+                $groups ?: [[
+                    'engagement_rate' => 0,
+                ]]
+            )
+        );
+
+        $maxSaveShare = max(
+            1.0,
+            ...array_map(
+                static fn (array $group): float =>
+                    (float) $group[
+                        'average_saves_shares'
+                    ],
+                $groups ?: [[
+                    'average_saves_shares' => 0,
+                ]]
+            )
+        );
+
+        foreach ($groups as &$group) {
+            $reachScore =
+                (
+                    $group['average_reach']
+                    / $maxReach
+                ) * 50;
+
+            $engagementScore =
+                (
+                    $group['engagement_rate']
+                    / $maxEngagement
+                ) * 30;
+
+            $valueScore =
+                (
+                    $group['average_saves_shares']
+                    / $maxSaveShare
+                ) * 20;
+
+            $sampleFactor = min(
+                1.0,
+                max(
+                    0.55,
+                    $group['posts']
+                    / $minimumSamples
+                )
+            );
+
+            $group['score'] = round(
+                (
+                    $reachScore
+                    + $engagementScore
+                    + $valueScore
+                ) * $sampleFactor,
+                1
+            );
+        }
+
+        unset($group);
+
+        usort(
+            $groups,
+            static function (
+                array $left,
+                array $right
+            ): int {
+                $scoreComparison =
+                    $right['score']
+                    <=> $left['score'];
+
+                if ($scoreComparison !== 0) {
+                    return $scoreComparison;
+                }
+
+                return
+                    $right['posts']
+                    <=> $left['posts'];
+            }
+        );
+
+        $baseline = array_map(
+            function (array $slot): array {
+                $weekday = (int) (
+                    $slot['weekday'] ?? 1
+                );
+
+                $time = (string) (
+                    $slot['time'] ?? '19:00'
+                );
+
+                return [
+                    'weekday' => $weekday,
+                    'weekday_label' =>
+                        $this->weekdayLabels()[$weekday]
+                        ?? 'Hari',
+                    'time' => $time,
+                    'label' => $slot['label']
+                        ?? (
+                            ($this->weekdayLabels()[
+                                $weekday
+                            ] ?? 'Hari')
+                            . ' '
+                            . $time
+                        ),
+                    'next_datetime_local' =>
+                        $this->nextPostingOccurrence(
+                            $weekday,
+                            $time
+                        ),
+                    'source' => 'baseline',
+                ];
+            },
+            $this->socialMedia->baselinePostingSlots
+        );
+
+        return [
+            'type' => $type,
+            'lookback_days' => $lookbackDays,
+            'minimum_samples' => $minimumSamples,
+            'published_posts' => count($rows),
+            'tracked_posts' => count($trackedRows),
+            'tested_slots' => count($groups),
+            'has_enough_data' =>
+                count($trackedRows) >= $minimumSamples,
+            'recommendations' =>
+                array_slice($groups, 0, 5),
+            'all_slots' => $groups,
+            'baseline' => $baseline,
+            'date_start' => $start,
+            'date_end' => $end,
+        ];
+    }
+
+    private function formPostingRecommendations(): array
+    {
+        $data = $this->postingRecommendationData();
+
+        if (!empty($data['recommendations'])) {
+            return array_map(
+                static function (
+                    array $item
+                ): array {
+                    return [
+                        'weekday_label' =>
+                            $item['weekday_label'],
+                        'time' => $item['time'],
+                        'next_datetime_local' =>
+                            $item[
+                                'next_datetime_local'
+                            ],
+                        'evidence' =>
+                            $item['posts']
+                            . ' konten · skor '
+                            . number_format(
+                                (float) $item['score'],
+                                1,
+                                ',',
+                                '.'
+                            ),
+                        'source' => 'data',
+                    ];
+                },
+                array_slice(
+                    $data['recommendations'],
+                    0,
+                    3
+                )
+            );
+        }
+
+        return array_map(
+            static function (
+                array $item
+            ): array {
+                return [
+                    'weekday_label' =>
+                        $item['weekday_label'],
+                    'time' => $item['time'],
+                    'next_datetime_local' =>
+                        $item[
+                            'next_datetime_local'
+                        ],
+                    'evidence' =>
+                        'Baseline eksperimen internal',
+                    'source' => 'baseline',
+                ];
+            },
+            array_slice($data['baseline'], 0, 3)
+        );
+    }
+
+    private function postingRecommendationMeta(): array
+    {
+        $data = $this->postingRecommendationData();
+
+        return [
+            'has_enough_data' =>
+                $data['has_enough_data'],
+            'tracked_posts' =>
+                $data['tracked_posts'],
+            'minimum_samples' =>
+                $data['minimum_samples'],
+        ];
+    }
+
+    private function postingTimeSlot(int $hour): array
+    {
+        if ($hour < 6) {
+            return [
+                'key' => '00-05',
+                'label' => '00.00–05.59',
+                'period' => 'Dini hari',
+            ];
+        }
+
+        if ($hour < 9) {
+            return [
+                'key' => '06-08',
+                'label' => '06.00–08.59',
+                'period' => 'Pagi',
+            ];
+        }
+
+        if ($hour < 12) {
+            return [
+                'key' => '09-11',
+                'label' => '09.00–11.59',
+                'period' => 'Menjelang siang',
+            ];
+        }
+
+        if ($hour < 15) {
+            return [
+                'key' => '12-14',
+                'label' => '12.00–14.59',
+                'period' => 'Siang',
+            ];
+        }
+
+        if ($hour < 18) {
+            return [
+                'key' => '15-17',
+                'label' => '15.00–17.59',
+                'period' => 'Sore',
+            ];
+        }
+
+        if ($hour < 21) {
+            return [
+                'key' => '18-20',
+                'label' => '18.00–20.59',
+                'period' => 'Malam',
+            ];
+        }
+
+        return [
+            'key' => '21-23',
+            'label' => '21.00–23.59',
+            'period' => 'Larut malam',
+        ];
+    }
+
+    private function weekdayLabels(): array
+    {
+        return [
+            1 => 'Senin',
+            2 => 'Selasa',
+            3 => 'Rabu',
+            4 => 'Kamis',
+            5 => 'Jumat',
+            6 => 'Sabtu',
+            7 => 'Minggu',
+        ];
+    }
+
+    private function nextPostingOccurrence(
+        int $weekday,
+        string $time
+    ): string {
+        $now = new \DateTimeImmutable('now');
+        $currentWeekday = (int) $now->format('N');
+
+        [$hour, $minute] = array_map(
+            'intval',
+            array_pad(
+                explode(':', $time, 2),
+                2,
+                '0'
+            )
+        );
+
+        $daysAhead = (
+            $weekday - $currentWeekday + 7
+        ) % 7;
+
+        $candidate = $now
+            ->modify('+' . $daysAhead . ' days')
+            ->setTime($hour, $minute);
+
+        if ($candidate <= $now) {
+            $candidate = $candidate->modify('+7 days');
+        }
+
+        return $candidate->format('Y-m-d\TH:i');
     }
 
     private function productionAttentionDataset(): array

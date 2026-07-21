@@ -50,6 +50,19 @@ foreach ($formatPerformance as $group) {
     </div>
 
     <div class="publication-header-actions">
+        <?php if (auth_can(
+            'publications.recommendations.view'
+        )) : ?>
+            <a
+                href="<?= base_url(
+                    '/publications/recommendations'
+                ) ?>"
+                class="btn btn-secondary"
+            >
+                Waktu Tayang
+            </a>
+        <?php endif; ?>
+
         <a
             href="<?= base_url('/publications/calendar') ?>"
             class="btn btn-secondary"

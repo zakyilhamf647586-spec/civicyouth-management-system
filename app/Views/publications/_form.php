@@ -399,6 +399,83 @@ $selectedTemplate = (string) $formValue(
                         menghitung deadline draft, desain, review,
                         approval, dan waktu tayang.
                     </small>
+
+                    <?php if (
+                        auth_can(
+                            'publications.recommendations.view'
+                        )
+                        && !empty($postingRecommendations)
+                    ) : ?>
+                        <div class="publication-schedule-suggestions">
+                            <div>
+                                <strong>
+                                    Saran waktu tayang
+                                </strong>
+
+                                <span>
+                                    <?= !empty(
+                                        $postingRecommendationMeta[
+                                            'has_enough_data'
+                                        ]
+                                    )
+                                        ? 'Berdasarkan performa internal'
+                                        : 'Baseline eksperimen sementara' ?>
+                                </span>
+                            </div>
+
+                            <div>
+                                <?php foreach (
+                                    $postingRecommendations
+                                    as $recommendation
+                                ) : ?>
+                                    <button
+                                        type="button"
+                                        data-recommended-datetime="<?= esc(
+                                            $recommendation[
+                                                'next_datetime_local'
+                                            ],
+                                            'attr'
+                                        ) ?>"
+                                    >
+                                        <strong>
+                                            <?= esc(
+                                                $recommendation[
+                                                    'weekday_label'
+                                                ]
+                                            ) ?>
+                                            ·
+                                            <?= esc(
+                                                str_replace(
+                                                    ':',
+                                                    '.',
+                                                    $recommendation[
+                                                        'time'
+                                                    ]
+                                                )
+                                            ) ?>
+                                            WIB
+                                        </strong>
+
+                                        <small>
+                                            <?= esc(
+                                                $recommendation[
+                                                    'evidence'
+                                                ]
+                                            ) ?>
+                                        </small>
+                                    </button>
+                                <?php endforeach; ?>
+                            </div>
+
+                            <a
+                                href="<?= base_url(
+                                    '/publications/recommendations'
+                                ) ?>"
+                            >
+                                Lihat analisis lengkap →
+                            </a>
+                        </div>
+                    <?php endif; ?>
                 </div>
 
                 <div class="form-group">

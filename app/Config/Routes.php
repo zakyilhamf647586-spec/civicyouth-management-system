@@ -136,6 +136,7 @@ $routes->get('/publications/analytics', 'SocialPublicationController::analytics'
 $routes->get('/publications/analytics/export', 'SocialPublicationController::exportAnalytics', $guard('publications.metrics.export'));
 $routes->get('/publications/audit', 'SocialPublicationController::audit', $guard('publications.audit.view'));
 $routes->get('/publications/deadlines', 'SocialPublicationController::deadlines', $guard('publications.deadlines.view'));
+$routes->get('/publications/recommendations', 'SocialPublicationController::recommendations', $guard('publications.recommendations.view'));
 $routes->post('/publications/(:num)/metrics', 'SocialPublicationController::storeMetrics/$1', $guard('publications.metrics.manage'));
 $routes->post('/publications/(:num)/metrics/(:num)/delete', 'SocialPublicationController::deleteMetric/$1/$2', $guard('publications.metrics.manage'));
 $routes->get('/publications/(:num)', 'SocialPublicationController::show/$1', $guard('publications.view'));

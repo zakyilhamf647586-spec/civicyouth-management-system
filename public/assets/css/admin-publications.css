@@ -2832,3 +2832,515 @@
         justify-content: center;
     }
 }
+
+
+/* ==========================================================
+   Data-Driven Posting Time Recommendations
+========================================================== */
+
+.publication-schedule-suggestions {
+    margin-top: 10px;
+    padding: 12px;
+    border: 1px solid rgba(217, 163, 22, .34);
+    border-radius: 12px;
+    background:
+        linear-gradient(
+            145deg,
+            #fffaf0,
+            #ffffff
+        );
+}
+
+.publication-schedule-suggestions > div:first-child {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.publication-schedule-suggestions > div:first-child strong,
+.publication-schedule-suggestions > div:first-child span {
+    display: block;
+}
+
+.publication-schedule-suggestions > div:first-child strong {
+    color: var(--publication-navy);
+    font-size: 9px;
+}
+
+.publication-schedule-suggestions > div:first-child span {
+    color: #9b7208;
+    font-size: 7.5px;
+    font-weight: 800;
+}
+
+.publication-schedule-suggestions > div:nth-child(2) {
+    margin-top: 9px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+}
+
+.publication-schedule-suggestions button {
+    min-width: 0;
+    padding: 9px;
+    border: 1px solid #e2e9ef;
+    border-radius: 9px;
+    color: inherit;
+    background: #ffffff;
+    cursor: pointer;
+    text-align: left;
+    transition:
+        transform .16s ease,
+        border-color .16s ease,
+        background .16s ease;
+}
+
+.publication-schedule-suggestions button:hover,
+.publication-schedule-suggestions button.is-selected {
+    transform: translateY(-1px);
+    border-color: var(--publication-gold);
+    background: #fff4ce;
+}
+
+.publication-schedule-suggestions button strong,
+.publication-schedule-suggestions button small {
+    display: block;
+}
+
+.publication-schedule-suggestions button strong {
+    color: var(--publication-navy);
+    font-size: 8.5px;
+}
+
+.publication-schedule-suggestions button small {
+    margin-top: 4px;
+    color: var(--publication-muted);
+    font-size: 7px;
+    line-height: 1.35;
+}
+
+.publication-schedule-suggestions > a {
+    margin-top: 9px;
+    display: inline-flex;
+    color: #9b7208;
+    font-size: 8px;
+    font-weight: 850;
+    text-decoration: none;
+}
+
+.publication-recommendation-notice {
+    margin-bottom: 18px;
+    padding: 16px 18px;
+    border-radius: 14px;
+    border-left: 4px solid #3f7652;
+    background: #eef7f1;
+}
+
+.publication-recommendation-notice.is-baseline {
+    border-left-color: #d9a316;
+    background: #fff8df;
+}
+
+.publication-recommendation-notice strong {
+    color: var(--publication-navy);
+    font-size: 11px;
+}
+
+.publication-recommendation-notice p {
+    margin: 5px 0 0;
+    color: var(--publication-muted);
+    font-size: 9.5px;
+    line-height: 1.55;
+}
+
+.publication-recommendation-toolbar {
+    margin-bottom: 18px;
+    padding: 15px;
+    display: grid;
+    grid-template-columns: minmax(360px, .8fr) 1fr;
+    align-items: end;
+    gap: 16px;
+    border: 1px solid var(--publication-border);
+    border-radius: 17px;
+    background: #ffffff;
+    box-shadow: 0 12px 30px rgba(4, 23, 45, .05);
+}
+
+.publication-recommendation-toolbar form {
+    display: grid;
+    grid-template-columns: minmax(190px, 1fr) auto auto;
+    align-items: end;
+    gap: 8px;
+}
+
+.publication-recommendation-toolbar .form-group {
+    margin: 0;
+}
+
+.publication-recommendation-toolbar > div {
+    align-self: center;
+    text-align: right;
+}
+
+.publication-recommendation-toolbar > div span,
+.publication-recommendation-toolbar > div strong {
+    display: block;
+}
+
+.publication-recommendation-toolbar > div span {
+    color: var(--publication-gold);
+    font-size: 8px;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.publication-recommendation-toolbar > div strong {
+    margin-top: 4px;
+    color: var(--publication-navy);
+    font-size: 13px;
+}
+
+.publication-recommendation-summary-grid {
+    margin-bottom: 18px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.publication-recommendation-summary-grid article {
+    min-height: 121px;
+    padding: 17px;
+    border: 1px solid var(--publication-border);
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 10px 28px rgba(4, 23, 45, .045);
+}
+
+.publication-recommendation-summary-grid article.featured {
+    color: #ffffff;
+    background:
+        radial-gradient(
+            circle at 92% 7%,
+            rgba(217, 163, 22, .22),
+            transparent 31%
+        ),
+        linear-gradient(135deg, #04172d, #08365f);
+    border-color: rgba(217, 163, 22, .32);
+}
+
+.publication-recommendation-summary-grid span,
+.publication-recommendation-summary-grid strong,
+.publication-recommendation-summary-grid small {
+    display: block;
+}
+
+.publication-recommendation-summary-grid span {
+    color: var(--publication-muted);
+    font-size: 8px;
+    font-weight: 850;
+    text-transform: uppercase;
+}
+
+.publication-recommendation-summary-grid strong {
+    margin-top: 10px;
+    color: var(--publication-navy);
+    font-size: 26px;
+    line-height: 1;
+}
+
+.publication-recommendation-summary-grid small {
+    margin-top: 10px;
+    color: #8295a3;
+    font-size: 8px;
+}
+
+.publication-recommendation-summary-grid .featured span,
+.publication-recommendation-summary-grid .featured small {
+    color: rgba(255, 255, 255, .62);
+}
+
+.publication-recommendation-summary-grid .featured strong {
+    color: #ffffff;
+}
+
+.publication-recommendation-top,
+.publication-recommendation-baseline,
+.publication-recommendation-method {
+    margin-bottom: 18px;
+    overflow: hidden;
+    border: 1px solid var(--publication-border);
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 12px 30px rgba(4, 23, 45, .05);
+}
+
+.publication-recommendation-top-grid {
+    padding: 17px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.publication-recommendation-top-grid article {
+    position: relative;
+    min-width: 0;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid #e2e9ef;
+    border-radius: 15px;
+    background:
+        linear-gradient(
+            145deg,
+            #f8fafc,
+            #ffffff
+        );
+}
+
+.publication-recommendation-top-grid article:first-child {
+    background:
+        radial-gradient(
+            circle at 92% 7%,
+            rgba(217, 163, 22, .18),
+            transparent 31%
+        ),
+        linear-gradient(145deg, #fffaf0, #ffffff);
+    border-color: rgba(217, 163, 22, .44);
+}
+
+.publication-recommendation-top-grid .rank {
+    width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    background: var(--publication-navy);
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 900;
+}
+
+.publication-recommendation-top-grid article > div {
+    margin-top: 14px;
+}
+
+.publication-recommendation-top-grid article > div span,
+.publication-recommendation-top-grid article > div strong,
+.publication-recommendation-top-grid article > div small {
+    display: block;
+}
+
+.publication-recommendation-top-grid article > div span {
+    color: var(--publication-muted);
+    font-size: 8.5px;
+    font-weight: 850;
+    text-transform: uppercase;
+}
+
+.publication-recommendation-top-grid article > div strong {
+    margin-top: 5px;
+    color: var(--publication-navy);
+    font-size: 27px;
+    line-height: 1;
+}
+
+.publication-recommendation-top-grid article > div small {
+    margin-top: 7px;
+    color: #8295a3;
+    font-size: 8px;
+}
+
+.publication-recommendation-top-grid dl {
+    margin: 16px 0 13px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 7px;
+}
+
+.publication-recommendation-top-grid dl div {
+    padding: 9px;
+    border-radius: 9px;
+    background: #eef3f7;
+}
+
+.publication-recommendation-top-grid dt {
+    color: var(--publication-muted);
+    font-size: 7px;
+    text-transform: uppercase;
+}
+
+.publication-recommendation-top-grid dd {
+    margin: 4px 0 0;
+    color: var(--publication-navy);
+    font-size: 10px;
+    font-weight: 850;
+}
+
+.publication-recommendation-top-grid .btn {
+    width: 100%;
+    margin-top: auto;
+    justify-content: center;
+}
+
+.publication-recommendation-confidence {
+    display: inline-flex;
+    align-self: flex-start;
+    margin-bottom: 13px;
+    padding: 6px 8px;
+    border-radius: 999px;
+    color: #486581;
+    background: #edf2f7;
+    font-size: 7px;
+    font-weight: 900;
+}
+
+.publication-recommendation-confidence--medium {
+    color: #725300;
+    background: #fff0b8;
+}
+
+.publication-recommendation-confidence--high {
+    color: #17613d;
+    background: #dff3e8;
+}
+
+.publication-recommendation-baseline > div:last-child {
+    padding: 17px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 11px;
+}
+
+.publication-recommendation-baseline article {
+    padding: 16px;
+    border: 1px solid #e2e9ef;
+    border-radius: 14px;
+    background: #fbfcfd;
+}
+
+.publication-recommendation-baseline article span,
+.publication-recommendation-baseline article strong,
+.publication-recommendation-baseline article small {
+    display: block;
+}
+
+.publication-recommendation-baseline article span {
+    color: var(--publication-muted);
+    font-size: 8px;
+    text-transform: uppercase;
+}
+
+.publication-recommendation-baseline article strong {
+    margin-top: 6px;
+    color: var(--publication-navy);
+    font-size: 22px;
+}
+
+.publication-recommendation-baseline article small {
+    margin-top: 7px;
+    color: #8295a3;
+    font-size: 8px;
+}
+
+.publication-recommendation-method {
+    padding: 19px;
+}
+
+.publication-recommendation-method > div:first-child span {
+    color: var(--publication-gold);
+    font-size: 8px;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.publication-recommendation-method > div:first-child h3 {
+    margin: 5px 0 0;
+    color: var(--publication-navy);
+    font-size: 17px;
+}
+
+.publication-recommendation-formula {
+    margin-top: 15px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 9px;
+}
+
+.publication-recommendation-formula article {
+    padding: 13px;
+    border-radius: 11px;
+    background: #f3f6f8;
+}
+
+.publication-recommendation-formula strong,
+.publication-recommendation-formula span,
+.publication-recommendation-formula p {
+    display: block;
+}
+
+.publication-recommendation-formula strong {
+    color: #b88408;
+    font-size: 20px;
+}
+
+.publication-recommendation-formula span {
+    margin-top: 5px;
+    color: var(--publication-navy);
+    font-size: 9px;
+    font-weight: 850;
+}
+
+.publication-recommendation-formula p {
+    margin: 6px 0 0;
+    color: var(--publication-muted);
+    font-size: 8px;
+    line-height: 1.45;
+}
+
+.publication-recommendation-table {
+    min-width: 1300px;
+}
+
+@media (max-width: 1100px) {
+    .publication-recommendation-summary-grid,
+    .publication-recommendation-formula {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .publication-recommendation-top-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 720px) {
+    .publication-schedule-suggestions > div:first-child {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .publication-schedule-suggestions > div:nth-child(2),
+    .publication-recommendation-summary-grid,
+    .publication-recommendation-baseline > div:last-child,
+    .publication-recommendation-formula {
+        grid-template-columns: 1fr;
+    }
+
+    .publication-recommendation-toolbar {
+        grid-template-columns: 1fr;
+    }
+
+    .publication-recommendation-toolbar form {
+        grid-template-columns: 1fr;
+    }
+
+    .publication-recommendation-toolbar form .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .publication-recommendation-toolbar > div {
+        text-align: left;
+    }
+}

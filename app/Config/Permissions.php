@@ -83,6 +83,7 @@ class Permissions extends BaseConfig
             'publications.metrics.export',
             'publications.audit.view',
             'publications.deadlines.view',
+            'publications.recommendations.view',
 
             'content_studio.*',
             'messages.*',
@@ -202,6 +203,7 @@ class Permissions extends BaseConfig
         'publications.metrics.export' => 'mengekspor analitik performa publikasi',
         'publications.audit.view' => 'melihat audit trail publikasi',
         'publications.deadlines.view' => 'melihat deadline produksi publikasi',
+        'publications.recommendations.view' => 'melihat rekomendasi waktu tayang publikasi',
 
         'content_studio.view'     => 'melihat AI Content Studio',
         'content_studio.create'   => 'membuat konten',
