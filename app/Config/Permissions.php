@@ -82,6 +82,7 @@ class Permissions extends BaseConfig
             'publications.metrics.manage',
             'publications.metrics.export',
             'publications.audit.view',
+            'publications.deadlines.view',
 
             'content_studio.*',
             'messages.*',
@@ -200,6 +201,7 @@ class Permissions extends BaseConfig
         'publications.metrics.manage' => 'mencatat atau menghapus metrik Instagram',
         'publications.metrics.export' => 'mengekspor analitik performa publikasi',
         'publications.audit.view' => 'melihat audit trail publikasi',
+        'publications.deadlines.view' => 'melihat deadline produksi publikasi',
 
         'content_studio.view'     => 'melihat AI Content Studio',
         'content_studio.create'   => 'membuat konten',

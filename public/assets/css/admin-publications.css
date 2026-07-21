@@ -2431,3 +2431,404 @@
         white-space: normal;
     }
 }
+
+
+/* ==========================================================
+   Production Deadlines & Overdue Detection
+========================================================== */
+
+.publication-deadline-overview,
+.publication-deadline-notice {
+    margin-bottom: 18px;
+    border: 1px solid var(--publication-border);
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 12px 30px rgba(4, 23, 45, .05);
+}
+
+.publication-deadline-overview {
+    padding: 21px;
+}
+
+.publication-deadline-overview__heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.publication-deadline-overview__heading span,
+.publication-deadline-overview__heading h3,
+.publication-deadline-overview__heading p {
+    display: block;
+}
+
+.publication-deadline-overview__heading span {
+    color: var(--publication-gold);
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+}
+
+.publication-deadline-overview__heading h3 {
+    margin: 5px 0 0;
+    color: var(--publication-navy);
+    font-size: 18px;
+}
+
+.publication-deadline-overview__heading p {
+    margin: 7px 0 0;
+    color: var(--publication-muted);
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+.publication-deadline-mini-stats {
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 9px;
+}
+
+.publication-deadline-mini-stats article {
+    padding: 13px;
+    border-radius: 12px;
+    background: #f7f9fb;
+    border: 1px solid #e5ebf0;
+}
+
+.publication-deadline-mini-stats span,
+.publication-deadline-mini-stats strong {
+    display: block;
+}
+
+.publication-deadline-mini-stats span {
+    color: var(--publication-muted);
+    font-size: 7.5px;
+    font-weight: 850;
+    text-transform: uppercase;
+}
+
+.publication-deadline-mini-stats strong {
+    margin-top: 7px;
+    color: var(--publication-navy);
+    font-size: 21px;
+}
+
+.publication-deadline-mini-stats .is-overdue {
+    background: #fff0f0;
+    border-color: #f0cccc;
+}
+
+.publication-deadline-mini-stats .is-due-soon {
+    background: #fff8df;
+    border-color: #eddca6;
+}
+
+.publication-deadline-mini-stats .is-unscheduled {
+    background: #eef3f7;
+}
+
+.publication-deadline-mini-stats .is-blocked {
+    background: #f3effc;
+    border-color: #ded2ef;
+}
+
+.publication-deadline-preview-list {
+    margin-top: 14px;
+    overflow: hidden;
+    border: 1px solid #e3e9ee;
+    border-radius: 13px;
+}
+
+.publication-deadline-preview-list > a {
+    padding: 12px 14px;
+    display: grid;
+    grid-template-columns:
+        minmax(105px, auto)
+        minmax(0, 1fr)
+        minmax(110px, auto);
+    align-items: center;
+    gap: 12px;
+    color: inherit;
+    border-bottom: 1px solid #e7edf2;
+    text-decoration: none;
+}
+
+.publication-deadline-preview-list > a:last-child {
+    border-bottom: 0;
+}
+
+.publication-deadline-preview-list > a:hover {
+    background: #f8fafc;
+}
+
+.publication-deadline-preview-list strong,
+.publication-deadline-preview-list p {
+    display: block;
+}
+
+.publication-deadline-preview-list strong {
+    color: var(--publication-navy);
+    font-size: 10.5px;
+}
+
+.publication-deadline-preview-list p {
+    margin: 4px 0 0;
+    color: var(--publication-muted);
+    font-size: 8.5px;
+}
+
+.publication-deadline-preview-list > a > small {
+    color: var(--publication-muted);
+    font-size: 8.5px;
+    text-align: right;
+}
+
+.publication-deadline-notice {
+    padding: 15px 17px;
+    border-left: 4px solid var(--publication-gold);
+    border-radius: 14px;
+    background: #fffaf0;
+}
+
+.publication-deadline-notice strong {
+    color: var(--publication-navy);
+    font-size: 11px;
+}
+
+.publication-deadline-notice p {
+    margin: 6px 0 0;
+    color: var(--publication-muted);
+    font-size: 9.5px;
+    line-height: 1.55;
+}
+
+.publication-deadline-summary-grid {
+    margin-bottom: 18px;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.publication-deadline-summary-grid > a,
+.publication-deadline-summary-grid > article {
+    min-height: 124px;
+    padding: 17px;
+    display: block;
+    color: inherit;
+    border: 1px solid var(--publication-border);
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 10px 28px rgba(4, 23, 45, .045);
+    text-decoration: none;
+}
+
+.publication-deadline-summary-grid > a:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 14px 34px rgba(4, 23, 45, .08);
+}
+
+.publication-deadline-summary-grid span,
+.publication-deadline-summary-grid strong,
+.publication-deadline-summary-grid small {
+    display: block;
+}
+
+.publication-deadline-summary-grid span {
+    color: var(--publication-muted);
+    font-size: 8px;
+    font-weight: 850;
+    text-transform: uppercase;
+}
+
+.publication-deadline-summary-grid strong {
+    margin-top: 10px;
+    color: var(--publication-navy);
+    font-size: 27px;
+    line-height: 1;
+}
+
+.publication-deadline-summary-grid small {
+    margin-top: 10px;
+    color: #8295a3;
+    font-size: 8px;
+    line-height: 1.4;
+}
+
+.publication-deadline-summary-grid .is-overdue {
+    background:
+        linear-gradient(145deg, #fff0f0, #ffffff);
+    border-color: #efcccc;
+}
+
+.publication-deadline-summary-grid .is-due-soon {
+    background:
+        linear-gradient(145deg, #fff8df, #ffffff);
+    border-color: #ead79a;
+}
+
+.publication-deadline-summary-grid .is-unscheduled {
+    background:
+        linear-gradient(145deg, #edf2f7, #ffffff);
+}
+
+.publication-deadline-summary-grid .is-on-track {
+    background:
+        linear-gradient(145deg, #eaf6ee, #ffffff);
+    border-color: #cce5d5;
+}
+
+.publication-deadline-summary-grid .is-blocked {
+    color: #ffffff;
+    background:
+        radial-gradient(
+            circle at 92% 7%,
+            rgba(217, 163, 22, .19),
+            transparent 31%
+        ),
+        linear-gradient(135deg, #04172d, #08365f);
+    border-color: rgba(217, 163, 22, .3);
+}
+
+.publication-deadline-summary-grid
+    .is-blocked span,
+.publication-deadline-summary-grid
+    .is-blocked small {
+    color: rgba(255, 255, 255, .62);
+}
+
+.publication-deadline-summary-grid
+    .is-blocked strong {
+    color: #ffffff;
+}
+
+.publication-deadline-filter {
+    display: grid;
+    grid-template-columns:
+        minmax(170px, 1fr)
+        minmax(170px, 1fr)
+        minmax(150px, .8fr)
+        minmax(180px, 1fr)
+        auto;
+    align-items: end;
+    gap: 11px;
+}
+
+.publication-deadline-filter label {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--publication-muted);
+    font-size: 8.5px;
+    font-weight: 850;
+}
+
+.publication-deadline-table {
+    min-width: 1500px;
+}
+
+.publication-deadline-table td > strong,
+.publication-deadline-table td > small {
+    display: block;
+}
+
+.publication-deadline-table td > small {
+    margin-top: 5px;
+    color: var(--publication-muted);
+    font-size: 8px;
+}
+
+.publication-deadline-urgency {
+    display: inline-flex;
+    padding: 7px 9px;
+    border-radius: 999px;
+    color: #486581;
+    background: #edf2f7;
+    font-size: 7.5px;
+    font-weight: 900;
+    white-space: nowrap;
+}
+
+.publication-deadline-urgency--overdue {
+    color: #8f2d2d;
+    background: #ffe0e0;
+}
+
+.publication-deadline-urgency--due_soon {
+    color: #725300;
+    background: #fff0b8;
+}
+
+.publication-deadline-urgency--unscheduled {
+    color: #486581;
+    background: #edf2f7;
+}
+
+.publication-deadline-urgency--on_track {
+    color: #17613d;
+    background: #dff3e8;
+}
+
+.publication-deadline-blockers {
+    max-width: 280px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.publication-deadline-blockers span {
+    padding: 6px 8px;
+    border-radius: 8px;
+    color: #7d3f2f;
+    background: #fde9e1;
+    font-size: 7.5px;
+    font-weight: 800;
+}
+
+.publication-deadline-clear {
+    color: #17613d;
+    font-size: 8px;
+    font-weight: 800;
+}
+
+@media (max-width: 1180px) {
+    .publication-deadline-summary-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .publication-deadline-filter {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+    .publication-deadline-overview__heading {
+        flex-direction: column;
+    }
+
+    .publication-deadline-mini-stats,
+    .publication-deadline-summary-grid,
+    .publication-deadline-filter {
+        grid-template-columns: 1fr;
+    }
+
+    .publication-deadline-preview-list > a {
+        grid-template-columns: 1fr;
+    }
+
+    .publication-deadline-preview-list > a > small {
+        text-align: left;
+    }
+
+    .publication-deadline-filter
+        .publication-filter-actions {
+        width: 100%;
+    }
+
+    .publication-deadline-filter
+        .publication-filter-actions .btn {
+        flex: 1 1 auto;
+        justify-content: center;
+    }
+}

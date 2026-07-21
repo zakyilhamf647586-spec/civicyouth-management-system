@@ -83,12 +83,35 @@ class SocialPublicationController extends BaseController
             ->orderBy('content_posts.id', 'DESC')
             ->paginate(15, 'social_publications');
 
+        $deadlineItems = $this->productionAttentionDataset();
+
         return view('publications/index', [
             'title' => 'Publikasi Sosial',
             'posts' => $posts,
             'pager' => $model->pager,
             'summary' => $this->publicationSummary(),
             'activityCandidates' => $this->publicationCandidates(),
+            'deadlineSummary' =>
+                $this->productionDeadlineSummary(
+                    $deadlineItems
+                ),
+            'deadlineItems' => array_slice(
+                array_values(array_filter(
+                    $deadlineItems,
+                    static fn (array $item): bool =>
+                        in_array(
+                            $item['urgency'],
+                            [
+                                'overdue',
+                                'due_soon',
+                                'unscheduled',
+                            ],
+                            true
+                        )
+                )),
+                0,
+                5
+            ),
             'programs' => $this->programModel
                 ->orderBy('display_order', 'ASC')
                 ->findAll(),
@@ -802,6 +825,120 @@ class SocialPublicationController extends BaseController
             'success',
             'Snapshot performa berhasil dihapus.'
         );
+    }
+
+    public function deadlines()
+    {
+        $urgency = trim(
+            (string) $this->request->getGet('urgency')
+        );
+
+        $status = trim(
+            (string) $this->request->getGet('status')
+        );
+
+        $priority = trim(
+            (string) $this->request->getGet('priority')
+        );
+
+        $owner = trim(
+            (string) $this->request->getGet('owner')
+        );
+
+        $items = $this->productionAttentionDataset();
+
+        if (!in_array(
+            $urgency,
+            [
+                'overdue',
+                'due_soon',
+                'unscheduled',
+                'on_track',
+            ],
+            true
+        )) {
+            $urgency = '';
+        }
+
+        if (!isset(
+            $this->socialMedia->workflowStatuses[$status]
+        )) {
+            $status = '';
+        }
+
+        if (!isset(
+            $this->socialMedia->priorities[$priority]
+        )) {
+            $priority = '';
+        }
+
+        $items = array_values(array_filter(
+            $items,
+            static function (
+                array $item
+            ) use (
+                $urgency,
+                $status,
+                $priority,
+                $owner
+            ): bool {
+                if (
+                    $urgency !== ''
+                    && $item['urgency'] !== $urgency
+                ) {
+                    return false;
+                }
+
+                if (
+                    $status !== ''
+                    && $item['workflow_status'] !== $status
+                ) {
+                    return false;
+                }
+
+                if (
+                    $priority !== ''
+                    && $item['priority'] !== $priority
+                ) {
+                    return false;
+                }
+
+                if (
+                    $owner !== ''
+                    && stripos(
+                        (string) ($item['owner'] ?? ''),
+                        $owner
+                    ) === false
+                ) {
+                    return false;
+                }
+
+                return true;
+            }
+        ));
+
+        return view('publications/deadlines', [
+            'title' => 'Deadline Produksi Publikasi',
+            'items' => $items,
+            'summary' =>
+                $this->productionDeadlineSummary(
+                    $this->productionAttentionDataset()
+                ),
+            'workflowStatuses' =>
+                $this->socialMedia->workflowStatuses,
+            'priorities' =>
+                $this->socialMedia->priorities,
+            'urgencyLabels' =>
+                $this->deadlineUrgencyLabels(),
+            'filters' => [
+                'urgency' => $urgency,
+                'status' => $status,
+                'priority' => $priority,
+                'owner' => $owner,
+            ],
+            'warningHours' =>
+                $this->socialMedia->deadlineWarningHours,
+        ]);
     }
 
     public function audit()
@@ -1522,6 +1659,410 @@ class SocialPublicationController extends BaseController
                 ->where('workflow_status', 'published')
                 ->countAllResults(),
         ];
+    }
+
+    private function productionAttentionDataset(): array
+    {
+        $rows = db_connect()
+            ->table('content_posts')
+            ->select(
+                'content_posts.*, '
+                . 'programs.name AS program_name, '
+                . 'COUNT(content_assets.id) AS asset_count',
+                false
+            )
+            ->join(
+                'programs',
+                'programs.id = content_posts.program_id',
+                'left'
+            )
+            ->join(
+                'content_assets',
+                'content_assets.content_post_id '
+                . '= content_posts.id',
+                'left'
+            )
+            ->where(
+                'content_posts.template_type',
+                'social_publication'
+            )
+            ->whereNotIn(
+                'content_posts.workflow_status',
+                ['published', 'archived']
+            )
+            ->groupBy('content_posts.id')
+            ->orderBy('content_posts.scheduled_at', 'ASC')
+            ->orderBy('content_posts.priority', 'DESC')
+            ->orderBy('content_posts.updated_at', 'ASC')
+            ->get()
+            ->getResultArray();
+
+        $now = new \DateTimeImmutable('now');
+
+        foreach ($rows as &$row) {
+            $row = array_merge(
+                $row,
+                $this->productionDeadlineState(
+                    $row,
+                    $now
+                )
+            );
+        }
+
+        unset($row);
+
+        $urgencyRank = [
+            'overdue' => 1,
+            'due_soon' => 2,
+            'unscheduled' => 3,
+            'on_track' => 4,
+        ];
+
+        $priorityRank = [
+            'urgent' => 1,
+            'high' => 2,
+            'normal' => 3,
+            'low' => 4,
+        ];
+
+        usort(
+            $rows,
+            static function (
+                array $left,
+                array $right
+            ) use (
+                $urgencyRank,
+                $priorityRank
+            ): int {
+                $urgencyComparison =
+                    ($urgencyRank[
+                        $left['urgency']
+                    ] ?? 99)
+                    <=>
+                    ($urgencyRank[
+                        $right['urgency']
+                    ] ?? 99);
+
+                if ($urgencyComparison !== 0) {
+                    return $urgencyComparison;
+                }
+
+                $priorityComparison =
+                    ($priorityRank[
+                        $left['priority'] ?? 'normal'
+                    ] ?? 99)
+                    <=>
+                    ($priorityRank[
+                        $right['priority'] ?? 'normal'
+                    ] ?? 99);
+
+                if ($priorityComparison !== 0) {
+                    return $priorityComparison;
+                }
+
+                $leftDue = $left['due_timestamp']
+                    ?? PHP_INT_MAX;
+
+                $rightDue = $right['due_timestamp']
+                    ?? PHP_INT_MAX;
+
+                return $leftDue <=> $rightDue;
+            }
+        );
+
+        return $rows;
+    }
+
+    private function productionDeadlineState(
+        array $post,
+        \DateTimeImmutable $now
+    ): array {
+        $status = (string) (
+            $post['workflow_status'] ?? 'brief'
+        );
+
+        $milestone = $this->socialMedia
+            ->productionMilestones[$status] ?? [
+                'label' => 'Lanjutkan produksi konten',
+                'offset_hours' => -24,
+            ];
+
+        $scheduledAt = $this->dateTimeFromValue(
+            $post['scheduled_at'] ?? null
+        );
+
+        $blockers = $this->productionBlockers(
+            $post
+        );
+
+        if ($scheduledAt === null) {
+            return [
+                'urgency' => 'unscheduled',
+                'urgency_label' =>
+                    $this->deadlineUrgencyLabels()[
+                        'unscheduled'
+                    ],
+                'next_milestone' =>
+                    'Tetapkan rencana tayang',
+                'due_at' => null,
+                'due_timestamp' => null,
+                'scheduled_at_object' => null,
+                'hours_remaining' => null,
+                'time_message' =>
+                    'Belum dapat menghitung deadline.',
+                'blockers' => $blockers,
+            ];
+        }
+
+        $offsetHours = (int) (
+            $milestone['offset_hours'] ?? 0
+        );
+
+        $modifier = ($offsetHours >= 0 ? '+' : '')
+            . $offsetHours
+            . ' hours';
+
+        $dueAt = $scheduledAt->modify($modifier);
+
+        $warningAt = $now->modify(
+            '+'
+            . max(
+                1,
+                $this->socialMedia->deadlineWarningHours
+            )
+            . ' hours'
+        );
+
+        if ($dueAt < $now) {
+            $urgency = 'overdue';
+        } elseif ($dueAt <= $warningAt) {
+            $urgency = 'due_soon';
+        } else {
+            $urgency = 'on_track';
+        }
+
+        $secondsRemaining =
+            $dueAt->getTimestamp()
+            - $now->getTimestamp();
+
+        $hoursRemaining = (int) floor(
+            $secondsRemaining / 3600
+        );
+
+        return [
+            'urgency' => $urgency,
+            'urgency_label' =>
+                $this->deadlineUrgencyLabels()[
+                    $urgency
+                ],
+            'next_milestone' =>
+                (string) ($milestone['label']
+                ?? 'Lanjutkan produksi'),
+            'due_at' => $dueAt,
+            'due_timestamp' => $dueAt->getTimestamp(),
+            'scheduled_at_object' => $scheduledAt,
+            'hours_remaining' => $hoursRemaining,
+            'time_message' =>
+                $this->deadlineTimeMessage(
+                    $hoursRemaining
+                ),
+            'blockers' => $blockers,
+        ];
+    }
+
+    private function productionBlockers(
+        array $post
+    ): array {
+        $status = (string) (
+            $post['workflow_status'] ?? 'brief'
+        );
+
+        $blockers = [];
+
+        if (empty(trim(
+            (string) ($post['owner'] ?? '')
+        ))) {
+            $blockers[] = 'PIC belum ditentukan';
+        }
+
+        if (
+            in_array(
+                $status,
+                [
+                    'design',
+                    'review',
+                    'revision',
+                    'approved',
+                    'scheduled',
+                ],
+                true
+            )
+            && empty(trim(
+                (string) ($post['canva_url'] ?? '')
+            ))
+        ) {
+            $blockers[] =
+                'Tautan desain kerja Canva belum tersedia';
+        }
+
+        if (
+            in_array(
+                $status,
+                [
+                    'review',
+                    'revision',
+                    'approved',
+                    'scheduled',
+                ],
+                true
+            )
+            && empty(trim(
+                (string) ($post['reviewer'] ?? '')
+            ))
+        ) {
+            $blockers[] = 'Reviewer belum ditentukan';
+        }
+
+        if (
+            in_array(
+                $status,
+                [
+                    'review',
+                    'revision',
+                    'approved',
+                    'scheduled',
+                ],
+                true
+            )
+            && (int) ($post['asset_count'] ?? 0) < 1
+        ) {
+            $blockers[] =
+                'Aset dokumentasi belum tersedia';
+        }
+
+        if (
+            in_array(
+                $status,
+                [
+                    'review',
+                    'revision',
+                    'approved',
+                    'scheduled',
+                ],
+                true
+            )
+            && empty(trim(
+                (string) ($post['caption'] ?? '')
+            ))
+        ) {
+            $blockers[] = 'Caption belum lengkap';
+        }
+
+        if (
+            in_array(
+                $status,
+                ['approved', 'scheduled'],
+                true
+            )
+            && empty($post['scheduled_at'])
+        ) {
+            $blockers[] =
+                'Rencana tayang belum ditentukan';
+        }
+
+        return $blockers;
+    }
+
+    private function productionDeadlineSummary(
+        array $items
+    ): array {
+        $summary = [
+            'total' => count($items),
+            'overdue' => 0,
+            'due_soon' => 0,
+            'unscheduled' => 0,
+            'on_track' => 0,
+            'blocked' => 0,
+        ];
+
+        foreach ($items as $item) {
+            $urgency = $item['urgency']
+                ?? 'on_track';
+
+            if (isset($summary[$urgency])) {
+                $summary[$urgency]++;
+            }
+
+            if (!empty($item['blockers'])) {
+                $summary['blocked']++;
+            }
+        }
+
+        return $summary;
+    }
+
+    private function deadlineUrgencyLabels(): array
+    {
+        return [
+            'overdue' => 'Terlambat',
+            'due_soon' => 'Segera Jatuh Tempo',
+            'unscheduled' => 'Belum Dijadwalkan',
+            'on_track' => 'Sesuai Jalur',
+        ];
+    }
+
+    private function deadlineTimeMessage(
+        int $hoursRemaining
+    ): string {
+        if ($hoursRemaining < 0) {
+            $lateHours = abs($hoursRemaining);
+
+            if ($lateHours < 24) {
+                return 'Terlambat '
+                    . max(1, $lateHours)
+                    . ' jam';
+            }
+
+            return 'Terlambat '
+                . max(
+                    1,
+                    (int) floor(
+                        $lateHours / 24
+                    )
+                )
+                . ' hari';
+        }
+
+        if ($hoursRemaining < 24) {
+            return 'Sisa '
+                . max(1, $hoursRemaining)
+                . ' jam';
+        }
+
+        return 'Sisa '
+            . max(
+                1,
+                (int) floor(
+                    $hoursRemaining / 24
+                )
+            )
+            . ' hari';
+    }
+
+    private function dateTimeFromValue(
+        $value
+    ): ?\DateTimeImmutable {
+        $value = trim((string) $value);
+
+        if ($value === '') {
+            return null;
+        }
+
+        try {
+            return new \DateTimeImmutable($value);
+        } catch (\Throwable $e) {
+            return null;
+        }
     }
 
     private function recordAudit(

@@ -190,4 +190,47 @@ class SocialMedia extends BaseConfig
         'high' => 'Tinggi',
         'urgent' => 'Mendesak',
     ];
+
+    /**
+     * Waktu peringatan sebelum deadline produksi.
+     */
+    public int $deadlineWarningHours = 48;
+
+    /**
+     * Deadline setiap tahap dihitung mundur dari Rencana Tayang.
+     *
+     * offset_hours:
+     * - nilai negatif berarti sebelum waktu tayang;
+     * - nol berarti tepat pada waktu tayang.
+     */
+    public array $productionMilestones = [
+        'brief' => [
+            'label' => 'Selesaikan draft konten',
+            'offset_hours' => -144,
+        ],
+        'draft' => [
+            'label' => 'Mulai dan lengkapi desain',
+            'offset_hours' => -96,
+        ],
+        'design' => [
+            'label' => 'Kirim konten untuk review',
+            'offset_hours' => -48,
+        ],
+        'review' => [
+            'label' => 'Selesaikan keputusan review',
+            'offset_hours' => -24,
+        ],
+        'revision' => [
+            'label' => 'Selesaikan revisi',
+            'offset_hours' => -18,
+        ],
+        'approved' => [
+            'label' => 'Finalisasi jadwal dan aset',
+            'offset_hours' => -12,
+        ],
+        'scheduled' => [
+            'label' => 'Publikasikan konten',
+            'offset_hours' => 0,
+        ],
+    ];
 }

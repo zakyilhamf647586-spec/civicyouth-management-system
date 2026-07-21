@@ -41,6 +41,19 @@ $formatDateTime = static function (?string $value): string {
 
     <div class="publication-header-actions">
         <?php if (auth_can(
+            'publications.deadlines.view'
+        )) : ?>
+            <a
+                href="<?= base_url(
+                    '/publications/deadlines'
+                ) ?>"
+                class="btn btn-secondary"
+            >
+                Deadline Produksi
+            </a>
+        <?php endif; ?>
+
+        <?php if (auth_can(
             'publications.audit.view'
         )) : ?>
             <a
@@ -115,6 +128,133 @@ $formatDateTime = static function (?string $value): string {
     </article>
 </section>
 
+
+
+<?php if (
+    auth_can('publications.deadlines.view')
+) : ?>
+    <section class="publication-deadline-overview">
+        <div class="publication-deadline-overview__heading">
+            <div>
+                <span>Production Control</span>
+                <h3>Perhatian deadline produksi</h3>
+                <p>
+                    Deadline dihitung otomatis dari Rencana Tayang
+                    dan posisi konten pada workflow saat ini.
+                </p>
+            </div>
+
+            <a
+                href="<?= base_url(
+                    '/publications/deadlines'
+                ) ?>"
+                class="btn btn-secondary"
+            >
+                Buka Pusat Deadline
+            </a>
+        </div>
+
+        <div class="publication-deadline-mini-stats">
+            <article class="is-overdue">
+                <span>Terlambat</span>
+                <strong>
+                    <?= (int) (
+                        $deadlineSummary['overdue'] ?? 0
+                    ) ?>
+                </strong>
+            </article>
+
+            <article class="is-due-soon">
+                <span>Segera Jatuh Tempo</span>
+                <strong>
+                    <?= (int) (
+                        $deadlineSummary['due_soon'] ?? 0
+                    ) ?>
+                </strong>
+            </article>
+
+            <article class="is-unscheduled">
+                <span>Belum Dijadwalkan</span>
+                <strong>
+                    <?= (int) (
+                        $deadlineSummary[
+                            'unscheduled'
+                        ] ?? 0
+                    ) ?>
+                </strong>
+            </article>
+
+            <article class="is-blocked">
+                <span>Memiliki Hambatan</span>
+                <strong>
+                    <?= (int) (
+                        $deadlineSummary['blocked'] ?? 0
+                    ) ?>
+                </strong>
+            </article>
+        </div>
+
+        <?php if (!empty($deadlineItems)) : ?>
+            <div class="publication-deadline-preview-list">
+                <?php foreach (
+                    $deadlineItems as $item
+                ) : ?>
+                    <a
+                        href="<?= base_url(
+                            '/publications/'
+                            . $item['id']
+                        ) ?>"
+                    >
+                        <span
+                            class="publication-deadline-urgency publication-deadline-urgency--<?= esc(
+                                $item['urgency'],
+                                'attr'
+                            ) ?>"
+                        >
+                            <?= esc(
+                                $item['urgency_label']
+                            ) ?>
+                        </span>
+
+                        <div>
+                            <strong>
+                                <?= esc(
+                                    $item['event_title']
+                                    ?: $item['title']
+                                    ?: 'Tanpa judul'
+                                ) ?>
+                            </strong>
+
+                            <p>
+                                <?= esc(
+                                    $item['next_milestone']
+                                ) ?>
+                                ·
+                                <?= esc(
+                                    $item['time_message']
+                                ) ?>
+                            </p>
+                        </div>
+
+                        <small>
+                            <?= esc(
+                                $item['owner']
+                                ?: 'PIC belum ditentukan'
+                            ) ?>
+                        </small>
+                    </a>
+                <?php endforeach; ?>
+            </div>
+        <?php else : ?>
+            <div class="publication-empty-state compact">
+                <strong>Tidak ada deadline kritis</strong>
+                <p>
+                    Produksi aktif masih berada dalam kondisi aman.
+                </p>
+            </div>
+        <?php endif; ?>
+    </section>
+<?php endif; ?>
 
 <?php if (
     auth_can('publications.create')

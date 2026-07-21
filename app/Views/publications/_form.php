@@ -394,6 +394,11 @@ $selectedTemplate = (string) $formValue(
                         name="scheduled_at"
                         value="<?= esc($scheduledValue, 'attr') ?>"
                     >
+                    <small>
+                        Isi sejak tahap brief agar sistem dapat
+                        menghitung deadline draft, desain, review,
+                        approval, dan waktu tayang.
+                    </small>
                 </div>
 
                 <div class="form-group">
