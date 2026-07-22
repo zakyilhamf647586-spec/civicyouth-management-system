@@ -6,16 +6,19 @@ use App\Models\ContentPostModel;
 use App\Models\ContentAssetModel;
 use App\Libraries\OpenAIContentService;
 use App\Libraries\ContentTemplateService;
+use App\Libraries\SecureUploadService;
 
 class ContentStudioController extends BaseController
 {
     protected $postModel;
     protected $assetModel;
+    protected SecureUploadService $uploadService;
 
     public function __construct()
     {
         $this->postModel  = new ContentPostModel();
         $this->assetModel = new ContentAssetModel();
+        $this->uploadService = new SecureUploadService();
     }
 
     public function index()
@@ -64,27 +67,12 @@ class ContentStudioController extends BaseController
                 ->with('error', 'File gambar belum dipilih.');
         }
 
-        $validFiles = [];
-
-        foreach ($files['content_images'] as $file) {
-            if (!$file->isValid()) {
-                continue;
-            }
-
-            if (!in_array($file->getMimeType(), ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'])) {
-                return redirect()->back()
-                    ->withInput()
-                    ->with('error', 'Format gambar harus JPG, JPEG, PNG, atau WEBP.');
-            }
-
-            if ($file->getSizeByUnit('mb') > 4) {
-                return redirect()->back()
-                    ->withInput()
-                    ->with('error', 'Ukuran tiap gambar maksimal 4MB.');
-            }
-
-            $validFiles[] = $file;
-        }
+        $validFiles = array_values(array_filter(
+            $files['content_images'],
+            static fn ($file) =>
+                $file
+                && $file->getError() !== UPLOAD_ERR_NO_FILE
+        ));
 
         if (count($validFiles) < 1) {
             return redirect()->back()
@@ -139,22 +127,52 @@ class ContentStudioController extends BaseController
 
         $sortOrder = 1;
 
-        foreach ($validFiles as $file) {
-            $fileName = $file->getRandomName();
-            $uploadDir = FCPATH . 'uploads/content_studio';
+        $storedFiles = [];
 
-            $file->move($uploadDir, $fileName);
+        try {
+            foreach ($validFiles as $file) {
+                $stored = $this->uploadService->storeImage(
+                    $file,
+                    'uploads/content_studio',
+                    [
+                        'max_bytes' => 4 * 1024 * 1024,
+                        'max_pixels' => 36_000_000,
+                        'target_max_width' => 2000,
+                        'target_max_height' => 2000,
+                    ]
+                );
 
-            $savedPath = $uploadDir . DIRECTORY_SEPARATOR . $fileName;
+                $storedFiles[] = $stored['relative_path'];
 
-            $this->optimizeImageForTemplate($savedPath);
+                $inserted = $this->assetModel->insert([
+                    'content_post_id' => $postId,
+                    'image_path' => $stored['relative_path'],
+                    'original_name' => $stored['original_name'],
+                    'sort_order' => $sortOrder++,
+                ], true);
 
-            $this->assetModel->insert([
-                'content_post_id' => $postId,
-                'image_path' => 'uploads/content_studio/' . $fileName,
-                'original_name' => $file->getClientName(),
-                'sort_order' => $sortOrder++,
-            ]);
+                if ($inserted === false) {
+                    throw new \RuntimeException(
+                        'Metadata salah satu gambar gagal disimpan.'
+                    );
+                }
+            }
+        } catch (\Throwable $exception) {
+            foreach ($storedFiles as $storedFile) {
+                $this->uploadService->deleteManagedFile(
+                    $storedFile,
+                    ['uploads/content_studio']
+                );
+            }
+
+            $this->assetModel
+                ->where('content_post_id', $postId)
+                ->delete();
+            $this->postModel->delete($postId);
+
+            return redirect()->back()
+                ->withInput()
+                ->with('error', $exception->getMessage());
         }
 
         return redirect()->to('/content-studio/show/' . $postId)
@@ -267,16 +285,30 @@ class ContentStudioController extends BaseController
             ->where('content_post_id', $id)
             ->findAll();
 
-        foreach ($assets as $asset) {
-            $path = FCPATH . $asset['image_path'];
-
-            if (file_exists($path)) {
-                unlink($path);
-            }
-        }
+        $database = db_connect();
+        $database->transStart();
 
         $this->assetModel->where('content_post_id', $id)->delete();
         $this->postModel->delete($id);
+
+        $database->transComplete();
+
+        if ($database->transStatus() === false) {
+            return redirect()->to('/content-studio')
+                ->with('error', 'Konten gagal dihapus.');
+        }
+
+        foreach ($assets as $asset) {
+            $this->uploadService->deleteManagedFile(
+                $asset['image_path'] ?? null,
+                ['uploads/content_studio']
+            );
+        }
+
+        $this->uploadService->deleteManagedFile(
+            $post['generated_image'] ?? null,
+            ['uploads/content_studio']
+        );
 
         return redirect()->to('/content-studio')
             ->with('success', 'Konten berhasil dihapus.');

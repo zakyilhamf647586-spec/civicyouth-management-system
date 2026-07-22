@@ -3,16 +3,19 @@
 namespace App\Controllers;
 
 use App\Models\ProgramModel;
+use App\Libraries\SecureUploadService;
 
 class ProgramController extends BaseController
 {
     protected ProgramModel $programModel;
+    protected SecureUploadService $uploadService;
 
     public function __construct()
     {
         helper('text');
 
         $this->programModel = new ProgramModel();
+        $this->uploadService = new SecureUploadService();
     }
 
     public function index()
@@ -82,11 +85,13 @@ class ProgramController extends BaseController
                 ->with('errors', $this->validator->getErrors());
         }
 
+        $coverName = null;
+
         try {
             $name      = trim((string) $this->request->getPost('name'));
             $coverName = $this->processCoverImage();
 
-            $this->programModel->insert([
+            $inserted = $this->programModel->insert([
                 'name'              => $name,
                 'slug'              => $this->createUniqueSlug($name),
                 'label'             => trim((string) $this->request->getPost('label')),
@@ -103,14 +108,28 @@ class ProgramController extends BaseController
                 'status'            => $this->request->getPost('status'),
                 'display_order'     => (int) $this->request->getPost('display_order'),
                 'created_by'        => session()->get('user_id') ?: null,
-            ]);
+            ], true);
+
+            if ($inserted === false) {
+                throw new \RuntimeException(
+                    'Program gagal disimpan.'
+                );
+            }
 
             return redirect()->to('/programs')
                 ->with('success', 'Program GARDA 01 berhasil ditambahkan.');
-        } catch (\RuntimeException $e) {
+        } catch (\Throwable $exception) {
+            if ($coverName !== null) {
+                $this->deleteProgramCover($coverName);
+            }
+
+            $message = $exception instanceof \RuntimeException
+                ? $exception->getMessage()
+                : 'Program belum dapat disimpan.';
+
             return redirect()->back()
                 ->withInput()
-                ->with('errors', [$e->getMessage()]);
+                ->with('errors', [$message]);
         }
     }
 
@@ -179,14 +198,17 @@ class ProgramController extends BaseController
                 ->with('errors', $this->validator->getErrors());
         }
 
+        $oldCover = $program['cover_image'] ?? null;
+        $coverName = $oldCover;
+        $hasNewCover = false;
+
         try {
             $name = trim((string) $this->request->getPost('name'));
 
-            $coverName = $this->processCoverImage(
-                $program['cover_image'] ?? null
-            );
+            $coverName = $this->processCoverImage($oldCover);
+            $hasNewCover = $coverName !== $oldCover;
 
-            $this->programModel->update($id, [
+            $updated = $this->programModel->update($id, [
                 'name'              => $name,
                 'slug'              => $this->createUniqueSlug($name, $id),
                 'label'             => trim((string) $this->request->getPost('label')),
@@ -204,12 +226,30 @@ class ProgramController extends BaseController
                 'display_order'     => (int) $this->request->getPost('display_order'),
             ]);
 
+            if ($updated === false) {
+                throw new \RuntimeException(
+                    'Program gagal diperbarui.'
+                );
+            }
+
+            if ($hasNewCover && $oldCover !== null) {
+                $this->deleteProgramCover($oldCover);
+            }
+
             return redirect()->to('/programs')
                 ->with('success', 'Program GARDA 01 berhasil diperbarui.');
-        } catch (\RuntimeException $e) {
+        } catch (\Throwable $exception) {
+            if ($hasNewCover && $coverName !== null) {
+                $this->deleteProgramCover($coverName);
+            }
+
+            $message = $exception instanceof \RuntimeException
+                ? $exception->getMessage()
+                : 'Program belum dapat diperbarui.';
+
             return redirect()->back()
                 ->withInput()
-                ->with('errors', [$e->getMessage()]);
+                ->with('errors', [$message]);
         }
     }
 
@@ -299,64 +339,33 @@ class ProgramController extends BaseController
     ): ?string {
         $cover = $this->request->getFile('cover_image');
 
-        if (
-            !$cover
-            || $cover->getError() === UPLOAD_ERR_NO_FILE
-        ) {
+        if (!$cover || $cover->getError() === UPLOAD_ERR_NO_FILE) {
             return $oldCover;
         }
 
-        if (!$cover->isValid()) {
-            throw new \RuntimeException(
-                'Cover program gagal diunggah.'
-            );
+        $stored = $this->uploadService->storeImage(
+            $cover,
+            'uploads/programs',
+            [
+                'max_bytes' => 2 * 1024 * 1024,
+                'max_pixels' => 28_000_000,
+                'target_max_width' => 2000,
+                'target_max_height' => 1600,
+            ]
+        );
+
+        return $stored['file_name'];
+    }
+
+    private function deleteProgramCover(?string $coverName): void
+    {
+        if (empty($coverName)) {
+            return;
         }
 
-        if ($cover->getSize() > (2 * 1024 * 1024)) {
-            throw new \RuntimeException(
-                'Ukuran cover program maksimal 2MB.'
-            );
-        }
-
-        $allowedMimes = [
-            'image/jpeg',
-            'image/jpg',
-            'image/png',
-            'image/webp',
-        ];
-
-        if (
-            !in_array(
-                $cover->getMimeType(),
-                $allowedMimes,
-                true
-            )
-        ) {
-            throw new \RuntimeException(
-                'Cover harus menggunakan format JPG, PNG, atau WEBP.'
-            );
-        }
-
-        $directory = FCPATH . 'uploads/programs';
-
-        if (!is_dir($directory)) {
-            mkdir($directory, 0775, true);
-        }
-
-        $newName = $cover->getRandomName();
-        $cover->move($directory, $newName);
-
-        if (
-            !empty($oldCover)
-            && file_exists(
-                $directory . DIRECTORY_SEPARATOR . $oldCover
-            )
-        ) {
-            unlink(
-                $directory . DIRECTORY_SEPARATOR . $oldCover
-            );
-        }
-
-        return $newName;
+        $this->uploadService->deleteManagedFile(
+            'uploads/programs/' . basename($coverName),
+            ['uploads/programs']
+        );
     }
 }

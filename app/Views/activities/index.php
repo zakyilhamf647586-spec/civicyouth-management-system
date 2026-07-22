@@ -7,6 +7,11 @@
     href="<?= base_url('assets/css/admin-activity-workflow.css') ?>?v=<?= filemtime(FCPATH . 'assets/css/admin-activity-workflow.css') ?>"
 >
 
+<link
+    rel="stylesheet"
+    href="<?= base_url('assets/css/admin-activity-quality.css') ?>?v=<?= filemtime(FCPATH . 'assets/css/admin-activity-quality.css') ?>"
+>
+
 <?php
 $publicationBadgeClasses = [
     'draft' => 'badge-secondary',
@@ -28,14 +33,23 @@ $publicationBadgeClasses = [
         </p>
     </div>
 
-    <?php if (auth_can('activities.create')) : ?>
+    <div class="activity-header-actions">
         <a
-            href="<?= base_url('/activities/create') ?>"
-            class="btn btn-primary"
+            href="<?= base_url('/activities/quality') ?>"
+            class="btn btn-secondary"
         >
-            + Tambah Kegiatan
+            Audit Kualitas
         </a>
-    <?php endif; ?>
+
+        <?php if (auth_can('activities.create')) : ?>
+            <a
+                href="<?= base_url('/activities/create') ?>"
+                class="btn btn-primary"
+            >
+                + Tambah Kegiatan
+            </a>
+        <?php endif; ?>
+    </div>
 </div>
 
 <?php if (session()->getFlashdata('success')) : ?>

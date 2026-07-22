@@ -3,14 +3,17 @@
 namespace App\Controllers;
 
 use App\Models\SiteSettingModel;
+use App\Libraries\SecureUploadService;
 
 class SiteSettingController extends BaseController
 {
     protected SiteSettingModel $settingModel;
+    protected SecureUploadService $uploadService;
 
     public function __construct()
     {
         $this->settingModel = new SiteSettingModel();
+        $this->uploadService = new SecureUploadService();
     }
 
     public function index()
@@ -177,10 +180,7 @@ class SiteSettingController extends BaseController
     ): array {
         $file = $this->request->getFile($fieldName);
 
-        if (
-            !$file
-            || $file->getError() === UPLOAD_ERR_NO_FILE
-        ) {
+        if (!$file || $file->getError() === UPLOAD_ERR_NO_FILE) {
             return [
                 'value' => $oldValue,
                 'new_file' => null,
@@ -188,96 +188,35 @@ class SiteSettingController extends BaseController
             ];
         }
 
-        if (!$file->isValid()) {
-            throw new \RuntimeException(
-                'File ' . $fieldName . ' gagal diunggah.'
-            );
-        }
-
-        if (
-            $file->getSize()
-            > ($maximumMegabytes * 1024 * 1024)
-        ) {
-            throw new \RuntimeException(
-                'Ukuran file '
-                . $fieldName
-                . ' maksimal '
-                . $maximumMegabytes
-                . ' MB.'
-            );
-        }
-
-        $allowedMimes = [
-            'image/jpeg',
-            'image/jpg',
-            'image/png',
-            'image/webp',
-            'image/x-icon',
-            'image/vnd.microsoft.icon',
-        ];
-
-        $mimeType = $file->getMimeType();
-
-        if (!in_array($mimeType, $allowedMimes, true)) {
-            throw new \RuntimeException(
-                'File harus berupa JPG, PNG, WEBP, atau ICO.'
-            );
-        }
-
-        if (
-            !in_array(
-                $mimeType,
-                ['image/x-icon', 'image/vnd.microsoft.icon'],
-                true
-            )
-            && @getimagesize($file->getTempName()) === false
-        ) {
-            throw new \RuntimeException(
-                'File gambar tidak valid.'
-            );
-        }
-
-        $directory = FCPATH . 'uploads/settings';
-
-        if (
-            !is_dir($directory)
-            && !mkdir($directory, 0775, true)
-            && !is_dir($directory)
-        ) {
-            throw new \RuntimeException(
-                'Folder pengaturan tidak dapat dibuat.'
-            );
-        }
-
-        $newName = $file->getRandomName();
-        $file->move($directory, $newName);
-
-        $newAbsolutePath =
-            $directory . DIRECTORY_SEPARATOR . $newName;
-
-        if (!is_file($newAbsolutePath)) {
-            throw new \RuntimeException(
-                'File gambar gagal disimpan.'
-            );
-        }
+        $stored = $this->uploadService->storeImage(
+            $file,
+            'uploads/settings',
+            [
+                'max_bytes' => $maximumMegabytes * 1024 * 1024,
+                'max_pixels' => 32_000_000,
+                'target_max_width' => $fieldName === 'site_favicon' ? 1024 : 2400,
+                'target_max_height' => $fieldName === 'site_favicon' ? 1024 : 2400,
+                'allow_ico' => $fieldName === 'site_favicon',
+            ]
+        );
 
         $oldAbsolutePath = null;
 
         if (
             !empty($oldValue)
             && str_starts_with(
-                str_replace('\\', '/', $oldValue),
+                trim(str_replace('\\', '/', $oldValue), '/'),
                 'uploads/settings/'
             )
         ) {
             $oldAbsolutePath = FCPATH
                 . 'uploads/settings/'
-                . basename($oldValue);
+                . basename((string) $oldValue);
         }
 
         return [
-            'value' => 'uploads/settings/' . $newName,
-            'new_file' => $newAbsolutePath,
+            'value' => $stored['relative_path'],
+            'new_file' => $stored['absolute_path'],
             'old_file' => $oldAbsolutePath,
         ];
     }
@@ -371,6 +310,16 @@ class SiteSettingController extends BaseController
                         'label' => 'Provinsi',
                         'type'  => 'text',
                         'max_length' => 100,
+                    ],
+                    'contact_location_description' => [
+                        'label' => 'Deskripsi Lokasi',
+                        'type'  => 'textarea',
+                        'max_length' => 700,
+                    ],
+                    'contact_maps_url' => [
+                        'label' => 'URL Google Maps',
+                        'type'  => 'url',
+                        'max_length' => 500,
                     ],
                 ],
             ],

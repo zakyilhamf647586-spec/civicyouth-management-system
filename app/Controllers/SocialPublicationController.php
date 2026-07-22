@@ -8,6 +8,7 @@ use App\Models\ContentPostModel;
 use App\Models\ContentPostMetricModel;
 use App\Models\ContentPostAuditLogModel;
 use App\Models\ProgramModel;
+use App\Libraries\SecureUploadService;
 use Config\SocialMedia;
 
 class SocialPublicationController extends BaseController
@@ -19,6 +20,7 @@ class SocialPublicationController extends BaseController
     protected ProgramModel $programModel;
     protected ActivityModel $activityModel;
     protected SocialMedia $socialMedia;
+    protected SecureUploadService $uploadService;
     protected ?string $publicationValidationError = null;
 
     public function __construct()
@@ -30,6 +32,7 @@ class SocialPublicationController extends BaseController
         $this->programModel = new ProgramModel();
         $this->activityModel = new ActivityModel();
         $this->socialMedia = new SocialMedia();
+        $this->uploadService = new SecureUploadService();
     }
 
     public function index()
@@ -117,6 +120,7 @@ class SocialPublicationController extends BaseController
                 ->findAll(),
             'templates' => $this->socialMedia->templates,
             'workflowStatuses' => $this->socialMedia->workflowStatuses,
+            'workflowDescriptions' => $this->socialMedia->workflowDescriptions,
             'publicationTypes' => $this->socialMedia->publicationTypes,
             'filters' => [
                 'status' => $status,
@@ -482,10 +486,6 @@ class SocialPublicationController extends BaseController
                 'type' => $type,
             ],
             'metricsReady' => $this->metricsTableReady(),
-            'auditHistory' => $auditHistory,
-            'auditReady' => $this->auditTableReady(),
-            'auditEventLabels' =>
-                $this->auditEventLabels(),
         ]);
     }
 
@@ -825,6 +825,17 @@ class SocialPublicationController extends BaseController
             'success',
             'Snapshot performa berhasil dihapus.'
         );
+    }
+
+    public function guide()
+    {
+        return view('publications/guide', [
+            'title' => 'Panduan Publikasi Sosial',
+            'workflowStatuses' =>
+                $this->socialMedia->workflowStatuses,
+            'workflowDescriptions' =>
+                $this->socialMedia->workflowDescriptions,
+        ]);
     }
 
     public function recommendations()
@@ -1237,6 +1248,10 @@ class SocialPublicationController extends BaseController
             'latestMetricSummary' =>
                 $this->metricSnapshotSummary($latestMetric),
             'metricsReady' => $this->metricsTableReady(),
+            'auditHistory' => $auditHistory,
+            'auditReady' => $this->auditTableReady(),
+            'auditEventLabels' =>
+                $this->auditEventLabels(),
         ]);
     }
 
@@ -1479,13 +1494,15 @@ class SocialPublicationController extends BaseController
             return redirect()->back()->with('error', 'Aset tidak ditemukan.');
         }
 
-        $path = FCPATH . ltrim($asset['image_path'], '/');
-
-        if (is_file($path)) {
-            unlink($path);
+        if ($this->assetModel->delete($assetId) === false) {
+            return redirect()->back()
+                ->with('error', 'Metadata aset gagal dihapus.');
         }
 
-        $this->assetModel->delete($assetId);
+        $this->uploadService->deleteManagedFile(
+            $asset['image_path'] ?? null,
+            ['uploads/content_studio']
+        );
 
         $this->recordAudit(
             (int) $id,
@@ -3489,32 +3506,12 @@ class SocialPublicationController extends BaseController
             $uploads = [$uploads];
         }
 
-        $validFiles = [];
-
-        foreach ($uploads as $file) {
-            if (!$file || !$file->isValid()) {
-                continue;
-            }
-
-            if (!in_array($file->getMimeType(), [
-                'image/jpeg',
-                'image/jpg',
-                'image/png',
-                'image/webp',
-            ], true)) {
-                throw new \RuntimeException(
-                    'Format aset harus JPG, JPEG, PNG, atau WEBP.'
-                );
-            }
-
-            if ($file->getSizeByUnit('mb') > 6) {
-                throw new \RuntimeException(
-                    'Ukuran setiap aset maksimal 6MB.'
-                );
-            }
-
-            $validFiles[] = $file;
-        }
+        $validFiles = array_values(array_filter(
+            $uploads,
+            static fn ($file) =>
+                $file
+                && $file->getError() !== UPLOAD_ERR_NO_FILE
+        ));
 
         if ($required && $validFiles === []) {
             throw new \RuntimeException('Pilih minimal satu gambar yang valid.');
@@ -3534,27 +3531,57 @@ class SocialPublicationController extends BaseController
             return 0;
         }
 
-        $uploadDir = FCPATH . 'uploads/content_studio';
-
-        if (!is_dir($uploadDir)) {
-            mkdir($uploadDir, 0755, true);
-        }
-
         $sortOrder = $existingCount + 1;
+        $storedFiles = [];
+        $insertedIds = [];
 
-        foreach ($validFiles as $file) {
-            $fileName = $file->getRandomName();
-            $file->move($uploadDir, $fileName);
+        try {
+            foreach ($validFiles as $file) {
+                $stored = $this->uploadService->storeImage(
+                    $file,
+                    'uploads/content_studio',
+                    [
+                        'max_bytes' => 6 * 1024 * 1024,
+                        'max_pixels' => 40_000_000,
+                        'target_max_width' => 2400,
+                        'target_max_height' => 2400,
+                    ]
+                );
 
-            $this->assetModel->insert([
-                'content_post_id' => $postId,
-                'image_path' => 'uploads/content_studio/' . $fileName,
-                'original_name' => $file->getClientName(),
-                'sort_order' => $sortOrder++,
-            ]);
+                $storedFiles[] = $stored['relative_path'];
+
+                $inserted = $this->assetModel->insert([
+                    'content_post_id' => $postId,
+                    'image_path' => $stored['relative_path'],
+                    'original_name' => $stored['original_name'],
+                    'sort_order' => $sortOrder++,
+                ], true);
+
+                if ($inserted === false) {
+                    throw new \RuntimeException('Metadata aset gagal disimpan.');
+                }
+
+                $insertedIds[] = (int) $inserted;
+            }
+        } catch (\Throwable $exception) {
+            if ($insertedIds !== []) {
+                $this->assetModel
+                    ->whereIn('id', $insertedIds)
+                    ->where('content_post_id', $postId)
+                    ->delete();
+            }
+
+            foreach ($storedFiles as $storedFile) {
+                $this->uploadService->deleteManagedFile(
+                    $storedFile,
+                    ['uploads/content_studio']
+                );
+            }
+
+            throw $exception;
         }
 
-        return count($validFiles);
+        return count($storedFiles);
     }
 
     private function canTransitionTo(

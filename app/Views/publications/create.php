@@ -4,20 +4,47 @@
 
 <?= $this->include('publications/_assets') ?>
 
-<div class="publication-admin-page">
+<div class="publication-admin-page publication-simple-editor">
 
 <div class="page-header publication-page-header">
     <div>
-        <span class="publication-eyebrow">Media Operations</span>
-        <h2>Buat Rencana Publikasi</h2>
-        <p>Mulai dari brief, pilih master Canva, lalu kelola sampai konten tayang.</p>
+        <span class="publication-eyebrow">
+            Konten Instagram
+        </span>
+
+        <h2>
+            <?= !empty($autoBrief)
+                ? 'Buat Konten dari Kegiatan'
+                : 'Buat Konten Baru' ?>
+        </h2>
+
+        <p>
+            Isi bagian utama terlebih dahulu. Bagian bertanda
+            opsional dapat dibuka hanya ketika diperlukan.
+        </p>
     </div>
 
-    <a href="<?= base_url('/publications') ?>" class="btn btn-secondary">Kembali</a>
+    <div class="publication-header-actions">
+        <a
+            href="<?= base_url('/publications/guide') ?>"
+            class="btn btn-secondary"
+        >
+            Lihat Panduan
+        </a>
+
+        <a
+            href="<?= base_url('/publications') ?>"
+            class="btn btn-secondary"
+        >
+            Kembali
+        </a>
+    </div>
 </div>
 
 <?php if (session()->getFlashdata('error')) : ?>
-    <div class="alert-error"><?= esc(session()->getFlashdata('error')) ?></div>
+    <div class="alert-error">
+        <?= esc(session()->getFlashdata('error')) ?>
+    </div>
 <?php endif; ?>
 
 <?php if (!empty($autoBrief)) : ?>
@@ -30,7 +57,7 @@
             <span>Brief Otomatis Aktif</span>
 
             <h3>
-                Data awal diambil dari kegiatan:
+                Data awal diambil dari:
                 <?= esc(
                     $autoBrief['activity']['title']
                     ?? 'Kegiatan GARDA 01'
@@ -38,10 +65,9 @@
             </h3>
 
             <p>
-                Sistem sudah mengisi identitas kegiatan, kategori,
-                format, master Canva, tujuan konten, caption awal,
-                hashtag, dan alt text. Tetap lakukan pemeriksaan
-                editorial sebelum menyimpan.
+                Sistem sudah mengisi beberapa field. Periksa judul,
+                caption, foto, Canva, PIC, dan target tayang sebelum
+                menyimpan.
             </p>
 
             <?php if (
@@ -50,10 +76,10 @@
                 ) > 0
             ) : ?>
                 <small>
-                    Perhatian: kegiatan ini sudah memiliki
+                    Kegiatan ini sudah memiliki
                     <?= (int) $autoBrief['existing_count'] ?>
-                    record publikasi. Brief baru tetap dapat dibuat
-                    untuk format atau sudut komunikasi yang berbeda.
+                    record publikasi. Brief tambahan tetap dapat
+                    dibuat untuk format yang berbeda.
                 </small>
             <?php endif; ?>
         </div>

@@ -40,6 +40,7 @@ $organizationName = site_setting(
 
 $activePage = $activePage ?? '';
 $currentUrl = current_url();
+$pageRobots = $robots ?? 'index, follow';
 
 $publicStylesheets = [
     'assets/css/app.css',
@@ -58,7 +59,7 @@ $publicStylesheets = [
     >
 
     <meta name="theme-color" content="#04172d">
-    <meta name="robots" content="index, follow">
+    <meta name="robots" content="<?= esc($pageRobots, 'attr') ?>">
 
     <title><?= esc($pageTitle) ?></title>
 

@@ -4,16 +4,19 @@ namespace App\Controllers;
 
 use App\Models\ActivityImageModel;
 use App\Models\ActivityModel;
+use App\Libraries\SecureUploadService;
 
 class ActivityGalleryController extends BaseController
 {
     protected ActivityModel $activityModel;
     protected ActivityImageModel $imageModel;
+    protected SecureUploadService $uploadService;
 
     public function __construct()
     {
         $this->activityModel = new ActivityModel();
         $this->imageModel    = new ActivityImageModel();
+        $this->uploadService = new SecureUploadService();
     }
 
     public function index(int $activityId)
@@ -93,19 +96,6 @@ class ActivityGalleryController extends BaseController
         $existingCover = $this->imageModel
             ->getCoverImage($activityId);
 
-        $directory = FCPATH . 'uploads/activities';
-
-        if (
-            !is_dir($directory)
-            && !mkdir($directory, 0775, true)
-            && !is_dir($directory)
-        ) {
-            return redirect()->back()
-                ->with(
-                    'error',
-                    'Folder penyimpanan galeri tidak dapat dibuat.'
-                );
-        }
 
         $uploadedFiles = [];
         $firstNewFile  = null;
@@ -115,45 +105,18 @@ class ActivityGalleryController extends BaseController
 
         try {
             foreach ($validFiles as $file) {
-                if (!$file->isValid()) {
-                    throw new \RuntimeException(
-                        'Salah satu foto gagal diunggah.'
-                    );
-                }
+                $stored = $this->uploadService->storeImage(
+                    $file,
+                    'uploads/activities',
+                    [
+                        'max_bytes' => 4 * 1024 * 1024,
+                        'max_pixels' => 36_000_000,
+                        'target_max_width' => 2400,
+                        'target_max_height' => 1800,
+                    ]
+                );
 
-                if ($file->getSize() > (4 * 1024 * 1024)) {
-                    throw new \RuntimeException(
-                        'Ukuran setiap foto maksimal 4 MB.'
-                    );
-                }
-
-                $allowedMimes = [
-                    'image/jpeg',
-                    'image/jpg',
-                    'image/png',
-                    'image/webp',
-                ];
-
-                if (
-                    !in_array(
-                        $file->getMimeType(),
-                        $allowedMimes,
-                        true
-                    )
-                ) {
-                    throw new \RuntimeException(
-                        'Foto harus berformat JPG, PNG, atau WEBP.'
-                    );
-                }
-
-                $newName = $file->getRandomName();
-                $file->move($directory, $newName);
-
-                if (!is_file($directory . DIRECTORY_SEPARATOR . $newName)) {
-                    throw new \RuntimeException(
-                        'Salah satu foto gagal disimpan.'
-                    );
-                }
+                $newName = $stored['file_name'];
 
                 $uploadedFiles[] = $newName;
                 $firstNewFile ??= $newName;
@@ -209,13 +172,10 @@ class ActivityGalleryController extends BaseController
             $database->transRollback();
 
             foreach ($uploadedFiles as $uploadedFile) {
-                $filePath = $directory
-                    . DIRECTORY_SEPARATOR
-                    . basename($uploadedFile);
-
-                if (is_file($filePath)) {
-                    unlink($filePath);
-                }
+                $this->uploadService->deleteManagedFile(
+                    'uploads/activities/' . basename($uploadedFile),
+                    ['uploads/activities']
+                );
             }
 
             $message = $exception instanceof \RuntimeException
@@ -334,44 +294,73 @@ class ActivityGalleryController extends BaseController
         }
 
         $wasCover = (int) $image['is_cover'] === 1;
+        $database = db_connect();
+        $database->transBegin();
 
-        $this->imageModel->delete($imageId);
+        try {
+            if ($this->imageModel->delete($imageId) === false) {
+                throw new \RuntimeException('Foto gagal dihapus.');
+            }
 
-        $filePath = FCPATH
-            . 'uploads/activities/'
-            . $image['image_file'];
+            if ($wasCover) {
+                $replacement = $this->imageModel
+                    ->where('activity_id', $activityId)
+                    ->orderBy('display_order', 'ASC')
+                    ->orderBy('id', 'ASC')
+                    ->first();
 
-        if (is_file($filePath)) {
-            unlink($filePath);
-        }
+                if ($replacement) {
+                    if ($this->imageModel->update(
+                        $replacement['id'],
+                        ['is_cover' => 1]
+                    ) === false) {
+                        throw new \RuntimeException(
+                            'Foto pengganti gagal ditetapkan.'
+                        );
+                    }
 
-        if ($wasCover) {
-            $replacement = $this->imageModel
-                ->where('activity_id', $activityId)
-                ->orderBy('display_order', 'ASC')
-                ->orderBy('id', 'ASC')
-                ->first();
-
-            if ($replacement) {
-                $this->imageModel->update(
-                    $replacement['id'],
-                    ['is_cover' => 1]
-                );
-
-                $this->activityModel->update(
-                    $activityId,
-                    [
-                        'documentation_file' =>
-                            $replacement['image_file'],
-                    ]
-                );
-            } else {
-                $this->activityModel->update(
+                    if ($this->activityModel->update(
+                        $activityId,
+                        [
+                            'documentation_file' =>
+                                $replacement['image_file'],
+                        ]
+                    ) === false) {
+                        throw new \RuntimeException(
+                            'Cover kegiatan gagal disinkronkan.'
+                        );
+                    }
+                } elseif ($this->activityModel->update(
                     $activityId,
                     ['documentation_file' => null]
+                ) === false) {
+                    throw new \RuntimeException(
+                        'Cover kegiatan gagal dikosongkan.'
+                    );
+                }
+            }
+
+            if ($database->transCommit() === false) {
+                throw new \RuntimeException(
+                    'Perubahan galeri gagal disimpan.'
                 );
             }
+        } catch (\Throwable $exception) {
+            $database->transRollback();
+
+            $message = $exception instanceof \RuntimeException
+                ? $exception->getMessage()
+                : 'Foto gagal dihapus.';
+
+            return redirect()
+                ->to('/activities/gallery/' . $activityId)
+                ->with('error', $message);
         }
+
+        $this->uploadService->deleteManagedFile(
+            'uploads/activities/' . basename($image['image_file']),
+            ['uploads/activities']
+        );
 
         return redirect()
             ->to('/activities/gallery/' . $activityId)

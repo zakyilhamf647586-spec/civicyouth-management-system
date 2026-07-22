@@ -222,6 +222,8 @@ $todayLabel =
         content="#04172d"
     >
 
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+
     <title>
         <?= esc($pageTitle) ?> — <?= esc($portalOrganizationName) ?> Portal
     </title>

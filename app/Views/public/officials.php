@@ -17,8 +17,15 @@ $chairman  = null;
 $vice      = [];
 $core      = [];
 $divisions = [];
+$activePeriod = 'Belum ditetapkan';
 
 foreach ($officials as $official) {
+    if (
+        $activePeriod === 'Belum ditetapkan'
+        && !empty($official['period'])
+    ) {
+        $activePeriod = trim((string) $official['period']);
+    }
     $position = mb_strtolower(
         trim($official['position_name'] ?? '')
     );
@@ -82,7 +89,7 @@ foreach ($officials as $official) {
 
                     <div>
                         <strong>
-                            <?= esc($officials[0]['period'] ?? '2026–2031') ?>
+                            <?= esc($activePeriod) ?>
                         </strong>
                         <span>Periode kepengurusan</span>
                     </div>
@@ -331,9 +338,9 @@ foreach ($officials as $official) {
                                     <h3><?= esc($name) ?></h3>
 
                                     <div class="official-profile-details">
-                                        <?php if (!empty($official['rt'])) : ?>
+                                        <?php if (!empty($official['rt_scope'])) : ?>
                                             <span>
-                                                <?= esc($official['rt']) ?>
+                                                <?= esc($official['rt_scope']) ?>
                                             </span>
                                         <?php endif; ?>
 
@@ -346,9 +353,13 @@ foreach ($officials as $official) {
 
                                     <p class="official-profile-bio">
                                         <?= esc(
-                                            $official['short_bio']
-                                            ?? $official['job_description']
-                                            ?? 'Pengurus Karang Taruna RW 01 Kelurahan Randugarut.'
+                                            !empty($official['short_bio'])
+                                                ? $official['short_bio']
+                                                : (
+                                                    !empty($official['description'])
+                                                        ? $official['description']
+                                                        : 'Pengurus Karang Taruna RW 01 Kelurahan Randugarut.'
+                                                )
                                         ) ?>
                                     </p>
                                 </div>
@@ -395,18 +406,18 @@ foreach ($officials as $official) {
             </div>
 
             <div>
-                <span class="public-kicker">Sistem Internal</span>
+                <span class="public-kicker">Terhubung dengan Pengurus</span>
 
-                <h2>Data pengurus terhubung langsung dengan dashboard</h2>
+                <h2>Sampaikan undangan, gagasan, atau peluang kolaborasi</h2>
 
                 <p>
-                    Struktur, foto, jabatan, periode, dan biodata pengurus
-                    dapat diperbarui melalui sistem manajemen internal.
+                    Hubungi GARDA 01 untuk menyampaikan informasi kegiatan,
+                    aspirasi pemuda, atau kesempatan kolaborasi bagi lingkungan.
                 </p>
             </div>
 
-            <a href="<?= base_url('/login') ?>" class="btn btn-primary">
-                Masuk Sistem
+            <a href="<?= base_url('/kontak') ?>" class="btn btn-primary">
+                Hubungi Kami
             </a>
         </section>
 </div>

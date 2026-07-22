@@ -27,6 +27,8 @@ class Filters extends BaseFilters
     public array $aliases = [
         'auth'          => \App\Filters\AuthFilter::class,
         'permission'    => \App\Filters\PermissionFilter::class,
+        'gardaheaders'   => \App\Filters\SecurityHeadersFilter::class,
+        'internalnoindex' => \App\Filters\InternalNoIndexFilter::class,
         'csrf'          => CSRF::class,
         'toolbar'       => DebugToolbar::class,
         'honeypot'      => Honeypot::class,
@@ -79,8 +81,10 @@ class Filters extends BaseFilters
             // 'invalidchars',
         ],
         'after' => [
-            // 'honeypot',
-            // 'secureheaders',
+            'gardaheaders',
+            'internalnoindex',
+            // CSP sengaja belum diaktifkan pada fase ini karena beberapa
+            // halaman lama masih memakai script/style inline.
         ],
     ];
 

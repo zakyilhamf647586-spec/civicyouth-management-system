@@ -4,16 +4,19 @@ namespace App\Controllers;
 
 use App\Models\MemberModel;
 use App\Models\OrganizationalStructureModel;
+use App\Libraries\SecureUploadService;
 
 class StructureController extends BaseController
 {
     protected $structureModel;
     protected $memberModel;
+    protected SecureUploadService $uploadService;
 
     public function __construct()
     {
         $this->structureModel = new OrganizationalStructureModel();
         $this->memberModel    = new MemberModel();
+        $this->uploadService = new SecureUploadService();
     }
 
     public function index()
@@ -65,27 +68,43 @@ class StructureController extends BaseController
                 ->with('errors', $this->validator->getErrors());
         }
 
+        $photoName = null;
+
         try {
             $photoName = $this->processOfficialPhoto();
 
-            $this->structureModel->insert([
+            $inserted = $this->structureModel->insert([
                 'member_id'       => $this->request->getPost('member_id'),
                 'position_name'   => $this->request->getPost('position_name'),
                 'division'        => $this->request->getPost('division'),
-                'rt'              => $this->request->getPost('rt'),
+                'rt_scope'        => $this->request->getPost('rt_scope'),
                 'period'          => $this->request->getPost('period'),
                 'sort_order'      => $this->request->getPost('sort_order') ?: 0,
-                'job_description' => $this->request->getPost('job_description'),
+                'description'     => $this->request->getPost('description'),
                 'photo'           => $photoName,
                 'short_bio'       => $this->request->getPost('short_bio'),
-            ]);
+            ], true);
+
+            if ($inserted === false) {
+                throw new \RuntimeException(
+                    'Data struktur gagal disimpan.'
+                );
+            }
 
             return redirect()->to('/structures')
                 ->with('success', 'Data struktur berhasil ditambahkan.');
-        } catch (\RuntimeException $e) {
+        } catch (\Throwable $exception) {
+            if ($photoName !== null) {
+                $this->deleteOfficialPhoto($photoName);
+            }
+
+            $message = $exception instanceof \RuntimeException
+                ? $exception->getMessage()
+                : 'Data struktur belum dapat disimpan.';
+
             return redirect()->back()
                 ->withInput()
-                ->with('errors', [$e->getMessage()]);
+                ->with('errors', [$message]);
         }
     }
 
@@ -135,27 +154,50 @@ class StructureController extends BaseController
                 ->with('errors', $this->validator->getErrors());
         }
 
-        try {
-            $photoName = $this->processOfficialPhoto($structure['photo'] ?? null);
+        $oldPhoto = $structure['photo'] ?? null;
+        $photoName = $oldPhoto;
+        $hasNewPhoto = false;
 
-            $this->structureModel->update($id, [
+        try {
+            $photoName = $this->processOfficialPhoto($oldPhoto);
+            $hasNewPhoto = $photoName !== $oldPhoto;
+
+            $updated = $this->structureModel->update($id, [
                 'member_id'       => $this->request->getPost('member_id'),
                 'position_name'   => $this->request->getPost('position_name'),
                 'division'        => $this->request->getPost('division'),
-                'rt'              => $this->request->getPost('rt'),
+                'rt_scope'        => $this->request->getPost('rt_scope'),
                 'period'          => $this->request->getPost('period'),
                 'sort_order'      => $this->request->getPost('sort_order') ?: 0,
-                'job_description' => $this->request->getPost('job_description'),
+                'description'     => $this->request->getPost('description'),
                 'photo'           => $photoName,
                 'short_bio'       => $this->request->getPost('short_bio'),
             ]);
 
+            if ($updated === false) {
+                throw new \RuntimeException(
+                    'Data struktur gagal diperbarui.'
+                );
+            }
+
+            if ($hasNewPhoto && $oldPhoto !== null) {
+                $this->deleteOfficialPhoto($oldPhoto);
+            }
+
             return redirect()->to('/structures')
                 ->with('success', 'Data struktur berhasil diperbarui.');
-        } catch (\RuntimeException $e) {
+        } catch (\Throwable $exception) {
+            if ($hasNewPhoto && $photoName !== null) {
+                $this->deleteOfficialPhoto($photoName);
+            }
+
+            $message = $exception instanceof \RuntimeException
+                ? $exception->getMessage()
+                : 'Data struktur belum dapat diperbarui.';
+
             return redirect()->back()
                 ->withInput()
-                ->with('errors', [$e->getMessage()]);
+                ->with('errors', [$message]);
         }
     }
 
@@ -164,16 +206,19 @@ class StructureController extends BaseController
         $structure = $this->structureModel->find($id);
 
         if (!$structure) {
-            return redirect()->to('/structures')->with('error', 'Data struktur tidak ditemukan.');
+            return redirect()->to('/structures')
+                ->with('error', 'Data struktur tidak ditemukan.');
         }
 
-        if (!empty($structure['photo']) && file_exists(FCPATH . 'uploads/officials/' . $structure['photo'])) {
-            unlink(FCPATH . 'uploads/officials/' . $structure['photo']);
+        if ($this->structureModel->delete($id) === false) {
+            return redirect()->to('/structures')
+                ->with('error', 'Data struktur gagal dihapus.');
         }
 
-        $this->structureModel->delete($id);
+        $this->deleteOfficialPhoto($structure['photo'] ?? null);
 
-        return redirect()->to('/structures')->with('success', 'Data struktur berhasil dihapus.');
+        return redirect()->to('/structures')
+            ->with('success', 'Data struktur berhasil dihapus.');
     }
 
     private function processOfficialPhoto(?string $oldPhoto = null): ?string
@@ -184,43 +229,29 @@ class StructureController extends BaseController
             return $oldPhoto;
         }
 
-        if (!$photo->isValid()) {
-            throw new \RuntimeException('Foto pengurus gagal diunggah.');
+        $stored = $this->uploadService->storeImage(
+            $photo,
+            'uploads/officials',
+            [
+                'max_bytes' => 2 * 1024 * 1024,
+                'max_pixels' => 20_000_000,
+                'target_max_width' => 1200,
+                'target_max_height' => 1200,
+            ]
+        );
+
+        return $stored['file_name'];
+    }
+
+    private function deleteOfficialPhoto(?string $photoName): void
+    {
+        if (empty($photoName)) {
+            return;
         }
 
-        if ($photo->getSize() > (2 * 1024 * 1024)) {
-            throw new \RuntimeException('Ukuran foto pengurus maksimal 2MB.');
-        }
-
-        $allowedMimes = [
-            'image/jpeg',
-            'image/jpg',
-            'image/png',
-            'image/webp',
-        ];
-
-        if (!in_array($photo->getMimeType(), $allowedMimes, true)) {
-            throw new \RuntimeException(
-                'Format foto harus JPG, JPEG, PNG, atau WEBP.'
-            );
-        }
-
-        $uploadDirectory = FCPATH . 'uploads/officials';
-
-        if (!is_dir($uploadDirectory)) {
-            mkdir($uploadDirectory, 0775, true);
-        }
-
-        $photoName = $photo->getRandomName();
-        $photo->move($uploadDirectory, $photoName);
-
-        if (
-            !empty($oldPhoto)
-            && file_exists($uploadDirectory . DIRECTORY_SEPARATOR . $oldPhoto)
-        ) {
-            unlink($uploadDirectory . DIRECTORY_SEPARATOR . $oldPhoto);
-        }
-
-        return $photoName;
+        $this->uploadService->deleteManagedFile(
+            'uploads/officials/' . basename($photoName),
+            ['uploads/officials']
+        );
     }
 }

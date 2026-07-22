@@ -4,10 +4,12 @@
 
 <?= $this->include('publications/_assets') ?>
 
-<div class="publication-admin-page">
+<div class="publication-admin-page publication-simple-home">
 
 <?php
-$formatActivityDate = static function (?string $value): string {
+$formatActivityDate = static function (
+    ?string $value
+): string {
     if (empty($value)) {
         return 'Tanggal belum ditentukan';
     }
@@ -19,7 +21,9 @@ $formatActivityDate = static function (?string $value): string {
         : 'Tanggal belum ditentukan';
 };
 
-$formatDateTime = static function (?string $value): string {
+$formatDateTime = static function (
+    ?string $value
+): string {
     if (empty($value)) {
         return 'Belum dijadwalkan';
     }
@@ -30,242 +34,264 @@ $formatDateTime = static function (?string $value): string {
         ? date('d M Y · H.i', $timestamp) . ' WIB'
         : 'Belum dijadwalkan';
 };
+
+$hasActiveFilters =
+    !empty($filters['q'])
+    || !empty($filters['status'])
+    || !empty($filters['type'])
+    || !empty($filters['program_id']);
+
+$criticalDeadlineCount =
+    (int) ($deadlineSummary['overdue'] ?? 0)
+    + (int) ($deadlineSummary['due_soon'] ?? 0);
+
+$statusDescriptions = $workflowDescriptions ?? [];
 ?>
 
 <div class="page-header publication-page-header">
     <div>
-        <span class="publication-eyebrow">Media Operations</span>
+        <span class="publication-eyebrow">
+            Ruang Kerja Konten Instagram
+        </span>
+
         <h2>Publikasi Sosial</h2>
-        <p>Satu pusat kendali untuk brief, Canva, approval, jadwal, dan arsip Instagram.</p>
+
+        <p>
+            Siapkan konten Instagram dari kegiatan GARDA 01,
+            kerjakan desainnya di Canva, lalu catat hasil tayangnya.
+        </p>
     </div>
 
     <div class="publication-header-actions">
-        <?php if (auth_can(
-            'publications.recommendations.view'
-        )) : ?>
-            <a
-                href="<?= base_url(
-                    '/publications/recommendations'
-                ) ?>"
-                class="btn btn-secondary"
-            >
-                Waktu Tayang
-            </a>
-        <?php endif; ?>
-
-        <?php if (auth_can(
-            'publications.deadlines.view'
-        )) : ?>
-            <a
-                href="<?= base_url(
-                    '/publications/deadlines'
-                ) ?>"
-                class="btn btn-secondary"
-            >
-                Deadline Produksi
-            </a>
-        <?php endif; ?>
-
-        <?php if (auth_can(
-            'publications.audit.view'
-        )) : ?>
-            <a
-                href="<?= base_url('/publications/audit') ?>"
-                class="btn btn-secondary"
-            >
-                Audit Trail
-            </a>
-        <?php endif; ?>
-
-        <?php if (auth_can(
-            'publications.metrics.view'
-        )) : ?>
-            <a
-                href="<?= base_url('/publications/analytics') ?>"
-                class="btn btn-secondary"
-            >
-                Analitik Instagram
-            </a>
-        <?php endif; ?>
-
         <a
-            href="<?= base_url('/publications/calendar') ?>"
+            href="<?= base_url('/publications/guide') ?>"
             class="btn btn-secondary"
         >
-            Kalender Konten
+            Panduan Singkat
         </a>
 
-        <?php if (auth_can('content_studio.view')) : ?>
-            <a href="<?= base_url('/content-studio') ?>" class="btn btn-secondary">AI Content Studio</a>
-        <?php endif; ?>
-
         <?php if (auth_can('publications.create')) : ?>
-            <a href="<?= base_url('/publications/create') ?>" class="btn btn-primary">+ Buat Publikasi</a>
+            <a
+                href="<?= base_url('/publications/create') ?>"
+                class="btn btn-primary"
+            >
+                + Buat Konten
+            </a>
         <?php endif; ?>
     </div>
 </div>
 
 <?php if (session()->getFlashdata('success')) : ?>
-    <div class="alert-success"><?= esc(session()->getFlashdata('success')) ?></div>
+    <div class="alert-success">
+        <?= esc(session()->getFlashdata('success')) ?>
+    </div>
 <?php endif; ?>
 
 <?php if (session()->getFlashdata('error')) : ?>
-    <div class="alert-error"><?= esc(session()->getFlashdata('error')) ?></div>
+    <div class="alert-error">
+        <?= esc(session()->getFlashdata('error')) ?>
+    </div>
 <?php endif; ?>
 
-<section class="publication-summary-grid">
-    <article>
-        <span>Total Publikasi</span>
-        <strong><?= esc($summary['total'] ?? 0) ?></strong>
-        <small>Seluruh record media</small>
-    </article>
-    <article>
-        <span>Dalam Produksi</span>
-        <strong><?= esc($summary['in_progress'] ?? 0) ?></strong>
-        <small>Brief, draft, desain, revisi</small>
-    </article>
-    <article class="tone-review">
-        <span>Menunggu Review</span>
-        <strong><?= esc($summary['review'] ?? 0) ?></strong>
-        <small>Memerlukan keputusan</small>
-    </article>
-    <article class="tone-scheduled">
-        <span>Dijadwalkan</span>
-        <strong><?= esc($summary['scheduled'] ?? 0) ?></strong>
-        <small>Siap tayang</small>
-    </article>
-    <article class="tone-published">
-        <span>Dipublikasikan</span>
-        <strong><?= esc($summary['published'] ?? 0) ?></strong>
-        <small>Tautan tayang tercatat</small>
-    </article>
+<section class="publication-purpose-banner">
+    <div class="publication-purpose-banner__icon">
+        IG
+    </div>
+
+    <div>
+        <span>Perlu dipahami</span>
+        <h3>Modul ini adalah ruang kerja internal Instagram.</h3>
+        <p>
+            Menyimpan brief di sini tidak otomatis membuat berita
+            pada website publik dan tidak otomatis mengunggah
+            konten ke Instagram.
+        </p>
+    </div>
+
+    <div class="publication-purpose-banner__paths">
+        <article>
+            <strong>Untuk website publik</strong>
+            <span>
+                Gunakan
+                <a href="<?= base_url('/activities') ?>">
+                    Data Kegiatan
+                </a>
+            </span>
+        </article>
+
+        <article>
+            <strong>Untuk Instagram</strong>
+            <span>
+                Gunakan Publikasi Sosial, Canva, lalu posting
+                secara manual.
+            </span>
+        </article>
+    </div>
 </section>
 
+<section class="publication-simple-actions">
+    <?php if (auth_can('publications.create')) : ?>
+        <a
+            href="<?= !empty($activityCandidates)
+                ? '#publication-from-activity'
+                : base_url('/activities') ?>"
+        >
+            <span>01</span>
+            <div>
+                <strong>Buat dari Kegiatan</strong>
+                <small>
+                    Pilih kegiatan Portal dan isi brief otomatis.
+                </small>
+            </div>
+            <b>→</b>
+        </a>
+    <?php endif; ?>
 
+    <a href="#publication-work-list">
+        <span>02</span>
+        <div>
+            <strong>Lanjutkan Pekerjaan</strong>
+            <small>
+                Buka konten yang masih brief, desain, atau review.
+            </small>
+        </div>
+        <b>→</b>
+    </a>
+
+    <a href="<?= base_url('/publications/calendar') ?>">
+        <span>03</span>
+        <div>
+            <strong>Lihat Kalender</strong>
+            <small>
+                Periksa rencana produksi dan waktu tayang.
+            </small>
+        </div>
+        <b>→</b>
+    </a>
+
+    <a href="<?= base_url(
+        '/publications?status=published'
+    ) ?>">
+        <span>04</span>
+        <div>
+            <strong>Konten Sudah Tayang</strong>
+            <small>
+                Lihat arsip tautan Instagram yang sudah dicatat.
+            </small>
+        </div>
+        <b>→</b>
+    </a>
+</section>
+
+<section class="publication-simple-flow">
+    <div>
+        <span>Alur Utama</span>
+        <h3>Cukup ikuti lima langkah ini</h3>
+    </div>
+
+    <ol>
+        <li>
+            <span>1</span>
+            <div>
+                <strong>Pilih kegiatan</strong>
+                <small>
+                    Ambil sumber dari Data Kegiatan atau buat manual.
+                </small>
+            </div>
+        </li>
+
+        <li>
+            <span>2</span>
+            <div>
+                <strong>Siapkan naskah</strong>
+                <small>
+                    Tentukan hook, caption, format, dan foto.
+                </small>
+            </div>
+        </li>
+
+        <li>
+            <span>3</span>
+            <div>
+                <strong>Kerjakan desain</strong>
+                <small>
+                    Salin master Canva, lalu simpan tautan kerja.
+                </small>
+            </div>
+        </li>
+
+        <li>
+            <span>4</span>
+            <div>
+                <strong>Review & jadwalkan</strong>
+                <small>
+                    Periksa hasil sebelum menentukan waktu tayang.
+                </small>
+            </div>
+        </li>
+
+        <li>
+            <span>5</span>
+            <div>
+                <strong>Posting & catat</strong>
+                <small>
+                    Posting manual ke Instagram dan simpan tautannya.
+                </small>
+            </div>
+        </li>
+    </ol>
+</section>
+
+<section class="publication-simple-summary">
+    <a href="<?= base_url('/publications') ?>">
+        <span>Semua Konten</span>
+        <strong><?= (int) ($summary['total'] ?? 0) ?></strong>
+    </a>
+
+    <a href="<?= base_url(
+        '/publications?status=review'
+    ) ?>" class="is-review">
+        <span>Menunggu Review</span>
+        <strong><?= (int) ($summary['review'] ?? 0) ?></strong>
+    </a>
+
+    <a href="<?= base_url(
+        '/publications?status=scheduled'
+    ) ?>" class="is-scheduled">
+        <span>Dijadwalkan</span>
+        <strong><?= (int) ($summary['scheduled'] ?? 0) ?></strong>
+    </a>
+
+    <a href="<?= base_url(
+        '/publications?status=published'
+    ) ?>" class="is-published">
+        <span>Sudah Tayang</span>
+        <strong><?= (int) ($summary['published'] ?? 0) ?></strong>
+    </a>
+</section>
 
 <?php if (
     auth_can('publications.deadlines.view')
+    && $criticalDeadlineCount > 0
 ) : ?>
-    <section class="publication-deadline-overview">
-        <div class="publication-deadline-overview__heading">
-            <div>
-                <span>Production Control</span>
-                <h3>Perhatian deadline produksi</h3>
-                <p>
-                    Deadline dihitung otomatis dari Rencana Tayang
-                    dan posisi konten pada workflow saat ini.
-                </p>
-            </div>
-
-            <a
-                href="<?= base_url(
-                    '/publications/deadlines'
-                ) ?>"
-                class="btn btn-secondary"
-            >
-                Buka Pusat Deadline
-            </a>
+    <section class="publication-simple-alert">
+        <div>
+            <span>Perlu Perhatian</span>
+            <strong>
+                <?= $criticalDeadlineCount ?>
+                pekerjaan mendekati atau melewati deadline.
+            </strong>
+            <small>
+                Buka pusat deadline untuk melihat target berikutnya.
+            </small>
         </div>
 
-        <div class="publication-deadline-mini-stats">
-            <article class="is-overdue">
-                <span>Terlambat</span>
-                <strong>
-                    <?= (int) (
-                        $deadlineSummary['overdue'] ?? 0
-                    ) ?>
-                </strong>
-            </article>
-
-            <article class="is-due-soon">
-                <span>Segera Jatuh Tempo</span>
-                <strong>
-                    <?= (int) (
-                        $deadlineSummary['due_soon'] ?? 0
-                    ) ?>
-                </strong>
-            </article>
-
-            <article class="is-unscheduled">
-                <span>Belum Dijadwalkan</span>
-                <strong>
-                    <?= (int) (
-                        $deadlineSummary[
-                            'unscheduled'
-                        ] ?? 0
-                    ) ?>
-                </strong>
-            </article>
-
-            <article class="is-blocked">
-                <span>Memiliki Hambatan</span>
-                <strong>
-                    <?= (int) (
-                        $deadlineSummary['blocked'] ?? 0
-                    ) ?>
-                </strong>
-            </article>
-        </div>
-
-        <?php if (!empty($deadlineItems)) : ?>
-            <div class="publication-deadline-preview-list">
-                <?php foreach (
-                    $deadlineItems as $item
-                ) : ?>
-                    <a
-                        href="<?= base_url(
-                            '/publications/'
-                            . $item['id']
-                        ) ?>"
-                    >
-                        <span
-                            class="publication-deadline-urgency publication-deadline-urgency--<?= esc(
-                                $item['urgency'],
-                                'attr'
-                            ) ?>"
-                        >
-                            <?= esc(
-                                $item['urgency_label']
-                            ) ?>
-                        </span>
-
-                        <div>
-                            <strong>
-                                <?= esc(
-                                    $item['event_title']
-                                    ?: $item['title']
-                                    ?: 'Tanpa judul'
-                                ) ?>
-                            </strong>
-
-                            <p>
-                                <?= esc(
-                                    $item['next_milestone']
-                                ) ?>
-                                ·
-                                <?= esc(
-                                    $item['time_message']
-                                ) ?>
-                            </p>
-                        </div>
-
-                        <small>
-                            <?= esc(
-                                $item['owner']
-                                ?: 'PIC belum ditentukan'
-                            ) ?>
-                        </small>
-                    </a>
-                <?php endforeach; ?>
-            </div>
-        <?php else : ?>
-            <div class="publication-empty-state compact">
-                <strong>Tidak ada deadline kritis</strong>
-                <p>
-                    Produksi aktif masih berada dalam kondisi aman.
-                </p>
-            </div>
-        <?php endif; ?>
+        <a
+            href="<?= base_url('/publications/deadlines') ?>"
+            class="btn btn-primary"
+        >
+            Periksa Deadline
+        </a>
     </section>
 <?php endif; ?>
 
@@ -273,14 +299,17 @@ $formatDateTime = static function (?string $value): string {
     auth_can('publications.create')
     && !empty($activityCandidates)
 ) : ?>
-    <section class="publication-activity-candidates">
+    <section
+        id="publication-from-activity"
+        class="publication-activity-candidates publication-simple-section"
+    >
         <div class="publication-activity-candidates__heading">
             <div>
-                <span>Brief Otomatis</span>
-                <h3>Kegiatan yang siap diolah menjadi konten</h3>
+                <span>Mulai Paling Mudah</span>
+                <h3>Buat konten dari kegiatan yang sudah ada</h3>
                 <p>
-                    Data judul, tanggal, lokasi, program, ringkasan,
-                    caption awal, dan master Canva akan diisi otomatis.
+                    Sistem mengisi judul, tanggal, lokasi, program,
+                    caption awal, dan pilihan master Canva.
                 </p>
             </div>
 
@@ -288,7 +317,7 @@ $formatDateTime = static function (?string $value): string {
                 href="<?= base_url('/activities') ?>"
                 class="btn btn-secondary"
             >
-                Lihat Data Kegiatan
+                Buka Data Kegiatan
             </a>
         </div>
 
@@ -307,8 +336,8 @@ $formatDateTime = static function (?string $value): string {
                             ? 'completed'
                             : 'planned' ?>">
                             <?= $isCompleted
-                                ? 'Selesai'
-                                : 'Direncanakan' ?>
+                                ? 'Sudah Selesai'
+                                : 'Akan Dilaksanakan' ?>
                         </span>
 
                         <small>
@@ -343,7 +372,7 @@ $formatDateTime = static function (?string $value): string {
                                 mb_strimwidth(
                                     $activity['summary'],
                                     0,
-                                    110,
+                                    120,
                                     '…'
                                 )
                             ) ?>
@@ -357,7 +386,7 @@ $formatDateTime = static function (?string $value): string {
                         ) ?>"
                         class="btn btn-primary"
                     >
-                        Buat Brief Otomatis
+                        Buat Konten dari Kegiatan Ini
                     </a>
                 </article>
             <?php endforeach; ?>
@@ -365,167 +394,352 @@ $formatDateTime = static function (?string $value): string {
     </section>
 <?php endif; ?>
 
-<section class="publication-filter-card">
-    <form method="get" action="<?= base_url('/publications') ?>">
-        <div class="publication-filter-search">
-            <label for="publication-search">Cari publikasi</label>
-            <input
-                id="publication-search"
-                type="search"
-                name="q"
-                value="<?= esc($filters['q'] ?? '', 'attr') ?>"
-                placeholder="Content ID, judul, atau hook"
-            >
-        </div>
-
-        <div>
-            <label for="publication-status">Status</label>
-            <select id="publication-status" name="status">
-                <option value="">Semua status</option>
-                <?php foreach ($workflowStatuses as $value => $label) : ?>
-                    <option
-                        value="<?= esc($value, 'attr') ?>"
-                        <?= ($filters['status'] ?? '') === $value ? 'selected' : '' ?>
-                    >
-                        <?= esc($label) ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-
-        <div>
-            <label for="publication-type">Format</label>
-            <select id="publication-type" name="type">
-                <option value="">Semua format</option>
-                <?php foreach ($publicationTypes as $value => $label) : ?>
-                    <option
-                        value="<?= esc($value, 'attr') ?>"
-                        <?= ($filters['type'] ?? '') === $value ? 'selected' : '' ?>
-                    >
-                        <?= esc($label) ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-
-        <div>
-            <label for="publication-program">Pilar</label>
-            <select id="publication-program" name="program_id">
-                <option value="">Semua pilar</option>
-                <?php foreach ($programs as $program) : ?>
-                    <option
-                        value="<?= esc($program['id'], 'attr') ?>"
-                        <?= (string) ($filters['program_id'] ?? '') === (string) $program['id']
-                            ? 'selected'
-                            : '' ?>
-                    >
-                        <?= esc($program['name']) ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Terapkan</button>
-        <a href="<?= base_url('/publications') ?>" class="btn btn-secondary">Reset</a>
-    </form>
-</section>
-
-<section class="publication-table-card">
+<section
+    id="publication-work-list"
+    class="publication-table-card publication-simple-work-list"
+>
     <div class="publication-table-heading">
         <div>
-            <span>Pipeline Publikasi</span>
-            <h3>Daftar pekerjaan media</h3>
+            <span>Pekerjaan Konten</span>
+            <h3>Lanjutkan pekerjaan yang sudah dibuat</h3>
         </div>
 
-        <small><?= count($posts ?? []) ?> record pada halaman ini</small>
+        <small>
+            <?= count($posts ?? []) ?>
+            record pada halaman ini
+        </small>
     </div>
 
+    <details
+        class="publication-simple-filter"
+        <?= $hasActiveFilters ? 'open' : '' ?>
+    >
+        <summary>
+            <span>
+                Cari atau saring konten
+                <?= $hasActiveFilters
+                    ? '— filter sedang aktif'
+                    : '' ?>
+            </span>
+            <b>Atur Filter</b>
+        </summary>
+
+        <form
+            method="get"
+            action="<?= base_url('/publications') ?>"
+        >
+            <div class="publication-filter-search">
+                <label for="publication-search">
+                    Cari publikasi
+                </label>
+
+                <input
+                    id="publication-search"
+                    type="search"
+                    name="q"
+                    value="<?= esc(
+                        $filters['q'] ?? '',
+                        'attr'
+                    ) ?>"
+                    placeholder="Content ID, judul, atau hook"
+                >
+            </div>
+
+            <div>
+                <label for="publication-status">
+                    Tahap
+                </label>
+
+                <select
+                    id="publication-status"
+                    name="status"
+                >
+                    <option value="">Semua tahap</option>
+
+                    <?php foreach (
+                        $workflowStatuses as $value => $label
+                    ) : ?>
+                        <option
+                            value="<?= esc($value, 'attr') ?>"
+                            <?= (
+                                $filters['status'] ?? ''
+                            ) === $value
+                                ? 'selected'
+                                : '' ?>
+                        >
+                            <?= esc($label) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div>
+                <label for="publication-type">
+                    Format
+                </label>
+
+                <select
+                    id="publication-type"
+                    name="type"
+                >
+                    <option value="">Semua format</option>
+
+                    <?php foreach (
+                        $publicationTypes as $value => $label
+                    ) : ?>
+                        <option
+                            value="<?= esc($value, 'attr') ?>"
+                            <?= (
+                                $filters['type'] ?? ''
+                            ) === $value
+                                ? 'selected'
+                                : '' ?>
+                        >
+                            <?= esc($label) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <div>
+                <label for="publication-program">
+                    Pilar
+                </label>
+
+                <select
+                    id="publication-program"
+                    name="program_id"
+                >
+                    <option value="">Semua pilar</option>
+
+                    <?php foreach ($programs as $program) : ?>
+                        <option
+                            value="<?= esc(
+                                $program['id'],
+                                'attr'
+                            ) ?>"
+                            <?= (string) (
+                                $filters['program_id'] ?? ''
+                            ) === (string) $program['id']
+                                ? 'selected'
+                                : '' ?>
+                        >
+                            <?= esc($program['name']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Terapkan
+            </button>
+
+            <a
+                href="<?= base_url('/publications') ?>"
+                class="btn btn-secondary"
+            >
+                Reset
+            </a>
+        </form>
+    </details>
+
     <div class="table-responsive">
-        <table class="publication-table">
+        <table class="publication-table publication-simple-table">
             <thead>
                 <tr>
-                    <th>Content ID</th>
-                    <th>Publikasi</th>
-                    <th>Pilar & Format</th>
-                    <th>Status</th>
-                    <th>Jadwal</th>
-                    <th>PIC</th>
-                    <th>Canva</th>
+                    <th>Konten</th>
+                    <th>Tahap Saat Ini</th>
+                    <th>Sumber &amp; Format</th>
+                    <th>Penanggung Jawab</th>
+                    <th>Target &amp; Desain</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
+
             <tbody>
                 <?php if (!empty($posts)) : ?>
                     <?php foreach ($posts as $post) : ?>
                         <?php
-                        $workflowStatus = $post['workflow_status'] ?: 'brief';
-                        $templateCode = $post['canva_template_code'] ?? '';
-                        $template = $templates[$templateCode] ?? null;
-                        $canvaUrl = $post['canva_url'] ?: ($template['url'] ?? null);
+                        $workflowStatus =
+                            $post['workflow_status']
+                            ?: 'brief';
+
+                        $templateCode =
+                            $post['canva_template_code']
+                            ?? '';
+
+                        $template =
+                            $templates[$templateCode]
+                            ?? null;
+
+                        $canvaUrl =
+                            $post['canva_url']
+                            ?: ($template['url'] ?? null);
                         ?>
+
                         <tr>
-                            <td data-label="Content ID">
+                            <td data-label="Konten">
                                 <strong class="publication-content-code">
-                                    <?= esc($post['content_code'] ?: 'LEGACY-' . $post['id']) ?>
+                                    <?= esc(
+                                        $post['content_code']
+                                        ?: 'LEGACY-' . $post['id']
+                                    ) ?>
                                 </strong>
-                                <small><?= esc($post['priority'] ?? 'normal') ?></small>
-                            </td>
-                            <td data-label="Publikasi">
+
                                 <a
-                                    href="<?= base_url('/publications/' . $post['id']) ?>"
+                                    href="<?= base_url(
+                                        '/publications/'
+                                        . $post['id']
+                                    ) ?>"
                                     class="publication-title-link"
                                 >
-                                    <?= esc($post['event_title'] ?: ($post['title'] ?: 'Tanpa judul')) ?>
+                                    <?= esc(
+                                        $post['event_title']
+                                        ?: (
+                                            $post['title']
+                                            ?: 'Tanpa judul'
+                                        )
+                                    ) ?>
                                 </a>
+
                                 <small>
-                                    <?= esc($post['cover_hook'] ?: 'Hook belum ditentukan') ?>
+                                    <?= esc(
+                                        $post['cover_hook']
+                                        ?: 'Hook belum ditentukan'
+                                    ) ?>
                                 </small>
                             </td>
-                            <td data-label="Pilar & Format">
-                                <strong><?= esc($post['program_name'] ?: 'Umum') ?></strong>
-                                <small>
-                                    <?= esc($publicationTypes[$post['publication_type']] ?? ucfirst($post['publication_type'] ?: 'feed')) ?>
-                                    · <?= esc($templateCode ?: '-') ?>
-                                </small>
-                            </td>
-                            <td data-label="Status">
-                                <span class="publication-status publication-status--<?= esc($workflowStatus, 'attr') ?>">
-                                    <?= esc($workflowStatuses[$workflowStatus] ?? ucfirst($workflowStatus)) ?>
+
+                            <td data-label="Tahap Saat Ini">
+                                <span
+                                    class="publication-status publication-status--<?= esc(
+                                        $workflowStatus,
+                                        'attr'
+                                    ) ?>"
+                                >
+                                    <?= esc(
+                                        $workflowStatuses[
+                                            $workflowStatus
+                                        ]
+                                        ?? ucfirst(
+                                            $workflowStatus
+                                        )
+                                    ) ?>
                                 </span>
-                            </td>
-                            <td data-label="Jadwal">
-                                <strong><?= esc($formatDateTime($post['scheduled_at'] ?? null)) ?></strong>
+
                                 <small>
-                                    <?= !empty($post['published_at'])
-                                        ? 'Tayang ' . esc($formatDateTime($post['published_at']))
-                                        : 'Belum tayang' ?>
+                                    <?= esc(
+                                        $statusDescriptions[
+                                            $workflowStatus
+                                        ]
+                                        ?? 'Lanjutkan sesuai workflow.'
+                                    ) ?>
                                 </small>
                             </td>
-                            <td data-label="PIC">
-                                <strong><?= esc($post['owner'] ?: '-') ?></strong>
-                                <small>Review: <?= esc($post['reviewer'] ?: '-') ?></small>
+
+                            <td data-label="Sumber & Format">
+                                <strong>
+                                    <?= esc(
+                                        $post['activity_title']
+                                        ?: (
+                                            $post['program_name']
+                                            ?: 'Konten manual'
+                                        )
+                                    ) ?>
+                                </strong>
+
+                                <small>
+                                    <?= esc(
+                                        $publicationTypes[
+                                            $post[
+                                                'publication_type'
+                                            ]
+                                        ]
+                                        ?? ucfirst(
+                                            $post[
+                                                'publication_type'
+                                            ] ?: 'feed'
+                                        )
+                                    ) ?>
+                                    ·
+                                    <?= esc($templateCode ?: '-') ?>
+                                </small>
                             </td>
-                            <td data-label="Canva">
+
+                            <td data-label="Penanggung Jawab">
+                                <strong>
+                                    <?= esc(
+                                        $post['owner']
+                                        ?: 'Belum ditentukan'
+                                    ) ?>
+                                </strong>
+
+                                <small>
+                                    Reviewer:
+                                    <?= esc(
+                                        $post['reviewer']
+                                        ?: 'belum ditentukan'
+                                    ) ?>
+                                </small>
+                            </td>
+
+                            <td data-label="Target & Desain">
+                                <strong>
+                                    <?= esc(
+                                        $formatDateTime(
+                                            $post['scheduled_at']
+                                            ?? null
+                                        )
+                                    ) ?>
+                                </strong>
+
                                 <?php if ($canvaUrl) : ?>
                                     <a
-                                        href="<?= esc($canvaUrl, 'attr') ?>"
+                                        href="<?= esc(
+                                            $canvaUrl,
+                                            'attr'
+                                        ) ?>"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         class="publication-external-link"
-                                        <?= empty($post['canva_url']) ? 'data-canva-master-link' : '' ?>
+                                        <?= empty($post['canva_url'])
+                                            ? 'data-canva-master-link'
+                                            : '' ?>
                                     >
-                                        <?= !empty($post['canva_url']) ? 'Desain Kerja' : 'Master' ?> ↗
+                                        <?= !empty($post['canva_url'])
+                                            ? 'Buka desain kerja'
+                                            : 'Buka master Canva' ?>
+                                        ↗
                                     </a>
                                 <?php else : ?>
-                                    <span class="publication-muted">Belum tersedia</span>
+                                    <small>Canva belum tersedia</small>
                                 <?php endif; ?>
                             </td>
+
                             <td data-label="Aksi">
                                 <div class="publication-row-actions">
-                                    <a href="<?= base_url('/publications/' . $post['id']) ?>" class="btn btn-primary">Buka</a>
+                                    <a
+                                        href="<?= base_url(
+                                            '/publications/'
+                                            . $post['id']
+                                        ) ?>"
+                                        class="btn btn-primary"
+                                    >
+                                        Lanjutkan
+                                    </a>
 
-                                    <?php if (auth_can('publications.update')) : ?>
-                                        <a href="<?= base_url('/publications/edit/' . $post['id']) ?>" class="btn btn-secondary">Edit</a>
+                                    <?php if (auth_can(
+                                        'publications.update'
+                                    )) : ?>
+                                        <a
+                                            href="<?= base_url(
+                                                '/publications/edit/'
+                                                . $post['id']
+                                            ) ?>"
+                                            class="btn btn-secondary"
+                                        >
+                                            Edit
+                                        </a>
                                     <?php endif; ?>
                                 </div>
                             </td>
@@ -533,12 +747,28 @@ $formatDateTime = static function (?string $value): string {
                     <?php endforeach; ?>
                 <?php else : ?>
                     <tr>
-                        <td colspan="8">
+                        <td colspan="6">
                             <div class="publication-empty-state">
-                                <strong>Belum ada publikasi yang sesuai</strong>
-                                <p>Buat brief pertama atau ubah filter pencarian.</p>
-                                <?php if (auth_can('publications.create')) : ?>
-                                    <a href="<?= base_url('/publications/create') ?>" class="btn btn-primary">+ Buat Publikasi</a>
+                                <strong>
+                                    Belum ada konten yang sesuai
+                                </strong>
+
+                                <p>
+                                    Buat konten pertama atau ubah
+                                    filter pencarian.
+                                </p>
+
+                                <?php if (auth_can(
+                                    'publications.create'
+                                )) : ?>
+                                    <a
+                                        href="<?= base_url(
+                                            '/publications/create'
+                                        ) ?>"
+                                        class="btn btn-primary"
+                                    >
+                                        + Buat Konten
+                                    </a>
                                 <?php endif; ?>
                             </div>
                         </td>
@@ -549,9 +779,90 @@ $formatDateTime = static function (?string $value): string {
     </div>
 
     <div class="pagination-wrapper">
-        <?= $pager->links('social_publications', 'default_full') ?>
+        <?= $pager->links(
+            'social_publications',
+            'default_full'
+        ) ?>
     </div>
 </section>
+
+<details class="publication-advanced-tools">
+    <summary>
+        <div>
+            <span>Fitur Lanjutan</span>
+            <strong>
+                Deadline, analitik, audit, dan alat pendukung
+            </strong>
+        </div>
+
+        <b>Buka</b>
+    </summary>
+
+    <div>
+        <?php if (auth_can(
+            'publications.deadlines.view'
+        )) : ?>
+            <a href="<?= base_url(
+                '/publications/deadlines'
+            ) ?>">
+                <strong>Deadline Produksi</strong>
+                <small>
+                    Periksa konten terlambat dan hambatan kerja.
+                </small>
+            </a>
+        <?php endif; ?>
+
+        <?php if (auth_can(
+            'publications.metrics.view'
+        )) : ?>
+            <a href="<?= base_url(
+                '/publications/analytics'
+            ) ?>">
+                <strong>Analitik Instagram</strong>
+                <small>
+                    Evaluasi reach, interaksi, dan performa format.
+                </small>
+            </a>
+        <?php endif; ?>
+
+        <?php if (auth_can(
+            'publications.recommendations.view'
+        )) : ?>
+            <a href="<?= base_url(
+                '/publications/recommendations'
+            ) ?>">
+                <strong>Rekomendasi Waktu Tayang</strong>
+                <small>
+                    Gunakan setelah data Insights mulai terkumpul.
+                </small>
+            </a>
+        <?php endif; ?>
+
+        <?php if (auth_can(
+            'publications.audit.view'
+        )) : ?>
+            <a href="<?= base_url(
+                '/publications/audit'
+            ) ?>">
+                <strong>Audit Trail</strong>
+                <small>
+                    Lacak perubahan dan pengguna yang melakukannya.
+                </small>
+            </a>
+        <?php endif; ?>
+
+        <?php if (auth_can(
+            'content_studio.view'
+        )) : ?>
+            <a href="<?= base_url('/content-studio') ?>">
+                <strong>AI Content Studio</strong>
+                <small>
+                    Bantu menyusun konsep dan naskah konten.
+                </small>
+            </a>
+        <?php endif; ?>
+    </div>
+</details>
 
 </div>
 

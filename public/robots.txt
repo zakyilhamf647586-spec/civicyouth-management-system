@@ -1,2 +1,20 @@
 User-agent: *
-Disallow: 
+Allow: /
+Disallow: /login
+Disallow: /logout
+Disallow: /dashboard
+Disallow: /users
+Disallow: /members
+Disallow: /structures
+Disallow: /meetings
+Disallow: /attendances
+Disallow: /cash
+Disallow: /activities
+Disallow: /messages
+Disallow: /reports
+Disallow: /exports
+Disallow: /imports
+Disallow: /publications
+Disallow: /content-studio
+Disallow: /programs
+Disallow: /settings

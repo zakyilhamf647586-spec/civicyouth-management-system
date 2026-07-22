@@ -35,7 +35,7 @@ class PublicController extends BaseController
             ->groupBy('rt')
             ->countAllResults();
 
-        $activeOfficials = $structureModel->countAllResults();
+        $activeOfficials = $structureModel->countPublicOfficials();
 
         $completedActivities = (new ActivityModel())
             ->applyPublicVisibility()
@@ -355,19 +355,7 @@ class PublicController extends BaseController
     {
         $structureModel = new OrganizationalStructureModel();
 
-        $officials = $structureModel
-            ->select(
-                'organizational_structures.*, ' .
-                'members.full_name AS member_name'
-            )
-            ->join(
-                'members',
-                'members.id = organizational_structures.member_id',
-                'left'
-            )
-            ->orderBy('organizational_structures.sort_order', 'ASC')
-            ->orderBy('organizational_structures.id', 'ASC')
-            ->findAll();
+        $officials = $structureModel->publicOfficials();
 
         return view('public/officials', [
             'title' => 'Pengurus GARDA 01 | Karang Taruna RW 01',

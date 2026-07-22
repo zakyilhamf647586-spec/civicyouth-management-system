@@ -6,6 +6,7 @@ use App\Models\MemberModel;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use App\Libraries\SecureUploadService;
 
 class ImportController extends BaseController
 {
@@ -65,23 +66,24 @@ class ImportController extends BaseController
 
     public function membersImport()
     {
-        $rules = [
-            'excel_file' => 'uploaded[excel_file]|max_size[excel_file,5120]|ext_in[excel_file,xlsx,xls,csv]'
-        ];
-
-        if (!$this->validate($rules)) {
-            return redirect()->back()
-                ->with('error', 'File tidak valid. Gunakan file .xlsx, .xls, atau .csv maksimal 5MB.');
-        }
-
         $file = $this->request->getFile('excel_file');
 
-        if (!$file->isValid()) {
+        if (!$file || $file->getError() === UPLOAD_ERR_NO_FILE) {
             return redirect()->back()
-                ->with('error', 'File gagal diupload.');
+                ->with('error', 'Pilih file XLSX, XLS, atau CSV maksimal 5 MB.');
         }
 
-        $spreadsheet = IOFactory::load($file->getTempName());
+        try {
+            $validated = (new SecureUploadService())
+                ->validateSpreadsheet($file, 5 * 1024 * 1024);
+
+            $spreadsheet = IOFactory::load(
+                $validated['temp_path']
+            );
+        } catch (\Throwable $exception) {
+            return redirect()->back()
+                ->with('error', 'File import ditolak: ' . $exception->getMessage());
+        }
         $sheet = $spreadsheet->getActiveSheet();
         $rows = $sheet->toArray();
 

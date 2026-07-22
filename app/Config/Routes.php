@@ -91,6 +91,7 @@ $routes->post('/cash/delete/(:num)', 'CashTransactionController::delete/$1', $gu
 
 /* Activities and publication workflow */
 $routes->get('/activities', 'ActivityController::index', $guard('activities.view'));
+$routes->get('/activities/quality', 'ActivityController::qualityAudit', $guard('activities.view'));
 $routes->get('/activities/create', 'ActivityController::create', $guard('activities.create'));
 $routes->post('/activities/store', 'ActivityController::store', $guard('activities.create'));
 $routes->get('/activities/edit/(:num)', 'ActivityController::edit/$1', $guard('activities.update'));
@@ -128,6 +129,7 @@ $routes->post('/imports/members', 'ImportController::membersImport', $guard('mem
 
 /* Social publication and Canva workflow */
 $routes->get('/publications', 'SocialPublicationController::index', $guard('publications.view'));
+$routes->get('/publications/guide', 'SocialPublicationController::guide', $guard('publications.view'));
 $routes->get('/publications/calendar', 'SocialPublicationController::calendar', $guard('publications.view'));
 $routes->get('/publications/create', 'SocialPublicationController::create', $guard('publications.create'));
 $routes->get('/publications/create/activity/(:num)', 'SocialPublicationController::createFromActivity/$1', $guard('publications.create'));

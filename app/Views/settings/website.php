@@ -163,7 +163,9 @@
                                         type="file"
                                         id="<?= esc($key) ?>"
                                         name="<?= esc($key) ?>"
-                                        accept=".jpg,.jpeg,.png,.webp,.ico"
+                                        accept="<?= $key === 'site_favicon'
+                                            ? '.jpg,.jpeg,.png,.webp,.ico'
+                                            : '.jpg,.jpeg,.png,.webp' ?>"
                                     >
 
                                     <small>

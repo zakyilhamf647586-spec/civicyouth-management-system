@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\ActivityImageModel;
 use App\Models\ActivityModel;
 use App\Models\ProgramModel;
+use App\Libraries\SecureUploadService;
 use DateTimeImmutable;
 use RuntimeException;
 use Throwable;
@@ -13,11 +14,13 @@ class ActivityController extends BaseController
 {
     protected ActivityModel $activityModel;
     protected ProgramModel $programModel;
+    protected SecureUploadService $uploadService;
 
     public function __construct()
     {
         $this->activityModel = new ActivityModel();
         $this->programModel  = new ProgramModel();
+        $this->uploadService = new SecureUploadService();
     }
 
     public function index()
@@ -144,6 +147,80 @@ class ActivityController extends BaseController
         ]);
     }
 
+    public function qualityAudit()
+    {
+        $readiness = trim((string) $this->request->getGet('readiness'));
+        $keyword = trim((string) $this->request->getGet('keyword'));
+
+        if (!in_array($readiness, ['incomplete', 'review', 'ready'], true)) {
+            $readiness = '';
+        }
+
+        $rows = db_connect()
+            ->table('activities')
+            ->select(
+                'activities.*, programs.name AS program_name, '
+                . 'COUNT(activity_images.id) AS gallery_count, '
+                . "SUM(CASE WHEN activity_images.caption IS NOT NULL "
+                . "AND TRIM(activity_images.caption) != '' THEN 1 ELSE 0 END) "
+                . 'AS captioned_images',
+                false
+            )
+            ->join('programs', 'programs.id = activities.program_id', 'left')
+            ->join('activity_images', 'activity_images.activity_id = activities.id', 'left')
+            ->groupBy('activities.id')
+            ->orderBy('activities.activity_date', 'DESC')
+            ->orderBy('activities.id', 'DESC')
+            ->get()
+            ->getResultArray();
+
+        $items = [];
+        $summary = [
+            'total' => count($rows),
+            'incomplete' => 0,
+            'review' => 0,
+            'ready' => 0,
+            'featured_not_ready' => 0,
+        ];
+
+        foreach ($rows as $row) {
+            $quality = $this->evaluateActivityQuality($row);
+            $item = array_merge($row, $quality);
+            $summary[$quality['readiness']]++;
+
+            if ((int) ($row['is_featured'] ?? 0) === 1 && $quality['readiness'] !== 'ready') {
+                $summary['featured_not_ready']++;
+            }
+
+            if ($readiness !== '' && $quality['readiness'] !== $readiness) {
+                continue;
+            }
+
+            if ($keyword !== '') {
+                $haystack = mb_strtolower(implode(' ', [
+                    $row['title'] ?? '',
+                    $row['location'] ?? '',
+                    $row['program_name'] ?? '',
+                    implode(' ', array_column($quality['issues'], 'message')),
+                ]));
+
+                if (!str_contains($haystack, mb_strtolower($keyword))) {
+                    continue;
+                }
+            }
+
+            $items[] = $item;
+        }
+
+        return view('activities/quality', [
+            'title' => 'Audit Kualitas Kegiatan',
+            'items' => $items,
+            'summary' => $summary,
+            'selectedReadiness' => $readiness,
+            'keyword' => $keyword,
+        ]);
+    }
+
     public function create()
     {
         $programs = $this->programModel
@@ -189,6 +266,8 @@ class ActivityController extends BaseController
             return $deniedResponse;
         }
 
+        $newFile = null;
+
         try {
             $programId = $this->normalizeProgramId(
                 $this->request->getPost('program_id')
@@ -232,12 +311,20 @@ class ActivityController extends BaseController
                     )
                 );
         } catch (RuntimeException $exception) {
+            if ($newFile !== null) {
+                $this->deleteDocumentationFile($newFile);
+            }
+
             return redirect()->back()
                 ->withInput()
                 ->with('errors', [
                     $exception->getMessage(),
                 ]);
         } catch (Throwable $exception) {
+            if ($newFile !== null) {
+                $this->deleteDocumentationFile($newFile);
+            }
+
             log_message(
                 'error',
                 'Gagal menyimpan kegiatan: {message}',
@@ -935,63 +1022,24 @@ class ActivityController extends BaseController
 
     private function processNewDocumentationUpload(): ?string
     {
-        $file = $this->request->getFile(
-            'documentation_file'
-        );
+        $file = $this->request->getFile('documentation_file');
 
-        if (
-            !$file
-            || $file->getError() === UPLOAD_ERR_NO_FILE
-        ) {
+        if (!$file || $file->getError() === UPLOAD_ERR_NO_FILE) {
             return null;
         }
 
-        if (!$file->isValid()) {
-            throw new RuntimeException(
-                'File dokumentasi gagal diunggah.'
-            );
-        }
+        $stored = $this->uploadService->storeImage(
+            $file,
+            'uploads/activities',
+            [
+                'max_bytes' => 4 * 1024 * 1024,
+                'max_pixels' => 36_000_000,
+                'target_max_width' => 2400,
+                'target_max_height' => 1800,
+            ]
+        );
 
-        if ($file->getSize() > (4 * 1024 * 1024)) {
-            throw new RuntimeException(
-                'Ukuran dokumentasi maksimal 4 MB.'
-            );
-        }
-
-        $allowedMimes = [
-            'image/jpeg',
-            'image/jpg',
-            'image/png',
-            'image/webp',
-        ];
-
-        if (!in_array(
-            $file->getMimeType(),
-            $allowedMimes,
-            true
-        )) {
-            throw new RuntimeException(
-                'Dokumentasi harus berupa JPG, JPEG, PNG, atau WEBP.'
-            );
-        }
-
-        $directory = FCPATH . 'uploads/activities';
-
-        if (
-            !is_dir($directory)
-            && !mkdir($directory, 0775, true)
-            && !is_dir($directory)
-        ) {
-            throw new RuntimeException(
-                'Folder upload kegiatan tidak dapat dibuat.'
-            );
-        }
-
-        $newFileName = $file->getRandomName();
-
-        $file->move($directory, $newFileName);
-
-        return $newFileName;
+        return $stored['file_name'];
     }
 
     private function deleteDocumentationFile(
@@ -1001,13 +1049,159 @@ class ActivityController extends BaseController
             return;
         }
 
-        $filePath = FCPATH
-            . 'uploads/activities/'
-            . basename($fileName);
+        $this->uploadService->deleteManagedFile(
+            'uploads/activities/' . basename($fileName),
+            ['uploads/activities']
+        );
+    }
 
-        if (is_file($filePath)) {
-            unlink($filePath);
+    /** @return array{readiness:string,label:string,issues:list<array{severity:string,message:string}>} */
+    private function evaluateActivityQuality(array $activity): array
+    {
+        $issues = [];
+        $critical = false;
+
+        $title = trim((string) ($activity['title'] ?? ''));
+        $summary = trim((string) ($activity['summary'] ?? ''));
+        $description = trim((string) ($activity['description'] ?? ''));
+        $result = trim((string) ($activity['result'] ?? ''));
+        $location = trim((string) ($activity['location'] ?? ''));
+        $executionStatus = (string) ($activity['status'] ?? '');
+        $publicationStatus = (string) (
+            $activity['publication_status'] ?? ''
+        );
+        $isPublic = (int) ($activity['is_public'] ?? 0);
+        $galleryCount = (int) ($activity['gallery_count'] ?? 0);
+        $captionedImages = (int) ($activity['captioned_images'] ?? 0);
+        $genericTitles = ['kegiatan', 'agenda', 'rapat', 'dokumentasi', 'acara'];
+
+        $add = static function (string $severity, string $message) use (&$issues): void {
+            $issues[] = ['severity' => $severity, 'message' => $message];
+        };
+
+        if (mb_strlen($title) < 10 || in_array(mb_strtolower($title), $genericTitles, true)) {
+            $add('critical', 'Judul terlalu umum atau terlalu pendek.');
+            $critical = true;
         }
+
+        if (empty($activity['program_id'])) {
+            $add('critical', 'Pilar/program belum dipilih.');
+            $critical = true;
+        }
+
+        if (!$this->isValidDate((string) ($activity['activity_date'] ?? ''))) {
+            $add('critical', 'Tanggal kegiatan tidak valid.');
+            $critical = true;
+        }
+
+        if ($location === '') {
+            $add('critical', 'Lokasi kegiatan belum diisi.');
+            $critical = true;
+        }
+
+        if (empty($activity['documentation_file']) && $galleryCount < 1) {
+            $add('critical', 'Cover atau galeri dokumentasi belum tersedia.');
+            $critical = true;
+        }
+
+        if (!in_array($executionStatus, ActivityModel::EXECUTION_STATUSES, true)) {
+            $add('critical', 'Status pelaksanaan tidak valid.');
+            $critical = true;
+        }
+
+        if (!in_array($publicationStatus, ActivityModel::PUBLICATION_STATUSES, true)) {
+            $add('critical', 'Status publikasi tidak valid.');
+            $critical = true;
+        }
+
+        if ($publicationStatus === 'published' && $isPublic !== 1) {
+            $add('critical', 'Status Dipublikasikan tetapi visibilitas publik tidak aktif.');
+            $critical = true;
+        }
+
+        if (
+            in_array($publicationStatus, ['draft', 'review', 'archived'], true)
+            && $isPublic === 1
+        ) {
+            $add('critical', 'Konten nonpublik masih memiliki penanda visibilitas publik aktif.');
+            $critical = true;
+        }
+
+        if ($publicationStatus === 'scheduled') {
+            $scheduledAt = trim((string) ($activity['scheduled_at'] ?? ''));
+            $scheduledTimestamp = $scheduledAt !== ''
+                ? strtotime($scheduledAt)
+                : false;
+
+            if ($scheduledTimestamp === false) {
+                $add('critical', 'Status Dijadwalkan belum memiliki waktu tayang yang valid.');
+                $critical = true;
+            } elseif ($scheduledTimestamp <= time()) {
+                $add('warning', 'Jadwal tayang sudah terlewati; periksa apakah status perlu diperbarui.');
+            }
+
+            if ($isPublic !== 1) {
+                $add('critical', 'Konten terjadwal belum mengaktifkan visibilitas publik.');
+                $critical = true;
+            }
+        }
+
+        $summaryLength = mb_strlen($summary);
+
+        if ($summaryLength < 120 || $summaryLength > 220) {
+            $add('warning', 'Ringkasan idealnya 120–220 karakter. Saat ini ' . $summaryLength . ' karakter.');
+        }
+
+        if (mb_strlen($description) < 80) {
+            $add('warning', 'Cerita/deskripsi kegiatan masih terlalu singkat.');
+        }
+
+        if ($executionStatus === 'completed' && mb_strlen($result) < 30) {
+            $add('warning', 'Hasil atau dampak kegiatan selesai belum cukup jelas.');
+        }
+
+        if ($galleryCount > 0 && $captionedImages < $galleryCount) {
+            $add('warning', ($galleryCount - $captionedImages) . ' foto galeri belum memiliki caption/teks alternatif.');
+        }
+
+        if (
+            $publicationStatus === 'published'
+            && empty($activity['published_at'])
+        ) {
+            $add('warning', 'Waktu publikasi belum tercatat.');
+        }
+
+        if ((int) ($activity['is_featured'] ?? 0) === 1) {
+            if ($critical) {
+                $add('critical', 'Kegiatan unggulan belum memenuhi data inti.');
+            }
+
+            if (!in_array($publicationStatus, ['published', 'scheduled'], true)) {
+                $add('warning', 'Penanda unggulan aktif pada konten yang belum diterbitkan.');
+            }
+        }
+
+        if ($critical) {
+            return [
+                'readiness' => 'incomplete',
+                'label' => 'Belum Lengkap',
+                'issues' => $issues,
+            ];
+        }
+
+        if ($issues !== []) {
+            return [
+                'readiness' => 'review',
+                'label' => 'Perlu Diperiksa',
+                'issues' => $issues,
+            ];
+        }
+
+        return [
+            'readiness' => 'ready',
+            'label' => 'Siap Dipublikasikan',
+            'issues' => [],
+        ];
     }
 
     private function findActivityOrRedirect(int $id)

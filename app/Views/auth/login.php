@@ -60,6 +60,8 @@ if (is_string($flashError) && trim($flashError) !== '') {
         content="#04172d"
     >
 
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+
     <meta
         name="description"
         content="Portal manajemen internal <?= esc($portalOrganizationName, 'attr') ?>, Karang Taruna RW 01 Kelurahan Randugarut."

@@ -152,6 +152,27 @@ class SiteSettingSeeder extends Seeder
             ],
 
             [
+                'setting_key'   => 'contact_location_description',
+                'setting_value' => 'Wilayah RW 01 Kelurahan Randugarut, Kecamatan Tugu, Kota Semarang.',
+                'setting_group' => 'contact',
+                'setting_type'  => 'textarea',
+                'label'         => 'Deskripsi Lokasi',
+                'description'   => 'Deskripsi singkat lokasi organisasi untuk footer dan halaman kontak.',
+                'sort_order'    => 8,
+                'is_public'     => 1,
+            ],
+            [
+                'setting_key'   => 'contact_maps_url',
+                'setting_value' => '',
+                'setting_group' => 'contact',
+                'setting_type'  => 'url',
+                'label'         => 'URL Google Maps',
+                'description'   => 'Gunakan URL lengkap lokasi Google Maps.',
+                'sort_order'    => 9,
+                'is_public'     => 1,
+            ],
+
+            [
                 'setting_key'   => 'instagram_url',
                 'setting_value' => '',
                 'setting_group' => 'social',
