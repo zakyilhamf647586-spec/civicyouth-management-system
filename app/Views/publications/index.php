@@ -65,7 +65,7 @@ $statusDescriptions = $workflowDescriptions ?? [];
     <div class="publication-header-actions">
         <a
             href="<?= base_url('/publications/guide') ?>"
-            class="btn btn-secondary"
+            class="btn btn-secondary publication-btn publication-btn--secondary"
         >
             Panduan Singkat
         </a>
@@ -73,7 +73,7 @@ $statusDescriptions = $workflowDescriptions ?? [];
         <?php if (auth_can('publications.create')) : ?>
             <a
                 href="<?= base_url('/publications/create') ?>"
-                class="btn btn-primary"
+                class="btn btn-primary publication-btn publication-btn--primary"
             >
                 + Buat Konten
             </a>
@@ -190,8 +190,8 @@ $statusDescriptions = $workflowDescriptions ?? [];
     </div>
 
     <ol>
-        <li>
-            <span>1</span>
+        <li class="publication-flow-step">
+            <span class="publication-flow-step__number">1</span>
             <div>
                 <strong>Pilih kegiatan</strong>
                 <small>
@@ -200,8 +200,8 @@ $statusDescriptions = $workflowDescriptions ?? [];
             </div>
         </li>
 
-        <li>
-            <span>2</span>
+        <li class="publication-flow-step">
+            <span class="publication-flow-step__number">2</span>
             <div>
                 <strong>Siapkan naskah</strong>
                 <small>
@@ -210,8 +210,8 @@ $statusDescriptions = $workflowDescriptions ?? [];
             </div>
         </li>
 
-        <li>
-            <span>3</span>
+        <li class="publication-flow-step">
+            <span class="publication-flow-step__number">3</span>
             <div>
                 <strong>Kerjakan desain</strong>
                 <small>
@@ -220,8 +220,8 @@ $statusDescriptions = $workflowDescriptions ?? [];
             </div>
         </li>
 
-        <li>
-            <span>4</span>
+        <li class="publication-flow-step">
+            <span class="publication-flow-step__number">4</span>
             <div>
                 <strong>Review & jadwalkan</strong>
                 <small>
@@ -230,8 +230,8 @@ $statusDescriptions = $workflowDescriptions ?? [];
             </div>
         </li>
 
-        <li>
-            <span>5</span>
+        <li class="publication-flow-step">
+            <span class="publication-flow-step__number">5</span>
             <div>
                 <strong>Posting & catat</strong>
                 <small>
@@ -243,28 +243,28 @@ $statusDescriptions = $workflowDescriptions ?? [];
 </section>
 
 <section class="publication-simple-summary">
-    <a href="<?= base_url('/publications') ?>">
+    <a href="<?= base_url('/publications') ?>" class="publication-stat-card is-total">
         <span>Semua Konten</span>
         <strong><?= (int) ($summary['total'] ?? 0) ?></strong>
     </a>
 
     <a href="<?= base_url(
         '/publications?status=review'
-    ) ?>" class="is-review">
+    ) ?>" class="publication-stat-card is-review">
         <span>Menunggu Review</span>
         <strong><?= (int) ($summary['review'] ?? 0) ?></strong>
     </a>
 
     <a href="<?= base_url(
         '/publications?status=scheduled'
-    ) ?>" class="is-scheduled">
+    ) ?>" class="publication-stat-card is-scheduled">
         <span>Dijadwalkan</span>
         <strong><?= (int) ($summary['scheduled'] ?? 0) ?></strong>
     </a>
 
     <a href="<?= base_url(
         '/publications?status=published'
-    ) ?>" class="is-published">
+    ) ?>" class="publication-stat-card is-published">
         <span>Sudah Tayang</span>
         <strong><?= (int) ($summary['published'] ?? 0) ?></strong>
     </a>
@@ -288,7 +288,7 @@ $statusDescriptions = $workflowDescriptions ?? [];
 
         <a
             href="<?= base_url('/publications/deadlines') ?>"
-            class="btn btn-primary"
+            class="btn btn-primary publication-btn publication-btn--primary"
         >
             Periksa Deadline
         </a>
@@ -315,7 +315,7 @@ $statusDescriptions = $workflowDescriptions ?? [];
 
             <a
                 href="<?= base_url('/activities') ?>"
-                class="btn btn-secondary"
+                class="btn btn-secondary publication-btn publication-btn--tertiary"
             >
                 Buka Data Kegiatan
             </a>
@@ -330,9 +330,9 @@ $statusDescriptions = $workflowDescriptions ?? [];
                     ($activity['status'] ?? '') === 'completed';
                 ?>
 
-                <article class="publication-activity-candidate">
+                <article class="publication-activity-candidate publication-activity-card">
                     <div class="publication-activity-candidate__meta">
-                        <span class="<?= $isCompleted
+                        <span class="publication-activity-status <?= $isCompleted
                             ? 'completed'
                             : 'planned' ?>">
                             <?= $isCompleted
@@ -340,53 +340,61 @@ $statusDescriptions = $workflowDescriptions ?? [];
                                 : 'Akan Dilaksanakan' ?>
                         </span>
 
-                        <small>
+                        <time class="publication-activity-date">
                             <?= esc(
                                 $formatActivityDate(
                                     $activity['activity_date']
                                     ?? null
                                 )
                             ) ?>
-                        </small>
+                        </time>
                     </div>
 
-                    <h4><?= esc($activity['title']) ?></h4>
+                    <div class="publication-activity-card__body">
+                        <h4><?= esc($activity['title']) ?></h4>
 
-                    <p>
-                        <?= esc(
-                            $activity['program_name']
-                            ?: 'Tanpa pilar khusus'
-                        ) ?>
-                        ·
-                        <?= esc(
-                            $activity['location']
-                            ?: 'Lokasi belum dicatat'
-                        ) ?>
-                    </p>
+                        <div class="publication-activity-card__meta">
+                            <span>
+                                <?= esc(
+                                    $activity['program_name']
+                                    ?: 'Tanpa pilar khusus'
+                                ) ?>
+                            </span>
 
-                    <?php if (!empty(
-                        $activity['summary']
-                    )) : ?>
-                        <small>
-                            <?= esc(
-                                mb_strimwidth(
-                                    $activity['summary'],
-                                    0,
-                                    120,
-                                    '…'
-                                )
-                            ) ?>
-                        </small>
-                    <?php endif; ?>
+                            <span>
+                                <?= esc(
+                                    $activity['location']
+                                    ?: 'Lokasi belum dicatat'
+                                ) ?>
+                            </span>
+                        </div>
+
+                        <?php if (!empty(
+                            $activity['summary']
+                        )) : ?>
+                            <p class="publication-activity-card__summary">
+                                <?= esc(
+                                    mb_strimwidth(
+                                        $activity['summary'],
+                                        0,
+                                        145,
+                                        '…'
+                                    )
+                                ) ?>
+                            </p>
+                        <?php endif; ?>
+                    </div>
 
                     <a
                         href="<?= base_url(
                             '/publications/create/activity/'
                             . $activity['id']
                         ) ?>"
-                        class="btn btn-primary"
+                        class="btn btn-primary publication-btn publication-btn--primary publication-card-action"
                     >
-                        Buat Konten dari Kegiatan Ini
+                        <span>Buat Konten</span>
+                        <small>dari kegiatan ini</small>
+                        <b aria-hidden="true">→</b>
                     </a>
                 </article>
             <?php endforeach; ?>
@@ -404,8 +412,8 @@ $statusDescriptions = $workflowDescriptions ?? [];
             <h3>Lanjutkan pekerjaan yang sudah dibuat</h3>
         </div>
 
-        <small>
-            <?= count($posts ?? []) ?>
+        <small class="publication-work-count">
+            <strong><?= count($posts ?? []) ?></strong>
             record pada halaman ini
         </small>
     </div>
@@ -421,7 +429,7 @@ $statusDescriptions = $workflowDescriptions ?? [];
                     ? '— filter sedang aktif'
                     : '' ?>
             </span>
-            <b>Atur Filter</b>
+            <b class="publication-filter-trigger">Atur Filter</b>
         </summary>
 
         <form
@@ -530,13 +538,13 @@ $statusDescriptions = $workflowDescriptions ?? [];
                 </select>
             </div>
 
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" class="btn btn-primary publication-btn publication-btn--primary">
                 Terapkan
             </button>
 
             <a
                 href="<?= base_url('/publications') ?>"
-                class="btn btn-secondary"
+                class="btn btn-secondary publication-btn publication-btn--secondary"
             >
                 Reset
             </a>
@@ -545,14 +553,23 @@ $statusDescriptions = $workflowDescriptions ?? [];
 
     <div class="table-responsive">
         <table class="publication-table publication-simple-table">
+            <colgroup>
+                <col class="publication-col-content">
+                <col class="publication-col-stage">
+                <col class="publication-col-source">
+                <col class="publication-col-owner">
+                <col class="publication-col-target">
+                <col class="publication-col-actions">
+            </colgroup>
+
             <thead>
                 <tr>
-                    <th>Konten</th>
-                    <th>Tahap Saat Ini</th>
-                    <th>Sumber &amp; Format</th>
-                    <th>Penanggung Jawab</th>
-                    <th>Target &amp; Desain</th>
-                    <th>Aksi</th>
+                    <th scope="col">Konten</th>
+                    <th scope="col">Tahap Saat Ini</th>
+                    <th scope="col">Sumber &amp; Format</th>
+                    <th scope="col">Penanggung Jawab</th>
+                    <th scope="col">Target &amp; Desain</th>
+                    <th scope="col">Aksi</th>
                 </tr>
             </thead>
 
@@ -577,153 +594,169 @@ $statusDescriptions = $workflowDescriptions ?? [];
                             ?: ($template['url'] ?? null);
                         ?>
 
-                        <tr>
+                        <tr class="publication-task-row">
                             <td data-label="Konten">
-                                <strong class="publication-content-code">
-                                    <?= esc(
-                                        $post['content_code']
-                                        ?: 'LEGACY-' . $post['id']
-                                    ) ?>
-                                </strong>
+                                <div class="publication-task-cell publication-task-cell--content">
+                                    <span class="publication-code-chip">
+                                        <?= esc(
+                                            $post['content_code']
+                                            ?: 'LEGACY-' . $post['id']
+                                        ) ?>
+                                    </span>
 
-                                <a
-                                    href="<?= base_url(
-                                        '/publications/'
-                                        . $post['id']
-                                    ) ?>"
-                                    class="publication-title-link"
-                                >
-                                    <?= esc(
-                                        $post['event_title']
-                                        ?: (
-                                            $post['title']
-                                            ?: 'Tanpa judul'
-                                        )
-                                    ) ?>
-                                </a>
-
-                                <small>
-                                    <?= esc(
-                                        $post['cover_hook']
-                                        ?: 'Hook belum ditentukan'
-                                    ) ?>
-                                </small>
-                            </td>
-
-                            <td data-label="Tahap Saat Ini">
-                                <span
-                                    class="publication-status publication-status--<?= esc(
-                                        $workflowStatus,
-                                        'attr'
-                                    ) ?>"
-                                >
-                                    <?= esc(
-                                        $workflowStatuses[
-                                            $workflowStatus
-                                        ]
-                                        ?? ucfirst(
-                                            $workflowStatus
-                                        )
-                                    ) ?>
-                                </span>
-
-                                <small>
-                                    <?= esc(
-                                        $statusDescriptions[
-                                            $workflowStatus
-                                        ]
-                                        ?? 'Lanjutkan sesuai workflow.'
-                                    ) ?>
-                                </small>
-                            </td>
-
-                            <td data-label="Sumber & Format">
-                                <strong>
-                                    <?= esc(
-                                        $post['activity_title']
-                                        ?: (
-                                            $post['program_name']
-                                            ?: 'Konten manual'
-                                        )
-                                    ) ?>
-                                </strong>
-
-                                <small>
-                                    <?= esc(
-                                        $publicationTypes[
-                                            $post[
-                                                'publication_type'
-                                            ]
-                                        ]
-                                        ?? ucfirst(
-                                            $post[
-                                                'publication_type'
-                                            ] ?: 'feed'
-                                        )
-                                    ) ?>
-                                    ·
-                                    <?= esc($templateCode ?: '-') ?>
-                                </small>
-                            </td>
-
-                            <td data-label="Penanggung Jawab">
-                                <strong>
-                                    <?= esc(
-                                        $post['owner']
-                                        ?: 'Belum ditentukan'
-                                    ) ?>
-                                </strong>
-
-                                <small>
-                                    Reviewer:
-                                    <?= esc(
-                                        $post['reviewer']
-                                        ?: 'belum ditentukan'
-                                    ) ?>
-                                </small>
-                            </td>
-
-                            <td data-label="Target & Desain">
-                                <strong>
-                                    <?= esc(
-                                        $formatDateTime(
-                                            $post['scheduled_at']
-                                            ?? null
-                                        )
-                                    ) ?>
-                                </strong>
-
-                                <?php if ($canvaUrl) : ?>
-                                    <a
-                                        href="<?= esc(
-                                            $canvaUrl,
-                                            'attr'
-                                        ) ?>"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        class="publication-external-link"
-                                        <?= empty($post['canva_url'])
-                                            ? 'data-canva-master-link'
-                                            : '' ?>
-                                    >
-                                        <?= !empty($post['canva_url'])
-                                            ? 'Buka desain kerja'
-                                            : 'Buka master Canva' ?>
-                                        ↗
-                                    </a>
-                                <?php else : ?>
-                                    <small>Canva belum tersedia</small>
-                                <?php endif; ?>
-                            </td>
-
-                            <td data-label="Aksi">
-                                <div class="publication-row-actions">
                                     <a
                                         href="<?= base_url(
                                             '/publications/'
                                             . $post['id']
                                         ) ?>"
-                                        class="btn btn-primary"
+                                        class="publication-title-link"
+                                    >
+                                        <?= esc(
+                                            $post['event_title']
+                                            ?: (
+                                                $post['title']
+                                                ?: 'Tanpa judul'
+                                            )
+                                        ) ?>
+                                    </a>
+
+                                    <span class="publication-cell-note">
+                                        <?= esc(
+                                            $post['cover_hook']
+                                            ?: 'Hook belum ditentukan'
+                                        ) ?>
+                                    </span>
+                                </div>
+                            </td>
+
+                            <td data-label="Tahap Saat Ini">
+                                <div class="publication-task-cell publication-task-cell--status">
+                                    <span
+                                        class="publication-status publication-status--<?= esc(
+                                            $workflowStatus,
+                                            'attr'
+                                        ) ?>"
+                                    >
+                                        <?= esc(
+                                            $workflowStatuses[
+                                                $workflowStatus
+                                            ]
+                                            ?? ucfirst(
+                                                $workflowStatus
+                                            )
+                                        ) ?>
+                                    </span>
+
+                                    <span class="publication-cell-note">
+                                        <?= esc(
+                                            $statusDescriptions[
+                                                $workflowStatus
+                                            ]
+                                            ?? 'Lanjutkan sesuai workflow.'
+                                        ) ?>
+                                    </span>
+                                </div>
+                            </td>
+
+                            <td data-label="Sumber & Format">
+                                <div class="publication-task-cell publication-task-cell--source">
+                                    <strong>
+                                        <?= esc(
+                                            $post['activity_title']
+                                            ?: (
+                                                $post['program_name']
+                                                ?: 'Konten manual'
+                                            )
+                                        ) ?>
+                                    </strong>
+
+                                    <div class="publication-inline-meta">
+                                        <span>
+                                            <?= esc(
+                                                $publicationTypes[
+                                                    $post[
+                                                        'publication_type'
+                                                    ]
+                                                ]
+                                                ?? ucfirst(
+                                                    $post[
+                                                        'publication_type'
+                                                    ] ?: 'feed'
+                                                )
+                                            ) ?>
+                                        </span>
+
+                                        <span><?= esc($templateCode ?: '-') ?></span>
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td data-label="Penanggung Jawab">
+                                <div class="publication-task-cell publication-task-cell--owner">
+                                    <strong>
+                                        <?= esc(
+                                            $post['owner']
+                                            ?: 'Belum ditentukan'
+                                        ) ?>
+                                    </strong>
+
+                                    <span class="publication-cell-note">
+                                        Reviewer:
+                                        <?= esc(
+                                            $post['reviewer']
+                                            ?: 'belum ditentukan'
+                                        ) ?>
+                                    </span>
+                                </div>
+                            </td>
+
+                            <td data-label="Target & Desain">
+                                <div class="publication-task-cell publication-task-cell--target">
+                                    <strong class="publication-target-date">
+                                        <?= esc(
+                                            $formatDateTime(
+                                                $post['scheduled_at']
+                                                ?? null
+                                            )
+                                        ) ?>
+                                    </strong>
+
+                                    <?php if ($canvaUrl) : ?>
+                                        <a
+                                            href="<?= esc(
+                                                $canvaUrl,
+                                                'attr'
+                                            ) ?>"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="publication-external-link publication-text-action"
+                                            <?= empty($post['canva_url'])
+                                                ? 'data-canva-master-link'
+                                                : '' ?>
+                                        >
+                                            <span>
+                                                <?= !empty($post['canva_url'])
+                                                    ? 'Buka desain kerja'
+                                                    : 'Buka master Canva' ?>
+                                            </span>
+                                            <b aria-hidden="true">↗</b>
+                                        </a>
+                                    <?php else : ?>
+                                        <span class="publication-cell-note">
+                                            Canva belum tersedia
+                                        </span>
+                                    <?php endif; ?>
+                                </div>
+                            </td>
+
+                            <td data-label="Aksi">
+                                <div class="publication-row-actions publication-row-actions--polished">
+                                    <a
+                                        href="<?= base_url(
+                                            '/publications/'
+                                            . $post['id']
+                                        ) ?>"
+                                        class="btn btn-primary publication-btn publication-btn--primary publication-btn--compact"
                                     >
                                         Lanjutkan
                                     </a>
@@ -736,7 +769,7 @@ $statusDescriptions = $workflowDescriptions ?? [];
                                                 '/publications/edit/'
                                                 . $post['id']
                                             ) ?>"
-                                            class="btn btn-secondary"
+                                            class="btn btn-secondary publication-btn publication-btn--secondary publication-btn--compact"
                                         >
                                             Edit
                                         </a>
@@ -765,7 +798,7 @@ $statusDescriptions = $workflowDescriptions ?? [];
                                         href="<?= base_url(
                                             '/publications/create'
                                         ) ?>"
-                                        class="btn btn-primary"
+                                        class="btn btn-primary publication-btn publication-btn--primary"
                                     >
                                         + Buat Konten
                                     </a>

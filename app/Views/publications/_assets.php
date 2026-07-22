@@ -6,6 +6,9 @@ $publicationCssPath =
 $publicationSimpleCssPath =
     FCPATH . 'assets/css/admin-publications-simplified.css';
 
+$publicationPolishCssPath =
+    FCPATH . 'assets/css/admin-publications-polish.css';
+
 $publicationJsPath =
     FCPATH . 'assets/js/admin-publications.js';
 
@@ -16,6 +19,11 @@ $publicationCssVersion = is_file($publicationCssPath)
 $publicationSimpleCssVersion =
     is_file($publicationSimpleCssPath)
         ? (string) filemtime($publicationSimpleCssPath)
+        : '1';
+
+$publicationPolishCssVersion =
+    is_file($publicationPolishCssPath)
+        ? (string) filemtime($publicationPolishCssPath)
         : '1';
 
 $publicationJsVersion = is_file($publicationJsPath)
@@ -38,6 +46,17 @@ $publicationJsVersion = is_file($publicationJsPath)
         'assets/css/admin-publications-simplified.css'
     ) ?>?v=<?= esc(
         $publicationSimpleCssVersion,
+        'attr'
+    ) ?>"
+>
+
+<link
+    id="garda-publication-polish-css"
+    rel="stylesheet"
+    href="<?= base_url(
+        'assets/css/admin-publications-polish.css'
+    ) ?>?v=<?= esc(
+        $publicationPolishCssVersion,
         'attr'
     ) ?>"
 >
