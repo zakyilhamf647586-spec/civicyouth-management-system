@@ -15,13 +15,20 @@ class PublicContactController extends BaseController
 
     public function index()
     {
+        $cmsState = $this->publicCmsPage('contact');
+        $cmsPage = $cmsState['page'];
+
         return view('public/contact', [
-            'title' => 'Kontak dan Kolaborasi | GARDA 01',
+            'title' => $cmsPage['title']
+                ?? 'Kontak dan Kolaborasi | GARDA 01',
 
             'metaDescription' =>
-                'Hubungi GARDA 01 untuk kolaborasi kegiatan, program sosial, lingkungan, kepemudaan, usaha, media, dan pemberdayaan masyarakat.',
+                $cmsPage['meta_description']
+                ?? 'Hubungi GARDA 01 untuk kolaborasi kegiatan, program sosial, lingkungan, kepemudaan, usaha, media, dan pemberdayaan masyarakat.',
 
             'activePage' => 'contact',
+            'cmsPage' => $cmsPage,
+            'cmsPreview' => $cmsState['preview'],
         ]);
     }
 

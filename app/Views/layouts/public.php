@@ -40,12 +40,15 @@ $organizationName = site_setting(
 
 $activePage = $activePage ?? '';
 $currentUrl = current_url();
-$pageRobots = $robots ?? 'index, follow';
+$pageRobots = !empty($cmsPreview)
+    ? 'noindex, nofollow, noarchive'
+    : ($robots ?? 'index, follow');
 
 $publicStylesheets = [
     'assets/css/app.css',
     'assets/css/public-footer-refinement.css',
     'assets/css/public-home-impact.css',
+    'assets/css/public-cms-preview.css',
 ];
 ?>
 <!DOCTYPE html>
@@ -136,7 +139,32 @@ $publicStylesheets = [
 
     <?= $this->renderSection('head') ?>
 </head>
-<body class="public-body">
+<body class="public-body <?= !empty($cmsPreview)
+    ? 'public-body--cms-preview'
+    : '' ?>">
+    <?php if (!empty($cmsPreview)) : ?>
+        <div class="public-cms-preview-banner">
+            <div>
+                <strong>Preview Draft CMS</strong>
+
+                <span>
+                    Perubahan ini belum tampil untuk pengunjung umum.
+                </span>
+            </div>
+
+            <?php if (!empty($cmsPage['page_key'])) : ?>
+                <a
+                    href="<?= base_url(
+                        '/website/pages/edit/'
+                        . $cmsPage['page_key']
+                    ) ?>"
+                >
+                    Kembali ke Editor
+                </a>
+            <?php endif; ?>
+        </div>
+    <?php endif; ?>
+
     <?= view('partials/public_navbar', [
         'activePage' => $activePage,
     ]) ?>

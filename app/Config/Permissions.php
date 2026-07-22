@@ -42,6 +42,7 @@ class Permissions extends BaseConfig
 
             'reports.*',
             'settings.website.manage',
+            'website.pages.*',
         ],
 
         'sekretaris' => [
@@ -72,6 +73,10 @@ class Permissions extends BaseConfig
             'programs.view',
             'programs.create',
             'programs.update',
+
+            'website.pages.view',
+            'website.pages.update',
+            'website.pages.preview',
 
             'publications.view',
             'publications.create',
@@ -188,6 +193,11 @@ class Permissions extends BaseConfig
         'programs.update'  => 'mengubah program',
         'programs.publish' => 'menerbitkan program',
         'programs.archive' => 'mengarsipkan program',
+
+        'website.pages.view' => 'melihat CMS halaman publik',
+        'website.pages.update' => 'mengubah draft halaman publik',
+        'website.pages.preview' => 'melihat preview halaman publik',
+        'website.pages.publish' => 'menerbitkan halaman publik',
 
         'publications.view'     => 'melihat publikasi sosial',
         'publications.create'   => 'membuat brief publikasi',

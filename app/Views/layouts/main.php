@@ -62,6 +62,11 @@ $pageContexts = [
         'label'   => 'Program GARDA 01',
     ],
 
+    'website' => [
+        'section' => 'Website Publik',
+        'label'   => 'Kelola Halaman',
+    ],
+
     'publications' => [
         'section' => 'Media dan Publikasi',
         'label'   => 'Publikasi Sosial',
@@ -573,6 +578,7 @@ $todayLabel =
 
             <?php if (auth_can_any([
                 'programs.view',
+                'website.pages.view',
                 'settings.website.manage',
                 'publications.view',
                 'content_studio.view',
@@ -594,6 +600,20 @@ $todayLabel =
                             </svg>
 
                             <span>Program GARDA 01</span>
+                        </a>
+                    <?php endif; ?>
+
+                    <?php if (auth_can('website.pages.view')) : ?>
+                        <a
+                            href="<?= base_url('/website/pages') ?>"
+                            class="garda-admin-nav-link <?= $isActive(['website']) ?>"
+                            title="Kelola Halaman Publik"
+                        >
+                            <svg aria-hidden="true">
+                                <use href="#icon-globe"></use>
+                            </svg>
+
+                            <span>Kelola Halaman</span>
                         </a>
                     <?php endif; ?>
 

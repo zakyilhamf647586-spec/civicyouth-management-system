@@ -196,14 +196,21 @@ class PublicController extends BaseController
             ->limit(3)
             ->findAll();
 
+        $cmsState = $this->publicCmsPage('home');
+        $cmsPage = $cmsState['page'];
+
         return view('public/home', [
             'title' =>
-                'GARDA 01 | Generasi Aktif Randugarut',
+                $cmsPage['title']
+                ?? 'GARDA 01 | Generasi Aktif Randugarut',
 
             'metaDescription' =>
-                'Website resmi GARDA 01, Generasi Aktif Randugarut, Karang Taruna RW 01 Kelurahan Randugarut.',
+                $cmsPage['meta_description']
+                ?? 'Website resmi GARDA 01, Generasi Aktif Randugarut, Karang Taruna RW 01 Kelurahan Randugarut.',
 
             'activePage'          => 'home',
+            'cmsPage'             => $cmsPage,
+            'cmsPreview'          => $cmsState['preview'],
             'activeMembers'       => $activeMembers,
             'connectedRt'         => $connectedRt,
             'activeOfficials'     => $activeOfficials,
@@ -368,10 +375,18 @@ class PublicController extends BaseController
 
     public function profile()
     {
+        $cmsState = $this->publicCmsPage('profile');
+        $cmsPage = $cmsState['page'];
+
         return view('public/profile', [
-            'title' => 'Profil GARDA 01 | Generasi Aktif Randugarut',
-            'metaDescription' => 'Mengenal GARDA 01 — Generasi Aktif Randugarut, identitas Karang Taruna RW 01 Kelurahan Randugarut.',
+            'title' => $cmsPage['title']
+                ?? 'Profil GARDA 01 | Generasi Aktif Randugarut',
+            'metaDescription' =>
+                $cmsPage['meta_description']
+                ?? 'Mengenal GARDA 01 — Generasi Aktif Randugarut, identitas Karang Taruna RW 01 Kelurahan Randugarut.',
             'activePage' => 'profile',
+            'cmsPage' => $cmsPage,
+            'cmsPreview' => $cmsState['preview'],
         ]);
     }
 

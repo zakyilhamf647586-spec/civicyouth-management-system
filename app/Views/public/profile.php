@@ -2,28 +2,72 @@
 
 <?= $this->section('content') ?>
 
+<?php
+$cmsPage = $cmsPage ?? null;
+?>
+
 <section class="public-editorial-hero">
     <div class="public-editorial-hero-copy">
-        <span class="public-kicker">Tentang Organisasi</span>
+        <span class="public-kicker">
+            <?= esc(public_cms_value(
+                $cmsPage,
+                'hero',
+                'kicker',
+                'Tentang Organisasi'
+            )) ?>
+        </span>
 
         <h1>
-            Generasi Aktif<br>
-            Randugarut
+            <?= nl2br(esc(public_cms_value(
+                $cmsPage,
+                'hero',
+                'title',
+                "Generasi Aktif\nRandugarut"
+            ))) ?>
         </h1>
 
         <p>
-            GARDA 01 merupakan identitas publik Karang Taruna RW 01
-            Kelurahan Randugarut sebagai ruang kolaborasi, pengembangan
-            pemuda, dan kontribusi nyata bagi lingkungan.
+            <?= esc(public_cms_value(
+                $cmsPage,
+                'hero',
+                'body',
+                'GARDA 01 merupakan identitas publik Karang Taruna RW 01 Kelurahan Randugarut sebagai ruang kolaborasi, pengembangan pemuda, dan kontribusi nyata bagi lingkungan.'
+            )) ?>
         </p>
 
         <div class="public-editorial-actions">
-            <a href="<?= base_url('/program') ?>" class="btn btn-primary">
-                Lihat Program
+            <a
+                href="<?= esc(public_cms_url(
+                    $cmsPage,
+                    'hero',
+                    'primary_url',
+                    '/program'
+                ), 'attr') ?>"
+                class="btn btn-primary"
+            >
+                <?= esc(public_cms_value(
+                    $cmsPage,
+                    'hero',
+                    'primary_label',
+                    'Lihat Program'
+                )) ?>
             </a>
 
-            <a href="<?= base_url('/pengurus') ?>" class="btn btn-secondary">
-                Kenali Pengurus
+            <a
+                href="<?= esc(public_cms_url(
+                    $cmsPage,
+                    'hero',
+                    'secondary_url',
+                    '/pengurus'
+                ), 'attr') ?>"
+                class="btn btn-secondary"
+            >
+                <?= esc(public_cms_value(
+                    $cmsPage,
+                    'hero',
+                    'secondary_label',
+                    'Kenali Pengurus'
+                )) ?>
             </a>
         </div>
     </div>
@@ -47,27 +91,49 @@
 <section class="public-content-section">
     <div class="profile-introduction-grid">
 
-        <article class="public-content-card profile-story-card">
-            <span class="public-kicker">Siapa Kami</span>
+        <?php if (public_cms_section_enabled(
+            $cmsPage,
+            'story',
+            true
+        )) : ?>
+            <article class="public-content-card profile-story-card">
+                <span class="public-kicker">
+                    <?= esc(public_cms_value(
+                        $cmsPage,
+                        'story',
+                        'kicker',
+                        'Siapa Kami'
+                    )) ?>
+                </span>
 
-            <h2>
-                Tumbuh bersama pemuda dan warga RW 01
-            </h2>
+                <h2>
+                    <?= esc(public_cms_value(
+                        $cmsPage,
+                        'story',
+                        'title',
+                        'Tumbuh bersama pemuda dan warga RW 01'
+                    )) ?>
+                </h2>
 
-            <p>
-                Karang Taruna RW 01 Kelurahan Randugarut merupakan
-                organisasi sosial kepemudaan yang menjadi wadah
-                partisipasi, pengembangan, dan kolaborasi pemuda
-                di lingkungan RW 01.
-            </p>
+                <p>
+                    <?= esc(public_cms_value(
+                        $cmsPage,
+                        'story',
+                        'paragraph_1',
+                        'Karang Taruna RW 01 Kelurahan Randugarut merupakan organisasi sosial kepemudaan yang menjadi wadah partisipasi, pengembangan, dan kolaborasi pemuda di lingkungan RW 01.'
+                    )) ?>
+                </p>
 
-            <p>
-                Melalui GARDA 01, organisasi membangun identitas yang
-                lebih mudah dikenal sekaligus tetap mempertahankan
-                nama resmi Karang Taruna RW 01 dalam administrasi,
-                legalitas, dan tata kelola organisasi.
-            </p>
-        </article>
+                <p>
+                    <?= esc(public_cms_value(
+                        $cmsPage,
+                        'story',
+                        'paragraph_2',
+                        'Melalui GARDA 01, organisasi membangun identitas yang lebih mudah dikenal sekaligus tetap mempertahankan nama resmi Karang Taruna RW 01 dalam administrasi, legalitas, dan tata kelola organisasi.'
+                    )) ?>
+                </p>
+            </article>
+        <?php endif; ?>
 
         <aside class="profile-identity-card">
             <span class="public-kicker">Identitas Resmi</span>
@@ -183,23 +249,58 @@
     </div>
 </section>
 
-<section class="public-page-cta">
-    <div>
-        <span class="public-kicker">Ruang Kontribusi</span>
+<?php if (public_cms_section_enabled(
+    $cmsPage,
+    'cta',
+    true
+)) : ?>
+    <section class="public-page-cta">
+        <div>
+            <span class="public-kicker">
+                <?= esc(public_cms_value(
+                    $cmsPage,
+                    'cta',
+                    'kicker',
+                    'Ruang Kontribusi'
+                )) ?>
+            </span>
 
-        <h2>
-            Kenali tujuh pilar gerakan GARDA 01
-        </h2>
+            <h2>
+                <?= esc(public_cms_value(
+                    $cmsPage,
+                    'cta',
+                    'title',
+                    'Kenali tujuh pilar gerakan GARDA 01'
+                )) ?>
+            </h2>
 
-        <p>
-            Setiap pilar menjadi ruang bagi pemuda untuk belajar,
-            berkolaborasi, dan menghasilkan kontribusi nyata.
-        </p>
-    </div>
+            <p>
+                <?= esc(public_cms_value(
+                    $cmsPage,
+                    'cta',
+                    'body',
+                    'Setiap pilar menjadi ruang bagi pemuda untuk belajar, berkolaborasi, dan menghasilkan kontribusi nyata.'
+                )) ?>
+            </p>
+        </div>
 
-    <a href="<?= base_url('/program') ?>" class="btn btn-primary">
-        Jelajahi Program
-    </a>
-</section>
+        <a
+            href="<?= esc(public_cms_url(
+                $cmsPage,
+                'cta',
+                'button_url',
+                '/program'
+            ), 'attr') ?>"
+            class="btn btn-primary"
+        >
+            <?= esc(public_cms_value(
+                $cmsPage,
+                'cta',
+                'button_label',
+                'Jelajahi Program'
+            )) ?>
+        </a>
+    </section>
+<?php endif; ?>
 
 <?= $this->endSection() ?>

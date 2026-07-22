@@ -78,6 +78,8 @@ $featuredHasImage = $activityHasImage(
 $impactHasImage = $activityHasImage(
     $impactActivity ?? null
 );
+
+$cmsPage = $cmsPage ?? null;
 ?>
 
 <div class="garda-home">
@@ -88,38 +90,83 @@ $impactHasImage = $activityHasImage(
         <div class="garda-home-hero-copy">
 
             <span class="garda-home-eyebrow">
-                Karang Taruna RW 01 • Kelurahan Randugarut
+                <?= esc(public_cms_value(
+                    $cmsPage,
+                    'hero',
+                    'eyebrow',
+                    'Karang Taruna RW 01 • Kelurahan Randugarut'
+                )) ?>
             </span>
 
-            <h1>GARDA 01</h1>
+            <h1>
+                <?= esc(public_cms_value(
+                    $cmsPage,
+                    'hero',
+                    'title',
+                    'GARDA 01'
+                )) ?>
+            </h1>
 
-            <h2>Generasi Aktif Randugarut</h2>
+            <h2>
+                <?= esc(public_cms_value(
+                    $cmsPage,
+                    'hero',
+                    'subtitle',
+                    'Generasi Aktif Randugarut'
+                )) ?>
+            </h2>
 
             <p class="garda-home-manifesto">
-                Guyub dalam kebersamaan.<br>
-                Bergerak melalui karya.<br>
-                Berdampak bagi lingkungan.
+                <?= nl2br(esc(public_cms_value(
+                    $cmsPage,
+                    'hero',
+                    'manifesto',
+                    "Guyub dalam kebersamaan.\nBergerak melalui karya.\nBerdampak bagi lingkungan."
+                ))) ?>
             </p>
 
             <p class="garda-home-introduction">
-                Ruang tumbuh dan kolaborasi pemuda RW 01 dalam
-                kegiatan sosial, lingkungan, olahraga, kreativitas,
-                pendidikan, usaha, dan pemberdayaan masyarakat.
+                <?= esc(public_cms_value(
+                    $cmsPage,
+                    'hero',
+                    'introduction',
+                    'Ruang tumbuh dan kolaborasi pemuda RW 01 dalam kegiatan sosial, lingkungan, olahraga, kreativitas, pendidikan, usaha, dan pemberdayaan masyarakat.'
+                )) ?>
             </p>
 
             <div class="garda-home-hero-actions">
                 <a
-                    href="<?= base_url('/kegiatan') ?>"
+                    href="<?= esc(public_cms_url(
+                        $cmsPage,
+                        'hero',
+                        'primary_url',
+                        '/kegiatan'
+                    ), 'attr') ?>"
                     class="btn btn-primary"
                 >
-                    Lihat Gerak Kami
+                    <?= esc(public_cms_value(
+                        $cmsPage,
+                        'hero',
+                        'primary_label',
+                        'Lihat Gerak Kami'
+                    )) ?>
                 </a>
 
                 <a
-                    href="<?= base_url('/profil') ?>"
+                    href="<?= esc(public_cms_url(
+                        $cmsPage,
+                        'hero',
+                        'secondary_url',
+                        '/profil'
+                    ), 'attr') ?>"
                     class="btn garda-home-outline-button"
                 >
-                    Kenali GARDA 01
+                    <?= esc(public_cms_value(
+                        $cmsPage,
+                        'hero',
+                        'secondary_label',
+                        'Kenali GARDA 01'
+                    )) ?>
                 </a>
             </div>
 
@@ -304,72 +351,90 @@ $impactHasImage = $activityHasImage(
     </section>
 
     <!-- NILAI UTAMA -->
-    <section class="garda-home-section garda-home-values">
+    <?php if (public_cms_section_enabled(
+        $cmsPage,
+        'about',
+        true
+    )) : ?>
+        <section class="garda-home-section garda-home-values">
 
-        <div class="garda-home-section-heading">
-            <span class="public-kicker">
-                Semangat GARDA 01
-            </span>
-
-            <h2>
-                Bertumbuh melalui kebersamaan dan tindakan nyata
-            </h2>
-
-            <p>
-                GARDA 01 hadir bukan sekadar sebagai struktur
-                organisasi, tetapi sebagai ruang bagi pemuda untuk
-                saling menguatkan, menciptakan karya, dan memberi
-                manfaat bagi lingkungan.
-            </p>
-        </div>
-
-        <div class="garda-home-value-grid">
-
-            <article>
-                <span class="garda-home-value-number">
-                    01
+            <div class="garda-home-section-heading">
+                <span class="public-kicker">
+                    <?= esc(public_cms_value(
+                        $cmsPage,
+                        'about',
+                        'kicker',
+                        'Semangat GARDA 01'
+                    )) ?>
                 </span>
 
-                <h3>Guyub</h3>
+                <h2>
+                    <?= esc(public_cms_value(
+                        $cmsPage,
+                        'about',
+                        'title',
+                        'Bertumbuh melalui kebersamaan dan tindakan nyata'
+                    )) ?>
+                </h2>
 
                 <p>
-                    Menyatukan pemuda, warga, dan berbagai unsur
-                    masyarakat melalui kebersamaan yang sehat,
-                    terbuka, dan saling menguatkan.
+                    <?= esc(public_cms_value(
+                        $cmsPage,
+                        'about',
+                        'body',
+                        'GARDA 01 hadir bukan sekadar sebagai struktur organisasi, tetapi sebagai ruang bagi pemuda untuk saling menguatkan, menciptakan karya, dan memberi manfaat bagi lingkungan.'
+                    )) ?>
                 </p>
-            </article>
+            </div>
 
-            <article>
-                <span class="garda-home-value-number">
-                    02
-                </span>
+            <div class="garda-home-value-grid">
 
-                <h3>Bergerak</h3>
+                <article>
+                    <span class="garda-home-value-number">
+                        01
+                    </span>
 
-                <p>
-                    Mengubah gagasan menjadi kegiatan nyata melalui
-                    kolaborasi, tanggung jawab, dan keberanian
-                    mengambil peran.
-                </p>
-            </article>
+                    <h3>Guyub</h3>
 
-            <article>
-                <span class="garda-home-value-number">
-                    03
-                </span>
+                    <p>
+                        Menyatukan pemuda, warga, dan berbagai unsur
+                        masyarakat melalui kebersamaan yang sehat,
+                        terbuka, dan saling menguatkan.
+                    </p>
+                </article>
 
-                <h3>Berdampak</h3>
+                <article>
+                    <span class="garda-home-value-number">
+                        02
+                    </span>
 
-                <p>
-                    Menghadirkan program yang relevan,
-                    terdokumentasi, dan memberikan manfaat yang
-                    dapat dirasakan lingkungan.
-                </p>
-            </article>
+                    <h3>Bergerak</h3>
 
-        </div>
+                    <p>
+                        Mengubah gagasan menjadi kegiatan nyata melalui
+                        kolaborasi, tanggung jawab, dan keberanian
+                        mengambil peran.
+                    </p>
+                </article>
 
-    </section>
+                <article>
+                    <span class="garda-home-value-number">
+                        03
+                    </span>
+
+                    <h3>Berdampak</h3>
+
+                    <p>
+                        Menghadirkan program yang relevan,
+                        terdokumentasi, dan memberikan manfaat yang
+                        dapat dirasakan lingkungan.
+                    </p>
+                </article>
+
+            </div>
+
+        </section>
+    <?php endif; ?>
 
     <!-- PILAR PROGRAM -->
     <section class="garda-home-section garda-home-programs">
@@ -750,68 +815,113 @@ $impactHasImage = $activityHasImage(
     </section>
 
     <!-- AJAKAN KOLABORASI -->
-    <section class="garda-home-collaboration">
+    <?php if (public_cms_section_enabled(
+        $cmsPage,
+        'collaboration',
+        true
+    )) : ?>
+        <section class="garda-home-collaboration">
 
-        <div class="garda-home-collaboration-copy">
+            <div class="garda-home-collaboration-copy">
 
-            <span class="public-kicker">
-                Bergerak Bersama
-            </span>
+                <span class="public-kicker">
+                    <?= esc(public_cms_value(
+                        $cmsPage,
+                        'collaboration',
+                        'kicker',
+                        'Bergerak Bersama'
+                    )) ?>
+                </span>
 
-            <h2>
-                Mari hadirkan lebih banyak dampak untuk lingkungan
-            </h2>
+                <h2>
+                    <?= esc(public_cms_value(
+                        $cmsPage,
+                        'collaboration',
+                        'title',
+                        'Mari hadirkan lebih banyak dampak untuk lingkungan'
+                    )) ?>
+                </h2>
 
-            <p>
-                GARDA 01 terbuka untuk berkolaborasi dengan warga,
-                komunitas, UMKM, lembaga pendidikan, pemerintah,
-                serta mitra sosial dalam kegiatan yang bermanfaat
-                bagi masyarakat.
-            </p>
+                <p>
+                    <?= esc(public_cms_value(
+                        $cmsPage,
+                        'collaboration',
+                        'body',
+                        'GARDA 01 terbuka untuk berkolaborasi dengan warga, komunitas, UMKM, lembaga pendidikan, pemerintah, serta mitra sosial dalam kegiatan yang bermanfaat bagi masyarakat.'
+                    )) ?>
+                </p>
 
-            <div class="garda-home-collaboration-actions">
+                <div class="garda-home-collaboration-actions">
 
-                <a
-                    href="<?= base_url('/profil') ?>"
-                    class="btn btn-primary"
-                >
-                    Kenali GARDA 01
-                </a>
+                    <a
+                        href="<?= esc(public_cms_url(
+                            $cmsPage,
+                            'collaboration',
+                            'primary_url',
+                            '/kontak'
+                        ), 'attr') ?>"
+                        class="btn btn-primary"
+                    >
+                        <?= esc(public_cms_value(
+                            $cmsPage,
+                            'collaboration',
+                            'primary_label',
+                            'Hubungi GARDA 01'
+                        )) ?>
+                    </a>
 
-                <a
-                    href="<?= base_url('/program') ?>"
-                    class="btn garda-home-outline-button"
-                >
-                    Lihat Program
-                </a>
+                    <a
+                        href="<?= esc(public_cms_url(
+                            $cmsPage,
+                            'collaboration',
+                            'secondary_url',
+                            '/program'
+                        ), 'attr') ?>"
+                        class="btn garda-home-outline-button"
+                    >
+                        <?= esc(public_cms_value(
+                            $cmsPage,
+                            'collaboration',
+                            'secondary_label',
+                            'Lihat Program'
+                        )) ?>
+                    </a>
+
+                </div>
 
             </div>
 
-        </div>
+            <aside class="garda-home-collaboration-list">
 
-        <aside class="garda-home-collaboration-list">
+                <span>Terbuka untuk kolaborasi:</span>
 
-            <span>Terbuka untuk kolaborasi:</span>
+                <ul>
+                    <?php foreach (public_cms_lines(
+                        $cmsPage,
+                        'collaboration',
+                        'collaboration_items',
+                        "Sosial dan kemanusiaan
+Lingkungan dan kebersihan
+Olahraga dan kepemudaan
+Pendidikan dan keterampilan
+Usaha produktif pemuda
+Media dan kreativitas"
+                    ) as $item) : ?>
+                        <li><?= esc($item) ?></li>
+                    <?php endforeach; ?>
+                </ul>
 
-            <ul>
-                <li>Sosial dan kemanusiaan</li>
-                <li>Lingkungan dan kebersihan</li>
-                <li>Olahraga dan kepemudaan</li>
-                <li>Pendidikan dan keterampilan</li>
-                <li>Usaha produktif pemuda</li>
-                <li>Media dan kreativitas</li>
-            </ul>
+            </aside>
 
-        </aside>
+            <div
+                class="garda-home-collaboration-watermark"
+                aria-hidden="true"
+            >
+                GARDA 01
+            </div>
 
-        <div
-            class="garda-home-collaboration-watermark"
-            aria-hidden="true"
-        >
-            GARDA 01
-        </div>
-
-    </section>
+        </section>
+    <?php endif; ?>
 
 </div>
 

@@ -127,6 +127,14 @@ $routes->get('/imports/members', 'ImportController::membersForm', $guard('member
 $routes->get('/imports/members/template', 'ImportController::membersTemplate', $guard('members.import'));
 $routes->post('/imports/members', 'ImportController::membersImport', $guard('members.import'));
 
+/* Structured public website CMS */
+$routes->get('/website/pages', 'PublicPageController::index', $guard('website.pages.view'));
+$routes->get('/website/pages/edit/(:segment)', 'PublicPageController::edit/$1', $guard('website.pages.update'));
+$routes->post('/website/pages/update/(:segment)', 'PublicPageController::update/$1', $guard('website.pages.update'));
+$routes->post('/website/pages/publish/(:segment)', 'PublicPageController::publish/$1', $guard('website.pages.publish'));
+$routes->post('/website/pages/restore/(:segment)', 'PublicPageController::restore/$1', $guard('website.pages.update'));
+$routes->get('/website/pages/preview/(:segment)', 'PublicPageController::preview/$1', $guard('website.pages.preview'));
+
 /* Social publication and Canva workflow */
 $routes->get('/publications', 'SocialPublicationController::index', $guard('publications.view'));
 $routes->get('/publications/guide', 'SocialPublicationController::guide', $guard('publications.view'));

@@ -2,22 +2,38 @@
 
 <?= $this->section('content') ?>
 
+<?php
+$cmsPage = $cmsPage ?? null;
+?>
+
 <section class="contact-public-hero">
 
     <div class="contact-public-hero-copy">
         <span class="public-kicker">
-            Kontak dan Kolaborasi
+            <?= esc(public_cms_value(
+                $cmsPage,
+                'hero',
+                'kicker',
+                'Kontak dan Kolaborasi'
+            )) ?>
         </span>
 
         <h1>
-            Bergerak bersama<br>
-            GARDA 01
+            <?= nl2br(esc(public_cms_value(
+                $cmsPage,
+                'hero',
+                'title',
+                "Bergerak bersama\nGARDA 01"
+            ))) ?>
         </h1>
 
         <p>
-            Sampaikan gagasan, undangan, tawaran kolaborasi,
-            kebutuhan sosial, maupun informasi kegiatan kepada
-            Karang Taruna RW 01 Randugarut.
+            <?= esc(public_cms_value(
+                $cmsPage,
+                'hero',
+                'body',
+                'Sampaikan gagasan, undangan, tawaran kolaborasi, kebutuhan sosial, maupun informasi kegiatan kepada Karang Taruna RW 01 Randugarut.'
+            )) ?>
         </p>
 
         <div class="contact-public-values">
@@ -51,18 +67,40 @@
 
     <article class="contact-public-form-card">
 
-        <div class="contact-public-heading">
-            <span class="public-kicker">
-                Kirim Pesan
-            </span>
+        <?php if (public_cms_section_enabled(
+            $cmsPage,
+            'form_intro',
+            true
+        )) : ?>
+            <div class="contact-public-heading">
+                <span class="public-kicker">
+                    <?= esc(public_cms_value(
+                        $cmsPage,
+                        'form_intro',
+                        'kicker',
+                        'Kirim Pesan'
+                    )) ?>
+                </span>
 
-            <h2>Apa yang ingin Anda sampaikan?</h2>
+                <h2>
+                    <?= esc(public_cms_value(
+                        $cmsPage,
+                        'form_intro',
+                        'title',
+                        'Apa yang ingin Anda sampaikan?'
+                    )) ?>
+                </h2>
 
-            <p>
-                Isi informasi dengan lengkap agar tim GARDA 01
-                dapat menindaklanjuti pesan dengan tepat.
-            </p>
-        </div>
+                <p>
+                    <?= esc(public_cms_value(
+                        $cmsPage,
+                        'form_intro',
+                        'body',
+                        'Isi informasi dengan lengkap agar tim GARDA 01 dapat menindaklanjuti pesan dengan tepat.'
+                    )) ?>
+                </p>
+            </div>
+        <?php endif; ?>
 
         <?php if (
             session()->getFlashdata('success')

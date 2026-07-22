@@ -1,0 +1,75 @@
+/*
+ * Draft preview banner for authenticated CMS editors.
+ */
+
+.public-cms-preview-banner {
+    position: relative;
+    z-index: 1200;
+    min-height: 48px;
+    padding: 9px clamp(16px, 4vw, 56px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    color: #ffffff;
+    background:
+        linear-gradient(
+            90deg,
+            #04172d,
+            #0b355d
+        );
+    border-bottom: 2px solid #d9a316;
+    box-shadow: 0 7px 24px rgba(4, 23, 45, .2);
+}
+
+.public-cms-preview-banner > div {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.public-cms-preview-banner strong {
+    color: #f3c94f;
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.public-cms-preview-banner span {
+    color: rgba(255, 255, 255, .74);
+    font-size: 11px;
+}
+
+.public-cms-preview-banner a {
+    flex: 0 0 auto;
+    padding: 7px 10px;
+    border: 1px solid rgba(255, 255, 255, .25);
+    border-radius: 8px;
+    color: #ffffff;
+    font-size: 10px;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.public-cms-preview-banner a:hover {
+    border-color: #f3c94f;
+    background: rgba(243, 201, 79, .12);
+}
+
+@media (max-width: 640px) {
+    .public-cms-preview-banner {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .public-cms-preview-banner > div {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .public-cms-preview-banner a {
+        width: 100%;
+        text-align: center;
+    }
+}
