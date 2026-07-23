@@ -27,6 +27,10 @@ $logoUrl = site_asset_url(
     'assets/img/logo-rw01.png'
 );
 
+$navigationItems = website_navigation_items(
+    'header'
+);
+
 $isNavActive = static function (
     array $pages
 ) use ($activePage): string {
@@ -74,118 +78,79 @@ $isNavActive = static function (
             id="publicNavLinks"
             aria-label="Navigasi utama"
         >
-            <a
-                href="<?= base_url('/') ?>"
-                class="<?= $isNavActive(['home']) ?>"
-                <?= $activePage === 'home'
-                    ? 'aria-current="page"'
-                    : '' ?>
-            >
-                Beranda
-            </a>
+            <?php foreach (
+                $navigationItems as $item
+            ) : ?>
+                <?php
+                $isPortal =
+                    ($item['style'] ?? 'default')
+                    === 'portal';
 
-            <a
-                href="<?= base_url('/profil') ?>"
-                class="<?= $isNavActive(['profile']) ?>"
-                <?= $activePage === 'profile'
-                    ? 'aria-current="page"'
-                    : '' ?>
-            >
-                Tentang
-            </a>
+                $isCurrent =
+                    website_navigation_item_active(
+                        $item,
+                        $activePage
+                    );
 
-            <a
-                href="<?= base_url('/program') ?>"
-                class="<?= $isNavActive([
-                    'programs',
-                    'program_detail',
-                ]) ?>"
-                <?= in_array(
-                    $activePage,
-                    ['programs', 'program_detail'],
-                    true
-                )
-                    ? 'aria-current="page"'
-                    : '' ?>
-            >
-                Program
-            </a>
+                $targetBlank =
+                    ($item['target'] ?? 'self')
+                    === 'blank';
 
-            <a
-                href="<?= base_url('/kegiatan') ?>"
-                class="<?= $isNavActive([
-                    'activities',
-                    'activity_detail',
-                ]) ?>"
-                <?= in_array(
-                    $activePage,
-                    ['activities', 'activity_detail'],
-                    true
-                )
-                    ? 'aria-current="page"'
-                    : '' ?>
-            >
-                Kegiatan
-            </a>
+                $itemUrl = website_navigation_url(
+                    (string) $item['url'],
+                    !$isPortal
+                );
+                ?>
 
-            <a
-                href="<?= base_url('/pengurus') ?>"
-                class="<?= $isNavActive(['officials']) ?>"
-                <?= $activePage === 'officials'
-                    ? 'aria-current="page"'
-                    : '' ?>
-            >
-                Pengurus
-            </a>
-
-            <a
-                href="<?= base_url('/kontak') ?>"
-                class="<?= $isNavActive(['contact']) ?>"
-                <?= $activePage === 'contact'
-                    ? 'aria-current="page"'
-                    : '' ?>
-            >
-                Kontak
-            </a>
-
-            <a
-                href="<?= base_url('/login') ?>"
-                class="public-portal-button"
-            >
-                <svg
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                    class="public-portal-icon public-portal-button-icon"
+                <a
+                    href="<?= esc($itemUrl, 'attr') ?>"
+                    class="<?= $isPortal
+                        ? 'public-portal-button'
+                        : ($isCurrent ? 'active' : '') ?>"
+                    <?= $isCurrent
+                        ? 'aria-current="page"'
+                        : '' ?>
+                    <?= $targetBlank
+                        ? 'target="_blank" rel="noopener noreferrer"'
+                        : '' ?>
                 >
-                    <path
-                        d="M7 10V8a5 5 0 0 1 10 0v2"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                        stroke-linecap="round"
-                    ></path>
+                    <?php if ($isPortal) : ?>
+                        <svg
+                            viewBox="0 0 24 24"
+                            aria-hidden="true"
+                            class="public-portal-icon public-portal-button-icon"
+                        >
+                            <path
+                                d="M7 10V8a5 5 0 0 1 10 0v2"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                                stroke-linecap="round"
+                            ></path>
 
-                    <rect
-                        x="5"
-                        y="10"
-                        width="14"
-                        height="10"
-                        rx="2.5"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                    ></rect>
+                            <rect
+                                x="5"
+                                y="10"
+                                width="14"
+                                height="10"
+                                rx="2.5"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.8"
+                            ></rect>
 
-                    <circle
-                        cx="12"
-                        cy="15"
-                        r="1.2"
-                        fill="currentColor"
-                    ></circle>
-                </svg>
+                            <circle
+                                cx="12"
+                                cy="15"
+                                r="1.2"
+                                fill="currentColor"
+                            ></circle>
+                        </svg>
+                    <?php endif; ?>
 
-                <span>Portal Pengurus</span>
-            </a>
+                    <span><?= esc($item['label']) ?></span>
+                </a>
+            <?php endforeach; ?>
 
             <div class="public-nav-mobile-identity">
                 <strong><?= esc($organizationLegalName) ?></strong>

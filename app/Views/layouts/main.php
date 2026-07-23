@@ -98,6 +98,16 @@ $pageContext = $pageContexts[$currentSegment] ?? [
     'label'   => $title ?? 'Portal Manajemen',
 ];
 
+if (str_starts_with(
+    $currentPath,
+    'website/navigation'
+)) {
+    $pageContext = [
+        'section' => 'Website Publik',
+        'label' => 'Navigasi Website',
+    ];
+}
+
 $pageTitle = $title ?? $pageContext['label'];
 
 $portalOrganizationName = site_setting(
@@ -579,6 +589,7 @@ $todayLabel =
             <?php if (auth_can_any([
                 'programs.view',
                 'website.pages.view',
+                'website.navigation.view',
                 'settings.website.manage',
                 'publications.view',
                 'content_studio.view',
@@ -606,7 +617,7 @@ $todayLabel =
                     <?php if (auth_can('website.pages.view')) : ?>
                         <a
                             href="<?= base_url('/website/pages') ?>"
-                            class="garda-admin-nav-link <?= $isActive(['website']) ?>"
+                            class="garda-admin-nav-link <?= $isActive(['website/pages']) ?>"
                             title="Kelola Halaman Publik"
                         >
                             <svg aria-hidden="true">
@@ -614,6 +625,26 @@ $todayLabel =
                             </svg>
 
                             <span>Kelola Halaman</span>
+                        </a>
+                    <?php endif; ?>
+
+                    <?php if (auth_can(
+                        'website.navigation.view'
+                    )) : ?>
+                        <a
+                            href="<?= base_url(
+                                '/website/navigation'
+                            ) ?>"
+                            class="garda-admin-nav-link <?= $isActive([
+                                'website/navigation',
+                            ]) ?>"
+                            title="Navigasi Website"
+                        >
+                            <svg aria-hidden="true">
+                                <use href="#icon-globe"></use>
+                            </svg>
+
+                            <span>Navigasi Website</span>
                         </a>
                     <?php endif; ?>
 

@@ -40,7 +40,15 @@ $organizationName = site_setting(
 
 $activePage = $activePage ?? '';
 $currentUrl = current_url();
-$pageRobots = !empty($cmsPreview)
+
+$navigationPreview =
+    function_exists('website_navigation_preview_active')
+    && website_navigation_preview_active();
+
+$pageRobots = (
+    !empty($cmsPreview)
+    || $navigationPreview
+)
     ? 'noindex, nofollow, noarchive'
     : ($robots ?? 'index, follow');
 
@@ -141,7 +149,31 @@ $publicStylesheets = [
 </head>
 <body class="public-body <?= !empty($cmsPreview)
     ? 'public-body--cms-preview'
-    : '' ?>">
+    : '' ?> <?= $navigationPreview
+        ? 'public-body--navigation-preview'
+        : '' ?>">
+    <?php if (
+        $navigationPreview
+        && empty($cmsPreview)
+    ) : ?>
+        <div class="public-cms-preview-banner">
+            <div>
+                <strong>Preview Draft Navigasi</strong>
+
+                <span>
+                    Susunan menu ini belum tampil untuk
+                    pengunjung umum.
+                </span>
+            </div>
+
+            <a href="<?= base_url(
+                '/website/navigation'
+            ) ?>">
+                Kembali ke Navigation Manager
+            </a>
+        </div>
+    <?php endif; ?>
+
     <?php if (!empty($cmsPreview)) : ?>
         <div class="public-cms-preview-banner">
             <div>

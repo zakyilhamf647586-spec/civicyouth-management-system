@@ -135,6 +135,14 @@ $routes->post('/website/pages/publish/(:segment)', 'PublicPageController::publis
 $routes->post('/website/pages/restore/(:segment)', 'PublicPageController::restore/$1', $guard('website.pages.update'));
 $routes->get('/website/pages/preview/(:segment)', 'PublicPageController::preview/$1', $guard('website.pages.preview'));
 
+/* Website Navigation Manager */
+$routes->get('/website/navigation', 'WebsiteNavigationController::index', $guard('website.navigation.view'));
+$routes->get('/website/navigation/edit/(:segment)', 'WebsiteNavigationController::edit/$1', $guard('website.navigation.update'));
+$routes->post('/website/navigation/update/(:segment)', 'WebsiteNavigationController::update/$1', $guard('website.navigation.update'));
+$routes->post('/website/navigation/publish/(:segment)', 'WebsiteNavigationController::publish/$1', $guard('website.navigation.publish'));
+$routes->post('/website/navigation/restore/(:segment)', 'WebsiteNavigationController::restore/$1', $guard('website.navigation.update'));
+$routes->get('/website/navigation/preview/(:segment)', 'WebsiteNavigationController::preview/$1', $guard('website.navigation.preview'));
+
 /* Social publication and Canva workflow */
 $routes->get('/publications', 'SocialPublicationController::index', $guard('publications.view'));
 $routes->get('/publications/guide', 'SocialPublicationController::guide', $guard('publications.view'));

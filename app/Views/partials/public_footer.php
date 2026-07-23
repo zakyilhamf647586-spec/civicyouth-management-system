@@ -70,6 +70,9 @@ $footerMapAction = site_setting(
     'Buka di Google Maps'
 );
 
+$footerNavigationItems =
+    website_navigation_items('footer');
+
 $contactEmail = trim((string) site_setting('contact_email', ''));
 $contactWhatsapp = trim((string) site_setting('contact_whatsapp', ''));
 $contactAddress = trim((string) site_setting(
@@ -245,12 +248,29 @@ $mapLabel = $mapLabelParts !== []
             >
                 <h2><?= esc($footerNavigationHeading) ?></h2>
 
-                <a href="<?= base_url('/') ?>">Beranda</a>
-                <a href="<?= base_url('/profil') ?>">Tentang GARDA 01</a>
-                <a href="<?= base_url('/program') ?>">Pilar Program</a>
-                <a href="<?= base_url('/kegiatan') ?>">Kegiatan</a>
-                <a href="<?= base_url('/pengurus') ?>">Pengurus</a>
-                <a href="<?= base_url('/kontak') ?>">Kontak & Kolaborasi</a>
+                <?php foreach (
+                    $footerNavigationItems as $item
+                ) : ?>
+                    <?php
+                    $targetBlank =
+                        ($item['target'] ?? 'self')
+                        === 'blank';
+                    ?>
+
+                    <a
+                        href="<?= esc(
+                            website_navigation_url(
+                                (string) $item['url']
+                            ),
+                            'attr'
+                        ) ?>"
+                        <?= $targetBlank
+                            ? 'target="_blank" rel="noopener noreferrer"'
+                            : '' ?>
+                    >
+                        <?= esc($item['label']) ?>
+                    </a>
+                <?php endforeach; ?>
             </nav>
 
             <section class="g01-footer__location">

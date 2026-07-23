@@ -16,6 +16,7 @@ abstract class BaseController extends Controller
         'site',
         'authorization',
         'public_cms',
+        'website_navigation',
     ];
 
     public function initController(
