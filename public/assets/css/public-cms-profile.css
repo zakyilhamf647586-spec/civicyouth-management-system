@@ -1,0 +1,24 @@
+/* GARDA 01 — Public Profile CMS Complete V1 */
+
+.profile-introduction-grid.is-single {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.profile-introduction-grid.is-single > * {
+    width: 100%;
+}
+
+.profile-identity-card h2 {
+    margin-top: 7px;
+    margin-bottom: 18px;
+}
+
+.profile-story-card p:last-child {
+    margin-bottom: 0;
+}
+
+@media (max-width: 720px) {
+    .profile-identity-card h2 {
+        margin-bottom: 14px;
+    }
+}

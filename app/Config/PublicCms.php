@@ -579,7 +579,7 @@ class PublicCms extends BaseConfig
                 'hero' => [
                     'name' => 'Hero Profil',
                     'description' =>
-                        'Pembuka halaman Profil organisasi.',
+                        'Pembuka halaman Profil dan kartu identitas brand GARDA 01.',
                     'toggleable' => false,
                     'fields' => [
                         'kicker' => [
@@ -635,6 +635,35 @@ class PublicCms extends BaseConfig
                             'required' => true,
                             'default' => '/pengurus',
                         ],
+                        'brand_kicker' => [
+                            'label' => 'Label Kartu Brand',
+                            'type' => 'text',
+                            'max' => 80,
+                            'required' => true,
+                            'default' => 'Master Brand',
+                        ],
+                        'brand_title' => [
+                            'label' => 'Nama Brand',
+                            'type' => 'text',
+                            'max' => 100,
+                            'required' => true,
+                            'default' => 'GARDA 01',
+                        ],
+                        'brand_subtitle' => [
+                            'label' => 'Kepanjangan Brand',
+                            'type' => 'text',
+                            'max' => 160,
+                            'required' => true,
+                            'default' => 'Generasi Aktif Randugarut',
+                        ],
+                        'brand_slogan' => [
+                            'label' => 'Slogan Brand',
+                            'type' => 'text',
+                            'max' => 160,
+                            'required' => true,
+                            'default' =>
+                                'Guyub • Bergerak • Berdampak',
+                        ],
                     ],
                 ],
                 'story' => [
@@ -673,6 +702,254 @@ class PublicCms extends BaseConfig
                             'required' => true,
                             'default' =>
                                 'Melalui GARDA 01, organisasi membangun identitas yang lebih mudah dikenal sekaligus tetap mempertahankan nama resmi Karang Taruna RW 01 dalam administrasi, legalitas, dan tata kelola organisasi.',
+                        ],
+                        'paragraph_3' => [
+                            'label' => 'Paragraf Tambahan',
+                            'type' => 'textarea',
+                            'max' => 900,
+                            'required' => false,
+                            'help' =>
+                                'Opsional. Kosongkan apabila dua paragraf sudah cukup.',
+                            'default' => '',
+                        ],
+                    ],
+                ],
+                'identity' => [
+                    'name' => 'Identitas Resmi',
+                    'description' =>
+                        'Ringkasan identitas formal dan identitas publik organisasi.',
+                    'toggleable' => true,
+                    'fields' => [
+                        'kicker' => [
+                            'label' => 'Label Section',
+                            'type' => 'text',
+                            'max' => 100,
+                            'required' => true,
+                            'default' => 'Identitas Resmi',
+                        ],
+                        'title' => [
+                            'label' => 'Judul Kartu',
+                            'type' => 'text',
+                            'max' => 180,
+                            'required' => true,
+                            'default' =>
+                                'Identitas yang kami bawa bersama',
+                        ],
+                        'organization_label' => [
+                            'label' => 'Label Nama Organisasi',
+                            'type' => 'text',
+                            'max' => 80,
+                            'required' => true,
+                            'default' => 'Nama Organisasi',
+                        ],
+                        'organization_value' => [
+                            'label' => 'Nama Resmi Organisasi',
+                            'type' => 'text',
+                            'max' => 200,
+                            'required' => true,
+                            'default' =>
+                                'Karang Taruna RW 01 Kelurahan Randugarut',
+                        ],
+                        'public_label' => [
+                            'label' => 'Label Identitas Publik',
+                            'type' => 'text',
+                            'max' => 80,
+                            'required' => true,
+                            'default' => 'Identitas Publik',
+                        ],
+                        'public_value' => [
+                            'label' => 'Identitas Publik',
+                            'type' => 'text',
+                            'max' => 120,
+                            'required' => true,
+                            'default' => 'GARDA 01',
+                        ],
+                        'expansion_label' => [
+                            'label' => 'Label Kepanjangan',
+                            'type' => 'text',
+                            'max' => 80,
+                            'required' => true,
+                            'default' => 'Kepanjangan',
+                        ],
+                        'expansion_value' => [
+                            'label' => 'Kepanjangan Identitas',
+                            'type' => 'text',
+                            'max' => 160,
+                            'required' => true,
+                            'default' => 'Generasi Aktif Randugarut',
+                        ],
+                        'region_label' => [
+                            'label' => 'Label Wilayah',
+                            'type' => 'text',
+                            'max' => 80,
+                            'required' => true,
+                            'default' => 'Wilayah',
+                        ],
+                        'region_value' => [
+                            'label' => 'Wilayah Organisasi',
+                            'type' => 'text',
+                            'max' => 180,
+                            'required' => true,
+                            'default' =>
+                                'RW 01 Kelurahan Randugarut',
+                        ],
+                        'slogan_label' => [
+                            'label' => 'Label Slogan',
+                            'type' => 'text',
+                            'max' => 80,
+                            'required' => true,
+                            'default' => 'Slogan',
+                        ],
+                        'slogan_value' => [
+                            'label' => 'Slogan Organisasi',
+                            'type' => 'text',
+                            'max' => 180,
+                            'required' => true,
+                            'default' =>
+                                'Guyub • Bergerak • Berdampak',
+                        ],
+                    ],
+                ],
+                'direction' => [
+                    'name' => 'Visi dan Misi',
+                    'description' =>
+                        'Arah organisasi yang menjadi dasar gerakan GARDA 01.',
+                    'toggleable' => true,
+                    'fields' => [
+                        'kicker' => [
+                            'label' => 'Label Section',
+                            'type' => 'text',
+                            'max' => 100,
+                            'required' => true,
+                            'default' => 'Arah Organisasi',
+                        ],
+                        'title' => [
+                            'label' => 'Judul',
+                            'type' => 'text',
+                            'max' => 180,
+                            'required' => true,
+                            'default' => 'Visi dan misi GARDA 01',
+                        ],
+                        'vision_label' => [
+                            'label' => 'Label Visi',
+                            'type' => 'text',
+                            'max' => 60,
+                            'required' => true,
+                            'default' => 'Visi',
+                        ],
+                        'vision_text' => [
+                            'label' => 'Isi Visi',
+                            'type' => 'textarea',
+                            'max' => 900,
+                            'required' => true,
+                            'default' =>
+                                'Menjadi organisasi pemuda yang guyub, aktif, adaptif, dan menghadirkan dampak nyata bagi lingkungan.',
+                        ],
+                        'mission_label' => [
+                            'label' => 'Label Misi',
+                            'type' => 'text',
+                            'max' => 60,
+                            'required' => true,
+                            'default' => 'Misi',
+                        ],
+                        'mission_items' => [
+                            'label' => 'Daftar Misi',
+                            'type' => 'textarea',
+                            'max' => 2200,
+                            'required' => true,
+                            'help' =>
+                                'Tulis satu butir misi pada setiap baris.',
+                            'default' =>
+                                "Membangun kebersamaan dan partisipasi pemuda di seluruh wilayah RW 01.\nMenyelenggarakan kegiatan sosial, lingkungan, olahraga, pendidikan, usaha, dan kreativitas.\nMengembangkan tata kelola organisasi yang tertib, transparan, dan terdokumentasi.\nMembangun kolaborasi dengan warga, komunitas, lembaga, pemerintah, dan mitra.",
+                        ],
+                    ],
+                ],
+                'values' => [
+                    'name' => 'Nilai Organisasi',
+                    'description' =>
+                        'Tiga nilai budaya utama yang membentuk cara GARDA 01 bekerja.',
+                    'toggleable' => true,
+                    'fields' => [
+                        'kicker' => [
+                            'label' => 'Label Section',
+                            'type' => 'text',
+                            'max' => 100,
+                            'required' => true,
+                            'default' => 'Nilai Organisasi',
+                        ],
+                        'title' => [
+                            'label' => 'Judul',
+                            'type' => 'text',
+                            'max' => 180,
+                            'required' => true,
+                            'default' =>
+                                'Budaya yang kami bangun bersama',
+                        ],
+                        'value_one_number' => [
+                            'label' => 'Nomor Nilai Pertama',
+                            'type' => 'text',
+                            'max' => 12,
+                            'required' => true,
+                            'default' => '01',
+                        ],
+                        'value_one_title' => [
+                            'label' => 'Judul Nilai Pertama',
+                            'type' => 'text',
+                            'max' => 100,
+                            'required' => true,
+                            'default' => 'Guyub',
+                        ],
+                        'value_one_body' => [
+                            'label' => 'Deskripsi Nilai Pertama',
+                            'type' => 'textarea',
+                            'max' => 520,
+                            'required' => true,
+                            'default' =>
+                                'Menjaga kebersamaan, rasa memiliki, dan hubungan yang sehat antarpemuda serta warga.',
+                        ],
+                        'value_two_number' => [
+                            'label' => 'Nomor Nilai Kedua',
+                            'type' => 'text',
+                            'max' => 12,
+                            'required' => true,
+                            'default' => '02',
+                        ],
+                        'value_two_title' => [
+                            'label' => 'Judul Nilai Kedua',
+                            'type' => 'text',
+                            'max' => 100,
+                            'required' => true,
+                            'default' => 'Bergerak',
+                        ],
+                        'value_two_body' => [
+                            'label' => 'Deskripsi Nilai Kedua',
+                            'type' => 'textarea',
+                            'max' => 520,
+                            'required' => true,
+                            'default' =>
+                                'Mengubah gagasan menjadi program, kegiatan, kolaborasi, dan karya yang nyata.',
+                        ],
+                        'value_three_number' => [
+                            'label' => 'Nomor Nilai Ketiga',
+                            'type' => 'text',
+                            'max' => 12,
+                            'required' => true,
+                            'default' => '03',
+                        ],
+                        'value_three_title' => [
+                            'label' => 'Judul Nilai Ketiga',
+                            'type' => 'text',
+                            'max' => 100,
+                            'required' => true,
+                            'default' => 'Berdampak',
+                        ],
+                        'value_three_body' => [
+                            'label' => 'Deskripsi Nilai Ketiga',
+                            'type' => 'textarea',
+                            'max' => 520,
+                            'required' => true,
+                            'default' =>
+                                'Memastikan setiap langkah memberi manfaat dan perubahan positif bagi lingkungan.',
                         ],
                     ],
                 ],
