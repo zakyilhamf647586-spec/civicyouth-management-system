@@ -447,6 +447,26 @@ class SiteSettingController extends BaseController
                         'label' => 'Gambar Berbagi Sosial',
                         'type'  => 'file',
                     ],
+                    'seo_og_image_alt' => [
+                        'label' => 'Alt Gambar Berbagi Sosial',
+                        'type'  => 'text',
+                        'max_length' => 180,
+                    ],
+                    'seo_twitter_handle' => [
+                        'label' => 'Akun X / Twitter',
+                        'type'  => 'text',
+                        'max_length' => 80,
+                    ],
+                    'seo_google_verification' => [
+                        'label' => 'Kode Verifikasi Google',
+                        'type'  => 'text',
+                        'max_length' => 255,
+                    ],
+                    'seo_bing_verification' => [
+                        'label' => 'Kode Verifikasi Bing',
+                        'type'  => 'text',
+                        'max_length' => 255,
+                    ],
                 ],
             ],
         ];

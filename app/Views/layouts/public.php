@@ -1,5 +1,7 @@
 <?php
 
+use App\Libraries\PublicSeoService;
+
 $defaultSeoTitle = site_setting(
     'seo_title',
     'GARDA 01 | Generasi Aktif Randugarut'
@@ -28,18 +30,12 @@ $faviconUrl = site_asset_url(
     'assets/img/logo-rw01.png'
 );
 
-$ogImageUrl = site_asset_url(
-    'seo_og_image',
-    'assets/img/logo-rw01.png'
-);
-
 $organizationName = site_setting(
     'organization_name',
     'GARDA 01'
 );
 
 $activePage = $activePage ?? '';
-$currentUrl = current_url();
 
 $navigationPreview =
     function_exists('website_navigation_preview_active')
@@ -51,6 +47,63 @@ $pageRobots = (
 )
     ? 'noindex, nofollow, noarchive'
     : ($robots ?? 'index, follow');
+
+$seoService = new PublicSeoService();
+
+$seoMetadata = $seoService->metadata([
+    'active_page' => $activePage,
+    'activity' => $activity ?? null,
+    'program' => $program ?? null,
+    'canonical_url' => $canonicalUrl ?? '',
+    'image' => $seoImage ?? '',
+    'image_alt' => $seoImageAlt ?? '',
+]);
+
+$currentUrl = $seoMetadata['canonical'];
+
+$ogImageUrl = $seoMetadata['image'];
+$ogImageAlt = $seoMetadata['image_alt'];
+$openGraphType = $seoMetadata['open_graph_type'];
+
+$structuredData = $seoService->structuredData([
+    'title' => $pageTitle,
+    'description' => $pageDescription,
+    'active_page' => $activePage,
+    'canonical_url' => $currentUrl,
+    'image' => $ogImageUrl,
+    'page_type' => $seoMetadata[
+        'schema_page_type'
+    ],
+    'activity' => $activity ?? null,
+    'program' => $program ?? null,
+    'programs' => $programs ?? [],
+    'activities' => $activities ?? [],
+]);
+
+$structuredDataJson = json_encode(
+    $structuredData,
+    JSON_UNESCAPED_UNICODE
+    | JSON_UNESCAPED_SLASHES
+    | JSON_HEX_TAG
+    | JSON_HEX_AMP
+    | JSON_HEX_APOS
+    | JSON_HEX_QUOT
+);
+
+$twitterHandle = trim((string) site_setting(
+    'seo_twitter_handle',
+    ''
+));
+
+$googleVerification = trim((string) site_setting(
+    'seo_google_verification',
+    ''
+));
+
+$bingVerification = trim((string) site_setting(
+    'seo_bing_verification',
+    ''
+));
 
 $publicStylesheets = [
     'assets/css/app.css',
@@ -104,7 +157,7 @@ $publicStylesheets = [
         content="<?= esc($pageDescription, 'attr') ?>"
     >
 
-    <meta property="og:type" content="website">
+    <meta property="og:type" content="<?= esc($openGraphType, 'attr') ?>">
 
     <meta
         property="og:url"
@@ -120,6 +173,120 @@ $publicStylesheets = [
         property="og:site_name"
         content="<?= esc($organizationName, 'attr') ?>"
     >
+
+    <meta property="og:locale" content="id_ID">
+
+    <meta
+        property="og:image:alt"
+        content="<?= esc($ogImageAlt, 'attr') ?>"
+    >
+
+    <meta name="twitter:card" content="summary_large_image">
+
+    <meta
+        name="twitter:title"
+        content="<?= esc($pageTitle, 'attr') ?>"
+    >
+
+    <meta
+        name="twitter:description"
+        content="<?= esc($pageDescription, 'attr') ?>"
+    >
+
+    <meta
+        name="twitter:image"
+        content="<?= esc($ogImageUrl, 'attr') ?>"
+    >
+
+    <meta
+        name="twitter:image:alt"
+        content="<?= esc($ogImageAlt, 'attr') ?>"
+    >
+
+    <?php if ($twitterHandle !== '') : ?>
+        <meta
+            name="twitter:site"
+            content="<?= esc($twitterHandle, 'attr') ?>"
+        >
+    <?php endif; ?>
+
+    <?php if ($googleVerification !== '') : ?>
+        <meta
+            name="google-site-verification"
+            content="<?= esc(
+                $googleVerification,
+                'attr'
+            ) ?>"
+        >
+    <?php endif; ?>
+
+    <?php if ($bingVerification !== '') : ?>
+        <meta
+            name="msvalidate.01"
+            content="<?= esc(
+                $bingVerification,
+                'attr'
+            ) ?>"
+        >
+    <?php endif; ?>
+
+    <?php if (
+        $activePage === 'activity_detail'
+        && !empty($activity)
+    ) : ?>
+        <?php if (!empty(
+            $activity['published_at']
+            ?? $activity['created_at']
+            ?? null
+        )) : ?>
+            <meta
+                property="article:published_time"
+                content="<?= esc(
+                    date(
+                        DATE_ATOM,
+                        strtotime(
+                            $activity['published_at']
+                            ?? $activity['created_at']
+                        )
+                    ),
+                    'attr'
+                ) ?>"
+            >
+        <?php endif; ?>
+
+        <?php if (!empty(
+            $activity['updated_at'] ?? null
+        )) : ?>
+            <meta
+                property="article:modified_time"
+                content="<?= esc(
+                    date(
+                        DATE_ATOM,
+                        strtotime(
+                            $activity['updated_at']
+                        )
+                    ),
+                    'attr'
+                ) ?>"
+            >
+        <?php endif; ?>
+    <?php endif; ?>
+
+    <link
+        rel="alternate"
+        hreflang="id-ID"
+        href="<?= esc($currentUrl, 'attr') ?>"
+    >
+
+    <link
+        rel="sitemap"
+        type="application/xml"
+        href="<?= base_url('sitemap.xml') ?>"
+    >
+
+    <?php if ($structuredDataJson !== false) : ?>
+        <script type="application/ld+json"><?= $structuredDataJson ?></script>
+    <?php endif; ?>
 
     <link
         rel="icon"

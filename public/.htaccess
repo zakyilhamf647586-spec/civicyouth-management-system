@@ -26,6 +26,11 @@ Options -Indexes
 	RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
 	RewriteRule ^ http://%1%{REQUEST_URI} [R=301,L]
 
+	# Dynamic SEO endpoints must pass through CodeIgniter,
+	# even when a static robots.txt fallback exists.
+	RewriteRule ^robots\.txt$ index.php/robots.txt [L,NC,QSA]
+	RewriteRule ^sitemap\.xml$ index.php/sitemap.xml [L,NC,QSA]
+
 	# Checks to see if the user is attempting to access a valid file,
 	# such as an image or css document, if this isn't true it sends the
 	# request to the front controller, index.php

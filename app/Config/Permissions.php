@@ -44,6 +44,7 @@ class Permissions extends BaseConfig
             'settings.website.manage',
             'website.pages.*',
             'website.navigation.*',
+            'website.seo.*',
         ],
 
         'sekretaris' => [
@@ -82,6 +83,8 @@ class Permissions extends BaseConfig
             'website.navigation.view',
             'website.navigation.update',
             'website.navigation.preview',
+
+            'website.seo.view',
 
             'publications.view',
             'publications.create',
@@ -208,6 +211,8 @@ class Permissions extends BaseConfig
         'website.navigation.update' => 'mengubah draft navigasi website',
         'website.navigation.preview' => 'melihat preview navigasi website',
         'website.navigation.publish' => 'menerbitkan navigasi website',
+
+        'website.seo.view' => 'melihat pusat SEO dan sitemap',
 
         'publications.view'     => 'melihat publikasi sosial',
         'publications.create'   => 'membuat brief publikasi',

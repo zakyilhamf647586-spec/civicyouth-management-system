@@ -14,6 +14,8 @@ $guard = static function (string $permission): array {
 };
 
 /* Public website */
+$routes->get('/sitemap.xml', 'SeoController::sitemap');
+$routes->get('/robots.txt', 'SeoController::robots');
 $routes->get('/', 'PublicController::index');
 $routes->get('/profil', 'PublicController::profile');
 $routes->get('/program', 'PublicController::programs');
@@ -142,6 +144,9 @@ $routes->post('/website/navigation/update/(:segment)', 'WebsiteNavigationControl
 $routes->post('/website/navigation/publish/(:segment)', 'WebsiteNavigationController::publish/$1', $guard('website.navigation.publish'));
 $routes->post('/website/navigation/restore/(:segment)', 'WebsiteNavigationController::restore/$1', $guard('website.navigation.update'));
 $routes->get('/website/navigation/preview/(:segment)', 'WebsiteNavigationController::preview/$1', $guard('website.navigation.preview'));
+
+/* SEO and sitemap center */
+$routes->get('/website/seo', 'SeoController::index', $guard('website.seo.view'));
 
 /* Social publication and Canva workflow */
 $routes->get('/publications', 'SocialPublicationController::index', $guard('publications.view'));

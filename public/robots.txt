@@ -18,3 +18,4 @@ Disallow: /publications
 Disallow: /content-studio
 Disallow: /programs
 Disallow: /settings
+Disallow: /website

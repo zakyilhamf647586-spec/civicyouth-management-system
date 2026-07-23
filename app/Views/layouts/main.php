@@ -108,6 +108,16 @@ if (str_starts_with(
     ];
 }
 
+if (str_starts_with(
+    $currentPath,
+    'website/seo'
+)) {
+    $pageContext = [
+        'section' => 'Website Publik',
+        'label' => 'SEO & Sitemap',
+    ];
+}
+
 $pageTitle = $title ?? $pageContext['label'];
 
 $portalOrganizationName = site_setting(
@@ -590,6 +600,7 @@ $todayLabel =
                 'programs.view',
                 'website.pages.view',
                 'website.navigation.view',
+                'website.seo.view',
                 'settings.website.manage',
                 'publications.view',
                 'content_studio.view',
@@ -645,6 +656,26 @@ $todayLabel =
                             </svg>
 
                             <span>Navigasi Website</span>
+                        </a>
+                    <?php endif; ?>
+
+                    <?php if (auth_can(
+                        'website.seo.view'
+                    )) : ?>
+                        <a
+                            href="<?= base_url(
+                                '/website/seo'
+                            ) ?>"
+                            class="garda-admin-nav-link <?= $isActive([
+                                'website/seo',
+                            ]) ?>"
+                            title="SEO & Sitemap"
+                        >
+                            <svg aria-hidden="true">
+                                <use href="#icon-globe"></use>
+                            </svg>
+
+                            <span>SEO & Sitemap</span>
                         </a>
                     <?php endif; ?>
 
