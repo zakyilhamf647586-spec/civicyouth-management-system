@@ -166,7 +166,7 @@ class PublicController extends BaseController
         }
 
         /*
-        * Tiga kegiatan terbaru.
+        * Kandidat kegiatan terbaru untuk section Beranda.
         * Kegiatan hero dikecualikan agar konten tidak berulang.
         */
         $latestBuilder = (new ActivityModel())
@@ -193,7 +193,7 @@ class PublicController extends BaseController
         $latestActivities = $latestBuilder
             ->orderBy('activities.activity_date', 'DESC')
             ->orderBy('activities.id', 'DESC')
-            ->limit(3)
+            ->limit(6)
             ->findAll();
 
         $cmsState = $this->publicCmsPage('home');

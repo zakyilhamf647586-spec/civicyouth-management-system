@@ -92,3 +92,34 @@ if (!function_exists('public_cms_lines')) {
         ));
     }
 }
+
+if (!function_exists('public_cms_int')) {
+    function public_cms_int(
+        ?array $page,
+        string $sectionKey,
+        string $fieldKey,
+        int $fallback,
+        int $minimum = 0,
+        int $maximum = PHP_INT_MAX
+    ): int {
+        $value = public_cms_value(
+            $page,
+            $sectionKey,
+            $fieldKey,
+            (string) $fallback
+        );
+
+        if (!preg_match('/^-?\d+$/', trim($value))) {
+            return max(
+                $minimum,
+                min($maximum, $fallback)
+            );
+        }
+
+        return max(
+            $minimum,
+            min($maximum, (int) $value)
+        );
+    }
+}
+

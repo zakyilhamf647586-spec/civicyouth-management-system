@@ -164,6 +164,22 @@ $hasChanges = !empty($page['has_unpublished_changes']);
     </div>
 </section>
 
+<nav class="public-cms-section-index" aria-label="Navigasi section editor">
+    <a href="#cms-section-seo">SEO</a>
+
+    <?php foreach (
+        $definition['sections'] as
+        $navSectionKey => $navSectionDefinition
+    ) : ?>
+        <a href="#cms-section-<?= esc(
+            $navSectionKey,
+            'attr'
+        ) ?>">
+            <?= esc($navSectionDefinition['name']) ?>
+        </a>
+    <?php endforeach; ?>
+</nav>
+
 <form
     action="<?= base_url(
         '/website/pages/update/' . $pageKey
@@ -176,7 +192,10 @@ $hasChanges = !empty($page['has_unpublished_changes']);
     <div class="public-cms-editor-layout">
         <div class="public-cms-editor-main">
 
-            <section class="public-cms-section-card">
+            <section
+                id="cms-section-seo"
+                class="public-cms-section-card"
+            >
                 <div class="public-cms-section-card__heading">
                     <span>SEO & Metadata</span>
 
@@ -258,7 +277,13 @@ $hasChanges = !empty($page['has_unpublished_changes']);
                 );
                 ?>
 
-                <section class="public-cms-section-card">
+                <section
+                    id="cms-section-<?= esc(
+                        $sectionKey,
+                        'attr'
+                    ) ?>"
+                    class="public-cms-section-card"
+                >
                     <div class="public-cms-section-card__heading">
                         <span>
                             Section
@@ -312,6 +337,19 @@ $hasChanges = !empty($page['has_unpublished_changes']);
                             </span>
                         <?php endif; ?>
                     </div>
+
+                    <?php if (!empty(
+                        $sectionDefinition['data_note']
+                    )) : ?>
+                        <div class="public-cms-dynamic-note">
+                            <strong>Data dinamis</strong>
+                            <span>
+                                <?= esc(
+                                    $sectionDefinition['data_note']
+                                ) ?>
+                            </span>
+                        </div>
+                    <?php endif; ?>
 
                     <div class="public-cms-fields-grid">
                         <?php foreach (

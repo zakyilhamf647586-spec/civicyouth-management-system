@@ -27,7 +27,7 @@ class PublicCms extends BaseConfig
                 'hero' => [
                     'name' => 'Hero Beranda',
                     'description' =>
-                        'Identitas utama dan ajakan pertama pada halaman Beranda.',
+                        'Identitas utama, ajakan pertama, dan teks kartu kegiatan unggulan.',
                     'toggleable' => false,
                     'fields' => [
                         'eyebrow' => [
@@ -100,12 +100,126 @@ class PublicCms extends BaseConfig
                             'required' => true,
                             'default' => '/profil',
                         ],
+                        'watermark' => [
+                            'label' => 'Watermark Hero',
+                            'type' => 'text',
+                            'max' => 18,
+                            'required' => true,
+                            'default' => 'G01',
+                        ],
+                        'featured_label' => [
+                            'label' => 'Label Kegiatan Unggulan',
+                            'type' => 'text',
+                            'max' => 60,
+                            'required' => true,
+                            'default' => 'Gerak Terbaru',
+                        ],
+                        'featured_link_label' => [
+                            'label' => 'Teks Tautan Kegiatan Unggulan',
+                            'type' => 'text',
+                            'max' => 70,
+                            'required' => true,
+                            'default' => 'Lihat dokumentasi',
+                        ],
+                        'featured_empty_title' => [
+                            'label' => 'Judul Saat Kegiatan Belum Ada',
+                            'type' => 'text',
+                            'max' => 90,
+                            'required' => true,
+                            'default' => 'GARDA 01',
+                        ],
+                        'featured_empty_body' => [
+                            'label' => 'Pesan Saat Kegiatan Belum Ada',
+                            'type' => 'textarea',
+                            'max' => 240,
+                            'required' => true,
+                            'default' =>
+                                'Dokumentasi kegiatan akan segera ditampilkan.',
+                        ],
+                    ],
+                ],
+                'statistics' => [
+                    'name' => 'Statistik Organisasi',
+                    'description' =>
+                        'Label dan penjelasan empat statistik pada Beranda.',
+                    'data_note' =>
+                        'Nilai angka dihitung otomatis dari data anggota, pengurus, kegiatan, dan program. Editor hanya mengubah label serta deskripsinya.',
+                    'toggleable' => true,
+                    'fields' => [
+                        'rt_label' => [
+                            'label' => 'Label Statistik RT',
+                            'type' => 'text',
+                            'max' => 80,
+                            'required' => true,
+                            'default' => 'RT Terhubung',
+                        ],
+                        'rt_description' => [
+                            'label' => 'Deskripsi Statistik RT',
+                            'type' => 'textarea',
+                            'max' => 220,
+                            'required' => true,
+                            'default' =>
+                                'Wilayah pemuda yang terdata dan terlibat.',
+                        ],
+                        'officials_label' => [
+                            'label' => 'Label Statistik Pengurus',
+                            'type' => 'text',
+                            'max' => 80,
+                            'required' => true,
+                            'default' => 'Pengurus Aktif',
+                        ],
+                        'officials_suffix' => [
+                            'label' => 'Akhiran Angka Pengurus',
+                            'type' => 'text',
+                            'max' => 4,
+                            'required' => false,
+                            'help' => 'Contoh: +. Kosongkan bila tidak diperlukan.',
+                            'default' => '+',
+                        ],
+                        'officials_description' => [
+                            'label' => 'Deskripsi Statistik Pengurus',
+                            'type' => 'textarea',
+                            'max' => 220,
+                            'required' => true,
+                            'default' =>
+                                'Penggerak organisasi dan program GARDA 01.',
+                        ],
+                        'activities_label' => [
+                            'label' => 'Label Statistik Kegiatan',
+                            'type' => 'text',
+                            'max' => 80,
+                            'required' => true,
+                            'default' => 'Kegiatan Terlaksana',
+                        ],
+                        'activities_description' => [
+                            'label' => 'Deskripsi Statistik Kegiatan',
+                            'type' => 'textarea',
+                            'max' => 220,
+                            'required' => true,
+                            'default' =>
+                                'Gerakan yang telah selesai dan terdokumentasi.',
+                        ],
+                        'programs_label' => [
+                            'label' => 'Label Statistik Program',
+                            'type' => 'text',
+                            'max' => 80,
+                            'required' => true,
+                            'default' => 'Pilar Gerakan',
+                        ],
+                        'programs_description' => [
+                            'label' => 'Deskripsi Statistik Program',
+                            'type' => 'textarea',
+                            'max' => 220,
+                            'required' => true,
+                            'default' =>
+                                'Ruang kontribusi pemuda dalam berbagai bidang.',
+                        ],
                     ],
                 ],
                 'about' => [
                     'name' => 'Nilai Utama',
                     'description' =>
-                        'Pengantar nilai organisasi pada Beranda.',
+                        'Pengantar dan tiga nilai organisasi pada Beranda.',
                     'toggleable' => true,
                     'fields' => [
                         'kicker' => [
@@ -130,6 +244,242 @@ class PublicCms extends BaseConfig
                             'required' => true,
                             'default' =>
                                 'GARDA 01 hadir bukan sekadar sebagai struktur organisasi, tetapi sebagai ruang bagi pemuda untuk saling menguatkan, menciptakan karya, dan memberi manfaat bagi lingkungan.',
+                        ],
+                        'value_one_title' => [
+                            'label' => 'Nilai 01 — Judul',
+                            'type' => 'text',
+                            'max' => 80,
+                            'required' => true,
+                            'default' => 'Guyub',
+                        ],
+                        'value_one_body' => [
+                            'label' => 'Nilai 01 — Deskripsi',
+                            'type' => 'textarea',
+                            'max' => 420,
+                            'required' => true,
+                            'default' =>
+                                'Menyatukan pemuda, warga, dan berbagai unsur masyarakat melalui kebersamaan yang sehat, terbuka, dan saling menguatkan.',
+                        ],
+                        'value_two_title' => [
+                            'label' => 'Nilai 02 — Judul',
+                            'type' => 'text',
+                            'max' => 80,
+                            'required' => true,
+                            'default' => 'Bergerak',
+                        ],
+                        'value_two_body' => [
+                            'label' => 'Nilai 02 — Deskripsi',
+                            'type' => 'textarea',
+                            'max' => 420,
+                            'required' => true,
+                            'default' =>
+                                'Mengubah gagasan menjadi kegiatan nyata melalui kolaborasi, tanggung jawab, dan keberanian mengambil peran.',
+                        ],
+                        'value_three_title' => [
+                            'label' => 'Nilai 03 — Judul',
+                            'type' => 'text',
+                            'max' => 80,
+                            'required' => true,
+                            'default' => 'Berdampak',
+                        ],
+                        'value_three_body' => [
+                            'label' => 'Nilai 03 — Deskripsi',
+                            'type' => 'textarea',
+                            'max' => 420,
+                            'required' => true,
+                            'default' =>
+                                'Menghadirkan program yang relevan, terdokumentasi, dan memberikan manfaat yang dapat dirasakan lingkungan.',
+                        ],
+                    ],
+                ],
+                'programs' => [
+                    'name' => 'Pilar Program',
+                    'description' =>
+                        'Pengantar, tautan, dan jumlah program yang tampil pada Beranda.',
+                    'data_note' =>
+                        'Kartu program diambil otomatis dari Program GARDA 01 yang berstatus terbit.',
+                    'toggleable' => true,
+                    'fields' => [
+                        'kicker' => [
+                            'label' => 'Label Section',
+                            'type' => 'text',
+                            'max' => 100,
+                            'required' => true,
+                            'default' => 'Pilar Gerakan',
+                        ],
+                        'title' => [
+                            'label' => 'Judul Section',
+                            'type' => 'text',
+                            'max' => 180,
+                            'required' => true,
+                            'default' => 'Dari kepedulian menjadi aksi',
+                        ],
+                        'body' => [
+                            'label' => 'Deskripsi',
+                            'type' => 'textarea',
+                            'max' => 620,
+                            'required' => true,
+                            'default' =>
+                                'Setiap pilar GARDA 01 menjadi ruang bagi pemuda untuk berkontribusi sesuai minat, kemampuan, dan kebutuhan lingkungan.',
+                        ],
+                        'section_link_label' => [
+                            'label' => 'Teks Tautan Semua Program',
+                            'type' => 'text',
+                            'max' => 70,
+                            'required' => true,
+                            'default' => 'Seluruh Program',
+                        ],
+                        'section_link_url' => [
+                            'label' => 'URL Semua Program',
+                            'type' => 'url',
+                            'max' => 255,
+                            'required' => true,
+                            'default' => '/program',
+                        ],
+                        'card_link_label' => [
+                            'label' => 'Teks Tautan pada Kartu',
+                            'type' => 'text',
+                            'max' => 70,
+                            'required' => true,
+                            'default' => 'Pelajari program',
+                        ],
+                        'item_limit' => [
+                            'label' => 'Jumlah Program Ditampilkan',
+                            'type' => 'text',
+                            'max' => 2,
+                            'required' => true,
+                            'help' => 'Masukkan angka 1–12.',
+                            'default' => '8',
+                        ],
+                        'empty_message' => [
+                            'label' => 'Pesan Saat Program Kosong',
+                            'type' => 'textarea',
+                            'max' => 220,
+                            'required' => true,
+                            'default' =>
+                                'Program GARDA 01 belum tersedia.',
+                        ],
+                    ],
+                ],
+                'impact' => [
+                    'name' => 'Cerita Dampak',
+                    'description' =>
+                        'Teks pendukung pada kegiatan berdampak yang dipilih otomatis.',
+                    'data_note' =>
+                        'Kegiatan dipilih otomatis dari kegiatan selesai yang sudah terbit dan memiliki hasil kegiatan.',
+                    'toggleable' => true,
+                    'fields' => [
+                        'eyebrow' => [
+                            'label' => 'Label Section',
+                            'type' => 'text',
+                            'max' => 100,
+                            'required' => true,
+                            'default' => 'Cerita Dampak',
+                        ],
+                        'media_title' => [
+                            'label' => 'Judul Media Fallback',
+                            'type' => 'text',
+                            'max' => 100,
+                            'required' => true,
+                            'default' => 'Cerita Dampak',
+                        ],
+                        'media_subtitle' => [
+                            'label' => 'Subjudul Media Fallback',
+                            'type' => 'text',
+                            'max' => 140,
+                            'required' => true,
+                            'default' => 'Guyub • Bergerak • Berdampak',
+                        ],
+                        'fallback_summary' => [
+                            'label' => 'Ringkasan Fallback',
+                            'type' => 'textarea',
+                            'max' => 620,
+                            'required' => true,
+                            'default' =>
+                                'Gerakan bersama pemuda dan warga untuk menghadirkan manfaat nyata, memperkuat kepedulian, serta menjaga kebersamaan di lingkungan RW 01 Randugarut.',
+                        ],
+                        'button_label' => [
+                            'label' => 'Teks Tombol',
+                            'type' => 'text',
+                            'max' => 70,
+                            'required' => true,
+                            'default' => 'Baca Cerita Kegiatan',
+                        ],
+                        'watermark' => [
+                            'label' => 'Watermark',
+                            'type' => 'text',
+                            'max' => 18,
+                            'required' => true,
+                            'default' => '01',
+                        ],
+                    ],
+                ],
+                'latest' => [
+                    'name' => 'Kegiatan Terbaru',
+                    'description' =>
+                        'Pengantar, tautan, dan jumlah kegiatan terbaru pada Beranda.',
+                    'data_note' =>
+                        'Daftar kegiatan diambil otomatis dari kegiatan publik terbaru dan tidak mengulang kegiatan hero.',
+                    'toggleable' => true,
+                    'fields' => [
+                        'kicker' => [
+                            'label' => 'Label Section',
+                            'type' => 'text',
+                            'max' => 100,
+                            'required' => true,
+                            'default' => 'Jejak Gerak GARDA 01',
+                        ],
+                        'title' => [
+                            'label' => 'Judul Section',
+                            'type' => 'text',
+                            'max' => 180,
+                            'required' => true,
+                            'default' => 'Kegiatan terbaru',
+                        ],
+                        'body' => [
+                            'label' => 'Deskripsi',
+                            'type' => 'textarea',
+                            'max' => 620,
+                            'required' => true,
+                            'default' =>
+                                'Dokumentasi kegiatan, kolaborasi, dan kontribusi pemuda GARDA 01 bagi lingkungan.',
+                        ],
+                        'section_link_label' => [
+                            'label' => 'Teks Tautan Semua Kegiatan',
+                            'type' => 'text',
+                            'max' => 70,
+                            'required' => true,
+                            'default' => 'Seluruh Kegiatan',
+                        ],
+                        'section_link_url' => [
+                            'label' => 'URL Semua Kegiatan',
+                            'type' => 'url',
+                            'max' => 255,
+                            'required' => true,
+                            'default' => '/kegiatan',
+                        ],
+                        'card_link_label' => [
+                            'label' => 'Teks Tautan pada Kartu',
+                            'type' => 'text',
+                            'max' => 70,
+                            'required' => true,
+                            'default' => 'Lihat Dokumentasi',
+                        ],
+                        'item_limit' => [
+                            'label' => 'Jumlah Kegiatan Ditampilkan',
+                            'type' => 'text',
+                            'max' => 1,
+                            'required' => true,
+                            'help' => 'Masukkan angka 1–6.',
+                            'default' => '3',
+                        ],
+                        'empty_message' => [
+                            'label' => 'Pesan Saat Kegiatan Kosong',
+                            'type' => 'textarea',
+                            'max' => 240,
+                            'required' => true,
+                            'default' =>
+                                'Dokumentasi kegiatan terbaru belum tersedia.',
                         ],
                     ],
                 ],
@@ -190,6 +540,13 @@ class PublicCms extends BaseConfig
                             'required' => true,
                             'default' => '/program',
                         ],
+                        'list_label' => [
+                            'label' => 'Judul Daftar Kolaborasi',
+                            'type' => 'text',
+                            'max' => 120,
+                            'required' => true,
+                            'default' => 'Terbuka untuk kolaborasi:',
+                        ],
                         'collaboration_items' => [
                             'label' => 'Daftar Bidang Kolaborasi',
                             'type' => 'textarea',
@@ -198,6 +555,13 @@ class PublicCms extends BaseConfig
                             'help' => 'Satu bidang per baris.',
                             'default' =>
                                 "Sosial dan kemanusiaan\nLingkungan dan kebersihan\nOlahraga dan kepemudaan\nPendidikan dan keterampilan\nUsaha produktif pemuda\nMedia dan kreativitas",
+                        ],
+                        'watermark' => [
+                            'label' => 'Watermark',
+                            'type' => 'text',
+                            'max' => 24,
+                            'required' => true,
+                            'default' => 'GARDA 01',
                         ],
                     ],
                 ],
