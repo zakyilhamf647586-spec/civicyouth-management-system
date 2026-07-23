@@ -321,6 +321,16 @@ class SiteSettingController extends BaseController
                         'type'  => 'url',
                         'max_length' => 500,
                     ],
+                    'contact_office_hours' => [
+                        'label' => 'Jam Respons / Operasional',
+                        'type'  => 'text',
+                        'max_length' => 180,
+                    ],
+                    'contact_response_note' => [
+                        'label' => 'Catatan Waktu Respons',
+                        'type'  => 'textarea',
+                        'max_length' => 500,
+                    ],
                 ],
             ],
 
@@ -373,6 +383,36 @@ class SiteSettingController extends BaseController
                         'label' => 'Catatan Resmi',
                         'type'  => 'text',
                         'max_length' => 255,
+                    ],
+                    'footer_navigation_heading' => [
+                        'label' => 'Judul Kolom Navigasi',
+                        'type'  => 'text',
+                        'max_length' => 80,
+                    ],
+                    'footer_location_heading' => [
+                        'label' => 'Judul Kolom Lokasi',
+                        'type'  => 'text',
+                        'max_length' => 80,
+                    ],
+                    'footer_contact_heading' => [
+                        'label' => 'Judul Kolom Kontak',
+                        'type'  => 'text',
+                        'max_length' => 80,
+                    ],
+                    'footer_contact_intro' => [
+                        'label' => 'Pengantar Kolom Kontak',
+                        'type'  => 'textarea',
+                        'max_length' => 500,
+                    ],
+                    'footer_map_label' => [
+                        'label' => 'Label Kartu Maps',
+                        'type'  => 'text',
+                        'max_length' => 100,
+                    ],
+                    'footer_map_action' => [
+                        'label' => 'Teks Aksi Maps',
+                        'type'  => 'text',
+                        'max_length' => 100,
                     ],
                     'footer_copyright' => [
                         'label' => 'Teks Hak Cipta',

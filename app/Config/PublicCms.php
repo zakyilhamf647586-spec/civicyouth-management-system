@@ -1012,7 +1012,7 @@ class PublicCms extends BaseConfig
                 'hero' => [
                     'name' => 'Hero Kontak',
                     'description' =>
-                        'Pembuka halaman Kontak dan Kolaborasi.',
+                        'Pembuka halaman Kontak dan kartu kanal resmi organisasi.',
                     'toggleable' => false,
                     'fields' => [
                         'kicker' => [
@@ -1040,12 +1040,106 @@ class PublicCms extends BaseConfig
                             'default' =>
                                 'Sampaikan gagasan, undangan, tawaran kolaborasi, kebutuhan sosial, maupun informasi kegiatan kepada Karang Taruna RW 01 Randugarut.',
                         ],
+                        'values_line' => [
+                            'label' => 'Baris Nilai',
+                            'type' => 'text',
+                            'max' => 180,
+                            'required' => true,
+                            'help' =>
+                                'Gunakan pemisah titik tengah, misalnya Guyub • Bergerak • Berdampak.',
+                            'default' =>
+                                'Guyub • Bergerak • Berdampak',
+                        ],
+                        'identity_kicker' => [
+                            'label' => 'Label Kartu Identitas',
+                            'type' => 'text',
+                            'max' => 100,
+                            'required' => true,
+                            'default' => 'Kanal Resmi Organisasi',
+                        ],
+                        'identity_title' => [
+                            'label' => 'Nama pada Kartu Identitas',
+                            'type' => 'text',
+                            'max' => 100,
+                            'required' => true,
+                            'default' => 'GARDA 01',
+                        ],
+                        'identity_subtitle' => [
+                            'label' => 'Deskripsi Kartu Identitas',
+                            'type' => 'textarea',
+                            'max' => 260,
+                            'required' => true,
+                            'default' =>
+                                "Generasi Aktif Randugarut\nKarang Taruna RW 01",
+                        ],
+                    ],
+                ],
+                'channels' => [
+                    'name' => 'Kanal Kontak Resmi',
+                    'description' =>
+                        'Kartu email, WhatsApp, dan lokasi yang memakai data Pengaturan Website.',
+                    'data_note' =>
+                        'Alamat email, nomor WhatsApp, dan URL Maps diambil otomatis dari Pengaturan Website.',
+                    'toggleable' => true,
+                    'fields' => [
+                        'kicker' => [
+                            'label' => 'Label Section',
+                            'type' => 'text',
+                            'max' => 100,
+                            'required' => true,
+                            'default' => 'Kanal Resmi',
+                        ],
+                        'title' => [
+                            'label' => 'Judul',
+                            'type' => 'text',
+                            'max' => 180,
+                            'required' => true,
+                            'default' =>
+                                'Pilih cara paling nyaman untuk terhubung',
+                        ],
+                        'body' => [
+                            'label' => 'Deskripsi',
+                            'type' => 'textarea',
+                            'max' => 620,
+                            'required' => true,
+                            'default' =>
+                                'Gunakan kanal resmi berikut untuk menyampaikan kebutuhan, undangan, atau peluang kolaborasi.',
+                        ],
+                        'email_label' => [
+                            'label' => 'Label Email',
+                            'type' => 'text',
+                            'max' => 80,
+                            'required' => true,
+                            'default' => 'Email Resmi',
+                        ],
+                        'whatsapp_label' => [
+                            'label' => 'Label WhatsApp',
+                            'type' => 'text',
+                            'max' => 80,
+                            'required' => true,
+                            'default' => 'WhatsApp',
+                        ],
+                        'location_label' => [
+                            'label' => 'Label Lokasi',
+                            'type' => 'text',
+                            'max' => 80,
+                            'required' => true,
+                            'default' => 'Lokasi Organisasi',
+                        ],
+                        'empty_value' => [
+                            'label' => 'Teks Saat Kanal Belum Diisi',
+                            'type' => 'text',
+                            'max' => 120,
+                            'required' => true,
+                            'default' =>
+                                'Belum dicantumkan oleh pengurus.',
+                        ],
                     ],
                 ],
                 'form_intro' => [
                     'name' => 'Pengantar Form Pesan',
                     'description' =>
-                        'Judul dan penjelasan di atas form kontak.',
+                        'Judul, penjelasan, dan microcopy form kontak.',
                     'toggleable' => true,
                     'fields' => [
                         'kicker' => [
@@ -1070,6 +1164,117 @@ class PublicCms extends BaseConfig
                             'required' => true,
                             'default' =>
                                 'Isi informasi dengan lengkap agar tim GARDA 01 dapat menindaklanjuti pesan dengan tepat.',
+                        ],
+                        'submit_label' => [
+                            'label' => 'Teks Tombol Kirim',
+                            'type' => 'text',
+                            'max' => 60,
+                            'required' => true,
+                            'default' => 'Kirim Pesan',
+                        ],
+                        'submit_note' => [
+                            'label' => 'Catatan di Samping Tombol',
+                            'type' => 'text',
+                            'max' => 180,
+                            'required' => true,
+                            'default' =>
+                                'Pesan akan masuk ke Portal Pengurus GARDA 01.',
+                        ],
+                    ],
+                ],
+                'collaboration' => [
+                    'name' => 'Ruang Kolaborasi',
+                    'description' =>
+                        'Daftar bidang kolaborasi yang terbuka bagi warga dan mitra.',
+                    'toggleable' => true,
+                    'fields' => [
+                        'kicker' => [
+                            'label' => 'Label Section',
+                            'type' => 'text',
+                            'max' => 100,
+                            'required' => true,
+                            'default' => 'Ruang Kolaborasi',
+                        ],
+                        'title' => [
+                            'label' => 'Judul',
+                            'type' => 'text',
+                            'max' => 180,
+                            'required' => true,
+                            'default' =>
+                                'Kami terbuka untuk bergerak bersama',
+                        ],
+                        'items' => [
+                            'label' => 'Daftar Bidang Kolaborasi',
+                            'type' => 'textarea',
+                            'max' => 2200,
+                            'required' => true,
+                            'help' =>
+                                'Tulis satu bidang kolaborasi pada setiap baris.',
+                            'default' =>
+                                "Program sosial dan kemanusiaan\nKegiatan lingkungan dan kebersihan\nOlahraga serta kepemudaan\nPendidikan dan keterampilan\nMedia, desain, dan dokumentasi\nUsaha produktif dan UMKM",
+                        ],
+                    ],
+                ],
+                'location' => [
+                    'name' => 'Lokasi Organisasi',
+                    'description' =>
+                        'Kartu alamat dan tautan Google Maps pada halaman Kontak.',
+                    'data_note' =>
+                        'Alamat dan URL Maps diambil otomatis dari Pengaturan Website.',
+                    'toggleable' => true,
+                    'fields' => [
+                        'kicker' => [
+                            'label' => 'Label Section',
+                            'type' => 'text',
+                            'max' => 100,
+                            'required' => true,
+                            'default' => 'Wilayah Organisasi',
+                        ],
+                        'title' => [
+                            'label' => 'Judul',
+                            'type' => 'text',
+                            'max' => 180,
+                            'required' => true,
+                            'default' =>
+                                'RW 01 Kelurahan Randugarut',
+                        ],
+                        'body' => [
+                            'label' => 'Deskripsi',
+                            'type' => 'textarea',
+                            'max' => 520,
+                            'required' => true,
+                            'default' =>
+                                'Basis gerakan pemuda GARDA 01 di wilayah Kelurahan Randugarut, Kecamatan Tugu, Kota Semarang.',
+                        ],
+                        'map_label' => [
+                            'label' => 'Teks Tombol Maps',
+                            'type' => 'text',
+                            'max' => 80,
+                            'required' => true,
+                            'default' => 'Buka Google Maps',
+                        ],
+                    ],
+                ],
+                'notice' => [
+                    'name' => 'Catatan Layanan',
+                    'description' =>
+                        'Catatan batas layanan organisasi pada sidebar Kontak.',
+                    'toggleable' => true,
+                    'fields' => [
+                        'title' => [
+                            'label' => 'Judul',
+                            'type' => 'text',
+                            'max' => 100,
+                            'required' => true,
+                            'default' => 'Catatan',
+                        ],
+                        'body' => [
+                            'label' => 'Isi Catatan',
+                            'type' => 'textarea',
+                            'max' => 700,
+                            'required' => true,
+                            'default' =>
+                                'Untuk kondisi darurat, layanan pemerintahan, keamanan, atau kesehatan, silakan menghubungi instansi resmi yang berwenang.',
                         ],
                     ],
                 ],

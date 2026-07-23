@@ -40,6 +40,36 @@ $footerCopyright = site_setting(
     'Karang Taruna RW 01 Randugarut'
 );
 
+$footerNavigationHeading = site_setting(
+    'footer_navigation_heading',
+    'Navigasi'
+);
+
+$footerLocationHeading = site_setting(
+    'footer_location_heading',
+    'Organisasi & Lokasi'
+);
+
+$footerContactHeading = site_setting(
+    'footer_contact_heading',
+    'Hubungi Kami'
+);
+
+$footerContactIntro = site_setting(
+    'footer_contact_intro',
+    'Sampaikan undangan, gagasan, informasi, atau tawaran kolaborasi melalui kanal resmi GARDA 01.'
+);
+
+$footerMapLabel = site_setting(
+    'footer_map_label',
+    'Lokasi Organisasi'
+);
+
+$footerMapAction = site_setting(
+    'footer_map_action',
+    'Buka di Google Maps'
+);
+
 $contactEmail = trim((string) site_setting('contact_email', ''));
 $contactWhatsapp = trim((string) site_setting('contact_whatsapp', ''));
 $contactAddress = trim((string) site_setting(
@@ -213,7 +243,7 @@ $mapLabel = $mapLabelParts !== []
                 class="g01-footer__column"
                 aria-label="Navigasi footer"
             >
-                <h2>Navigasi</h2>
+                <h2><?= esc($footerNavigationHeading) ?></h2>
 
                 <a href="<?= base_url('/') ?>">Beranda</a>
                 <a href="<?= base_url('/profil') ?>">Tentang GARDA 01</a>
@@ -224,7 +254,7 @@ $mapLabel = $mapLabelParts !== []
             </nav>
 
             <section class="g01-footer__location">
-                <h2>Organisasi & Lokasi</h2>
+                <h2><?= esc($footerLocationHeading) ?></h2>
 
                 <div class="g01-footer__location-card">
                     <div class="g01-footer__location-heading">
@@ -290,8 +320,8 @@ $mapLabel = $mapLabelParts !== []
 
                     <span class="g01-footer__map-action">
                         <span>
-                            <small>Lokasi Organisasi</small>
-                            <strong>Buka di Google Maps</strong>
+                            <small><?= esc($footerMapLabel) ?></small>
+                            <strong><?= esc($footerMapAction) ?></strong>
                         </span>
 
                         <span aria-hidden="true">↗</span>
@@ -300,12 +330,10 @@ $mapLabel = $mapLabelParts !== []
             </section>
 
             <section class="g01-footer__contact">
-                <h2>Hubungi Kami</h2>
+                <h2><?= esc($footerContactHeading) ?></h2>
 
                 <p class="g01-footer__contact-intro">
-                    Sampaikan undangan, gagasan, informasi, atau
-                    tawaran kolaborasi melalui kanal resmi
-                    <?= esc($organizationName) ?>.
+                    <?= esc($footerContactIntro) ?>
                 </p>
 
                 <div class="g01-footer__contact-list">
