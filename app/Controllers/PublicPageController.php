@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\PublicPageModel;
 use App\Models\PublicPageSectionModel;
+use App\Models\UserModel;
 use Config\PublicCms;
 use RuntimeException;
 
@@ -11,20 +12,37 @@ class PublicPageController extends BaseController
 {
     protected PublicPageModel $pageModel;
     protected PublicPageSectionModel $sectionModel;
+    protected UserModel $userModel;
     protected PublicCms $cmsConfig;
+
+    /**
+     * @var list<string>
+     */
+    private array $validWorkflowStatuses = [
+        'draft',
+        'in_review',
+        'changes_requested',
+        'approved',
+        'published',
+    ];
 
     public function __construct()
     {
         $this->pageModel = new PublicPageModel();
         $this->sectionModel =
             new PublicPageSectionModel();
+        $this->userModel = new UserModel();
         $this->cmsConfig = new PublicCms();
     }
 
     public function index()
     {
         $ready = $this->cmsReady();
+        $reviewReady = $ready
+            && $this->reviewWorkflowReady();
+
         $pages = [];
+        $workflowCounts = $this->emptyWorkflowCounts();
 
         if ($ready) {
             foreach (
@@ -46,6 +64,25 @@ class PublicPageController extends BaseController
                         )
                         ->countAllResults();
 
+                $page['workflow_status'] =
+                    $reviewReady
+                        ? $this->normalizeWorkflowStatus(
+                            (string) (
+                                $page['workflow_status']
+                                ?? ''
+                            ),
+                            $page
+                        )
+                        : $this->legacyWorkflowStatus(
+                            $page
+                        );
+
+                $status = $page['workflow_status'];
+
+                if (isset($workflowCounts[$status])) {
+                    $workflowCounts[$status]++;
+                }
+
                 $pages[] = $page;
             }
         }
@@ -53,7 +90,47 @@ class PublicPageController extends BaseController
         return view('public_pages/index', [
             'title' => 'Kelola Halaman Publik',
             'ready' => $ready,
+            'reviewReady' => $reviewReady,
             'pages' => $pages,
+            'workflowCounts' => $workflowCounts,
+            'workflowLabels' =>
+                $this->workflowLabels(),
+        ]);
+    }
+
+    public function reviewQueue()
+    {
+        $this->assertReviewWorkflowReady();
+
+        $pages = $this->pageModel
+            ->whereIn('workflow_status', [
+                'in_review',
+                'approved',
+                'changes_requested',
+            ])
+            ->orderBy(
+                "FIELD(
+                    workflow_status,
+                    'in_review',
+                    'approved',
+                    'changes_requested'
+                )",
+                '',
+                false
+            )
+            ->orderBy('submitted_at', 'ASC')
+            ->findAll();
+
+        $userNames = $this->userNamesForPages(
+            $pages
+        );
+
+        return view('public_pages/review', [
+            'title' => 'Review Halaman Publik',
+            'pages' => $pages,
+            'userNames' => $userNames,
+            'workflowLabels' =>
+                $this->workflowLabels(),
         ]);
     }
 
@@ -70,6 +147,17 @@ class PublicPageController extends BaseController
                 'Halaman CMS tidak ditemukan.'
             );
         }
+
+        $page['workflow_status'] =
+            $this->reviewWorkflowReady()
+                ? $this->normalizeWorkflowStatus(
+                    (string) (
+                        $page['workflow_status']
+                        ?? ''
+                    ),
+                    $page
+                )
+                : $this->legacyWorkflowStatus($page);
 
         $sections = $this->sectionModel
             ->where(
@@ -104,6 +192,10 @@ class PublicPageController extends BaseController
             'page' => $page,
             'definition' => $definition,
             'sections' => $sectionMap,
+            'reviewReady' =>
+                $this->reviewWorkflowReady(),
+            'workflowLabels' =>
+                $this->workflowLabels(),
         ]);
     }
 
@@ -121,6 +213,26 @@ class PublicPageController extends BaseController
                     'error',
                     'Halaman CMS tidak ditemukan.'
                 );
+        }
+
+        if (
+            $this->reviewWorkflowReady()
+            && in_array(
+                $this->normalizeWorkflowStatus(
+                    (string) (
+                        $page['workflow_status']
+                        ?? ''
+                    ),
+                    $page
+                ),
+                ['in_review', 'approved'],
+                true
+            )
+        ) {
+            return redirect()->back()->with(
+                'error',
+                'Draft sedang dikunci oleh proses review. Minta revisi atau selesaikan proses review terlebih dahulu.'
+            );
         }
 
         $title = trim(
@@ -282,20 +394,37 @@ class PublicPageController extends BaseController
         $db->transBegin();
 
         try {
+            $pageUpdate = [
+                'draft_title' => $title,
+                'draft_meta_description' =>
+                    $metaDescription,
+                'revision_note' =>
+                    $revisionNote !== ''
+                        ? $revisionNote
+                        : null,
+                'last_edited_by' =>
+                    $this->currentUserId(),
+                'has_unpublished_changes' => 1,
+            ];
+
+            if ($this->reviewWorkflowReady()) {
+                $pageUpdate = array_merge(
+                    $pageUpdate,
+                    [
+                        'workflow_status' => 'draft',
+                        'submitted_by' => null,
+                        'submitted_at' => null,
+                        'reviewed_by' => null,
+                        'reviewed_at' => null,
+                        'approved_by' => null,
+                        'approved_at' => null,
+                    ]
+                );
+            }
+
             $this->pageModel->update(
                 (int) $page['id'],
-                [
-                    'draft_title' => $title,
-                    'draft_meta_description' =>
-                        $metaDescription,
-                    'revision_note' =>
-                        $revisionNote !== ''
-                            ? $revisionNote
-                            : null,
-                    'last_edited_by' =>
-                        $this->currentUserId(),
-                    'has_unpublished_changes' => 1,
-                ]
+                $pageUpdate
             );
 
             $existingSections =
@@ -356,6 +485,223 @@ class PublicPageController extends BaseController
         );
     }
 
+    public function submitReview(string $pageKey)
+    {
+        $this->assertReviewWorkflowReady();
+
+        $page = $this->pageModel
+            ->findByKey($pageKey);
+
+        if (!$page) {
+            return redirect()->to('/website/pages')
+                ->with(
+                    'error',
+                    'Halaman CMS tidak ditemukan.'
+                );
+        }
+
+        $status = $this->normalizeWorkflowStatus(
+            (string) (
+                $page['workflow_status'] ?? ''
+            ),
+            $page
+        );
+
+        if (
+            !in_array(
+                $status,
+                [
+                    'draft',
+                    'changes_requested',
+                    'published',
+                ],
+                true
+            )
+            || empty($page['has_unpublished_changes'])
+        ) {
+            return redirect()->back()->with(
+                'error',
+                'Halaman belum mempunyai draft yang siap dikirim untuk review.'
+            );
+        }
+
+        $revisionNote = trim((string) (
+            $page['revision_note'] ?? ''
+        ));
+
+        if ($revisionNote === '') {
+            return redirect()->back()->with(
+                'error',
+                'Isi Catatan Revisi lalu simpan draft sebelum mengirim halaman untuk review.'
+            );
+        }
+
+        try {
+            $this->pageModel->update(
+                (int) $page['id'],
+                [
+                    'workflow_status' => 'in_review',
+                    'submitted_by' =>
+                        $this->currentUserId(),
+                    'submitted_at' =>
+                        date('Y-m-d H:i:s'),
+                    'reviewed_by' => null,
+                    'reviewed_at' => null,
+                    'review_note' => null,
+                    'approved_by' => null,
+                    'approved_at' => null,
+                ]
+            );
+        } catch (\Throwable $exception) {
+            return redirect()->back()->with(
+                'error',
+                'Halaman belum dapat dikirim untuk review.'
+            );
+        }
+
+        return redirect()->to(
+            '/website/pages/edit/' . $pageKey
+        )->with(
+            'success',
+            'Halaman berhasil dikirim untuk review.'
+        );
+    }
+
+    public function requestChanges(string $pageKey)
+    {
+        $this->assertReviewWorkflowReady();
+
+        $page = $this->pageModel
+            ->findByKey($pageKey);
+
+        if (!$page) {
+            return redirect()->to(
+                '/website/pages/review'
+            )->with(
+                'error',
+                'Halaman CMS tidak ditemukan.'
+            );
+        }
+
+        if (
+            $this->normalizeWorkflowStatus(
+                (string) (
+                    $page['workflow_status'] ?? ''
+                ),
+                $page
+            ) !== 'in_review'
+        ) {
+            return redirect()->back()->with(
+                'error',
+                'Halaman tidak sedang menunggu review.'
+            );
+        }
+
+        $reviewNote = trim(strip_tags(
+            (string) $this->request
+                ->getPost('review_note')
+        ));
+
+        if (
+            $reviewNote === ''
+            || mb_strlen($reviewNote) > 1000
+        ) {
+            return redirect()->back()->with(
+                'error',
+                'Catatan revisi reviewer wajib diisi maksimal 1.000 karakter.'
+            );
+        }
+
+        try {
+            $this->pageModel->update(
+                (int) $page['id'],
+                [
+                    'workflow_status' =>
+                        'changes_requested',
+                    'reviewed_by' =>
+                        $this->currentUserId(),
+                    'reviewed_at' =>
+                        date('Y-m-d H:i:s'),
+                    'review_note' => $reviewNote,
+                    'approved_by' => null,
+                    'approved_at' => null,
+                ]
+            );
+        } catch (\Throwable $exception) {
+            return redirect()->back()->with(
+                'error',
+                'Permintaan revisi belum dapat disimpan.'
+            );
+        }
+
+        return redirect()->to(
+            '/website/pages/review'
+        )->with(
+            'success',
+            'Halaman dikembalikan kepada editor untuk direvisi.'
+        );
+    }
+
+    public function approve(string $pageKey)
+    {
+        $this->assertReviewWorkflowReady();
+
+        $page = $this->pageModel
+            ->findByKey($pageKey);
+
+        if (!$page) {
+            return redirect()->to(
+                '/website/pages/review'
+            )->with(
+                'error',
+                'Halaman CMS tidak ditemukan.'
+            );
+        }
+
+        if (
+            $this->normalizeWorkflowStatus(
+                (string) (
+                    $page['workflow_status'] ?? ''
+                ),
+                $page
+            ) !== 'in_review'
+        ) {
+            return redirect()->back()->with(
+                'error',
+                'Halaman tidak sedang menunggu review.'
+            );
+        }
+
+        try {
+            $now = date('Y-m-d H:i:s');
+            $userId = $this->currentUserId();
+
+            $this->pageModel->update(
+                (int) $page['id'],
+                [
+                    'workflow_status' => 'approved',
+                    'reviewed_by' => $userId,
+                    'reviewed_at' => $now,
+                    'review_note' => null,
+                    'approved_by' => $userId,
+                    'approved_at' => $now,
+                ]
+            );
+        } catch (\Throwable $exception) {
+            return redirect()->back()->with(
+                'error',
+                'Persetujuan halaman belum dapat disimpan.'
+            );
+        }
+
+        return redirect()->to(
+            '/website/pages/review'
+        )->with(
+            'success',
+            'Halaman disetujui dan siap dipublikasikan.'
+        );
+    }
+
     public function publish(string $pageKey)
     {
         $this->assertReady();
@@ -371,6 +717,29 @@ class PublicPageController extends BaseController
                 );
         }
 
+        if ($this->reviewWorkflowReady()) {
+            $status = $this->normalizeWorkflowStatus(
+                (string) (
+                    $page['workflow_status'] ?? ''
+                ),
+                $page
+            );
+
+            if ($status !== 'approved') {
+                return redirect()->back()->with(
+                    'error',
+                    'Halaman harus melalui review dan berstatus Disetujui sebelum dipublikasikan.'
+                );
+            }
+        }
+
+        if (empty($page['has_unpublished_changes'])) {
+            return redirect()->back()->with(
+                'error',
+                'Tidak ada perubahan draft untuk dipublikasikan.'
+            );
+        }
+
         $sections = $this->sectionModel
             ->where(
                 'public_page_id',
@@ -382,21 +751,28 @@ class PublicPageController extends BaseController
         $db->transBegin();
 
         try {
+            $pageUpdate = [
+                'published_title' =>
+                    $page['draft_title'],
+                'published_meta_description' =>
+                    $page[
+                        'draft_meta_description'
+                    ],
+                'published_by' =>
+                    $this->currentUserId(),
+                'published_at' =>
+                    date('Y-m-d H:i:s'),
+                'has_unpublished_changes' => 0,
+            ];
+
+            if ($this->reviewWorkflowReady()) {
+                $pageUpdate['workflow_status'] =
+                    'published';
+            }
+
             $this->pageModel->update(
                 (int) $page['id'],
-                [
-                    'published_title' =>
-                        $page['draft_title'],
-                    'published_meta_description' =>
-                        $page[
-                            'draft_meta_description'
-                        ],
-                    'published_by' =>
-                        $this->currentUserId(),
-                    'published_at' =>
-                        date('Y-m-d H:i:s'),
-                    'has_unpublished_changes' => 0,
-                ]
+                $pageUpdate
             );
 
             foreach ($sections as $section) {
@@ -464,20 +840,38 @@ class PublicPageController extends BaseController
         $db->transBegin();
 
         try {
+            $pageUpdate = [
+                'draft_title' =>
+                    $page['published_title'],
+                'draft_meta_description' =>
+                    $page[
+                        'published_meta_description'
+                    ],
+                'has_unpublished_changes' => 0,
+                'revision_note' => null,
+                'last_edited_by' =>
+                    $this->currentUserId(),
+            ];
+
+            if ($this->reviewWorkflowReady()) {
+                $pageUpdate = array_merge(
+                    $pageUpdate,
+                    [
+                        'workflow_status' => 'published',
+                        'submitted_by' => null,
+                        'submitted_at' => null,
+                        'reviewed_by' => null,
+                        'reviewed_at' => null,
+                        'review_note' => null,
+                        'approved_by' => null,
+                        'approved_at' => null,
+                    ]
+                );
+            }
+
             $this->pageModel->update(
                 (int) $page['id'],
-                [
-                    'draft_title' =>
-                        $page['published_title'],
-                    'draft_meta_description' =>
-                        $page[
-                            'published_meta_description'
-                        ],
-                    'has_unpublished_changes' => 0,
-                    'revision_note' => null,
-                    'last_edited_by' =>
-                        $this->currentUserId(),
-                ]
+                $pageUpdate
             );
 
             foreach ($sections as $section) {
@@ -542,6 +936,115 @@ class PublicPageController extends BaseController
         );
     }
 
+    /**
+     * @return array<string, string>
+     */
+    private function workflowLabels(): array
+    {
+        return [
+            'draft' => 'Draft',
+            'in_review' => 'Menunggu Review',
+            'changes_requested' => 'Perlu Revisi',
+            'approved' => 'Disetujui',
+            'published' => 'Terpublikasi',
+        ];
+    }
+
+    /**
+     * @return array<string, int>
+     */
+    private function emptyWorkflowCounts(): array
+    {
+        return [
+            'draft' => 0,
+            'in_review' => 0,
+            'changes_requested' => 0,
+            'approved' => 0,
+            'published' => 0,
+        ];
+    }
+
+    /**
+     * @param list<array<string, mixed>> $pages
+     * @return array<int, string>
+     */
+    private function userNamesForPages(
+        array $pages
+    ): array {
+        $userIds = [];
+
+        foreach ($pages as $page) {
+            foreach ([
+                'last_edited_by',
+                'submitted_by',
+                'reviewed_by',
+                'approved_by',
+                'published_by',
+            ] as $field) {
+                if (!empty($page[$field])) {
+                    $userIds[] = (int) $page[$field];
+                }
+            }
+        }
+
+        $userIds = array_values(array_unique(
+            array_filter($userIds)
+        ));
+
+        if ($userIds === []) {
+            return [];
+        }
+
+        $users = $this->userModel
+            ->select('id, name')
+            ->whereIn('id', $userIds)
+            ->findAll();
+
+        $result = [];
+
+        foreach ($users as $user) {
+            $result[(int) $user['id']] =
+                (string) $user['name'];
+        }
+
+        return $result;
+    }
+
+    /**
+     * @param array<string, mixed> $page
+     */
+    private function normalizeWorkflowStatus(
+        string $status,
+        array $page
+    ): string {
+        if (
+            in_array(
+                $status,
+                $this->validWorkflowStatuses,
+                true
+            )
+        ) {
+            return $status;
+        }
+
+        return $this->legacyWorkflowStatus($page);
+    }
+
+    /**
+     * @param array<string, mixed> $page
+     */
+    private function legacyWorkflowStatus(
+        array $page
+    ): string {
+        if (!empty($page['has_unpublished_changes'])) {
+            return 'draft';
+        }
+
+        return !empty($page['published_at'])
+            ? 'published'
+            : 'draft';
+    }
+
     private function definition(string $pageKey): array
     {
         $definition = $this->cmsConfig
@@ -566,11 +1069,37 @@ class PublicPageController extends BaseController
             );
     }
 
+    private function reviewWorkflowReady(): bool
+    {
+        if (!$this->cmsReady()) {
+            return false;
+        }
+
+        $fields = db_connect()->getFieldNames(
+            'public_pages'
+        );
+
+        return in_array(
+            'workflow_status',
+            $fields,
+            true
+        );
+    }
+
     private function assertReady(): void
     {
         if (!$this->cmsReady()) {
             throw new RuntimeException(
                 'Fondasi CMS publik belum tersedia. Jalankan php spark migrate.'
+            );
+        }
+    }
+
+    private function assertReviewWorkflowReady(): void
+    {
+        if (!$this->reviewWorkflowReady()) {
+            throw new RuntimeException(
+                'Workflow review belum tersedia. Jalankan php spark migrate.'
             );
         }
     }

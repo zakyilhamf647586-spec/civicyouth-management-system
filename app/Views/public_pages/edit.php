@@ -33,6 +33,27 @@ $revisionNote = old(
 
 $hasPublishedVersion = !empty($page['published_at']);
 $hasChanges = !empty($page['has_unpublished_changes']);
+
+$workflowStatus = (string) (
+    $page['workflow_status'] ?? (
+        $hasChanges ? 'draft' : 'published'
+    )
+);
+
+$statusLabels = $workflowLabels ?? [
+    'draft' => 'Draft',
+    'in_review' => 'Menunggu Review',
+    'changes_requested' => 'Perlu Revisi',
+    'approved' => 'Disetujui',
+    'published' => 'Terpublikasi',
+];
+
+$editorLocked = $reviewReady
+    && in_array(
+        $workflowStatus,
+        ['in_review', 'approved'],
+        true
+    );
 ?>
 
 <div class="public-cms-admin public-cms-editor">
@@ -49,8 +70,8 @@ $hasChanges = !empty($page['has_unpublished_changes']);
 
         <p>
             Perbarui konten sebagai draft, periksa preview,
-            kemudian publikasikan setelah seluruh isi dinyatakan
-            siap.
+            kirim untuk review, dan publikasikan hanya setelah
+            halaman disetujui.
         </p>
     </div>
 
@@ -78,8 +99,59 @@ $hasChanges = !empty($page['has_unpublished_changes']);
         <?php endif; ?>
 
         <?php if (
-            auth_can('website.pages.publish')
+            $reviewReady
             && $hasChanges
+            && in_array(
+                $workflowStatus,
+                ['draft', 'changes_requested', 'published'],
+                true
+            )
+            && auth_can('website.pages.submit_review')
+        ) : ?>
+            <form
+                action="<?= base_url(
+                    '/website/pages/submit-review/'
+                    . $pageKey
+                ) ?>"
+                method="post"
+                onsubmit="return confirm(
+                    'Kirim draft ini untuk ditinjau?'
+                )"
+            >
+                <?= csrf_field() ?>
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                >
+                    Kirim untuk Review
+                </button>
+            </form>
+        <?php endif; ?>
+
+        <?php if (
+            $reviewReady
+            && in_array(
+                $workflowStatus,
+                ['in_review', 'approved'],
+                true
+            )
+            && auth_can('website.pages.review')
+        ) : ?>
+            <a
+                href="<?= base_url(
+                    '/website/pages/review'
+                ) ?>"
+                class="btn btn-primary"
+            >
+                Buka Antrian Review
+            </a>
+        <?php endif; ?>
+
+        <?php if (
+            $reviewReady
+            && $workflowStatus === 'approved'
+            && auth_can('website.pages.publish')
         ) : ?>
             <form
                 action="<?= base_url(
@@ -87,7 +159,7 @@ $hasChanges = !empty($page['has_unpublished_changes']);
                 ) ?>"
                 method="post"
                 onsubmit="return confirm(
-                    'Publikasikan draft ini ke website publik?'
+                    'Publikasikan halaman yang sudah disetujui ini?'
                 )"
             >
                 <?= csrf_field() ?>
@@ -125,10 +197,68 @@ $hasChanges = !empty($page['has_unpublished_changes']);
     </div>
 <?php endif; ?>
 
-<section class="public-cms-editor-status">
+<?php if ($reviewReady) : ?>
+    <section class="public-cms-workflow-banner status-<?= esc(
+        $workflowStatus,
+        'attr'
+    ) ?>">
+        <div>
+            <span>Status Editorial</span>
+
+            <strong>
+                <?= esc(
+                    $statusLabels[$workflowStatus]
+                    ?? $workflowStatus
+                ) ?>
+            </strong>
+        </div>
+
+        <p>
+            <?php if ($workflowStatus === 'draft') : ?>
+                Draft dapat diedit dan belum dikirim kepada reviewer.
+            <?php elseif (
+                $workflowStatus === 'in_review'
+            ) : ?>
+                Draft sedang ditinjau dan dikunci dari perubahan.
+            <?php elseif (
+                $workflowStatus === 'changes_requested'
+            ) : ?>
+                Reviewer meminta perbaikan sebelum halaman dikirim ulang.
+            <?php elseif (
+                $workflowStatus === 'approved'
+            ) : ?>
+                Draft telah disetujui dan siap dipublikasikan.
+            <?php else : ?>
+                Draft sama dengan versi yang sedang tampil di website.
+            <?php endif; ?>
+        </p>
+    </section>
+<?php endif; ?>
+
+<?php if (
+    $workflowStatus === 'changes_requested'
+    && !empty($page['review_note'])
+) : ?>
+    <section class="public-cms-review-note-panel">
+        <span>Catatan Reviewer</span>
+        <p><?= esc($page['review_note']) ?></p>
+    </section>
+<?php endif; ?>
+
+<section class="public-cms-editor-status is-five">
     <div>
         <span>Halaman</span>
         <strong><?= esc($definition['route']) ?></strong>
+    </div>
+
+    <div>
+        <span>Status Editorial</span>
+        <strong>
+            <?= esc(
+                $statusLabels[$workflowStatus]
+                ?? $workflowStatus
+            ) ?>
+        </strong>
     </div>
 
     <div>
@@ -141,7 +271,7 @@ $hasChanges = !empty($page['has_unpublished_changes']);
     </div>
 
     <div>
-        <span>Status Draft</span>
+        <span>Perubahan Draft</span>
         <strong>
             <?= $hasChanges
                 ? 'Ada perubahan'
@@ -153,12 +283,10 @@ $hasChanges = !empty($page['has_unpublished_changes']);
         <span>Terakhir Tayang</span>
         <strong>
             <?= $hasPublishedVersion
-                ? esc(
-                    date(
-                        'd M Y · H.i',
-                        strtotime($page['published_at'])
-                    )
-                )
+                ? esc(date(
+                    'd M Y · H.i',
+                    strtotime($page['published_at'])
+                ))
                 : '-' ?>
         </strong>
     </div>
@@ -185,12 +313,17 @@ $hasChanges = !empty($page['has_unpublished_changes']);
         '/website/pages/update/' . $pageKey
     ) ?>"
     method="post"
-    class="public-cms-edit-form"
+    class="public-cms-edit-form <?= $editorLocked
+        ? 'is-editor-locked'
+        : '' ?>"
 >
     <?= csrf_field() ?>
 
     <div class="public-cms-editor-layout">
-        <div class="public-cms-editor-main">
+        <fieldset
+            class="public-cms-editor-main public-cms-editor-fieldset"
+            <?= $editorLocked ? 'disabled' : '' ?>
+        >
 
             <section
                 id="cms-section-seo"
@@ -493,7 +626,7 @@ $hasChanges = !empty($page['has_unpublished_changes']);
                 <?php $sectionNumber++; ?>
             <?php endforeach; ?>
 
-        </div>
+        </fieldset>
 
         <aside class="public-cms-editor-sidebar">
             <section class="public-cms-sidebar-card">
@@ -501,34 +634,56 @@ $hasChanges = !empty($page['has_unpublished_changes']);
                     Draft Control
                 </span>
 
-                <h3>Simpan tanpa langsung tayang</h3>
+                <?php if ($editorLocked) : ?>
+                    <h3>Editor sedang dikunci</h3>
 
-                <p>
-                    Tombol Simpan Draft hanya memperbarui versi
-                    internal. Website publik tetap memakai versi
-                    terakhir yang sudah diterbitkan.
-                </p>
+                    <p>
+                        Draft tidak dapat diubah selama status
+                        Menunggu Review atau Disetujui.
+                    </p>
 
-                <div class="form-group">
-                    <label for="revision_note">
-                        Catatan Revisi
-                    </label>
+                    <?php if (auth_can(
+                        'website.pages.review'
+                    )) : ?>
+                        <a
+                            href="<?= base_url(
+                                '/website/pages/review'
+                            ) ?>"
+                            class="btn btn-primary"
+                        >
+                            Buka Antrian Review
+                        </a>
+                    <?php endif; ?>
+                <?php else : ?>
+                    <h3>Simpan tanpa langsung tayang</h3>
 
-                    <textarea
-                        id="revision_note"
-                        name="revision_note"
-                        rows="4"
-                        maxlength="255"
-                        placeholder="Contoh: memperbarui hero dan CTA kolaborasi"
-                    ><?= esc($revisionNote) ?></textarea>
-                </div>
+                    <p>
+                        Simpan Draft memperbarui versi internal.
+                        Setelah siap, isi catatan revisi dan kirim
+                        halaman kepada reviewer.
+                    </p>
 
-                <button
-                    type="submit"
-                    class="btn btn-primary public-cms-save-button"
-                >
-                    Simpan Draft
-                </button>
+                    <div class="form-group">
+                        <label for="revision_note">
+                            Catatan Revisi
+                        </label>
+
+                        <textarea
+                            id="revision_note"
+                            name="revision_note"
+                            rows="4"
+                            maxlength="255"
+                            placeholder="Contoh: memperbarui hero dan CTA kolaborasi"
+                        ><?= esc($revisionNote) ?></textarea>
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary public-cms-save-button"
+                    >
+                        Simpan Draft
+                    </button>
+                <?php endif; ?>
             </section>
 
             <section class="public-cms-sidebar-card is-info">

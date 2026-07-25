@@ -137,6 +137,11 @@ $routes->post('/website/pages/publish/(:segment)', 'PublicPageController::publis
 $routes->post('/website/pages/restore/(:segment)', 'PublicPageController::restore/$1', $guard('website.pages.update'));
 $routes->get('/website/pages/preview/(:segment)', 'PublicPageController::preview/$1', $guard('website.pages.preview'));
 
+$routes->get('/website/pages/review', 'PublicPageController::reviewQueue', $guard('website.pages.review'));
+$routes->post('/website/pages/submit-review/(:segment)', 'PublicPageController::submitReview/$1', $guard('website.pages.submit_review'));
+$routes->post('/website/pages/request-changes/(:segment)', 'PublicPageController::requestChanges/$1', $guard('website.pages.review'));
+$routes->post('/website/pages/approve/(:segment)', 'PublicPageController::approve/$1', $guard('website.pages.approve'));
+
 /* Website Navigation Manager */
 $routes->get('/website/navigation', 'WebsiteNavigationController::index', $guard('website.navigation.view'));
 $routes->get('/website/navigation/edit/(:segment)', 'WebsiteNavigationController::edit/$1', $guard('website.navigation.update'));

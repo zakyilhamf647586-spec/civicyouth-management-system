@@ -693,3 +693,489 @@
     }
 }
 
+
+
+/* ==========================================================
+   Phase 3A — Public page editorial review workflow
+========================================================== */
+
+.public-cms-intro-card.is-workflow {
+    grid-template-columns: minmax(260px, .8fr) 1.2fr;
+}
+
+.public-cms-intro-card.is-workflow ol {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.public-cms-intro-card.is-workflow li {
+    min-width: 0;
+}
+
+.public-cms-workflow-summary {
+    margin-bottom: 16px;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.public-cms-workflow-summary article {
+    min-height: 74px;
+    padding: 12px;
+    border: 1px solid var(--cms-border);
+    border-radius: 12px;
+    background: #ffffff;
+}
+
+.public-cms-workflow-summary span,
+.public-cms-workflow-summary strong {
+    display: block;
+}
+
+.public-cms-workflow-summary span {
+    color: var(--cms-slate);
+    font-size: 7.5px;
+    font-weight: 850;
+    text-transform: uppercase;
+}
+
+.public-cms-workflow-summary strong {
+    margin-top: 8px;
+    color: var(--cms-navy);
+    font-size: 22px;
+}
+
+.public-cms-workflow-summary .status-draft {
+    background: #f4f7f9;
+}
+
+.public-cms-workflow-summary .status-in_review {
+    background: #eef5fb;
+}
+
+.public-cms-workflow-summary .status-changes_requested {
+    background: #fff3e5;
+}
+
+.public-cms-workflow-summary .status-approved {
+    background: #f0ebfb;
+}
+
+.public-cms-workflow-summary .status-published {
+    background: #e9f6ee;
+}
+
+.workflow-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 9px;
+    border-radius: 999px;
+    font-size: 7.5px;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.workflow-status.status-draft {
+    color: #596d7a;
+    background: #edf2f5;
+}
+
+.workflow-status.status-in_review {
+    color: #285f83;
+    background: #dcecf7;
+}
+
+.workflow-status.status-changes_requested {
+    color: #8a5214;
+    background: #ffe7c8;
+}
+
+.workflow-status.status-approved {
+    color: #62458a;
+    background: #e9def7;
+}
+
+.workflow-status.status-published {
+    color: #17613d;
+    background: #dff3e8;
+}
+
+.public-cms-review-note {
+    margin-top: 12px;
+    padding: 11px 12px;
+    border-left: 3px solid #d27d22;
+    border-radius: 9px;
+    background: #fff7ed;
+}
+
+.public-cms-review-note span {
+    color: #915617;
+    font-size: 7px;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.public-cms-review-note p {
+    margin: 5px 0 0;
+    color: #6f5a43;
+    font-size: 8.5px;
+    line-height: 1.5;
+}
+
+.public-cms-editor-status.is-five {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.public-cms-workflow-banner,
+.public-cms-review-note-panel {
+    margin-bottom: 14px;
+    padding: 14px 16px;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 16px;
+    border: 1px solid var(--cms-border);
+    border-left: 4px solid #718594;
+    border-radius: 13px;
+    background: #ffffff;
+}
+
+.public-cms-workflow-banner > div span,
+.public-cms-review-note-panel > span {
+    display: block;
+    color: var(--cms-slate);
+    font-size: 7px;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.public-cms-workflow-banner > div strong {
+    display: block;
+    margin-top: 4px;
+    color: var(--cms-navy);
+    font-size: 12px;
+}
+
+.public-cms-workflow-banner p,
+.public-cms-review-note-panel p {
+    margin: 0;
+    color: var(--cms-slate);
+    font-size: 9px;
+    line-height: 1.55;
+}
+
+.public-cms-workflow-banner.status-in_review {
+    border-left-color: #3b7ca3;
+    background: #f3f8fc;
+}
+
+.public-cms-workflow-banner.status-changes_requested,
+.public-cms-review-note-panel {
+    border-left-color: #d27d22;
+    background: #fff8ef;
+}
+
+.public-cms-workflow-banner.status-approved {
+    border-left-color: #7554a1;
+    background: #f8f5fc;
+}
+
+.public-cms-workflow-banner.status-published {
+    border-left-color: #3c855d;
+    background: #f2faf5;
+}
+
+.public-cms-editor-fieldset {
+    margin: 0;
+    padding: 0;
+    min-width: 0;
+    border: 0;
+}
+
+.public-cms-editor-fieldset:disabled {
+    opacity: .72;
+}
+
+.public-cms-editor-fieldset:disabled
+.public-cms-section-card {
+    background: #f9fafb;
+}
+
+.public-cms-review-principles {
+    margin-bottom: 16px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 9px;
+}
+
+.public-cms-review-principles article {
+    padding: 13px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid var(--cms-border);
+    border-radius: 12px;
+    background: #ffffff;
+}
+
+.public-cms-review-principles b {
+    width: 28px;
+    height: 28px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9px;
+    color: var(--cms-navy);
+    background: #f2c852;
+    font-size: 9px;
+}
+
+.public-cms-review-principles strong,
+.public-cms-review-principles span {
+    display: block;
+}
+
+.public-cms-review-principles strong {
+    color: var(--cms-navy);
+    font-size: 10px;
+}
+
+.public-cms-review-principles span {
+    margin-top: 3px;
+    color: var(--cms-slate);
+    font-size: 8px;
+}
+
+.public-cms-review-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.public-cms-review-card,
+.public-cms-review-empty {
+    overflow: hidden;
+    border: 1px solid var(--cms-border);
+    border-radius: 16px;
+    background: #ffffff;
+    box-shadow: 0 12px 30px rgba(4, 23, 45, .045);
+}
+
+.public-cms-review-card > header {
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    border-bottom: 1px solid var(--cms-border);
+    background: #fbfcfd;
+}
+
+.public-cms-review-card > header > div > span {
+    color: var(--cms-gold);
+    font-size: 8px;
+    font-weight: 850;
+}
+
+.public-cms-review-card h3 {
+    margin: 4px 0 0;
+    color: var(--cms-navy);
+    font-size: 16px;
+}
+
+.public-cms-review-card__body {
+    padding: 16px 18px;
+}
+
+.public-cms-review-meta {
+    display: grid;
+    grid-template-columns: .75fr .75fr 1.5fr;
+    gap: 8px;
+}
+
+.public-cms-review-meta > div {
+    padding: 10px;
+    border-radius: 10px;
+    background: #f4f7f9;
+}
+
+.public-cms-review-meta span,
+.public-cms-review-meta strong {
+    display: block;
+}
+
+.public-cms-review-meta span {
+    color: var(--cms-slate);
+    font-size: 7px;
+    font-weight: 850;
+    text-transform: uppercase;
+}
+
+.public-cms-review-meta strong {
+    margin-top: 5px;
+    color: var(--cms-navy);
+    font-size: 9px;
+    line-height: 1.45;
+}
+
+.public-cms-review-feedback,
+.public-cms-review-approved {
+    margin-top: 12px;
+    padding: 12px;
+    border-radius: 10px;
+}
+
+.public-cms-review-feedback {
+    border-left: 3px solid #d27d22;
+    background: #fff7ed;
+}
+
+.public-cms-review-approved {
+    border-left: 3px solid #7554a1;
+    background: #f6f1fb;
+}
+
+.public-cms-review-feedback span,
+.public-cms-review-approved strong,
+.public-cms-review-approved span {
+    display: block;
+}
+
+.public-cms-review-feedback span {
+    color: #915617;
+    font-size: 7px;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.public-cms-review-feedback p {
+    margin: 5px 0 0;
+    color: #6f5a43;
+    line-height: 1.5;
+}
+
+.public-cms-review-approved strong {
+    color: #62458a;
+}
+
+.public-cms-review-approved span {
+    margin-top: 4px;
+    color: var(--cms-slate);
+}
+
+.public-cms-review-card > footer {
+    padding: 0 18px 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.public-cms-review-actions {
+    padding: 16px 18px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 12px;
+    border-top: 1px solid var(--cms-border);
+    background: #fafcfd;
+}
+
+.public-cms-review-actions form:first-child {
+    min-width: 0;
+}
+
+.public-cms-review-actions label {
+    display: block;
+    margin-bottom: 6px;
+    color: var(--cms-slate);
+    font-size: 8px;
+    font-weight: 850;
+}
+
+.public-cms-review-actions textarea {
+    width: 100%;
+    margin-bottom: 8px;
+    padding: 10px;
+    border: 1px solid var(--cms-border);
+    border-radius: 10px;
+    resize: vertical;
+}
+
+.public-cms-review-actions textarea:focus {
+    border-color: rgba(11, 45, 77, .55);
+    box-shadow: 0 0 0 4px rgba(11, 45, 77, .1);
+    outline: 0;
+}
+
+.public-cms-approve-form {
+    align-self: end;
+}
+
+.public-cms-publish-action {
+    padding: 14px 18px;
+    border-top: 1px solid var(--cms-border);
+    background: #f5faf7;
+}
+
+.public-cms-publish-action .btn {
+    width: 100%;
+    justify-content: center;
+}
+
+.public-cms-review-empty {
+    padding: 34px;
+    text-align: center;
+}
+
+.public-cms-review-empty strong {
+    color: var(--cms-navy);
+}
+
+.public-cms-review-empty p {
+    margin: 6px 0 0;
+    color: var(--cms-slate);
+}
+
+@media (max-width: 1180px) {
+    .public-cms-intro-card.is-workflow {
+        grid-template-columns: 1fr;
+    }
+
+    .public-cms-intro-card.is-workflow ol {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .public-cms-workflow-summary {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .public-cms-editor-status.is-five {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+    .public-cms-intro-card.is-workflow ol,
+    .public-cms-workflow-summary,
+    .public-cms-editor-status.is-five,
+    .public-cms-review-principles,
+    .public-cms-review-meta,
+    .public-cms-review-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .public-cms-workflow-banner,
+    .public-cms-review-note-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .public-cms-review-card > header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .public-cms-approve-form,
+    .public-cms-approve-form .btn {
+        width: 100%;
+    }
+}
