@@ -80,6 +80,7 @@ class Permissions extends BaseConfig
             'website.pages.update',
             'website.pages.preview',
             'website.pages.submit_review',
+            'website.pages.revisions.view',
 
             'website.navigation.view',
             'website.navigation.update',
@@ -210,6 +211,8 @@ class Permissions extends BaseConfig
         'website.pages.submit_review' => 'mengirim halaman publik untuk ditinjau',
         'website.pages.review' => 'meninjau dan meminta revisi halaman publik',
         'website.pages.approve' => 'menyetujui halaman publik',
+        'website.pages.revisions.view' => 'melihat riwayat versi halaman publik',
+        'website.pages.revisions.restore' => 'memulihkan versi halaman publik ke draft',
 
         'website.navigation.view' => 'melihat Navigation Manager',
         'website.navigation.update' => 'mengubah draft navigasi website',

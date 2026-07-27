@@ -142,6 +142,10 @@ $routes->post('/website/pages/submit-review/(:segment)', 'PublicPageController::
 $routes->post('/website/pages/request-changes/(:segment)', 'PublicPageController::requestChanges/$1', $guard('website.pages.review'));
 $routes->post('/website/pages/approve/(:segment)', 'PublicPageController::approve/$1', $guard('website.pages.approve'));
 
+$routes->get('/website/pages/revisions/(:segment)', 'PublicPageController::revisions/$1', $guard('website.pages.revisions.view'));
+$routes->get('/website/pages/revisions/(:segment)/(:num)', 'PublicPageController::revisionDetail/$1/$2', $guard('website.pages.revisions.view'));
+$routes->post('/website/pages/revisions/(:segment)/(:num)/restore', 'PublicPageController::restoreRevision/$1/$2', $guard('website.pages.revisions.restore'));
+
 /* Website Navigation Manager */
 $routes->get('/website/navigation', 'WebsiteNavigationController::index', $guard('website.navigation.view'));
 $routes->get('/website/navigation/edit/(:segment)', 'WebsiteNavigationController::edit/$1', $guard('website.navigation.update'));

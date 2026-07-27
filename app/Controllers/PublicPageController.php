@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Libraries\PublicPageRevisionService;
 use App\Models\PublicPageModel;
 use App\Models\PublicPageSectionModel;
 use App\Models\UserModel;
@@ -14,6 +15,7 @@ class PublicPageController extends BaseController
     protected PublicPageSectionModel $sectionModel;
     protected UserModel $userModel;
     protected PublicCms $cmsConfig;
+    protected PublicPageRevisionService $revisionService;
 
     /**
      * @var list<string>
@@ -33,6 +35,8 @@ class PublicPageController extends BaseController
             new PublicPageSectionModel();
         $this->userModel = new UserModel();
         $this->cmsConfig = new PublicCms();
+        $this->revisionService =
+            new PublicPageRevisionService();
     }
 
     public function index()
@@ -40,6 +44,9 @@ class PublicPageController extends BaseController
         $ready = $this->cmsReady();
         $reviewReady = $ready
             && $this->reviewWorkflowReady();
+
+        $revisionReady = $ready
+            && $this->revisionService->ready();
 
         $pages = [];
         $workflowCounts = $this->emptyWorkflowCounts();
@@ -77,6 +84,14 @@ class PublicPageController extends BaseController
                             $page
                         );
 
+                $page['revision_count'] =
+                    $revisionReady
+                        ? $this->revisionService
+                            ->countForPage(
+                                (int) $page['id']
+                            )
+                        : 0;
+
                 $status = $page['workflow_status'];
 
                 if (isset($workflowCounts[$status])) {
@@ -91,6 +106,7 @@ class PublicPageController extends BaseController
             'title' => 'Kelola Halaman Publik',
             'ready' => $ready,
             'reviewReady' => $reviewReady,
+            'revisionReady' => $revisionReady,
             'pages' => $pages,
             'workflowCounts' => $workflowCounts,
             'workflowLabels' =>
@@ -194,6 +210,15 @@ class PublicPageController extends BaseController
             'sections' => $sectionMap,
             'reviewReady' =>
                 $this->reviewWorkflowReady(),
+            'revisionReady' =>
+                $this->revisionService->ready(),
+            'revisionCount' =>
+                $this->revisionService->ready()
+                    ? $this->revisionService
+                        ->countForPage(
+                            (int) $page['id']
+                        )
+                    : 0,
             'workflowLabels' =>
                 $this->workflowLabels(),
         ]);
@@ -536,13 +561,17 @@ class PublicPageController extends BaseController
             );
         }
 
+        $db = db_connect();
+        $db->transBegin();
+
         try {
+            $actorId = $this->currentUserId();
+
             $this->pageModel->update(
                 (int) $page['id'],
                 [
                     'workflow_status' => 'in_review',
-                    'submitted_by' =>
-                        $this->currentUserId(),
+                    'submitted_by' => $actorId,
                     'submitted_at' =>
                         date('Y-m-d H:i:s'),
                     'reviewed_by' => null,
@@ -552,10 +581,30 @@ class PublicPageController extends BaseController
                     'approved_at' => null,
                 ]
             );
+
+            if ($this->revisionService->ready()) {
+                $this->revisionService->capture(
+                    (int) $page['id'],
+                    'draft',
+                    'review_submission',
+                    $actorId,
+                    $revisionNote
+                );
+            }
+
+            if ($db->transCommit() === false) {
+                throw new RuntimeException(
+                    'Halaman belum dapat dikirim untuk review.'
+                );
+            }
         } catch (\Throwable $exception) {
+            $db->transRollback();
+
             return redirect()->back()->with(
                 'error',
-                'Halaman belum dapat dikirim untuk review.'
+                $exception instanceof RuntimeException
+                    ? $exception->getMessage()
+                    : 'Halaman belum dapat dikirim untuk review.'
             );
         }
 
@@ -791,6 +840,16 @@ class PublicPageController extends BaseController
                 );
             }
 
+            if ($this->revisionService->ready()) {
+                $this->revisionService->capture(
+                    (int) $page['id'],
+                    'published',
+                    'published',
+                    $this->currentUserId(),
+                    $page['revision_note'] ?? null
+                );
+            }
+
             if ($db->transCommit() === false) {
                 throw new RuntimeException(
                     'Halaman belum dapat dipublikasikan.'
@@ -916,6 +975,159 @@ class PublicPageController extends BaseController
         );
     }
 
+    public function revisions(string $pageKey)
+    {
+        $this->assertRevisionHistoryReady();
+
+        $page = $this->pageModel
+            ->findByKey($pageKey);
+
+        if (!$page) {
+            throw new RuntimeException(
+                'Halaman CMS tidak ditemukan.'
+            );
+        }
+
+        $revisions = $this->revisionService
+            ->historyForPage((int) $page['id']);
+
+        $userNames = $this->userNamesForRevisions(
+            $revisions
+        );
+
+        return view(
+            'public_pages/revisions/index',
+            [
+                'title' =>
+                    'Riwayat Versi ' . $page['name'],
+                'page' => $page,
+                'pageKey' => $pageKey,
+                'revisions' => $revisions,
+                'userNames' => $userNames,
+                'sourceLabels' =>
+                    $this->revisionSourceLabels(),
+            ]
+        );
+    }
+
+    public function revisionDetail(
+        string $pageKey,
+        int $revisionId
+    ) {
+        $this->assertRevisionHistoryReady();
+
+        $page = $this->pageModel
+            ->findByKey($pageKey);
+
+        if (!$page) {
+            throw new RuntimeException(
+                'Halaman CMS tidak ditemukan.'
+            );
+        }
+
+        $revision = $this->revisionService
+            ->findForPage(
+                (int) $page['id'],
+                $revisionId
+            );
+
+        if (!$revision) {
+            throw new RuntimeException(
+                'Versi halaman tidak ditemukan.'
+            );
+        }
+
+        $snapshot = $this->revisionService
+            ->decode($revision);
+
+        $comparison = $this->revisionService
+            ->compareWithCurrentDraft(
+                $revision,
+                (int) $page['id']
+            );
+
+        $userNames = $this->userNamesForRevisions([
+            $revision,
+        ]);
+
+        return view(
+            'public_pages/revisions/show',
+            [
+                'title' =>
+                    'Versi #'
+                    . $revision['version_number']
+                    . ' — '
+                    . $page['name'],
+                'page' => $page,
+                'pageKey' => $pageKey,
+                'revision' => $revision,
+                'snapshot' => $snapshot,
+                'comparison' => $comparison,
+                'userNames' => $userNames,
+                'sourceLabels' =>
+                    $this->revisionSourceLabels(),
+            ]
+        );
+    }
+
+    public function restoreRevision(
+        string $pageKey,
+        int $revisionId
+    ) {
+        $this->assertRevisionHistoryReady();
+
+        $page = $this->pageModel
+            ->findByKey($pageKey);
+
+        if (!$page) {
+            return redirect()->to('/website/pages')
+                ->with(
+                    'error',
+                    'Halaman CMS tidak ditemukan.'
+                );
+        }
+
+        $revision = $this->revisionService
+            ->findForPage(
+                (int) $page['id'],
+                $revisionId
+            );
+
+        if (!$revision) {
+            return redirect()->to(
+                '/website/pages/revisions/'
+                . $pageKey
+            )->with(
+                'error',
+                'Versi halaman tidak ditemukan.'
+            );
+        }
+
+        try {
+            $this->revisionService->restoreToDraft(
+                (int) $page['id'],
+                $revision,
+                $this->currentUserId()
+            );
+        } catch (\Throwable $exception) {
+            return redirect()->back()->with(
+                'error',
+                $exception instanceof RuntimeException
+                    ? $exception->getMessage()
+                    : 'Versi halaman belum dapat dipulihkan.'
+            );
+        }
+
+        return redirect()->to(
+            '/website/pages/edit/' . $pageKey
+        )->with(
+            'success',
+            'Versi #'
+            . $revision['version_number']
+            . ' dipulihkan sebagai draft baru. Periksa preview dan jalankan review sebelum publikasi.'
+        );
+    }
+
     public function preview(string $pageKey)
     {
         $this->assertReady();
@@ -934,6 +1146,73 @@ class PublicPageController extends BaseController
             )
             . 'cms_preview=1'
         );
+    }
+
+    /**
+     * @param list<array<string, mixed>> $revisions
+     * @return array<int, string>
+     */
+    private function userNamesForRevisions(
+        array $revisions
+    ): array {
+        $userIds = [];
+
+        foreach ($revisions as $revision) {
+            if (!empty($revision['created_by'])) {
+                $userIds[] =
+                    (int) $revision['created_by'];
+            }
+        }
+
+        $userIds = array_values(array_unique(
+            array_filter($userIds)
+        ));
+
+        if ($userIds === []) {
+            return [];
+        }
+
+        $users = $this->userModel
+            ->select('id, name')
+            ->whereIn('id', $userIds)
+            ->findAll();
+
+        $names = [];
+
+        foreach ($users as $user) {
+            $names[(int) $user['id']] =
+                (string) $user['name'];
+        }
+
+        return $names;
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    private function revisionSourceLabels(): array
+    {
+        return [
+            'initial_published' =>
+                'Snapshot Awal Publik',
+            'initial_draft' =>
+                'Snapshot Awal Draft',
+            'review_submission' =>
+                'Dikirim untuk Review',
+            'published' =>
+                'Dipublikasikan',
+            'rollback' =>
+                'Pemulihan Versi',
+        ];
+    }
+
+    private function assertRevisionHistoryReady(): void
+    {
+        if (!$this->revisionService->ready()) {
+            throw new RuntimeException(
+                'Revision History belum tersedia. Jalankan php spark migrate.'
+            );
+        }
     }
 
     /**

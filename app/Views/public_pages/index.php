@@ -264,6 +264,18 @@ $statusLabels = $workflowLabels ?? [
                                     : 'Belum pernah' ?>
                             </dd>
                         </div>
+
+                        <?php if ($revisionReady) : ?>
+                            <div>
+                                <dt>Riwayat Versi</dt>
+                                <dd>
+                                    <?= (int) (
+                                        $page['revision_count']
+                                        ?? 0
+                                    ) ?>
+                                </dd>
+                            </div>
+                        <?php endif; ?>
                     </dl>
 
                     <?php if (
@@ -319,6 +331,23 @@ $statusLabels = $workflowLabels ?? [
                             Preview Draft ↗
                         </a>
                     <?php endif; ?>
+
+                    <?php if (
+                        $revisionReady
+                        && auth_can(
+                            'website.pages.revisions.view'
+                        )
+                    ) : ?>
+                        <a
+                            href="<?= base_url(
+                                '/website/pages/revisions/'
+                                . $page['page_key']
+                            ) ?>"
+                            class="btn btn-secondary"
+                        >
+                            Riwayat Versi
+                        </a>
+                    <?php endif; ?>
                 </footer>
             </article>
         <?php endforeach; ?>
@@ -329,9 +358,10 @@ $statusLabels = $workflowLabels ?? [
 
         <p>
             Halaman yang sedang ditinjau atau sudah disetujui
-            dikunci dari penyuntingan. Reviewer dapat meminta revisi
-            atau menyetujui melalui Antrian Review. Publikasi hanya
-            tersedia setelah status Disetujui.
+            dikunci dari penyuntingan. Snapshot versi dibuat saat
+            draft dikirim untuk review dan ketika halaman
+            dipublikasikan. Versi lama dapat dipulihkan hanya sebagai
+            draft baru.
         </p>
     </section>
 

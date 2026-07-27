@@ -83,6 +83,26 @@ $editorLocked = $reviewReady
             Kembali
         </a>
 
+        <?php if (
+            $revisionReady
+            && auth_can(
+                'website.pages.revisions.view'
+            )
+        ) : ?>
+            <a
+                href="<?= base_url(
+                    '/website/pages/revisions/'
+                    . $pageKey
+                ) ?>"
+                class="btn btn-secondary"
+            >
+                Riwayat Versi
+                <?php if ($revisionCount > 0) : ?>
+                    (<?= (int) $revisionCount ?>)
+                <?php endif; ?>
+            </a>
+        <?php endif; ?>
+
         <?php if (auth_can(
             'website.pages.preview'
         )) : ?>

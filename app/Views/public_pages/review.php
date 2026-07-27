@@ -210,6 +210,20 @@ $statusLabels = $workflowLabels ?? [];
                     >
                         Lihat Editor
                     </a>
+
+                    <?php if (auth_can(
+                        'website.pages.revisions.view'
+                    )) : ?>
+                        <a
+                            href="<?= base_url(
+                                '/website/pages/revisions/'
+                                . $page['page_key']
+                            ) ?>"
+                            class="btn btn-secondary"
+                        >
+                            Riwayat Versi
+                        </a>
+                    <?php endif; ?>
                 </footer>
 
                 <?php if (
