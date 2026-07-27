@@ -327,6 +327,22 @@ class WebsiteNavigationController extends BaseController
                 );
         }
 
+        $this->recordCmsAudit([
+            'module' => 'navigation',
+            'event_type' => 'navigation.draft_saved',
+            'severity' => 'info',
+            'subject_type' => 'website_navigation',
+            'subject_id' => (int) $menu['id'],
+            'subject_key' => $menuKey,
+            'subject_label' => $definition['name'],
+            'summary' => 'Draft ' . $definition['name'] . ' disimpan.',
+            'details' => $revisionNote,
+            'metadata' => [
+                'item_count' => count($cleanItems),
+                'enabled_count' => $enabledCount,
+            ],
+        ]);
+
         return redirect()->to(
             '/website/navigation/edit/' . $menuKey
         )->with(
@@ -370,6 +386,22 @@ class WebsiteNavigationController extends BaseController
                 'Navigasi belum dapat dipublikasikan.'
             );
         }
+
+        $definition = $this->definition($menuKey);
+
+        $this->recordCmsAudit([
+            'module' => 'navigation',
+            'event_type' => 'navigation.published',
+            'severity' => 'notice',
+            'subject_type' => 'website_navigation',
+            'subject_id' => (int) $menu['id'],
+            'subject_key' => $menuKey,
+            'subject_label' => $definition['name'],
+            'summary' => $definition['name'] . ' dipublikasikan.',
+            'metadata' => [
+                'published_item_count' => count($this->decodeItems($menu['draft_items'] ?? null)),
+            ],
+        ]);
 
         return redirect()->to(
             '/website/navigation/edit/' . $menuKey
@@ -415,6 +447,19 @@ class WebsiteNavigationController extends BaseController
             );
         }
 
+        $definition = $this->definition($menuKey);
+
+        $this->recordCmsAudit([
+            'module' => 'navigation',
+            'event_type' => 'navigation.draft_restored',
+            'severity' => 'warning',
+            'subject_type' => 'website_navigation',
+            'subject_id' => (int) $menu['id'],
+            'subject_key' => $menuKey,
+            'subject_label' => $definition['name'],
+            'summary' => 'Draft ' . $definition['name'] . ' dipulihkan ke versi publik.',
+        ]);
+
         return redirect()->to(
             '/website/navigation/edit/' . $menuKey
         )->with(
@@ -431,6 +476,16 @@ class WebsiteNavigationController extends BaseController
         $route = (string) (
             $definition['preview_route'] ?? '/'
         );
+
+        $this->recordCmsAudit([
+            'module' => 'navigation',
+            'event_type' => 'navigation.preview_opened',
+            'severity' => 'info',
+            'subject_type' => 'website_navigation',
+            'subject_key' => $menuKey,
+            'subject_label' => $definition['name'],
+            'summary' => 'Preview ' . $definition['name'] . ' dibuka.',
+        ]);
 
         return redirect()->to(
             $route

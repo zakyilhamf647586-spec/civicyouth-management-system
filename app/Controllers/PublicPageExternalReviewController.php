@@ -127,6 +127,24 @@ class PublicPageExternalReviewController extends BaseController
             . $created['raw_token']
         );
 
+        $this->recordCmsAudit([
+            'module' => 'external_review',
+            'event_type' => 'external_review.link_created',
+            'severity' => 'notice',
+            'subject_type' => 'public_page',
+            'subject_id' => (int) $page['id'],
+            'subject_key' => $pageKey,
+            'subject_label' => $page['name'],
+            'summary' => 'Tautan review eksternal dibuat untuk ' . $page['name'] . '.',
+            'metadata' => [
+                'preview_token_id' => (int) ($created['token']['id'] ?? 0),
+                'revision_id' => (int) $created['revision_id'],
+                'expires_at' => $created['token']['expires_at'] ?? null,
+                'max_views' => (int) ($created['token']['max_views'] ?? 0),
+                'allow_decision' => !empty($created['token']['allow_decision']),
+            ],
+        ]);
+
         return redirect()->to(
             '/website/pages/external-review/'
             . $pageKey
@@ -181,6 +199,21 @@ class PublicPageExternalReviewController extends BaseController
                 $token,
                 $this->currentUserId()
             );
+
+            $this->recordCmsAudit([
+                'module' => 'external_review',
+                'event_type' => 'external_review.link_revoked',
+                'severity' => 'warning',
+                'subject_type' => 'public_page',
+                'subject_id' => (int) $page['id'],
+                'subject_key' => $pageKey,
+                'subject_label' => $page['name'],
+                'summary' => 'Tautan review eksternal dicabut untuk ' . $page['name'] . '.',
+                'metadata' => [
+                    'preview_token_id' => (int) $token['id'],
+                    'label' => $token['label'] ?? null,
+                ],
+            ]);
         } catch (\Throwable $exception) {
             return redirect()->back()->with(
                 'error',

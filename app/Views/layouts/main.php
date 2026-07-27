@@ -118,6 +118,16 @@ if (str_starts_with(
     ];
 }
 
+if (str_starts_with(
+    $currentPath,
+    'website/audit'
+)) {
+    $pageContext = [
+        'section' => 'Website Publik',
+        'label' => 'Audit Aktivitas CMS',
+    ];
+}
+
 $pageTitle = $title ?? $pageContext['label'];
 
 $portalOrganizationName = site_setting(
@@ -387,6 +397,12 @@ $todayLabel =
         <path d="M8 13h8M8 17h8M8 9h3"></path>
     </symbol>
 
+    <symbol id="icon-audit" viewBox="0 0 24 24">
+        <path d="M6 3h12v18H6V3Z"></path>
+        <path d="M9 8h6M9 12h6M9 16h4"></path>
+        <path d="m16 15 2 2 3-4"></path>
+    </symbol>
+
     <symbol id="icon-globe" viewBox="0 0 24 24">
         <circle cx="12" cy="12" r="9"></circle>
         <path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"></path>
@@ -601,6 +617,7 @@ $todayLabel =
                 'website.pages.view',
                 'website.navigation.view',
                 'website.seo.view',
+                'website.audit.view',
                 'settings.website.manage',
                 'publications.view',
                 'content_studio.view',
@@ -676,6 +693,26 @@ $todayLabel =
                             </svg>
 
                             <span>SEO & Sitemap</span>
+                        </a>
+                    <?php endif; ?>
+
+                    <?php if (auth_can(
+                        'website.audit.view'
+                    )) : ?>
+                        <a
+                            href="<?= base_url(
+                                '/website/audit'
+                            ) ?>"
+                            class="garda-admin-nav-link <?= $isActive([
+                                'website/audit',
+                            ]) ?>"
+                            title="Audit Aktivitas CMS"
+                        >
+                            <svg aria-hidden="true">
+                                <use href="#icon-audit"></use>
+                            </svg>
+
+                            <span>Audit Aktivitas CMS</span>
                         </a>
                     <?php endif; ?>
 

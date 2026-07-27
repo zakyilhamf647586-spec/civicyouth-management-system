@@ -2640,6 +2640,33 @@ class SocialPublicationController extends BaseController
 
         try {
             $this->auditModel->insert($payload);
+
+            $this->recordCmsAudit([
+                'module' => 'social_publication',
+                'event_type' => 'publication.' . $eventType,
+                'severity' => in_array(
+                    $eventType,
+                    ['archived', 'deleted', 'revision_requested'],
+                    true
+                ) ? 'warning' : (
+                    in_array($eventType, ['published', 'approved', 'scheduled'], true)
+                        ? 'notice'
+                        : 'info'
+                ),
+                'subject_type' => 'content_post',
+                'subject_id' => $postId,
+                'subject_label' => 'Publikasi #' . $postId,
+                'summary' => $summary,
+                'metadata' => [
+                    'from_status' => $options['from_status'] ?? null,
+                    'to_status' => $options['to_status'] ?? null,
+                    'changed_fields' => array_keys(
+                        is_array($options['changed_fields'] ?? null)
+                            ? $options['changed_fields']
+                            : []
+                    ),
+                ],
+            ]);
         } catch (\Throwable $e) {
             log_message(
                 'error',

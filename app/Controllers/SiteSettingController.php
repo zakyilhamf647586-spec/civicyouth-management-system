@@ -29,6 +29,7 @@ class SiteSettingController extends BaseController
     public function update()
     {
         $groups = $this->getSettingGroups();
+        $beforeValues = $this->settingModel->getSettingsArray();
         $values = [];
         $errors = [];
 
@@ -146,6 +147,28 @@ class SiteSettingController extends BaseController
                     unlink($oldFile);
                 }
             }
+
+            $changedKeys = [];
+
+            foreach ($values as $key => $value) {
+                if ((string) ($beforeValues[$key] ?? '') !== (string) $value) {
+                    $changedKeys[] = $key;
+                }
+            }
+
+            $this->recordCmsAudit([
+                'module' => 'settings',
+                'event_type' => 'settings.website_updated',
+                'severity' => 'notice',
+                'subject_type' => 'website_settings',
+                'subject_key' => 'site_settings',
+                'subject_label' => 'Pengaturan Website',
+                'summary' => 'Pengaturan website diperbarui.',
+                'metadata' => [
+                    'changed_count' => count($changedKeys),
+                    'changed_keys' => $changedKeys,
+                ],
+            ]);
 
             return redirect()
                 ->to('/settings/website')

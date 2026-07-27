@@ -3,6 +3,7 @@
 namespace App\Filters;
 
 use App\Libraries\Authorization;
+use App\Libraries\CmsAuditService;
 use CodeIgniter\Filters\FilterInterface;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
@@ -23,6 +24,20 @@ class PermissionFilter implements FilterInterface
         }
 
         helper(['url', 'authorization']);
+
+        (new CmsAuditService())->record([
+            'module' => 'security',
+            'event_type' => 'access.permission_denied',
+            'severity' => 'security',
+            'subject_type' => 'permission',
+            'subject_key' => $permission,
+            'subject_label' => $authorization->permissionLabel($permission),
+            'summary' => 'Akses Portal ditolak karena izin tidak tersedia.',
+            'metadata' => [
+                'permission' => $permission,
+                'role' => $authorization->roleName(),
+            ],
+        ]);
 
         $body = view('errors/403', [
             'permission'      => $permission,

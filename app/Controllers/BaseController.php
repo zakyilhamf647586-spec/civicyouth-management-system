@@ -44,6 +44,16 @@ abstract class BaseController extends Controller
     }
 
     /**
+     * @param array<string, mixed> $event
+     */
+    protected function recordCmsAudit(
+        array $event
+    ): void {
+        (new \App\Libraries\CmsAuditService())
+            ->record($event);
+    }
+
+    /**
      * @return array{
      *     page: ?array,
      *     preview: bool,

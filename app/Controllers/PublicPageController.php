@@ -521,6 +521,22 @@ class PublicPageController extends BaseController
                 );
         }
 
+        $this->recordCmsAudit([
+            'module' => 'public_pages',
+            'event_type' => 'page.draft_saved',
+            'severity' => 'info',
+            'subject_type' => 'public_page',
+            'subject_id' => (int) $page['id'],
+            'subject_key' => $pageKey,
+            'subject_label' => $page['name'],
+            'summary' => 'Draft halaman ' . $page['name'] . ' disimpan.',
+            'details' => $revisionNote,
+            'metadata' => [
+                'section_count' => count($sectionPayloads),
+                'workflow_status' => 'draft',
+            ],
+        ]);
+
         return redirect()->to(
             '/website/pages/edit/' . $pageKey
         )->with(
@@ -627,6 +643,22 @@ class PublicPageController extends BaseController
             );
         }
 
+        $this->recordCmsAudit([
+            'module' => 'public_pages',
+            'event_type' => 'page.review_submitted',
+            'severity' => 'notice',
+            'subject_type' => 'public_page',
+            'subject_id' => (int) $page['id'],
+            'subject_key' => $pageKey,
+            'subject_label' => $page['name'],
+            'summary' => 'Halaman ' . $page['name'] . ' dikirim untuk review.',
+            'details' => $revisionNote,
+            'metadata' => [
+                'from_status' => $status,
+                'to_status' => 'in_review',
+            ],
+        ]);
+
         return redirect()->to(
             '/website/pages/edit/' . $pageKey
         )->with(
@@ -702,6 +734,22 @@ class PublicPageController extends BaseController
             );
         }
 
+        $this->recordCmsAudit([
+            'module' => 'public_pages',
+            'event_type' => 'page.changes_requested',
+            'severity' => 'warning',
+            'subject_type' => 'public_page',
+            'subject_id' => (int) $page['id'],
+            'subject_key' => $pageKey,
+            'subject_label' => $page['name'],
+            'summary' => 'Revisi diminta untuk halaman ' . $page['name'] . '.',
+            'details' => $reviewNote,
+            'metadata' => [
+                'from_status' => 'in_review',
+                'to_status' => 'changes_requested',
+            ],
+        ]);
+
         return redirect()->to(
             '/website/pages/review'
         )->with(
@@ -761,6 +809,21 @@ class PublicPageController extends BaseController
                 'Persetujuan halaman belum dapat disimpan.'
             );
         }
+
+        $this->recordCmsAudit([
+            'module' => 'public_pages',
+            'event_type' => 'page.approved',
+            'severity' => 'notice',
+            'subject_type' => 'public_page',
+            'subject_id' => (int) $page['id'],
+            'subject_key' => $pageKey,
+            'subject_label' => $page['name'],
+            'summary' => 'Halaman ' . $page['name'] . ' disetujui.',
+            'metadata' => [
+                'from_status' => 'in_review',
+                'to_status' => 'approved',
+            ],
+        ]);
 
         return redirect()->to(
             '/website/pages/review'
@@ -885,6 +948,22 @@ class PublicPageController extends BaseController
             );
         }
 
+        $this->recordCmsAudit([
+            'module' => 'public_pages',
+            'event_type' => 'page.published',
+            'severity' => 'notice',
+            'subject_type' => 'public_page',
+            'subject_id' => (int) $page['id'],
+            'subject_key' => $pageKey,
+            'subject_label' => $page['name'],
+            'summary' => 'Halaman ' . $page['name'] . ' dipublikasikan.',
+            'details' => $page['revision_note'] ?? null,
+            'metadata' => [
+                'from_status' => 'approved',
+                'to_status' => 'published',
+            ],
+        ]);
+
         return redirect()->to(
             '/website/pages/edit/' . $pageKey
         )->with(
@@ -985,6 +1064,21 @@ class PublicPageController extends BaseController
                     : 'Draft belum dapat dipulihkan.'
             );
         }
+
+        $this->recordCmsAudit([
+            'module' => 'public_pages',
+            'event_type' => 'page.draft_restored',
+            'severity' => 'warning',
+            'subject_type' => 'public_page',
+            'subject_id' => (int) $page['id'],
+            'subject_key' => $pageKey,
+            'subject_label' => $page['name'],
+            'summary' => 'Draft halaman ' . $page['name'] . ' dikembalikan ke versi publik.',
+            'metadata' => [
+                'workflow_status' => 'published',
+                'has_unpublished_changes' => false,
+            ],
+        ]);
 
         return redirect()->to(
             '/website/pages/edit/' . $pageKey
@@ -1137,6 +1231,22 @@ class PublicPageController extends BaseController
             );
         }
 
+        $this->recordCmsAudit([
+            'module' => 'public_pages',
+            'event_type' => 'page.revision_restored',
+            'severity' => 'warning',
+            'subject_type' => 'public_page',
+            'subject_id' => (int) $page['id'],
+            'subject_key' => $pageKey,
+            'subject_label' => $page['name'],
+            'summary' => 'Versi lama halaman ' . $page['name'] . ' dipulihkan sebagai draft.',
+            'metadata' => [
+                'source_revision_id' => (int) $revision['id'],
+                'source_version_number' => (int) $revision['version_number'],
+                'new_workflow_status' => 'draft',
+            ],
+        ]);
+
         return redirect()->to(
             '/website/pages/edit/' . $pageKey
         )->with(
@@ -1152,6 +1262,16 @@ class PublicPageController extends BaseController
         $this->assertReady();
 
         $definition = $this->definition($pageKey);
+
+        $this->recordCmsAudit([
+            'module' => 'public_pages',
+            'event_type' => 'page.preview_opened',
+            'severity' => 'info',
+            'subject_type' => 'public_page',
+            'subject_key' => $pageKey,
+            'subject_label' => $definition['name'] ?? $pageKey,
+            'summary' => 'Preview draft halaman dibuka.',
+        ]);
 
         return redirect()->to(
             $definition['route']

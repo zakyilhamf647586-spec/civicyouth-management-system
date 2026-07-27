@@ -302,6 +302,21 @@ class ActivityController extends BaseController
                 );
             }
 
+            $this->recordCmsAudit([
+                'module' => 'activities',
+                'event_type' => 'activity.created',
+                'severity' => 'notice',
+                'subject_type' => 'activity',
+                'subject_id' => (int) $insertId,
+                'subject_label' => $baseData['title'] ?? 'Kegiatan',
+                'summary' => 'Kegiatan ' . ($baseData['title'] ?? '#' . $insertId) . ' ditambahkan.',
+                'metadata' => [
+                    'workflow_action' => $action,
+                    'publication_status' => $workflowData['publication_status'] ?? null,
+                    'program_id' => $programId,
+                ],
+            ]);
+
             return redirect()->to('/activities')
                 ->with(
                     'success',
@@ -449,6 +464,22 @@ class ActivityController extends BaseController
                 );
             }
 
+            $this->recordCmsAudit([
+                'module' => 'activities',
+                'event_type' => 'activity.updated',
+                'severity' => 'info',
+                'subject_type' => 'activity',
+                'subject_id' => $id,
+                'subject_label' => $baseData['title'] ?? $activity['title'] ?? 'Kegiatan',
+                'summary' => 'Kegiatan ' . ($baseData['title'] ?? $activity['title'] ?? '#' . $id) . ' diperbarui.',
+                'metadata' => [
+                    'workflow_action' => $action,
+                    'previous_publication_status' => $activity['publication_status'] ?? null,
+                    'new_publication_status' => $workflowData['publication_status'] ?? null,
+                    'documentation_changed' => $newFile !== null,
+                ],
+            ]);
+
             return redirect()->to('/activities')
                 ->with(
                     'success',
@@ -507,6 +538,20 @@ class ActivityController extends BaseController
                 'published_at' => null,
             ]);
 
+            $this->recordCmsAudit([
+                'module' => 'activities',
+                'event_type' => 'activity.review_submitted',
+                'severity' => 'notice',
+                'subject_type' => 'activity',
+                'subject_id' => $id,
+                'subject_label' => $activity['title'] ?? 'Kegiatan',
+                'summary' => 'Kegiatan ' . ($activity['title'] ?? '#' . $id) . ' dikirim untuk review.',
+                'metadata' => [
+                    'from_status' => $activity['publication_status'] ?? null,
+                    'to_status' => 'review',
+                ],
+            ]);
+
             return redirect()->to('/activities')
                 ->with(
                     'success',
@@ -537,6 +582,20 @@ class ActivityController extends BaseController
                 'scheduled_at' => null,
                 'published_at' => date('Y-m-d H:i:s'),
                 'review_notes' => null,
+            ]);
+
+            $this->recordCmsAudit([
+                'module' => 'activities',
+                'event_type' => 'activity.published',
+                'severity' => 'notice',
+                'subject_type' => 'activity',
+                'subject_id' => $id,
+                'subject_label' => $activity['title'] ?? 'Kegiatan',
+                'summary' => 'Kegiatan ' . ($activity['title'] ?? '#' . $id) . ' dipublikasikan.',
+                'metadata' => [
+                    'from_status' => $activity['publication_status'] ?? null,
+                    'to_status' => 'published',
+                ],
             ]);
 
             return redirect()->to('/activities')
@@ -582,6 +641,21 @@ class ActivityController extends BaseController
                 : ($activity['review_notes'] ?? null),
         ]);
 
+        $this->recordCmsAudit([
+            'module' => 'activities',
+            'event_type' => 'activity.returned_to_draft',
+            'severity' => 'warning',
+            'subject_type' => 'activity',
+            'subject_id' => $id,
+            'subject_label' => $activity['title'] ?? 'Kegiatan',
+            'summary' => 'Kegiatan ' . ($activity['title'] ?? '#' . $id) . ' dikembalikan ke draft.',
+            'details' => $reviewNotes,
+            'metadata' => [
+                'from_status' => $activity['publication_status'] ?? null,
+                'to_status' => 'draft',
+            ],
+        ]);
+
         return redirect()->to('/activities')
             ->with(
                 'success',
@@ -601,6 +675,20 @@ class ActivityController extends BaseController
             'publication_status' => 'archived',
             'is_public' => 0,
             'scheduled_at' => null,
+        ]);
+
+        $this->recordCmsAudit([
+            'module' => 'activities',
+            'event_type' => 'activity.archived',
+            'severity' => 'warning',
+            'subject_type' => 'activity',
+            'subject_id' => $id,
+            'subject_label' => $activity['title'] ?? 'Kegiatan',
+            'summary' => 'Kegiatan ' . ($activity['title'] ?? '#' . $id) . ' diarsipkan.',
+            'metadata' => [
+                'from_status' => $activity['publication_status'] ?? null,
+                'to_status' => 'archived',
+            ],
         ]);
 
         return redirect()->to('/activities')
@@ -656,6 +744,20 @@ class ActivityController extends BaseController
         foreach ($filesToDelete as $fileName) {
             $this->deleteDocumentationFile($fileName);
         }
+
+        $this->recordCmsAudit([
+            'module' => 'activities',
+            'event_type' => 'activity.deleted',
+            'severity' => 'warning',
+            'subject_type' => 'activity',
+            'subject_id' => $id,
+            'subject_label' => $activity['title'] ?? 'Kegiatan',
+            'summary' => 'Kegiatan ' . ($activity['title'] ?? '#' . $id) . ' dihapus.',
+            'metadata' => [
+                'deleted_file_count' => count($filesToDelete),
+                'previous_publication_status' => $activity['publication_status'] ?? null,
+            ],
+        ]);
 
         return redirect()->to('/activities')
             ->with(

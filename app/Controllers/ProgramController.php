@@ -116,6 +116,23 @@ class ProgramController extends BaseController
                 );
             }
 
+            $createdProgram = $this->programModel->find((int) $inserted);
+
+            $this->recordCmsAudit([
+                'module' => 'programs',
+                'event_type' => 'program.created',
+                'severity' => 'notice',
+                'subject_type' => 'program',
+                'subject_id' => (int) $inserted,
+                'subject_key' => $createdProgram['slug'] ?? null,
+                'subject_label' => $name,
+                'summary' => 'Program ' . $name . ' ditambahkan.',
+                'metadata' => [
+                    'status' => $this->request->getPost('status'),
+                    'display_order' => (int) $this->request->getPost('display_order'),
+                ],
+            ]);
+
             return redirect()->to('/programs')
                 ->with('success', 'Program GARDA 01 berhasil ditambahkan.');
         } catch (\Throwable $exception) {
@@ -236,6 +253,24 @@ class ProgramController extends BaseController
                 $this->deleteProgramCover($oldCover);
             }
 
+            $updatedProgram = $this->programModel->find($id);
+
+            $this->recordCmsAudit([
+                'module' => 'programs',
+                'event_type' => 'program.updated',
+                'severity' => 'info',
+                'subject_type' => 'program',
+                'subject_id' => $id,
+                'subject_key' => $updatedProgram['slug'] ?? null,
+                'subject_label' => $name,
+                'summary' => 'Program ' . $name . ' diperbarui.',
+                'metadata' => [
+                    'previous_status' => $program['status'] ?? null,
+                    'new_status' => $this->request->getPost('status'),
+                    'cover_changed' => $hasNewCover,
+                ],
+            ]);
+
             return redirect()->to('/programs')
                 ->with('success', 'Program GARDA 01 berhasil diperbarui.');
         } catch (\Throwable $exception) {
@@ -255,7 +290,9 @@ class ProgramController extends BaseController
 
     public function publish(int $id)
     {
-        if (!$this->programModel->find($id)) {
+        $program = $this->programModel->find($id);
+
+        if (!$program) {
             return redirect()->to('/programs')
                 ->with('error', 'Program tidak ditemukan.');
         }
@@ -264,19 +301,51 @@ class ProgramController extends BaseController
             'status' => 'published',
         ]);
 
+        $this->recordCmsAudit([
+            'module' => 'programs',
+            'event_type' => 'program.published',
+            'severity' => 'notice',
+            'subject_type' => 'program',
+            'subject_id' => $id,
+            'subject_key' => $program['slug'] ?? null,
+            'subject_label' => $program['name'] ?? 'Program',
+            'summary' => 'Program ' . ($program['name'] ?? '#' . $id) . ' dipublikasikan.',
+            'metadata' => [
+                'previous_status' => $program['status'] ?? null,
+                'new_status' => 'published',
+            ],
+        ]);
+
         return redirect()->to('/programs')
             ->with('success', 'Program berhasil dipublikasikan.');
     }
 
     public function archive(int $id)
     {
-        if (!$this->programModel->find($id)) {
+        $program = $this->programModel->find($id);
+
+        if (!$program) {
             return redirect()->to('/programs')
                 ->with('error', 'Program tidak ditemukan.');
         }
 
         $this->programModel->update($id, [
             'status' => 'archived',
+        ]);
+
+        $this->recordCmsAudit([
+            'module' => 'programs',
+            'event_type' => 'program.archived',
+            'severity' => 'warning',
+            'subject_type' => 'program',
+            'subject_id' => $id,
+            'subject_key' => $program['slug'] ?? null,
+            'subject_label' => $program['name'] ?? 'Program',
+            'summary' => 'Program ' . ($program['name'] ?? '#' . $id) . ' diarsipkan.',
+            'metadata' => [
+                'previous_status' => $program['status'] ?? null,
+                'new_status' => 'archived',
+            ],
         ]);
 
         return redirect()->to('/programs')

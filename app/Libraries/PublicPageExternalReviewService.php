@@ -811,6 +811,16 @@ class PublicPageExternalReviewService
                 'created_at' =>
                     date('Y-m-d H:i:s'),
             ]);
+
+            (new CmsAuditService())
+                ->recordExternalReviewEvent(
+                    $pageId,
+                    $tokenId,
+                    $eventType,
+                    $metadata,
+                    $ipAddress,
+                    $userAgent
+                );
         } catch (\Throwable $exception) {
             log_message(
                 'warning',

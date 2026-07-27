@@ -215,6 +215,9 @@ class Permissions extends BaseConfig
         'website.pages.revisions.restore' => 'memulihkan versi halaman publik ke draft',
         'website.pages.external_preview.manage' => 'mengelola tautan review eksternal halaman publik',
 
+        'website.audit.view' => 'melihat audit aktivitas CMS terpusat',
+        'website.audit.export' => 'mengekspor audit aktivitas CMS',
+
         'website.navigation.view' => 'melihat Navigation Manager',
         'website.navigation.update' => 'mengubah draft navigasi website',
         'website.navigation.preview' => 'melihat preview navigasi website',

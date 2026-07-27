@@ -154,6 +154,11 @@ $routes->get('/website/pages/external-review/(:segment)', 'PublicPageExternalRev
 $routes->post('/website/pages/external-review/(:segment)/create', 'PublicPageExternalReviewController::create/$1', $guard('website.pages.external_preview.manage'));
 $routes->post('/website/pages/external-review/(:segment)/(:num)/revoke', 'PublicPageExternalReviewController::revoke/$1/$2', $guard('website.pages.external_preview.manage'));
 
+/* Central CMS audit */
+$routes->get('/website/audit', 'CmsAuditController::index', $guard('website.audit.view'));
+$routes->get('/website/audit/export', 'CmsAuditController::export', $guard('website.audit.export'));
+$routes->get('/website/audit/(:num)', 'CmsAuditController::show/$1', $guard('website.audit.view'));
+
 /* Website Navigation Manager */
 $routes->get('/website/navigation', 'WebsiteNavigationController::index', $guard('website.navigation.view'));
 $routes->get('/website/navigation/edit/(:segment)', 'WebsiteNavigationController::edit/$1', $guard('website.navigation.update'));
