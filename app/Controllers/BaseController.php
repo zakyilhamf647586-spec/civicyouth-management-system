@@ -10,6 +10,13 @@ use Psr\Log\LoggerInterface;
 
 abstract class BaseController extends Controller
 {
+    /**
+     * Request-scoped external preview context.
+     *
+     * @var array<string, mixed>|null
+     */
+    protected ?array $externalCmsPreviewContext = null;
+
     protected $helpers = [
         'url',
         'form',
@@ -28,11 +35,57 @@ abstract class BaseController extends Controller
     }
 
     /**
-     * @return array{page: ?array, preview: bool}
+     * @param array<string, mixed> $context
+     */
+    protected function useExternalCmsPreview(
+        array $context
+    ): void {
+        $this->externalCmsPreviewContext = $context;
+    }
+
+    /**
+     * @return array{
+     *     page: ?array,
+     *     preview: bool,
+     *     external: bool,
+     *     external_token: ?string,
+     *     external_meta: ?array,
+     *     canonical_url: ?string
+     * }
      */
     protected function publicCmsPage(
         string $pageKey
     ): array {
+        if (
+            is_array($this->externalCmsPreviewContext)
+            && (
+                $this->externalCmsPreviewContext[
+                    'page_key'
+                ] ?? null
+            ) === $pageKey
+        ) {
+            return [
+                'page' =>
+                    $this->externalCmsPreviewContext[
+                        'bundle'
+                    ] ?? null,
+                'preview' => true,
+                'external' => true,
+                'external_token' =>
+                    $this->externalCmsPreviewContext[
+                        'raw_token'
+                    ] ?? null,
+                'external_meta' =>
+                    $this->externalCmsPreviewContext[
+                        'meta'
+                    ] ?? null,
+                'canonical_url' =>
+                    $this->externalCmsPreviewContext[
+                        'canonical_url'
+                    ] ?? null,
+            ];
+        }
+
         $previewRequested =
             (string) $this->request->getGet(
                 'cms_preview'
@@ -59,6 +112,10 @@ abstract class BaseController extends Controller
                 return [
                     'page' => null,
                     'preview' => false,
+                    'external' => false,
+                    'external_token' => null,
+                    'external_meta' => null,
+                    'canonical_url' => null,
                 ];
             }
 
@@ -70,6 +127,10 @@ abstract class BaseController extends Controller
                 'preview' =>
                     $previewAllowed
                     && $page !== null,
+                'external' => false,
+                'external_token' => null,
+                'external_meta' => null,
+                'canonical_url' => null,
             ];
         } catch (\Throwable $exception) {
             log_message(
@@ -83,6 +144,10 @@ abstract class BaseController extends Controller
             return [
                 'page' => null,
                 'preview' => false,
+                'external' => false,
+                'external_token' => null,
+                'external_meta' => null,
+                'canonical_url' => null,
             ];
         }
     }

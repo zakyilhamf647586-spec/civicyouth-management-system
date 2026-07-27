@@ -37,6 +37,15 @@ $organizationName = site_setting(
 
 $activePage = $activePage ?? '';
 
+$externalPreview = !empty($externalPreview);
+$externalPreviewToken =
+    $externalPreviewToken ?? null;
+$externalPreviewMeta = is_array(
+    $externalPreviewMeta ?? null
+)
+    ? $externalPreviewMeta
+    : [];
+
 $navigationPreview =
     function_exists('website_navigation_preview_active')
     && website_navigation_preview_active();
@@ -44,6 +53,7 @@ $navigationPreview =
 $pageRobots = (
     !empty($cmsPreview)
     || $navigationPreview
+    || $externalPreview
 )
     ? 'noindex, nofollow, noarchive'
     : ($robots ?? 'index, follow');
@@ -110,6 +120,7 @@ $publicStylesheets = [
     'assets/css/public-footer-refinement.css',
     'assets/css/public-home-impact.css',
     'assets/css/public-cms-preview.css',
+    'assets/css/public-external-review.css',
 ];
 ?>
 <!DOCTYPE html>
@@ -124,6 +135,10 @@ $publicStylesheets = [
 
     <meta name="theme-color" content="#04172d">
     <meta name="robots" content="<?= esc($pageRobots, 'attr') ?>">
+
+    <?php if ($externalPreview) : ?>
+        <meta name="referrer" content="no-referrer">
+    <?php endif; ?>
 
     <title><?= esc($pageTitle) ?></title>
 
@@ -318,7 +333,9 @@ $publicStylesheets = [
     ? 'public-body--cms-preview'
     : '' ?> <?= $navigationPreview
         ? 'public-body--navigation-preview'
-        : '' ?>">
+        : '' ?> <?= $externalPreview
+            ? 'public-body--external-review'
+            : '' ?>">
     <?php if (
         $navigationPreview
         && empty($cmsPreview)
@@ -341,7 +358,10 @@ $publicStylesheets = [
         </div>
     <?php endif; ?>
 
-    <?php if (!empty($cmsPreview)) : ?>
+    <?php if (
+        !empty($cmsPreview)
+        && !$externalPreview
+    ) : ?>
         <div class="public-cms-preview-banner">
             <div>
                 <strong>Preview Draft CMS</strong>
@@ -364,6 +384,34 @@ $publicStylesheets = [
         </div>
     <?php endif; ?>
 
+    <?php if ($externalPreview) : ?>
+        <div class="external-review-public-banner">
+            <div>
+                <strong>Tautan Review Terbatas</strong>
+
+                <span>
+                    Snapshot versi
+                    #<?= (int) (
+                        $externalPreviewMeta[
+                            'version_number'
+                        ] ?? 0
+                    ) ?>
+                    ·
+                    <?= esc(
+                        $externalPreviewMeta['label']
+                        ?? 'Review Eksternal'
+                    ) ?>
+                    ·
+                    Tidak tampil untuk pengunjung umum
+                </span>
+            </div>
+
+            <a href="#external-review-panel">
+                Berikan Tanggapan
+            </a>
+        </div>
+    <?php endif; ?>
+
     <?= view('partials/public_navbar', [
         'activePage' => $activePage,
     ]) ?>
@@ -371,6 +419,22 @@ $publicStylesheets = [
     <main class="public-main">
         <?= $this->renderSection('content') ?>
     </main>
+
+    <?php if (
+        $externalPreview
+        && is_string($externalPreviewToken)
+        && $externalPreviewToken !== ''
+    ) : ?>
+        <?= view(
+            'external_review/feedback_panel',
+            [
+                'externalPreviewToken' =>
+                    $externalPreviewToken,
+                'externalPreviewMeta' =>
+                    $externalPreviewMeta,
+            ]
+        ) ?>
+    <?php endif; ?>
 
     <?= view('partials/public_footer') ?>
 

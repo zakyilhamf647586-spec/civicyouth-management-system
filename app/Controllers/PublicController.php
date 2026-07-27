@@ -211,6 +211,13 @@ class PublicController extends BaseController
             'activePage'          => 'home',
             'cmsPage'             => $cmsPage,
             'cmsPreview'          => $cmsState['preview'],
+            'externalPreview'     => $cmsState['external'],
+            'externalPreviewToken' =>
+                $cmsState['external_token'],
+            'externalPreviewMeta' =>
+                $cmsState['external_meta'],
+            'canonicalUrl' =>
+                $cmsState['canonical_url'],
             'activeMembers'       => $activeMembers,
             'connectedRt'         => $connectedRt,
             'activeOfficials'     => $activeOfficials,
@@ -387,6 +394,14 @@ class PublicController extends BaseController
             'activePage' => 'profile',
             'cmsPage' => $cmsPage,
             'cmsPreview' => $cmsState['preview'],
+            'externalPreview' =>
+                $cmsState['external'],
+            'externalPreviewToken' =>
+                $cmsState['external_token'],
+            'externalPreviewMeta' =>
+                $cmsState['external_meta'],
+            'canonicalUrl' =>
+                $cmsState['canonical_url'],
         ]);
     }
 

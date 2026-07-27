@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Libraries\PublicPageExternalReviewService;
 use App\Libraries\PublicPageRevisionService;
 use App\Models\PublicPageModel;
 use App\Models\PublicPageSectionModel;
@@ -16,6 +17,7 @@ class PublicPageController extends BaseController
     protected UserModel $userModel;
     protected PublicCms $cmsConfig;
     protected PublicPageRevisionService $revisionService;
+    protected PublicPageExternalReviewService $externalReviewService;
 
     /**
      * @var list<string>
@@ -37,6 +39,8 @@ class PublicPageController extends BaseController
         $this->cmsConfig = new PublicCms();
         $this->revisionService =
             new PublicPageRevisionService();
+        $this->externalReviewService =
+            new PublicPageExternalReviewService();
     }
 
     public function index()
@@ -141,10 +145,25 @@ class PublicPageController extends BaseController
             $pages
         );
 
+        $externalReviews =
+            $this->externalReviewService->ready()
+                ? $this->externalReviewService
+                    ->latestReviewsForPages(
+                        array_map(
+                            static fn (array $page): int =>
+                                (int) $page['id'],
+                            $pages
+                        )
+                    )
+                : [];
+
         return view('public_pages/review', [
             'title' => 'Review Halaman Publik',
             'pages' => $pages,
             'userNames' => $userNames,
+            'externalReviews' => $externalReviews,
+            'externalReviewReady' =>
+                $this->externalReviewService->ready(),
             'workflowLabels' =>
                 $this->workflowLabels(),
         ]);
@@ -1199,6 +1218,8 @@ class PublicPageController extends BaseController
                 'Snapshot Awal Draft',
             'review_submission' =>
                 'Dikirim untuk Review',
+            'external_preview' =>
+                'Snapshot Review Eksternal',
             'published' =>
                 'Dipublikasikan',
             'rollback' =>

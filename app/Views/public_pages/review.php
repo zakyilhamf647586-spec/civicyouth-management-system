@@ -88,6 +88,16 @@ $statusLabels = $workflowLabels ?? [];
                 $page['workflow_status'] ?? 'draft'
             );
 
+            $externalReview = is_array(
+                $externalReviews[
+                    (int) $page['id']
+                ] ?? null
+            )
+                ? $externalReviews[
+                    (int) $page['id']
+                ]
+                : null;
+
             $submittedBy = !empty(
                 $page['submitted_by']
             )
@@ -186,6 +196,44 @@ $statusLabels = $workflowLabels ?? [];
                             </span>
                         </div>
                     <?php endif; ?>
+
+                    <?php if ($externalReview) : ?>
+                        <div class="public-cms-external-feedback">
+                            <span>
+                                Tanggapan Reviewer Eksternal
+                            </span>
+
+                            <strong>
+                                <?= match (
+                                    $externalReview['decision']
+                                    ?? 'comment'
+                                ) {
+                                    'approved' =>
+                                        'Layak menurut reviewer',
+                                    'changes_requested' =>
+                                        'Memerlukan perbaikan',
+                                    default =>
+                                        'Komentar eksternal',
+                                } ?>
+                            </strong>
+
+                            <p>
+                                <?= esc(
+                                    $externalReview['comment']
+                                    ?? ''
+                                ) ?>
+                            </p>
+
+                            <small>
+                                <?= esc(
+                                    $externalReview[
+                                        'reviewer_name'
+                                    ] ?? 'Reviewer'
+                                ) ?>
+                                · masukan eksternal, bukan approval internal
+                            </small>
+                        </div>
+                    <?php endif; ?>
                 </div>
 
                 <footer>
@@ -222,6 +270,23 @@ $statusLabels = $workflowLabels ?? [];
                             class="btn btn-secondary"
                         >
                             Riwayat Versi
+                        </a>
+                    <?php endif; ?>
+
+                    <?php if (
+                        $externalReviewReady
+                        && auth_can(
+                            'website.pages.external_preview.manage'
+                        )
+                    ) : ?>
+                        <a
+                            href="<?= base_url(
+                                '/website/pages/external-review/'
+                                . $page['page_key']
+                            ) ?>"
+                            class="btn btn-secondary"
+                        >
+                            Review Eksternal
                         </a>
                     <?php endif; ?>
                 </footer>

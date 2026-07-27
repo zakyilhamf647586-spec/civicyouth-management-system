@@ -29,6 +29,14 @@ class PublicContactController extends BaseController
             'activePage' => 'contact',
             'cmsPage' => $cmsPage,
             'cmsPreview' => $cmsState['preview'],
+            'externalPreview' =>
+                $cmsState['external'],
+            'externalPreviewToken' =>
+                $cmsState['external_token'],
+            'externalPreviewMeta' =>
+                $cmsState['external_meta'],
+            'canonicalUrl' =>
+                $cmsState['canonical_url'],
         ]);
     }
 

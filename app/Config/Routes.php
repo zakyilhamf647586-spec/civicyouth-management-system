@@ -26,6 +26,10 @@ $routes->get('/kegiatan/(:num)', 'PublicController::activityDetail/$1');
 $routes->get('/kontak', 'PublicContactController::index');
 $routes->post('/kontak/kirim', 'PublicContactController::submit');
 
+/* Secure external page review */
+$routes->get('/review/page/(:segment)', 'ExternalPageReviewController::show/$1');
+$routes->post('/review/page/(:segment)/feedback', 'ExternalPageReviewController::feedback/$1');
+
 /* Authentication */
 $routes->get('/login', 'AuthController::login');
 $routes->post('/login', 'AuthController::attemptLogin');
@@ -145,6 +149,10 @@ $routes->post('/website/pages/approve/(:segment)', 'PublicPageController::approv
 $routes->get('/website/pages/revisions/(:segment)', 'PublicPageController::revisions/$1', $guard('website.pages.revisions.view'));
 $routes->get('/website/pages/revisions/(:segment)/(:num)', 'PublicPageController::revisionDetail/$1/$2', $guard('website.pages.revisions.view'));
 $routes->post('/website/pages/revisions/(:segment)/(:num)/restore', 'PublicPageController::restoreRevision/$1/$2', $guard('website.pages.revisions.restore'));
+
+$routes->get('/website/pages/external-review/(:segment)', 'PublicPageExternalReviewController::index/$1', $guard('website.pages.external_preview.manage'));
+$routes->post('/website/pages/external-review/(:segment)/create', 'PublicPageExternalReviewController::create/$1', $guard('website.pages.external_preview.manage'));
+$routes->post('/website/pages/external-review/(:segment)/(:num)/revoke', 'PublicPageExternalReviewController::revoke/$1/$2', $guard('website.pages.external_preview.manage'));
 
 /* Website Navigation Manager */
 $routes->get('/website/navigation', 'WebsiteNavigationController::index', $guard('website.navigation.view'));

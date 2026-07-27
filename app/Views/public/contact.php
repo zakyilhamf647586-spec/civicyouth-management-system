@@ -21,6 +21,7 @@ $contactCssVersion = is_file($contactCssPath)
 
 <?php
 $cmsPage = $cmsPage ?? null;
+$externalPreview = !empty($externalPreview);
 
 $contactEmail = trim((string) site_setting(
     'contact_email',
@@ -380,6 +381,9 @@ $valueItems = array_values(array_filter(array_map(
                 </h2>
 
                 <p>
+                    <?php if ($externalPreview) : ?>
+                        Form kontak dinonaktifkan selama review eksternal.
+                    <?php else : ?>
                     <?= esc(public_cms_value(
                         $cmsPage,
                         'form_intro',
@@ -414,9 +418,16 @@ $valueItems = array_values(array_filter(array_map(
         <?php endif; ?>
 
         <form
-            action="<?= base_url('/kontak/kirim') ?>"
+            action="<?= $externalPreview
+                ? '#external-review-panel'
+                : base_url('/kontak/kirim') ?>"
             method="post"
-            class="contact-public-form"
+            class="contact-public-form <?= $externalPreview
+                ? 'is-external-preview-disabled'
+                : '' ?>"
+            <?= $externalPreview
+                ? 'inert aria-disabled="true"'
+                : '' ?>
         >
             <?= csrf_field() ?>
 
@@ -540,6 +551,9 @@ $valueItems = array_values(array_filter(array_map(
                 <button
                     type="submit"
                     class="btn btn-primary"
+                    <?= $externalPreview
+                        ? 'disabled'
+                        : '' ?>
                 >
                     <?= esc(public_cms_value(
                         $cmsPage,
@@ -550,12 +564,16 @@ $valueItems = array_values(array_filter(array_map(
                 </button>
 
                 <p>
-                    <?= esc(public_cms_value(
-                        $cmsPage,
-                        'form_intro',
-                        'submit_note',
-                        'Pesan akan masuk ke Portal Pengurus GARDA 01.'
-                    )) ?>
+                    <?php if ($externalPreview) : ?>
+                        Form kontak dinonaktifkan selama review eksternal.
+                    <?php else : ?>
+                        <?= esc(public_cms_value(
+                            $cmsPage,
+                            'form_intro',
+                            'submit_note',
+                            'Pesan akan masuk ke Portal Pengurus GARDA 01.'
+                        )) ?>
+                    <?php endif; ?>
                 </p>
             </div>
         </form>
@@ -678,6 +696,7 @@ $valueItems = array_values(array_filter(array_map(
                         'body',
                         'Untuk kondisi darurat, layanan pemerintahan, keamanan, atau kesehatan, silakan menghubungi instansi resmi yang berwenang.'
                     )) ?>
+                    <?php endif; ?>
                 </p>
             </div>
         <?php endif; ?>

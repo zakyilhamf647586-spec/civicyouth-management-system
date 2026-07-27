@@ -348,6 +348,20 @@ $statusLabels = $workflowLabels ?? [
                             Riwayat Versi
                         </a>
                     <?php endif; ?>
+
+                    <?php if (auth_can(
+                        'website.pages.external_preview.manage'
+                    )) : ?>
+                        <a
+                            href="<?= base_url(
+                                '/website/pages/external-review/'
+                                . $page['page_key']
+                            ) ?>"
+                            class="btn btn-secondary"
+                        >
+                            Review Eksternal
+                        </a>
+                    <?php endif; ?>
                 </footer>
             </article>
         <?php endforeach; ?>

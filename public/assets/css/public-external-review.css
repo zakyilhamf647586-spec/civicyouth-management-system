@@ -1,0 +1,228 @@
+/* GARDA 01 — External Review Surface */
+
+.external-review-public-banner {
+    position: relative;
+    z-index: 1300;
+    min-height: 52px;
+    padding: 9px clamp(16px, 4vw, 56px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    color: #fff;
+    background:
+        linear-gradient(90deg, #5c3f0b, #9a6c13);
+    border-bottom: 2px solid #f0c44d;
+    box-shadow: 0 8px 24px rgba(7, 31, 54, .18);
+}
+
+.external-review-public-banner > div {
+    min-width: 0;
+}
+
+.external-review-public-banner strong,
+.external-review-public-banner span {
+    display: block;
+}
+
+.external-review-public-banner strong {
+    color: #fff5ce;
+    font-size: 12px;
+}
+
+.external-review-public-banner span {
+    margin-top: 3px;
+    color: rgba(255, 255, 255, .78);
+    font-size: 10px;
+}
+
+.external-review-public-banner a {
+    flex: 0 0 auto;
+    padding: 8px 11px;
+    border: 1px solid rgba(255, 255, 255, .36);
+    border-radius: 9px;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 850;
+    text-decoration: none;
+}
+
+.external-review-public-panel {
+    width: min(1120px, calc(100% - 32px));
+    margin: 28px auto;
+    padding: clamp(20px, 4vw, 34px);
+    border: 1px solid #d9e2e8;
+    border-top: 5px solid #c99424;
+    border-radius: 20px;
+    background: #fff;
+    box-shadow: 0 18px 44px rgba(7, 31, 54, .09);
+}
+
+.external-review-public-panel__intro > span {
+    color: #b27e18;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+}
+
+.external-review-public-panel__intro h2 {
+    margin: 7px 0 0;
+    color: #071f36;
+    font-size: clamp(23px, 4vw, 34px);
+}
+
+.external-review-public-panel__intro p {
+    max-width: 760px;
+    margin: 9px 0 0;
+    color: #607485;
+    line-height: 1.65;
+}
+
+.external-review-public-success,
+.external-review-public-error {
+    margin-top: 16px;
+    padding: 12px 14px;
+    border-radius: 11px;
+}
+
+.external-review-public-success {
+    color: #17613d;
+    background: #e4f5eb;
+}
+
+.external-review-public-error {
+    color: #873c48;
+    background: #fae7ea;
+}
+
+.external-review-public-form {
+    margin-top: 20px;
+}
+
+.external-review-public-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.external-review-public-form label,
+.external-review-public-form legend {
+    display: block;
+    margin-bottom: 7px;
+    color: #071f36;
+    font-weight: 800;
+}
+
+.external-review-public-form input[type="text"],
+.external-review-public-form input[type="email"],
+.external-review-public-form textarea {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid #d7e1e7;
+    border-radius: 11px;
+    color: #071f36;
+    background: #fff;
+}
+
+.external-review-public-form input:focus,
+.external-review-public-form textarea:focus {
+    border-color: rgba(7, 31, 54, .55);
+    box-shadow: 0 0 0 4px rgba(7, 31, 54, .09);
+    outline: none;
+}
+
+.external-review-public-form fieldset {
+    margin: 16px 0;
+    padding: 13px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    border: 1px solid #d7e1e7;
+    border-radius: 12px;
+}
+
+.external-review-public-form fieldset label {
+    margin: 0;
+    padding: 9px 11px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    border-radius: 9px;
+    background: #f3f6f8;
+    cursor: pointer;
+}
+
+.external-review-public-submit {
+    margin-top: 14px;
+    min-height: 44px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 11px;
+    color: #fff;
+    background: #071f36;
+    box-shadow: 0 8px 18px rgba(7, 31, 54, .16);
+    font-weight: 850;
+    cursor: pointer;
+}
+
+.external-review-public-submit:hover {
+    transform: translateY(-1px);
+    background: #0b3459;
+}
+
+.external-review-public-completed {
+    margin-top: 18px;
+    padding: 18px;
+    border-left: 4px solid #3b855e;
+    border-radius: 12px;
+    background: #eef8f2;
+}
+
+.external-review-public-completed > span {
+    color: #2e7651;
+    font-size: 9px;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.external-review-public-completed h3 {
+    margin: 6px 0 0;
+    color: #173f2c;
+}
+
+.external-review-public-completed p {
+    margin: 8px 0;
+    color: #567265;
+    line-height: 1.6;
+}
+
+.external-review-public-completed small {
+    color: #668277;
+}
+
+.public-body--external-review
+.contact-public-form.is-external-preview-disabled {
+    opacity: .58;
+    filter: saturate(.75);
+}
+
+@media (max-width: 700px) {
+    .external-review-public-banner {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .external-review-public-banner a {
+        width: 100%;
+        text-align: center;
+    }
+
+    .external-review-public-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .external-review-public-form fieldset {
+        flex-direction: column;
+    }
+}

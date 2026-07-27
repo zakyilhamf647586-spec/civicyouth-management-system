@@ -104,6 +104,20 @@ $editorLocked = $reviewReady
         <?php endif; ?>
 
         <?php if (auth_can(
+            'website.pages.external_preview.manage'
+        )) : ?>
+            <a
+                href="<?= base_url(
+                    '/website/pages/external-review/'
+                    . $pageKey
+                ) ?>"
+                class="btn btn-secondary"
+            >
+                Review Eksternal
+            </a>
+        <?php endif; ?>
+
+        <?php if (auth_can(
             'website.pages.preview'
         )) : ?>
             <a

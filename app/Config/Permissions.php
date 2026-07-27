@@ -213,6 +213,7 @@ class Permissions extends BaseConfig
         'website.pages.approve' => 'menyetujui halaman publik',
         'website.pages.revisions.view' => 'melihat riwayat versi halaman publik',
         'website.pages.revisions.restore' => 'memulihkan versi halaman publik ke draft',
+        'website.pages.external_preview.manage' => 'mengelola tautan review eksternal halaman publik',
 
         'website.navigation.view' => 'melihat Navigation Manager',
         'website.navigation.update' => 'mengubah draft navigasi website',
