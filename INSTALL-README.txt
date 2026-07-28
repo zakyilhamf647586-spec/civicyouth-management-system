@@ -1,27 +1,13 @@
-GARDA 01 — PUBLIC PAGE REVISION HISTORY V1
-=============================================
+GARDA 01 — PRODUCTION DEPLOYMENT READINESS V1
+================================================
 
 PRASYARAT
 ---------
-- Fase 1 Runtime Stabilization
-- Seluruh Fase 2
-- Fase 3A Public Page Review Workflow
+Fase 1 sampai Fase 3D sudah terpasang.
 
-FITUR
------
-- Snapshot versi halaman.
-- Riwayat versi per halaman.
-- Detail isi snapshot.
-- Perbandingan dengan draft aktif.
-- Pemulihan aman sebagai draft baru.
-- Snapshot otomatis pada review dan publish.
-
-MIGRATION
----------
-app/Database/Migrations/2026-07-23-180000_CreatePublicPageRevisions.php
-
-Jalankan:
-php spark migrate
+DATABASE
+--------
+Tidak ada migration baru.
 
 SETELAH EKSTRAK
 ---------------
@@ -31,7 +17,9 @@ Restart server dan tekan Ctrl + F5.
 
 TES
 ----
-/website/pages
-/website/pages/revisions/home
-/website/pages/revisions/profile
-/website/pages/revisions/contact
+php spark production:check
+php spark production:check --json
+php spark production:check --strict
+
+/system/readiness
+/system/readiness/export

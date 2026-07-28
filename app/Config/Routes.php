@@ -16,7 +16,8 @@ $guard = static function (string $permission): array {
 /* Public website */
 $routes->get('/sitemap.xml', 'SeoController::sitemap');
 $routes->get('/robots.txt', 'SeoController::robots');
-$routes->get('/', 'PublicController::index');
+$routes->get('/', 'IntroducingController::index');
+$routes->get('/home', 'PublicController::index');
 $routes->get('/profil', 'PublicController::profile');
 $routes->get('/program', 'PublicController::programs');
 $routes->get('/program/(:segment)', 'PublicController::programDetail/$1');
@@ -158,6 +159,10 @@ $routes->post('/website/pages/external-review/(:segment)/(:num)/revoke', 'Public
 $routes->get('/website/audit', 'CmsAuditController::index', $guard('website.audit.view'));
 $routes->get('/website/audit/export', 'CmsAuditController::export', $guard('website.audit.export'));
 $routes->get('/website/audit/(:num)', 'CmsAuditController::show/$1', $guard('website.audit.view'));
+
+/* Production deployment readiness */
+$routes->get('/system/readiness', 'ProductionReadinessController::index', $guard('system.readiness.view'));
+$routes->get('/system/readiness/export', 'ProductionReadinessController::export', $guard('system.readiness.export'));
 
 /* Website Navigation Manager */
 $routes->get('/website/navigation', 'WebsiteNavigationController::index', $guard('website.navigation.view'));

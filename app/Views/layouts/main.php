@@ -128,6 +128,16 @@ if (str_starts_with(
     ];
 }
 
+if (str_starts_with(
+    $currentPath,
+    'system/readiness'
+)) {
+    $pageContext = [
+        'section' => 'Sistem',
+        'label' => 'Kesiapan Produksi',
+    ];
+}
+
 $pageTitle = $title ?? $pageContext['label'];
 
 $portalOrganizationName = site_setting(
@@ -433,6 +443,11 @@ $todayLabel =
 
     <symbol id="icon-chevron" viewBox="0 0 24 24">
         <path d="m9 6 6 6-6 6"></path>
+    </symbol>
+
+    <symbol id="icon-readiness" viewBox="0 0 24 24">
+        <path d="M12 3l8 4v5c0 5-3.4 8.1-8 9-4.6-.9-8-4-8-9V7l8-4z"></path>
+        <path d="M8.5 12l2.2 2.2 4.8-5"></path>
     </symbol>
 
     <symbol id="icon-settings" viewBox="0 0 24 24">
@@ -794,23 +809,42 @@ $todayLabel =
                 </div>
             <?php endif; ?>
 
-            <?php if (auth_can('users.view')) : ?>
+            <?php if (auth_can_any([
+                'users.view',
+                'system.readiness.view',
+            ])) : ?>
                 <div class="garda-admin-nav-section">
                     <div class="garda-admin-nav-heading">
                         Sistem
                     </div>
 
-                    <a
-                        href="<?= base_url('/users') ?>"
-                        class="garda-admin-nav-link <?= $isActive(['users']) ?>"
-                        title="Manajemen Akun"
-                    >
-                        <svg aria-hidden="true">
-                            <use href="#icon-user"></use>
-                        </svg>
+                    <?php if (auth_can('users.view')) : ?>
+                        <a
+                            href="<?= base_url('/users') ?>"
+                            class="garda-admin-nav-link <?= $isActive(['users']) ?>"
+                            title="Manajemen Akun"
+                        >
+                            <svg aria-hidden="true">
+                                <use href="#icon-user"></use>
+                            </svg>
 
-                        <span>Manajemen Akun</span>
-                    </a>
+                            <span>Manajemen Akun</span>
+                        </a>
+                    <?php endif; ?>
+
+                    <?php if (auth_can('system.readiness.view')) : ?>
+                        <a
+                            href="<?= base_url('/system/readiness') ?>"
+                            class="garda-admin-nav-link <?= $isActive(['system/readiness']) ?>"
+                            title="Kesiapan Produksi"
+                        >
+                            <svg aria-hidden="true">
+                                <use href="#icon-readiness"></use>
+                            </svg>
+
+                            <span>Kesiapan Produksi</span>
+                        </a>
+                    <?php endif; ?>
                 </div>
             <?php endif; ?>
 

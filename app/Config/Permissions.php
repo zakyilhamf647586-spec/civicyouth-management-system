@@ -45,6 +45,8 @@ class Permissions extends BaseConfig
             'website.pages.*',
             'website.navigation.*',
             'website.seo.*',
+            'website.audit.*',
+            'system.readiness.*',
         ],
 
         'sekretaris' => [
@@ -217,6 +219,9 @@ class Permissions extends BaseConfig
 
         'website.audit.view' => 'melihat audit aktivitas CMS terpusat',
         'website.audit.export' => 'mengekspor audit aktivitas CMS',
+
+        'system.readiness.view' => 'melihat kesiapan deployment production',
+        'system.readiness.export' => 'mengekspor laporan kesiapan production',
 
         'website.navigation.view' => 'melihat Navigation Manager',
         'website.navigation.update' => 'mengubah draft navigasi website',

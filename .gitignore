@@ -99,3 +99,10 @@ _modules/*
 /_rbac-review-source/
 /GARDA01-rbac-review-source.zip
 /docs/RBAC-DATABASE-AUDIT.txt
+
+#-------------------------
+# Production Deployment Artifacts
+#-------------------------
+/builds/garda01-production-*
+/deployment-readiness-*.json
+.env.production
