@@ -1,0 +1,401 @@
+/* GARDA 01 — Backup & Disaster Recovery V1 */
+
+.backup-recovery-page {
+    --backup-navy: #071f36;
+    --backup-gold: #c99624;
+    --backup-slate: #647887;
+    --backup-border: #dbe4ea;
+    width: 100%;
+    min-width: 0;
+}
+
+.backup-recovery-header,
+.backup-recovery-actions {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.backup-recovery-header { margin-bottom: 16px; }
+.backup-recovery-actions { flex-wrap: wrap; justify-content: flex-end; }
+
+.backup-recovery-eyebrow {
+    color: var(--backup-gold);
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+
+.backup-recovery-header h2 {
+    margin: 5px 0 0;
+    color: var(--backup-navy);
+    font-size: clamp(25px, 3vw, 33px);
+}
+
+.backup-recovery-header p {
+    max-width: 760px;
+    margin: 7px 0 0;
+    color: var(--backup-slate);
+    line-height: 1.55;
+}
+
+.backup-status-hero {
+    margin-bottom: 14px;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 18px;
+    border: 1px solid var(--backup-border);
+    border-left: 5px solid #c65454;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #fff, #fff2f2);
+    box-shadow: 0 15px 36px rgba(7, 31, 54, .05);
+}
+
+.backup-status-hero.has-backup {
+    border-left-color: #3d8b5d;
+    background: linear-gradient(135deg, #fff, #eef8f2);
+}
+
+.backup-status-main > span,
+.backup-latest > span,
+.backup-stat-grid span,
+.backup-policy-grid span,
+.backup-cli-card span,
+.backup-list-card > header span,
+.backup-runbook > header span {
+    color: var(--backup-gold);
+    font-size: 8px;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.backup-status-main h3 {
+    margin: 5px 0 0;
+    color: var(--backup-navy);
+    font-size: 19px;
+}
+
+.backup-status-main p {
+    margin: 7px 0 0;
+    color: var(--backup-slate);
+    line-height: 1.55;
+}
+
+.backup-latest {
+    min-width: 180px;
+    padding: 14px;
+    border-radius: 12px;
+    background: rgba(239, 243, 246, .78);
+}
+
+.backup-latest strong,
+.backup-latest small {
+    display: block;
+}
+
+.backup-latest strong {
+    margin-top: 6px;
+    color: var(--backup-navy);
+    font-size: 13px;
+}
+
+.backup-latest small {
+    margin-top: 4px;
+    color: var(--backup-slate);
+}
+
+.backup-stat-grid,
+.backup-policy-grid {
+    margin-bottom: 14px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.backup-stat-grid article,
+.backup-policy-grid article {
+    min-width: 0;
+    padding: 13px;
+    border: 1px solid var(--backup-border);
+    border-radius: 12px;
+    background: #fff;
+}
+
+.backup-policy-grid article { background: #f7f4eb; }
+
+.backup-stat-grid span,
+.backup-stat-grid strong,
+.backup-stat-grid small,
+.backup-policy-grid span,
+.backup-policy-grid strong,
+.backup-policy-grid small {
+    display: block;
+}
+
+.backup-stat-grid strong,
+.backup-policy-grid strong {
+    margin-top: 7px;
+    color: var(--backup-navy);
+    font-size: 20px;
+}
+
+.backup-stat-grid small,
+.backup-policy-grid small {
+    margin-top: 4px;
+    color: var(--backup-slate);
+}
+
+.backup-cli-card,
+.backup-list-card,
+.backup-runbook {
+    margin-bottom: 14px;
+    overflow: hidden;
+    border: 1px solid var(--backup-border);
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 11px 28px rgba(7, 31, 54, .04);
+}
+
+.backup-cli-card {
+    padding: 16px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 16px;
+    border-left: 4px solid var(--backup-gold);
+}
+
+.backup-cli-card h3,
+.backup-list-card > header h3,
+.backup-runbook > header h3 {
+    margin: 5px 0 0;
+    color: var(--backup-navy);
+    font-size: 15px;
+}
+
+.backup-cli-card p {
+    margin: 6px 0 0;
+    color: var(--backup-slate);
+    line-height: 1.5;
+}
+
+.backup-cli-card code {
+    max-width: 520px;
+    padding: 12px 14px;
+    overflow-x: auto;
+    border-radius: 10px;
+    color: #fff;
+    background: var(--backup-navy);
+    white-space: nowrap;
+}
+
+.backup-list-card > header,
+.backup-runbook > header {
+    padding: 15px 17px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border-bottom: 1px solid var(--backup-border);
+    background: #fbfcfd;
+}
+
+.backup-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.backup-list > article {
+    padding: 14px 16px;
+    display: grid;
+    grid-template-columns: 46px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 13px;
+    border-bottom: 1px solid #edf1f3;
+}
+
+.backup-list > article:last-child { border-bottom: 0; }
+
+.backup-icon {
+    width: 42px;
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 11px;
+    color: #fff;
+    background: var(--backup-navy);
+    font-size: 10px;
+    font-weight: 900;
+}
+
+.backup-main { min-width: 0; }
+
+.backup-main > header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.backup-main > header > div > span {
+    color: var(--backup-gold);
+    font-size: 7px;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.backup-main h4 {
+    margin: 4px 0 0;
+    overflow: hidden;
+    color: var(--backup-navy);
+    font-size: 11px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.backup-verification {
+    flex: 0 0 auto;
+    padding: 5px 8px;
+    border-radius: 999px;
+    color: #6b7680;
+    background: #edf2f5;
+    font-size: 7px;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.backup-verification.status-verified {
+    color: #17613d;
+    background: #dff3e8;
+}
+
+.backup-verification.status-failed_checksum,
+.backup-verification.status-failed_zip,
+.backup-verification.status-missing_manifest {
+    color: #9b3232;
+    background: #ffdede;
+}
+
+.backup-main dl {
+    margin: 10px 0 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 7px;
+}
+
+.backup-main dl div {
+    padding: 8px 9px;
+    border-radius: 8px;
+    background: #f4f7f9;
+}
+
+.backup-main dt {
+    color: var(--backup-slate);
+    font-size: 6.5px;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.backup-main dd {
+    margin: 4px 0 0;
+    color: var(--backup-navy);
+    font-size: 8.5px;
+}
+
+.backup-item-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 7px;
+}
+
+.backup-empty-state {
+    padding: 34px;
+    text-align: center;
+}
+
+.backup-empty-state strong { color: var(--backup-navy); }
+.backup-empty-state p { margin: 6px 0 0; color: var(--backup-slate); }
+
+.backup-runbook ol {
+    margin: 0;
+    padding: 14px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    list-style: none;
+}
+
+.backup-runbook li {
+    padding: 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    border-radius: 10px;
+    background: #f4f7f9;
+}
+
+.backup-runbook b { color: var(--backup-gold); font-size: 9px; }
+.backup-runbook li span { color: var(--backup-navy); line-height: 1.45; }
+
+@media (max-width: 1100px) {
+    .backup-stat-grid,
+    .backup-policy-grid,
+    .backup-main dl {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .backup-runbook ol {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+    .backup-recovery-header,
+    .backup-status-hero,
+    .backup-cli-card {
+        grid-template-columns: 1fr;
+        flex-direction: column;
+    }
+
+    .backup-recovery-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .backup-list > article {
+        grid-template-columns: 42px minmax(0, 1fr);
+    }
+
+    .backup-item-actions {
+        grid-column: 2;
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 520px) {
+    .backup-stat-grid,
+    .backup-policy-grid,
+    .backup-main dl,
+    .backup-runbook ol {
+        grid-template-columns: 1fr;
+    }
+
+    .backup-main > header {
+        flex-direction: column;
+    }
+
+    .backup-list > article {
+        grid-template-columns: 1fr;
+    }
+
+    .backup-item-actions {
+        grid-column: 1;
+    }
+}

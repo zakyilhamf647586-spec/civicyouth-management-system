@@ -44,6 +44,7 @@ class ProductionReadinessController extends BaseController
                 'security' => 'Keamanan',
                 'database' => 'Database',
                 'filesystem' => 'Filesystem',
+                'recovery' => 'Backup & Recovery',
                 'application' => 'Aplikasi',
                 'deployment' => 'Aset Deployment',
                 'manual' => 'Validasi Manual',

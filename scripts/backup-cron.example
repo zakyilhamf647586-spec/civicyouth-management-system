@@ -1,0 +1,6 @@
+# GARDA 01 daily backup — Linux cron example
+# Adjust PHP and project paths.
+
+0 2 * * * cd /var/www/garda01/current && /usr/bin/php spark backup:create --tag scheduled >> writable/logs/scheduled-backup.log 2>&1
+15 2 * * * cd /var/www/garda01/current && LATEST=$(find writable/backups -maxdepth 1 -name 'garda01-backup-*.zip' -printf '%T@ %f\n' | sort -nr | head -1 | cut -d' ' -f2-) && [ -n "$LATEST" ] && /usr/bin/php spark backup:verify --file "$LATEST" >> writable/logs/scheduled-backup.log 2>&1
+30 2 * * * cd /var/www/garda01/current && /usr/bin/php spark backup:prune >> writable/logs/scheduled-backup.log 2>&1

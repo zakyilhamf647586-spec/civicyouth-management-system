@@ -47,6 +47,10 @@ class Permissions extends BaseConfig
             'website.seo.*',
             'website.audit.*',
             'system.readiness.*',
+
+            'system.backups.view',
+            'system.backups.create',
+            'system.backups.verify',
         ],
 
         'sekretaris' => [
@@ -222,6 +226,11 @@ class Permissions extends BaseConfig
 
         'system.readiness.view' => 'melihat kesiapan deployment production',
         'system.readiness.export' => 'mengekspor laporan kesiapan production',
+
+        'system.backups.view' => 'melihat pusat backup dan pemulihan',
+        'system.backups.create' => 'membuat backup aplikasi',
+        'system.backups.verify' => 'memverifikasi integritas backup',
+        'system.backups.prune' => 'menjalankan retensi dan menghapus backup lama',
 
         'website.navigation.view' => 'melihat Navigation Manager',
         'website.navigation.update' => 'mengubah draft navigasi website',

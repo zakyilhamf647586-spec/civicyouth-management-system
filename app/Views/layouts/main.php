@@ -138,6 +138,16 @@ if (str_starts_with(
     ];
 }
 
+if (str_starts_with(
+    $currentPath,
+    'system/backups'
+)) {
+    $pageContext = [
+        'section' => 'Sistem',
+        'label' => 'Backup & Pemulihan',
+    ];
+}
+
 $pageTitle = $title ?? $pageContext['label'];
 
 $portalOrganizationName = site_setting(
@@ -443,6 +453,13 @@ $todayLabel =
 
     <symbol id="icon-chevron" viewBox="0 0 24 24">
         <path d="m9 6 6 6-6 6"></path>
+    </symbol>
+
+    <symbol id="icon-backup" viewBox="0 0 24 24">
+        <path d="M5 4h14v6H5z"></path>
+        <path d="M5 14h14v6H5z"></path>
+        <path d="M8 7h.01M8 17h.01"></path>
+        <path d="M12 10v4"></path>
     </symbol>
 
     <symbol id="icon-readiness" viewBox="0 0 24 24">
@@ -812,6 +829,7 @@ $todayLabel =
             <?php if (auth_can_any([
                 'users.view',
                 'system.readiness.view',
+                'system.backups.view',
             ])) : ?>
                 <div class="garda-admin-nav-section">
                     <div class="garda-admin-nav-heading">
@@ -843,6 +861,20 @@ $todayLabel =
                             </svg>
 
                             <span>Kesiapan Produksi</span>
+                        </a>
+                    <?php endif; ?>
+
+                    <?php if (auth_can('system.backups.view')) : ?>
+                        <a
+                            href="<?= base_url('/system/backups') ?>"
+                            class="garda-admin-nav-link <?= $isActive(['system/backups']) ?>"
+                            title="Backup & Pemulihan"
+                        >
+                            <svg aria-hidden="true">
+                                <use href="#icon-backup"></use>
+                            </svg>
+
+                            <span>Backup & Pemulihan</span>
                         </a>
                     <?php endif; ?>
                 </div>

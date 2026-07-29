@@ -1,9 +1,9 @@
-GARDA 01 — PRODUCTION DEPLOYMENT READINESS V1
-================================================
+GARDA 01 — AUTOMATED BACKUP & DISASTER RECOVERY V1
+====================================================
 
 PRASYARAT
 ---------
-Fase 1 sampai Fase 3D sudah terpasang.
+Fase 1 sampai Fase 4A sudah terpasang.
 
 DATABASE
 --------
@@ -13,13 +13,24 @@ SETELAH EKSTRAK
 ---------------
 php spark cache:clear
 
-Restart server dan tekan Ctrl + F5.
+COMMAND
+-------
+php spark backup:create --tag manual
+php spark backup:list
+php spark backup:verify --file ARCHIVE.zip
+php spark backup:prune --dry-run
+php spark backup:prune
 
-TES
-----
-php spark production:check
-php spark production:check --json
-php spark production:check --strict
+RESTORE
+-------
+php spark backup:restore --file ARCHIVE.zip --yes --maintenance-confirmed YES
 
-/system/readiness
-/system/readiness/export
+PORTAL
+------
+/system/backups
+
+SOURCE-SPECIFIC SAFETY AUDIT
+----------------------------
+This package was revalidated against the latest uploaded source on 2026-07-28.
+It has zero path overlap with the current Introducing and public-premium files.
+Checkpoint the current public work before extraction.

@@ -33,6 +33,7 @@ class ProductionReadinessService
         $this->securityChecks();
         $this->databaseChecks();
         $this->filesystemChecks();
+        $this->recoveryChecks();
         $this->applicationChecks();
         $this->deploymentChecks();
         $this->manualChecks();
@@ -88,6 +89,7 @@ class ProductionReadinessService
             'security' => [],
             'database' => [],
             'filesystem' => [],
+            'recovery' => [],
             'application' => [],
             'deployment' => [],
             'manual' => [],
@@ -810,6 +812,141 @@ class ProductionReadinessService
                 : 'Folder backups berisi file.',
             'Simpan backup di lokasi privat terpisah.'
         );
+    }
+
+    protected function recoveryChecks(): void
+    {
+        try {
+            $service = new BackupRecoveryService();
+            $status = $service->status();
+            $latest = $status['latest'] ?? null;
+            $isProduction = ENVIRONMENT === 'production';
+
+            $storageReady = !empty($status['directory_ready'])
+                && !empty($status['temporary_ready']);
+
+            $this->add(
+                'recovery.storage',
+                'recovery',
+                'Storage backup siap',
+                $storageReady ? 'pass' : 'fail',
+                true,
+                $storageReady
+                    ? 'Folder backup dan temporary writable.'
+                    : 'Folder backup atau temporary belum writable.',
+                'Perbaiki permission writable/backups dan writable/backup-temp.'
+            );
+
+            $hasBackup = is_array($latest);
+
+            $this->add(
+                'recovery.exists',
+                'recovery',
+                'Backup aplikasi tersedia',
+                $hasBackup
+                    ? 'pass'
+                    : ($isProduction ? 'fail' : 'warning'),
+                $isProduction,
+                $hasBackup
+                    ? 'Backup terbaru ditemukan.'
+                    : 'Belum ada backup aplikasi.',
+                'Jalankan php spark backup:create dan simpan salinan kedua di luar server.'
+            );
+
+            if ($hasBackup) {
+                $ageHours = $service->latestBackupAgeHours();
+                $warningHours = (int) env('backup.warningAgeHours', 48);
+                $criticalHours = (int) env('backup.criticalAgeHours', 168);
+
+                $ageStatus = $ageHours !== null && $ageHours <= $warningHours
+                    ? 'pass'
+                    : (
+                        $ageHours !== null && $ageHours <= $criticalHours
+                            ? 'warning'
+                            : ($isProduction ? 'fail' : 'warning')
+                    );
+
+                $this->add(
+                    'recovery.age',
+                    'recovery',
+                    'Backup terbaru masih segar',
+                    $ageStatus,
+                    $isProduction && $ageStatus === 'fail',
+                    $ageHours !== null
+                        ? 'Usia backup: ' . $ageHours . ' jam.'
+                        : 'Usia backup tidak dapat dihitung.',
+                    'Jalankan backup otomatis sekurangnya sekali sehari.'
+                );
+
+                $verified = (
+                    $latest['verification_status'] ?? ''
+                ) === 'verified';
+
+                $this->add(
+                    'recovery.verified',
+                    'recovery',
+                    'Backup terbaru terverifikasi',
+                    $verified
+                        ? 'pass'
+                        : ($isProduction ? 'fail' : 'warning'),
+                    $isProduction && !$verified,
+                    $verified
+                        ? 'Checksum dan isi archive telah diverifikasi.'
+                        : 'Backup terbaru belum terverifikasi.',
+                    'Jalankan php spark backup:verify --file ARCHIVE.zip.'
+                );
+            }
+
+            $restoreTool = !empty($status['native_tools']['mysql']);
+
+            $this->add(
+                'recovery.mysql',
+                'recovery',
+                'mysql client untuk restore tersedia',
+                $restoreTool ? 'pass' : 'warning',
+                false,
+                $restoreTool
+                    ? 'Binary mysql terdeteksi.'
+                    : 'Binary mysql belum ditemukan.',
+                'Atur backup.mysqlPath pada .env agar restore CLI siap.'
+            );
+
+            if ($status['free_bytes'] !== null) {
+                $minimum = (int) env(
+                    'backup.minimumFreeSpaceBytes',
+                    1073741824
+                );
+
+                $this->add(
+                    'recovery.space',
+                    'recovery',
+                    'Ruang storage backup memadai',
+                    $status['free_bytes'] >= $minimum
+                        ? 'pass'
+                        : 'warning',
+                    false,
+                    'Ruang kosong: '
+                        . number_format(
+                            $status['free_bytes'] / 1073741824,
+                            2
+                        )
+                        . ' GB.',
+                    'Sediakan minimal 1 GB atau beberapa kali ukuran data aktif.'
+                );
+            }
+        } catch (\Throwable $exception) {
+            $this->add(
+                'recovery.service',
+                'recovery',
+                'Layanan backup dapat diperiksa',
+                ENVIRONMENT === 'production'
+                    ? 'fail'
+                    : 'warning',
+                ENVIRONMENT === 'production',
+                'Layanan backup belum dapat diperiksa.',
+                'Periksa extension zip, konfigurasi, dan permission writable.'
+            );
+        }
     }
 
     protected function applicationChecks(): void

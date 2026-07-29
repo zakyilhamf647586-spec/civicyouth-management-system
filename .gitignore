@@ -106,3 +106,14 @@ _modules/*
 /builds/garda01-production-*
 /deployment-readiness-*.json
 .env.production
+
+#-------------------------
+# Runtime Backup Archives
+#-------------------------
+/writable/backups/*
+!/writable/backups/.htaccess
+!/writable/backups/index.html
+/writable/backup-temp/*
+!/writable/backup-temp/.htaccess
+!/writable/backup-temp/index.html
+/writable/backup-operation.lock

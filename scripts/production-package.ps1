@@ -68,7 +68,9 @@ function Test-ExcludedPath {
         'writable/logs/',
         'writable/session/',
         'writable/debugbar/',
-        'writable/uploads/'
+        'writable/uploads/',
+        'writable/backups/',
+        'writable/backup-temp/'
     )) {
         if ($Normalized.StartsWith($Prefix, [System.StringComparison]::OrdinalIgnoreCase)) {
             $Name = Split-Path $Normalized -Leaf

@@ -164,6 +164,13 @@ $routes->get('/website/audit/(:num)', 'CmsAuditController::show/$1', $guard('web
 $routes->get('/system/readiness', 'ProductionReadinessController::index', $guard('system.readiness.view'));
 $routes->get('/system/readiness/export', 'ProductionReadinessController::export', $guard('system.readiness.export'));
 
+/* Automated backup and disaster recovery */
+$routes->get('/system/backups', 'BackupRecoveryController::index', $guard('system.backups.view'));
+$routes->post('/system/backups/create', 'BackupRecoveryController::create', $guard('system.backups.create'));
+$routes->post('/system/backups/verify', 'BackupRecoveryController::verify', $guard('system.backups.verify'));
+$routes->post('/system/backups/prune', 'BackupRecoveryController::prune', $guard('system.backups.prune'));
+$routes->get('/system/backups/manifest/(:segment)', 'BackupRecoveryController::manifest/$1', $guard('system.backups.view'));
+
 /* Website Navigation Manager */
 $routes->get('/website/navigation', 'WebsiteNavigationController::index', $guard('website.navigation.view'));
 $routes->get('/website/navigation/edit/(:segment)', 'WebsiteNavigationController::edit/$1', $guard('website.navigation.update'));
