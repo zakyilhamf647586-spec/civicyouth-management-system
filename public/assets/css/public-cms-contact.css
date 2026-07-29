@@ -1,8 +1,11 @@
-/* GARDA 01 — Public Contact CMS Complete V1 */
-
 .contact-channel-section {
-    margin: 0 0 28px;
+    position: relative;
+    width: calc(100% - 48px);
+    max-width: var(--container-width, 1180px);
+    margin: 0 auto 28px;
     padding: 26px;
+    overflow: hidden;
+    box-sizing: border-box;
     border: 1px solid rgba(15, 43, 68, .12);
     border-radius: 24px;
     background: #ffffff;
@@ -137,6 +140,10 @@
 }
 
 @media (max-width: 900px) {
+    .contact-channel-section {
+        width: calc(100% - 40px);
+    }
+
     .contact-channel-grid {
         grid-template-columns: 1fr;
     }
@@ -153,6 +160,7 @@
 
 @media (max-width: 640px) {
     .contact-channel-section {
+        width: calc(100% - 32px);
         padding: 20px;
         border-radius: 19px;
     }

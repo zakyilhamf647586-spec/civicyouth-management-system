@@ -46,7 +46,7 @@ $isNavActive = static function (
         <a
             href="<?= base_url('/') ?>"
             class="public-brand"
-            aria-label="<?= esc($organizationName) ?> — Beranda"
+            aria-label="Kembali ke Introducing <?= esc($organizationName) ?>"
         >
             <img
                 src="<?= esc($logoUrl, 'attr') ?>"

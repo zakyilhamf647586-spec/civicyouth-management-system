@@ -1,0 +1,1116 @@
+/* =========================================================
+   GARDA 01 — Public Premium Experience V2
+   Refinement layer only. All rules are scoped to the public
+   layout so the portal/admin workflow remains untouched.
+========================================================= */
+
+.public-body.public-experience-v2 {
+    --g01-premium-border: rgba(8, 39, 68, 0.095);
+    --g01-premium-gold-border: rgba(217, 163, 22, 0.22);
+    --g01-premium-surface: rgba(255, 255, 255, 0.94);
+    --g01-premium-shadow: 0 18px 48px rgba(4, 23, 45, 0.085);
+    --g01-premium-shadow-hover: 0 26px 72px rgba(4, 23, 45, 0.14);
+    --g01-premium-ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+    overflow-x: hidden;
+    font-family:
+        "Segoe UI Variable",
+        "Segoe UI",
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    background:
+        radial-gradient(
+            circle at 7% 8%,
+            rgba(217, 163, 22, 0.075),
+            transparent 23rem
+        ),
+        radial-gradient(
+            circle at 96% 32%,
+            rgba(8, 39, 68, 0.055),
+            transparent 30rem
+        ),
+        var(--color-ivory-100);
+}
+
+.public-experience-v2 .public-main {
+    position: relative;
+    isolation: isolate;
+}
+
+.public-experience-v2 .public-main::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+        linear-gradient(
+            rgba(8, 39, 68, 0.018) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(8, 39, 68, 0.018) 1px,
+            transparent 1px
+        );
+    background-size: 64px 64px;
+    mask-image: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.22),
+        transparent 42%
+    );
+}
+
+.public-skip-link {
+    position: fixed;
+    top: 10px;
+    left: 14px;
+    z-index: 5000;
+    padding: 10px 14px;
+    color: var(--color-navy-950);
+    background: var(--color-gold-400);
+    border-radius: 10px;
+    box-shadow: var(--g01-premium-shadow);
+    font-size: 13px;
+    font-weight: 850;
+    text-decoration: none;
+    transform: translateY(-160%);
+    transition: transform 0.2s ease;
+}
+
+.public-skip-link:focus {
+    transform: translateY(0);
+}
+
+.public-experience-v2 :where(a, button, input, select, textarea):focus-visible {
+    outline: 3px solid rgba(231, 187, 71, 0.72);
+    outline-offset: 3px;
+}
+
+.public-experience-v2 :where(
+    .public-content-section,
+    .garda-home-section,
+    .public-page-cta,
+    .garda-home-collaboration,
+    .g01-impact-story,
+    .officials-structure-section,
+    .officials-profile-section,
+    .activity-detail-main,
+    .activity-editorial-section,
+    .activity-impact-section,
+    .activity-related-section
+) {
+    scroll-margin-top: 104px;
+}
+
+/* ---------------------------------------------------------
+   Navbar — quieter at rest, more compact after scrolling
+--------------------------------------------------------- */
+
+.public-experience-v2 .public-navbar {
+    transition:
+        min-height 0.3s var(--g01-premium-ease),
+        background 0.3s ease,
+        box-shadow 0.3s ease,
+        border-color 0.3s ease;
+}
+
+.public-experience-v2 .public-navbar::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: -1px;
+    left: 0;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(231, 187, 71, 0.82) 28%,
+        rgba(231, 187, 71, 0.82) 72%,
+        transparent
+    );
+    opacity: 0.76;
+}
+
+.public-experience-v2 .public-navbar.public-navbar--scrolled {
+    min-height: 66px;
+    background: rgba(4, 23, 45, 0.94);
+    border-bottom-color: rgba(217, 163, 22, 0.32);
+    box-shadow: 0 14px 36px rgba(4, 23, 45, 0.21);
+}
+
+.public-experience-v2 .public-navbar.public-navbar--scrolled
+.public-navbar-inner {
+    min-height: 66px;
+}
+
+.public-experience-v2 .public-brand-mark {
+    transition:
+        width 0.3s var(--g01-premium-ease),
+        height 0.3s var(--g01-premium-ease),
+        transform 0.3s var(--g01-premium-ease),
+        box-shadow 0.3s ease;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.13);
+}
+
+.public-experience-v2 .public-brand:hover .public-brand-mark {
+    transform: translateY(-1px) rotate(-1.5deg);
+}
+
+.public-experience-v2 .public-navbar.public-navbar--scrolled
+.public-brand-mark {
+    width: 40px;
+    height: 40px;
+}
+
+.public-experience-v2 .public-navbar.public-navbar--scrolled
+.public-nav-links > a:not(.public-portal-button) {
+    padding-top: 22px;
+    padding-bottom: 20px;
+}
+
+.public-experience-v2 .public-nav-links > a:not(.public-portal-button) {
+    letter-spacing: 0.01em;
+}
+
+.public-experience-v2 .public-portal-button {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+/* ---------------------------------------------------------
+   Button hierarchy — public area only
+--------------------------------------------------------- */
+
+.public-experience-v2 .public-main .btn {
+    min-height: 44px;
+    padding: 11px 17px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+    line-height: 1.1;
+    box-shadow: none;
+    transition:
+        color 0.22s ease,
+        background 0.22s ease,
+        border-color 0.22s ease,
+        transform 0.22s var(--g01-premium-ease),
+        box-shadow 0.22s ease;
+}
+
+.public-experience-v2 .public-main .btn:hover {
+    transform: translateY(-2px);
+}
+
+.public-experience-v2 .public-main .btn-primary {
+    color: #fff;
+    background: linear-gradient(
+        135deg,
+        var(--color-navy-800),
+        var(--color-navy-950)
+    );
+    border: 1px solid rgba(4, 23, 45, 0.36);
+    box-shadow: 0 10px 24px rgba(4, 23, 45, 0.15);
+}
+
+.public-experience-v2 .public-main .btn-primary:hover {
+    color: #fff;
+    background: linear-gradient(
+        135deg,
+        var(--color-navy-700),
+        var(--color-navy-900)
+    );
+    box-shadow: 0 15px 32px rgba(4, 23, 45, 0.2);
+}
+
+.public-experience-v2 :where(
+    .garda-home-hero-copy,
+    .public-editorial-hero-copy,
+    .program-detail-copy,
+    .contact-public-hero-copy,
+    .officials-hero-copy,
+    .garda-home-collaboration,
+    .g01-impact-story__content,
+    .program-campaign-card,
+    .activity-detail-hero-copy
+) .btn-primary {
+    color: var(--color-navy-950);
+    background: linear-gradient(
+        135deg,
+        #f0c657,
+        var(--color-gold-500)
+    );
+    border-color: rgba(243, 221, 160, 0.54);
+    box-shadow: 0 12px 28px rgba(217, 163, 22, 0.2);
+}
+
+.public-experience-v2 :where(
+    .garda-home-hero-copy,
+    .public-editorial-hero-copy,
+    .program-detail-copy,
+    .contact-public-hero-copy,
+    .officials-hero-copy,
+    .garda-home-collaboration,
+    .g01-impact-story__content,
+    .program-campaign-card,
+    .activity-detail-hero-copy
+) .btn-primary:hover {
+    color: var(--color-navy-950);
+    background: linear-gradient(135deg, #f5d578, #e1aa1d);
+    box-shadow: 0 17px 36px rgba(217, 163, 22, 0.27);
+}
+
+.public-experience-v2 .public-main .btn-secondary {
+    color: var(--color-navy-900);
+    background: rgba(255, 255, 255, 0.74);
+    border: 1px solid rgba(8, 39, 68, 0.14);
+    box-shadow: 0 8px 22px rgba(4, 23, 45, 0.07);
+}
+
+.public-experience-v2 .public-main .btn-secondary:hover {
+    color: var(--color-navy-950);
+    background: #fff;
+    border-color: rgba(217, 163, 22, 0.35);
+}
+
+/* ---------------------------------------------------------
+   Typography and section rhythm
+--------------------------------------------------------- */
+
+.public-experience-v2 .public-kicker,
+.public-experience-v2 .garda-home-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: 0.13em;
+}
+
+.public-experience-v2 .public-kicker::before,
+.public-experience-v2 .garda-home-eyebrow::before {
+    content: "";
+    width: 23px;
+    height: 2px;
+    flex: 0 0 auto;
+    border-radius: 999px;
+    background: currentColor;
+    opacity: 0.88;
+}
+
+.public-experience-v2 :where(
+    .garda-home-section-heading,
+    .public-section-header,
+    .officials-section-heading,
+    .activity-editorial-heading
+) h2 {
+    text-wrap: balance;
+}
+
+.public-experience-v2 :where(
+    .garda-home-section-heading,
+    .public-section-header,
+    .officials-section-heading
+) > p {
+    max-width: 690px;
+}
+
+.public-experience-v2 .garda-home-section,
+.public-experience-v2 .public-content-section {
+    position: relative;
+}
+
+.public-experience-v2 .garda-home-section + .garda-home-section,
+.public-experience-v2 .public-content-section + .public-content-section {
+    border-top: 1px solid rgba(8, 39, 68, 0.055);
+}
+
+.public-experience-v2 .public-section-header {
+    margin-bottom: 30px;
+}
+
+.public-experience-v2 .public-section-header h2 {
+    letter-spacing: -0.035em;
+}
+
+/* ---------------------------------------------------------
+   Homepage hero and featured story
+--------------------------------------------------------- */
+
+.public-experience-v2 .garda-home-hero {
+    gap: 22px;
+    padding-top: 58px;
+}
+
+.public-experience-v2 .garda-home-hero-copy {
+    border-radius: 30px;
+    border-color: rgba(231, 187, 71, 0.28);
+    box-shadow:
+        0 30px 80px rgba(4, 23, 45, 0.19),
+        inset 0 1px 0 rgba(255, 255, 255, 0.055);
+}
+
+.public-experience-v2 .garda-home-hero-copy::before,
+.public-experience-v2 .public-editorial-hero-copy::before,
+.public-experience-v2 .program-detail-copy::before,
+.public-experience-v2 .officials-hero-copy::before,
+.public-experience-v2 .contact-public-hero-copy::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 13%;
+    left: 13%;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(243, 221, 160, 0.82),
+        transparent
+    );
+}
+
+.public-experience-v2 .garda-home-hero-copy h1 {
+    letter-spacing: -0.055em;
+    text-shadow: 0 16px 42px rgba(0, 0, 0, 0.16);
+}
+
+.public-experience-v2 .garda-home-manifesto {
+    position: relative;
+    padding-left: 18px;
+}
+
+.public-experience-v2 .garda-home-manifesto::before {
+    content: "";
+    position: absolute;
+    top: 4px;
+    bottom: 4px;
+    left: 0;
+    width: 3px;
+    border-radius: 999px;
+    background: linear-gradient(
+        to bottom,
+        var(--color-gold-400),
+        rgba(231, 187, 71, 0.14)
+    );
+}
+
+.public-experience-v2 .garda-home-featured {
+    position: relative;
+    border-top-width: 0;
+    border: 1px solid rgba(217, 163, 22, 0.2);
+    box-shadow: var(--g01-premium-shadow);
+    transition:
+        transform 0.35s var(--g01-premium-ease),
+        box-shadow 0.35s ease;
+}
+
+.public-experience-v2 .garda-home-featured::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 24px;
+    left: 24px;
+    z-index: 4;
+    height: 4px;
+    border-radius: 0 0 999px 999px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        var(--color-gold-500),
+        transparent
+    );
+}
+
+.public-experience-v2 .garda-home-featured:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--g01-premium-shadow-hover);
+}
+
+.public-experience-v2 .garda-home-featured-media::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0;
+    height: 38%;
+    pointer-events: none;
+    background: linear-gradient(
+        to top,
+        rgba(4, 23, 45, 0.34),
+        transparent
+    );
+}
+
+.public-experience-v2 .garda-home-featured-label {
+    z-index: 2;
+    border: 1px solid rgba(255, 255, 255, 0.58);
+    backdrop-filter: blur(10px);
+}
+
+.public-experience-v2 .garda-home-featured-content {
+    padding: 25px 26px 26px;
+}
+
+.public-experience-v2 .garda-home-featured-content h3 {
+    letter-spacing: -0.025em;
+}
+
+/* ---------------------------------------------------------
+   Homepage statistics, values, programs, activities
+--------------------------------------------------------- */
+
+.public-experience-v2 .garda-home-statistics {
+    gap: 14px;
+}
+
+.public-experience-v2 .garda-home-statistics article {
+    position: relative;
+    overflow: hidden;
+    border-top: 0;
+    border: 1px solid var(--g01-premium-border);
+    box-shadow: 0 14px 36px rgba(4, 23, 45, 0.065);
+    transition:
+        transform 0.28s var(--g01-premium-ease),
+        border-color 0.28s ease,
+        box-shadow 0.28s ease;
+}
+
+.public-experience-v2 .garda-home-statistics article::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 4px;
+    background: linear-gradient(
+        to bottom,
+        var(--color-gold-400),
+        var(--color-gold-600)
+    );
+}
+
+.public-experience-v2 .garda-home-statistics article::after {
+    content: "";
+    position: absolute;
+    right: -28px;
+    bottom: -40px;
+    width: 108px;
+    height: 108px;
+    border: 1px solid rgba(217, 163, 22, 0.12);
+    border-radius: 50%;
+}
+
+.public-experience-v2 .garda-home-statistics article:hover {
+    transform: translateY(-4px);
+    border-color: rgba(217, 163, 22, 0.25);
+    box-shadow: var(--g01-premium-shadow);
+}
+
+.public-experience-v2 .garda-home-value-grid article,
+.public-experience-v2 .garda-home-program-card,
+.public-experience-v2 .garda-home-activity-card,
+.public-experience-v2 .program-pillar-card,
+.public-experience-v2 .public-activity-card,
+.public-experience-v2 .profile-value-grid article {
+    border-color: var(--g01-premium-border);
+    box-shadow: var(--g01-premium-shadow);
+}
+
+.public-experience-v2 .garda-home-value-grid article {
+    position: relative;
+    overflow: hidden;
+}
+
+.public-experience-v2 .garda-home-value-grid article::after {
+    content: attr(data-value);
+    position: absolute;
+    right: 15px;
+    bottom: -17px;
+    color: rgba(8, 39, 68, 0.035);
+    font-size: 92px;
+    font-weight: 900;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.public-experience-v2 .garda-home-value-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 36px;
+    min-height: 28px;
+    padding: 5px 9px;
+    background: rgba(217, 163, 22, 0.1);
+    border: 1px solid rgba(217, 163, 22, 0.18);
+    border-radius: 999px;
+}
+
+.public-experience-v2 .garda-home-value-grid h3 {
+    margin-top: 24px;
+    letter-spacing: -0.035em;
+}
+
+.public-experience-v2 .garda-home-program-card,
+.public-experience-v2 .program-pillar-card {
+    background:
+        radial-gradient(
+            circle at 100% 0%,
+            rgba(217, 163, 22, 0.08),
+            transparent 34%
+        ),
+        #fff;
+}
+
+.public-experience-v2 .garda-home-program-card::before,
+.public-experience-v2 .program-pillar-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(
+        90deg,
+        var(--color-gold-500),
+        transparent 72%
+    );
+    opacity: 0.72;
+}
+
+.public-experience-v2 .garda-home-program-card:hover,
+.public-experience-v2 .program-pillar-card:hover,
+.public-experience-v2 .garda-home-activity-card:hover,
+.public-experience-v2 .public-activity-card:hover,
+.public-experience-v2 .profile-value-grid article:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--g01-premium-shadow-hover);
+}
+
+.public-experience-v2 .garda-home-program-number,
+.public-experience-v2 .program-pillar-number {
+    color: rgba(4, 23, 45, 0.055);
+}
+
+.public-experience-v2 .garda-home-program-card > a,
+.public-experience-v2 .program-pillar-card > a,
+.public-experience-v2 .garda-home-text-link,
+.public-experience-v2 .public-read-more {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--color-gold-600);
+    transition:
+        color 0.2s ease,
+        gap 0.2s ease;
+}
+
+.public-experience-v2 .garda-home-program-card > a:hover,
+.public-experience-v2 .program-pillar-card > a:hover,
+.public-experience-v2 .garda-home-text-link:hover,
+.public-experience-v2 .public-read-more:hover {
+    gap: 9px;
+    color: #946a04;
+}
+
+.public-experience-v2 .garda-home-activity-card,
+.public-experience-v2 .public-activity-card {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+}
+
+.public-experience-v2 .garda-home-activity-content,
+.public-experience-v2 .public-activity-card-content {
+    display: flex;
+    flex: 1;
+    align-items: flex-start;
+    flex-direction: column;
+}
+
+.public-experience-v2 .garda-home-activity-content h3,
+.public-experience-v2 .public-activity-card h3 {
+    letter-spacing: -0.025em;
+}
+
+.public-experience-v2 .garda-home-activity-content .garda-home-text-link,
+.public-experience-v2 .public-activity-card .public-read-more {
+    margin-top: auto;
+    padding-top: 18px;
+}
+
+/* ---------------------------------------------------------
+   Shared editorial heroes and cards
+--------------------------------------------------------- */
+
+.public-experience-v2 :where(
+    .public-editorial-hero-copy,
+    .program-detail-copy,
+    .officials-hero-copy,
+    .contact-public-hero-copy,
+    .activity-detail-hero-copy
+) {
+    position: relative;
+    overflow: hidden;
+    border-color: rgba(217, 163, 22, 0.26);
+    box-shadow:
+        0 26px 74px rgba(4, 23, 45, 0.17),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.public-experience-v2 :where(
+    .public-editorial-hero-copy,
+    .program-detail-copy,
+    .officials-hero-copy,
+    .contact-public-hero-copy,
+    .activity-detail-hero-copy
+) h1 {
+    text-wrap: balance;
+    letter-spacing: -0.048em;
+}
+
+.public-experience-v2 :where(
+    .public-brand-lockup-card,
+    .public-program-summary,
+    .program-detail-number,
+    .officials-hero-emblem
+) {
+    position: relative;
+    overflow: hidden;
+    border-top-width: 0;
+    border: 1px solid var(--g01-premium-gold-border);
+    box-shadow: var(--g01-premium-shadow);
+}
+
+.public-experience-v2 :where(
+    .public-brand-lockup-card,
+    .public-program-summary,
+    .program-detail-number,
+    .officials-hero-emblem
+)::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 22px;
+    left: 22px;
+    height: 4px;
+    border-radius: 0 0 999px 999px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        var(--color-gold-500),
+        transparent
+    );
+}
+
+.public-experience-v2 .public-content-card {
+    border-color: var(--g01-premium-border);
+    box-shadow: var(--g01-premium-shadow);
+}
+
+.public-experience-v2 .public-content-card h2,
+.public-experience-v2 .profile-identity-card h2,
+.public-experience-v2 .program-campaign-card h2 {
+    letter-spacing: -0.035em;
+}
+
+/* Profile page: remove forced dead space and restore contrast. */
+.public-experience-v2 .profile-introduction-grid,
+.public-experience-v2 .profile-direction-grid {
+    align-items: start;
+}
+
+.public-experience-v2 .profile-story-card,
+.public-experience-v2 .profile-identity-card,
+.public-experience-v2 .profile-vision-card,
+.public-experience-v2 .profile-mission-card {
+    min-height: 0;
+}
+
+.public-experience-v2 .profile-story-card {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(30px, 4vw, 44px);
+}
+
+.public-experience-v2 .profile-story-card::after {
+    content: "01";
+    position: absolute;
+    right: 22px;
+    bottom: -24px;
+    color: rgba(8, 39, 68, 0.035);
+    font-size: 120px;
+    font-weight: 900;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.public-experience-v2 .profile-identity-card {
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(217, 163, 22, 0.22);
+    box-shadow: var(--g01-premium-shadow);
+}
+
+.public-experience-v2 .profile-identity-card h2 {
+    color: #fff;
+}
+
+.public-experience-v2 .profile-identity-card::after {
+    content: "G01";
+    position: absolute;
+    top: 32px;
+    right: -13px;
+    color: rgba(255, 255, 255, 0.025);
+    font-size: 92px;
+    font-weight: 900;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.public-experience-v2 .profile-vision-card {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(30px, 4vw, 43px);
+}
+
+.public-experience-v2 .profile-vision-card::after {
+    content: "“";
+    position: absolute;
+    right: 22px;
+    bottom: -42px;
+    color: rgba(255, 255, 255, 0.045);
+    font-family: Georgia, serif;
+    font-size: 190px;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.public-experience-v2 .profile-vision-card h3 {
+    position: relative;
+    z-index: 1;
+    max-width: 760px;
+    font-size: clamp(25px, 3.2vw, 34px);
+    line-height: 1.42;
+    text-wrap: balance;
+}
+
+.public-experience-v2 .profile-mission-card ol {
+    counter-reset: mission;
+    padding: 0;
+    list-style: none;
+}
+
+.public-experience-v2 .profile-mission-card li {
+    position: relative;
+    margin: 0;
+    padding: 13px 0 13px 42px;
+    border-bottom: 1px solid rgba(8, 39, 68, 0.07);
+}
+
+.public-experience-v2 .profile-mission-card li:last-child {
+    border-bottom: 0;
+}
+
+.public-experience-v2 .profile-mission-card li::before {
+    counter-increment: mission;
+    content: counter(mission, decimal-leading-zero);
+    position: absolute;
+    top: 14px;
+    left: 0;
+    color: var(--color-gold-600);
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 0.05em;
+}
+
+.public-experience-v2 .profile-value-grid article {
+    position: relative;
+    overflow: hidden;
+    border-top-width: 0;
+    border: 1px solid var(--g01-premium-border);
+    transition:
+        transform 0.28s var(--g01-premium-ease),
+        box-shadow 0.28s ease;
+}
+
+.public-experience-v2 .profile-value-grid article::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 34%;
+    left: 0;
+    height: 3px;
+    background: linear-gradient(
+        90deg,
+        var(--color-gold-500),
+        transparent
+    );
+}
+
+/* ---------------------------------------------------------
+   Program, activity, officials, contact refinements
+--------------------------------------------------------- */
+
+.public-experience-v2 .program-focus-grid div {
+    border: 1px solid rgba(8, 39, 68, 0.065);
+    transition:
+        background 0.22s ease,
+        transform 0.22s var(--g01-premium-ease);
+}
+
+.public-experience-v2 .program-focus-grid div:hover {
+    background: #fff;
+    transform: translateY(-2px);
+}
+
+.public-experience-v2 .activity-public-filter,
+.public-experience-v2 .contact-public-form-card,
+.public-experience-v2 .contact-public-sidebar-card {
+    border-color: var(--g01-premium-border);
+    box-shadow: var(--g01-premium-shadow);
+}
+
+.public-experience-v2 .public-activity-image-link,
+.public-experience-v2 .garda-home-activity-media,
+.public-experience-v2 .activity-related-media {
+    position: relative;
+}
+
+.public-experience-v2 .public-activity-image-link::after,
+.public-experience-v2 .garda-home-activity-media::after,
+.public-experience-v2 .activity-related-media::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0;
+    height: 28%;
+    pointer-events: none;
+    background: linear-gradient(
+        to top,
+        rgba(4, 23, 45, 0.18),
+        transparent
+    );
+}
+
+.public-experience-v2 .officials-structure-section,
+.public-experience-v2 .officials-profile-section {
+    border-color: var(--g01-premium-border);
+    box-shadow: var(--g01-premium-shadow);
+}
+
+.public-experience-v2 .official-profile-card,
+.public-experience-v2 .officials-chart-node {
+    border-color: var(--g01-premium-border);
+    box-shadow: 0 13px 34px rgba(4, 23, 45, 0.07);
+}
+
+.public-experience-v2 .contact-public-identity,
+.public-experience-v2 .contact-public-location-card {
+    border-color: var(--g01-premium-border);
+    box-shadow: var(--g01-premium-shadow);
+}
+
+/* ---------------------------------------------------------
+   Shared CTA and footer transition
+--------------------------------------------------------- */
+
+.public-experience-v2 .public-page-cta {
+    position: relative;
+    overflow: hidden;
+    padding: clamp(30px, 4vw, 42px);
+    border-color: rgba(217, 163, 22, 0.23);
+    box-shadow: var(--g01-premium-shadow);
+}
+
+.public-experience-v2 .public-page-cta::after {
+    content: "GARDA 01";
+    position: absolute;
+    right: -12px;
+    bottom: -38px;
+    color: rgba(8, 39, 68, 0.027);
+    font-size: clamp(72px, 10vw, 130px);
+    font-weight: 900;
+    line-height: 1;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.public-experience-v2 .public-page-cta > * {
+    position: relative;
+    z-index: 1;
+}
+
+.public-experience-v2 .garda-home-collaboration {
+    box-shadow:
+        0 28px 76px rgba(4, 23, 45, 0.19),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.public-experience-v2 .g01-footer {
+    margin-top: 52px;
+}
+
+.public-experience-v2 .g01-footer__contact-item,
+.public-experience-v2 .g01-footer__location-card,
+.public-experience-v2 .g01-footer__map-preview {
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+/* ---------------------------------------------------------
+   Safe reveal motion and back-to-top utility
+--------------------------------------------------------- */
+
+.public-experience-v2.public-motion-ready [data-public-reveal] {
+    opacity: 0;
+    transform: translateY(18px);
+    transition:
+        opacity 0.62s var(--g01-premium-ease),
+        transform 0.62s var(--g01-premium-ease);
+    transition-delay: var(--public-reveal-delay, 0ms);
+}
+
+.public-experience-v2.public-motion-ready
+[data-public-reveal].is-visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.public-back-to-top {
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 1250;
+    width: 44px;
+    height: 44px;
+    display: grid;
+    place-items: center;
+    color: var(--color-navy-950);
+    background: linear-gradient(135deg, #f0c657, var(--color-gold-500));
+    border: 1px solid rgba(255, 255, 255, 0.55);
+    border-radius: 14px;
+    box-shadow: 0 16px 34px rgba(4, 23, 45, 0.22);
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(12px) scale(0.94);
+    transition:
+        opacity 0.22s ease,
+        transform 0.22s var(--g01-premium-ease),
+        box-shadow 0.22s ease;
+}
+
+.public-back-to-top.is-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0) scale(1);
+}
+
+.public-back-to-top:hover {
+    transform: translateY(-3px) scale(1);
+    box-shadow: 0 20px 40px rgba(4, 23, 45, 0.27);
+}
+
+.public-back-to-top svg {
+    width: 19px;
+    height: 19px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* ---------------------------------------------------------
+   Responsive safeguards
+--------------------------------------------------------- */
+
+@media (max-width: 1050px) {
+    .public-experience-v2 .public-navbar.public-navbar--scrolled,
+    .public-experience-v2 .public-navbar.public-navbar--scrolled
+    .public-navbar-inner {
+        min-height: var(--navbar-height);
+    }
+
+    .public-experience-v2 .public-navbar.public-navbar--scrolled
+    .public-brand-mark {
+        width: 46px;
+        height: 46px;
+    }
+
+    .public-experience-v2 .profile-introduction-grid,
+    .public-experience-v2 .profile-direction-grid {
+        align-items: stretch;
+    }
+}
+
+@media (max-width: 720px) {
+    .public-body.public-experience-v2 {
+        background:
+            radial-gradient(
+                circle at 0% 5%,
+                rgba(217, 163, 22, 0.065),
+                transparent 20rem
+            ),
+            var(--color-ivory-100);
+    }
+
+    .public-experience-v2 .public-main::before {
+        display: none;
+    }
+
+    .public-experience-v2 .garda-home-hero {
+        padding-top: 34px;
+    }
+
+    .public-experience-v2 .garda-home-hero-copy,
+    .public-experience-v2 .public-editorial-hero-copy,
+    .public-experience-v2 .program-detail-copy,
+    .public-experience-v2 .officials-hero-copy,
+    .public-experience-v2 .contact-public-hero-copy {
+        border-radius: 23px;
+    }
+
+    .public-experience-v2 .garda-home-manifesto {
+        padding-left: 14px;
+    }
+
+    .public-experience-v2 .public-kicker::before,
+    .public-experience-v2 .garda-home-eyebrow::before {
+        width: 17px;
+    }
+
+    .public-experience-v2 .public-page-cta {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .public-experience-v2 .public-page-cta .btn {
+        width: 100%;
+    }
+
+    .public-back-to-top {
+        right: 16px;
+        bottom: 16px;
+        width: 42px;
+        height: 42px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .public-experience-v2 *,
+    .public-experience-v2 *::before,
+    .public-experience-v2 *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+
+    .public-experience-v2.public-motion-ready [data-public-reveal] {
+        opacity: 1;
+        transform: none;
+    }
+}

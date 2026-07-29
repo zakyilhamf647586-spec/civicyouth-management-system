@@ -218,7 +218,7 @@ $mapLabel = $mapLabelParts !== []
                 <a
                     href="<?= base_url('/') ?>"
                     class="g01-footer__brand"
-                    aria-label="<?= esc($organizationName) ?> — Beranda"
+                    aria-label="Kembali ke Introducing <?= esc($organizationName) ?>"
                 >
                     <span class="g01-footer__brand-mark">
                         <img

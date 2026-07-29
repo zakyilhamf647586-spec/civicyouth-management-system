@@ -512,7 +512,7 @@ $visibleLatestActivities = array_slice(
 
             <div class="garda-home-value-grid">
 
-                <article>
+                <article data-value="01">
                     <span class="garda-home-value-number">01</span>
 
                     <h3>
@@ -534,7 +534,7 @@ $visibleLatestActivities = array_slice(
                     </p>
                 </article>
 
-                <article>
+                <article data-value="02">
                     <span class="garda-home-value-number">02</span>
 
                     <h3>
@@ -556,7 +556,7 @@ $visibleLatestActivities = array_slice(
                     </p>
                 </article>
 
-                <article>
+                <article data-value="03">
                     <span class="garda-home-value-number">03</span>
 
                     <h3>

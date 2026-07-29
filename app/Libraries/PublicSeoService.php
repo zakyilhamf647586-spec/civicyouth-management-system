@@ -310,6 +310,11 @@ class PublicSeoService
                 'changefreq' => 'weekly',
             ],
             [
+                'path' => '/home',
+                'priority' => '0.9',
+                'changefreq' => 'weekly',
+            ],
+            [
                 'path' => '/profil',
                 'priority' => '0.8',
                 'changefreq' => 'monthly',
@@ -911,7 +916,7 @@ class PublicSeoService
         $items = [
             [
                 'name' => 'Beranda',
-                'url' => base_url('/'),
+                'url' => base_url('home'),
             ],
         ];
 

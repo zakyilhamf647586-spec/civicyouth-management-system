@@ -18,7 +18,7 @@ class PublicCms extends BaseConfig
     public array $pages = [
         'home' => [
             'name' => 'Beranda',
-            'route' => '/',
+            'route' => '/home',
             'default_title' =>
                 'GARDA 01 | Generasi Aktif Randugarut',
             'default_meta_description' =>

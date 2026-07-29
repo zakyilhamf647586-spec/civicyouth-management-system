@@ -16,12 +16,12 @@ class WebsiteNavigation extends BaseConfig
             'name' => 'Navigasi Utama',
             'description' =>
                 'Menu yang tampil pada navbar website publik.',
-            'preview_route' => '/',
+            'preview_route' => '/home',
             'items' => [
                 [
                     'item_key' => 'home',
                     'label' => 'Beranda',
-                    'url' => '/',
+                    'url' => '/home',
                     'active_pages' => ['home'],
                     'target' => 'self',
                     'style' => 'default',
@@ -94,12 +94,12 @@ class WebsiteNavigation extends BaseConfig
             'name' => 'Navigasi Footer',
             'description' =>
                 'Daftar tautan pada kolom navigasi footer.',
-            'preview_route' => '/',
+            'preview_route' => '/home',
             'items' => [
                 [
                     'item_key' => 'home',
                     'label' => 'Beranda',
-                    'url' => '/',
+                    'url' => '/home',
                     'active_pages' => ['home'],
                     'target' => 'self',
                     'style' => 'default',

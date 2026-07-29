@@ -37,6 +37,16 @@ $organizationName = site_setting(
 
 $activePage = $activePage ?? '';
 
+$publicPageClass = preg_replace(
+    '/[^a-z0-9-]+/',
+    '-',
+    strtolower(str_replace('_', '-', (string) $activePage))
+);
+
+if (!is_string($publicPageClass) || $publicPageClass === '') {
+    $publicPageClass = 'default';
+}
+
 $externalPreview = !empty($externalPreview);
 $externalPreviewToken =
     $externalPreviewToken ?? null;
@@ -328,14 +338,60 @@ $publicStylesheets = [
     <?php endforeach; ?>
 
     <?= $this->renderSection('head') ?>
+
+    <?php
+    $publicPremiumStylesheet =
+        'assets/css/public-premium-v2.css';
+    $publicPremiumStylesheetPath =
+        FCPATH . $publicPremiumStylesheet;
+    ?>
+
+    <?php if (is_file($publicPremiumStylesheetPath)) : ?>
+        <link
+            rel="stylesheet"
+            href="<?= base_url($publicPremiumStylesheet) ?>?v=<?= esc(
+                (string) filemtime($publicPremiumStylesheetPath),
+                'attr'
+            ) ?>"
+        >
+    <?php endif; ?>
+
+    <?php
+    $publicExperienceStylesheet =
+        'assets/css/public-experience-v3.css';
+    $publicExperienceStylesheetPath =
+        FCPATH . $publicExperienceStylesheet;
+    ?>
+
+    <?php if (is_file($publicExperienceStylesheetPath)) : ?>
+        <link
+            rel="stylesheet"
+            href="<?= base_url($publicExperienceStylesheet) ?>?v=<?= esc(
+                (string) filemtime($publicExperienceStylesheetPath),
+                'attr'
+            ) ?>"
+        >
+    <?php endif; ?>
 </head>
-<body class="public-body <?= !empty($cmsPreview)
+<body class="public-body public-experience-v2 public-experience-v3 public-page--<?= esc(
+    $publicPageClass,
+    'attr'
+) ?> <?= !empty($cmsPreview)
     ? 'public-body--cms-preview'
     : '' ?> <?= $navigationPreview
         ? 'public-body--navigation-preview'
         : '' ?> <?= $externalPreview
             ? 'public-body--external-review'
             : '' ?>">
+    <a class="public-skip-link" href="#main-content">
+        Langsung ke konten utama
+    </a>
+
+    <?= view('partials/public_experience', [
+        'activePage' => $activePage,
+        'pageTitle' => $pageTitle,
+    ]) ?>
+
     <?php if (
         $navigationPreview
         && empty($cmsPreview)
@@ -416,7 +472,11 @@ $publicStylesheets = [
         'activePage' => $activePage,
     ]) ?>
 
-    <main class="public-main">
+    <main
+        class="public-main"
+        id="main-content"
+        tabindex="-1"
+    >
         <?= $this->renderSection('content') ?>
     </main>
 
@@ -439,5 +499,37 @@ $publicStylesheets = [
     <?= view('partials/public_footer') ?>
 
     <?= $this->renderSection('scripts') ?>
+
+    <?php
+    $publicPremiumScript =
+        'assets/js/public-premium-v2.js';
+    $publicPremiumScriptPath =
+        FCPATH . $publicPremiumScript;
+    ?>
+
+    <?php if (is_file($publicPremiumScriptPath)) : ?>
+        <script
+            src="<?= base_url($publicPremiumScript) ?>?v=<?= esc(
+                (string) filemtime($publicPremiumScriptPath),
+                'attr'
+            ) ?>"
+        ></script>
+    <?php endif; ?>
+
+    <?php
+    $publicExperienceScript =
+        'assets/js/public-experience-v3.js';
+    $publicExperienceScriptPath =
+        FCPATH . $publicExperienceScript;
+    ?>
+
+    <?php if (is_file($publicExperienceScriptPath)) : ?>
+        <script
+            src="<?= base_url($publicExperienceScript) ?>?v=<?= esc(
+                (string) filemtime($publicExperienceScriptPath),
+                'attr'
+            ) ?>"
+        ></script>
+    <?php endif; ?>
 </body>
 </html>
