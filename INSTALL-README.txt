@@ -1,36 +1,41 @@
-GARDA 01 — AUTOMATED BACKUP & DISASTER RECOVERY V1
-====================================================
+GARDA 01 — MONITORING, HEALTH CHECK & OPERATIONAL DASHBOARD V1
+===============================================================
 
 PRASYARAT
 ---------
-Fase 1 sampai Fase 4A sudah terpasang.
+Fase 4B sudah berada pada source terbaru.
 
-DATABASE
---------
-Tidak ada migration baru.
-
-SETELAH EKSTRAK
----------------
-php spark cache:clear
+MIGRATION
+---------
+php spark migrate
 
 COMMAND
 -------
-php spark backup:create --tag manual
-php spark backup:list
-php spark backup:verify --file ARCHIVE.zip
-php spark backup:prune --dry-run
-php spark backup:prune
-
-RESTORE
--------
-php spark backup:restore --file ARCHIVE.zip --yes --maintenance-confirmed YES
+php spark system:health
+php spark system:health --json
+php spark system:health --snapshot
+php spark system:health:snapshot
+php spark system:health:prune --days 30
 
 PORTAL
 ------
-/system/backups
+/system/operations
 
-SOURCE-SPECIFIC SAFETY AUDIT
-----------------------------
-This package was revalidated against the latest uploaded source on 2026-07-28.
-It has zero path overlap with the current Introducing and public-premium files.
-Checkpoint the current public work before extraction.
+PUBLIC HEALTH
+-------------
+/health/live
+/health/ready
+
+CATATAN
+-------
+Patch juga memperbaiki route Introducing:
+/ -> Introducing
+/home -> Beranda utama
+
+SOURCE HYGIENE
+--------------
+Periksa artefak terminal:
+powershell -ExecutionPolicy Bypass -File .\scripts\source-hygiene-check.ps1
+
+Hapus artefak yang namanya diawali "hell -ExecutionPolicy Bypass":
+Get-ChildItem -LiteralPath . -File | Where-Object { $_.Name -like 'hell -ExecutionPolicy Bypass*' } | Remove-Item -Force

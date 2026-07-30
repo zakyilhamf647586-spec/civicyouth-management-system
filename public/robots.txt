@@ -19,3 +19,6 @@ Disallow: /content-studio
 Disallow: /programs
 Disallow: /settings
 Disallow: /website
+Disallow: /system
+Disallow: /health
+Disallow: /review

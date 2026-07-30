@@ -690,6 +690,9 @@ class PublicSeoService
             '/programs',
             '/settings',
             '/website',
+            '/system',
+            '/health',
+            '/review',
         ];
 
         $lines = [

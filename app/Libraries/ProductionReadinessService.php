@@ -934,6 +934,57 @@ class ProductionReadinessService
                     'Sediakan minimal 1 GB atau beberapa kali ukuran data aktif.'
                 );
             }
+
+
+            $monitoring = new SystemMonitoringService();
+            $monitoringReady = $monitoring->monitoringReady();
+
+            $this->add(
+                'recovery.monitoring_tables',
+                'recovery',
+                'Tabel monitoring operasional tersedia',
+                $monitoringReady
+                    ? 'pass'
+                    : ($isProduction ? 'fail' : 'warning'),
+                $isProduction && !$monitoringReady,
+                $monitoringReady
+                    ? 'Snapshot dan incident center siap digunakan.'
+                    : 'Tabel monitoring belum tersedia.',
+                'Jalankan migration Fase 4C.'
+            );
+
+            if ($monitoringReady) {
+                $statistics = $monitoring->statistics();
+                $lastSnapshot = $statistics['last_snapshot_at'] ?? null;
+                $snapshotAgeMinutes = null;
+
+                if (is_string($lastSnapshot) && $lastSnapshot !== '') {
+                    $lastTimestamp = strtotime($lastSnapshot);
+
+                    if ($lastTimestamp !== false) {
+                        $snapshotAgeMinutes = (int) floor(
+                            (time() - $lastTimestamp) / 60
+                        );
+                    }
+                }
+
+                $snapshotFresh = $snapshotAgeMinutes !== null
+                    && $snapshotAgeMinutes <= 15;
+
+                $this->add(
+                    'recovery.monitoring_snapshot',
+                    'recovery',
+                    'Snapshot monitoring terbaru',
+                    $snapshotFresh
+                        ? 'pass'
+                        : ($isProduction ? 'fail' : 'warning'),
+                    $isProduction && !$snapshotFresh,
+                    $snapshotAgeMinutes !== null
+                        ? 'Usia snapshot: ' . $snapshotAgeMinutes . ' menit.'
+                        : 'Belum ada snapshot monitoring.',
+                    'Aktifkan scheduler system:health:snapshot setiap lima menit.'
+                );
+            }
         } catch (\Throwable $exception) {
             $this->add(
                 'recovery.service',
@@ -961,6 +1012,9 @@ class ProductionReadinessService
             '/login',
             '/website/audit',
             '/system/readiness',
+            '/system/operations',
+            '/health/live',
+            '/health/ready',
         ];
 
         $missing = [];
@@ -977,7 +1031,7 @@ class ProductionReadinessService
             $missing === [] ? 'pass' : 'fail',
             true,
             $missing === []
-                ? 'Route publik, autentikasi, audit, dan readiness tersedia.'
+                ? 'Route publik, autentikasi, audit, health, dan operations tersedia.'
                 : 'Route tidak ditemukan: ' . implode(', ', $missing),
             'Periksa app/Config/Routes.php.'
         );

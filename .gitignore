@@ -117,3 +117,10 @@ _modules/*
 !/writable/backup-temp/.htaccess
 !/writable/backup-temp/index.html
 /writable/backup-operation.lock
+
+
+#-------------------------
+# Operational Monitoring Artifacts
+#-------------------------
+/garda01-operations-*.json
+/writable/logs/health-monitor.log

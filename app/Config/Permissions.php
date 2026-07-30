@@ -51,6 +51,8 @@ class Permissions extends BaseConfig
             'system.backups.view',
             'system.backups.create',
             'system.backups.verify',
+
+            'system.operations.*',
         ],
 
         'sekretaris' => [
@@ -231,6 +233,10 @@ class Permissions extends BaseConfig
         'system.backups.create' => 'membuat backup aplikasi',
         'system.backups.verify' => 'memverifikasi integritas backup',
         'system.backups.prune' => 'menjalankan retensi dan menghapus backup lama',
+
+        'system.operations.view' => 'melihat dashboard operasional dan kesehatan sistem',
+        'system.operations.export' => 'mengekspor laporan operasional',
+        'system.operations.manage' => 'membuat snapshot dan mengakui insiden operasional',
 
         'website.navigation.view' => 'melihat Navigation Manager',
         'website.navigation.update' => 'mengubah draft navigasi website',

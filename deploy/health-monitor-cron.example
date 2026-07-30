@@ -1,0 +1,5 @@
+# GARDA 01 health monitoring — Linux cron example
+# Snapshot every five minutes; prune once daily.
+
+*/5 * * * * cd /var/www/garda01/current && /usr/bin/php spark system:health:snapshot >> writable/logs/health-monitor.log 2>&1
+20 3 * * * cd /var/www/garda01/current && /usr/bin/php spark system:health:prune --days 30 >> writable/logs/health-monitor.log 2>&1

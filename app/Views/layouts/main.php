@@ -148,6 +148,16 @@ if (str_starts_with(
     ];
 }
 
+if (str_starts_with(
+    $currentPath,
+    'system/operations'
+)) {
+    $pageContext = [
+        'section' => 'Sistem',
+        'label' => 'Operational Dashboard',
+    ];
+}
+
 $pageTitle = $title ?? $pageContext['label'];
 
 $portalOrganizationName = site_setting(
@@ -453,6 +463,14 @@ $todayLabel =
 
     <symbol id="icon-chevron" viewBox="0 0 24 24">
         <path d="m9 6 6 6-6 6"></path>
+    </symbol>
+
+    <symbol id="icon-operations" viewBox="0 0 24 24">
+        <path d="M4 19V9"></path>
+        <path d="M10 19V5"></path>
+        <path d="M16 19v-7"></path>
+        <path d="M22 19V3"></path>
+        <path d="M2 19h22"></path>
     </symbol>
 
     <symbol id="icon-backup" viewBox="0 0 24 24">
@@ -830,6 +848,7 @@ $todayLabel =
                 'users.view',
                 'system.readiness.view',
                 'system.backups.view',
+                'system.operations.view',
             ])) : ?>
                 <div class="garda-admin-nav-section">
                     <div class="garda-admin-nav-heading">
@@ -875,6 +894,20 @@ $todayLabel =
                             </svg>
 
                             <span>Backup & Pemulihan</span>
+                        </a>
+                    <?php endif; ?>
+
+                    <?php if (auth_can('system.operations.view')) : ?>
+                        <a
+                            href="<?= base_url('/system/operations') ?>"
+                            class="garda-admin-nav-link <?= $isActive(['system/operations']) ?>"
+                            title="Operational Dashboard"
+                        >
+                            <svg aria-hidden="true">
+                                <use href="#icon-operations"></use>
+                            </svg>
+
+                            <span>Operational Dashboard</span>
                         </a>
                     <?php endif; ?>
                 </div>

@@ -16,6 +16,8 @@ $guard = static function (string $permission): array {
 /* Public website */
 $routes->get('/sitemap.xml', 'SeoController::sitemap');
 $routes->get('/robots.txt', 'SeoController::robots');
+$routes->get('/health/live', 'HealthController::live');
+$routes->get('/health/ready', 'HealthController::ready');
 $routes->get('/', 'IntroducingController::index');
 $routes->get('/home', 'PublicController::index');
 $routes->get('/profil', 'PublicController::profile');
@@ -170,6 +172,12 @@ $routes->post('/system/backups/create', 'BackupRecoveryController::create', $gua
 $routes->post('/system/backups/verify', 'BackupRecoveryController::verify', $guard('system.backups.verify'));
 $routes->post('/system/backups/prune', 'BackupRecoveryController::prune', $guard('system.backups.prune'));
 $routes->get('/system/backups/manifest/(:segment)', 'BackupRecoveryController::manifest/$1', $guard('system.backups.view'));
+
+/* Monitoring, health checks, and operational dashboard */
+$routes->get('/system/operations', 'OperationsController::index', $guard('system.operations.view'));
+$routes->get('/system/operations/export', 'OperationsController::export', $guard('system.operations.export'));
+$routes->post('/system/operations/snapshot', 'OperationsController::snapshot', $guard('system.operations.manage'));
+$routes->post('/system/operations/incidents/(:num)/acknowledge', 'OperationsController::acknowledge/$1', $guard('system.operations.manage'));
 
 /* Website Navigation Manager */
 $routes->get('/website/navigation', 'WebsiteNavigationController::index', $guard('website.navigation.view'));
