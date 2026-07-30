@@ -6,6 +6,10 @@ use App\Models\UserModel;
 
 class AuthController extends BaseController
 {
+    private const LOGIN_IP_CAPACITY = 20;
+    private const LOGIN_PAIR_CAPACITY = 6;
+    private const LOGIN_WINDOW_SECONDS = 900;
+
     public function login()
     {
         if (session()->get('isLoggedIn')) {
@@ -17,6 +21,18 @@ class AuthController extends BaseController
 
     public function attemptLogin()
     {
+        $email = mb_strtolower(
+            trim((string) $this->request->getPost('email'))
+        );
+
+        if (!$this->allowLoginAttempt($email)) {
+            return $this->redirectBackWithSafeInput()
+                ->with(
+                    'error',
+                    'Terlalu banyak percobaan masuk. Tunggu beberapa menit lalu coba kembali.'
+                );
+        }
+
         $rules = [
             'email' => [
                 'label' => 'Alamat email',
@@ -29,14 +45,9 @@ class AuthController extends BaseController
         ];
 
         if (!$this->validate($rules)) {
-            return redirect()->back()
-                ->withInput()
+            return $this->redirectBackWithSafeInput()
                 ->with('errors', $this->validator->getErrors());
         }
-
-        $email = mb_strtolower(
-            trim((string) $this->request->getPost('email'))
-        );
 
         $password = (string) $this->request->getPost('password');
         $user = (new UserModel())->findByEmailWithRole($email);
@@ -45,8 +56,7 @@ class AuthController extends BaseController
             !$user
             || !password_verify($password, (string) $user['password'])
         ) {
-            return redirect()->back()
-                ->withInput()
+            return $this->redirectBackWithSafeInput()
                 ->with(
                     'error',
                     'Email atau kata sandi tidak sesuai.'
@@ -54,19 +64,19 @@ class AuthController extends BaseController
         }
 
         if (($user['status'] ?? '') !== 'active') {
-            return redirect()->back()
-                ->withInput()
+            return $this->redirectBackWithSafeInput()
                 ->with('error', 'Akun Anda sedang tidak aktif.');
         }
 
         if (empty($user['role_name'])) {
-            return redirect()->back()
-                ->withInput()
+            return $this->redirectBackWithSafeInput()
                 ->with(
                     'error',
                     'Peran akun belum dikonfigurasi. Hubungi administrator.'
                 );
         }
+
+        $this->clearLoginPairThrottle($email);
 
         session()->regenerate(true);
 
@@ -81,6 +91,40 @@ class AuthController extends BaseController
         ]);
 
         return redirect()->to('/dashboard');
+    }
+
+    private function allowLoginAttempt(string $email): bool
+    {
+        $ipAddress = $this->request->getIPAddress();
+        $throttler = service('throttler');
+
+        $ipAllowed = $throttler->check(
+            'portal-login-ip-' . hash('sha256', $ipAddress),
+            self::LOGIN_IP_CAPACITY,
+            self::LOGIN_WINDOW_SECONDS
+        );
+
+        $pairAllowed = $throttler->check(
+            'portal-login-pair-'
+                . hash('sha256', $ipAddress . '|' . $email),
+            self::LOGIN_PAIR_CAPACITY,
+            self::LOGIN_WINDOW_SECONDS
+        );
+
+        return $ipAllowed && $pairAllowed;
+    }
+
+    private function clearLoginPairThrottle(string $email): void
+    {
+        $key = 'portal-login-pair-'
+            . hash(
+                'sha256',
+                $this->request->getIPAddress()
+                    . '|'
+                    . $email
+            );
+
+        service('throttler')->remove($key);
     }
 
     public function logout()

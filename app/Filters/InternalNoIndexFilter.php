@@ -10,11 +10,14 @@ class InternalNoIndexFilter implements FilterInterface
 {
     private const PUBLIC_FIRST_SEGMENTS = [
         '',
+        'home',
         'profil',
         'program',
         'pengurus',
         'kegiatan',
         'kontak',
+        'sitemap.xml',
+        'robots.txt',
     ];
 
     public function before(RequestInterface $request, $arguments = null)
@@ -27,8 +30,24 @@ class InternalNoIndexFilter implements FilterInterface
         ResponseInterface $response,
         $arguments = null
     ) {
-        $path = trim((string) service('uri')->getPath(), '/');
-        $firstSegment = explode('/', $path)[0] ?? '';
+        $path = trim($request->getUri()->getPath(), '/');
+        $segments = $path === ''
+            ? []
+            : explode('/', $path);
+
+        $indexPage = trim(
+            (string) config('App')->indexPage,
+            '/'
+        );
+
+        if (
+            $indexPage !== ''
+            && ($segments[0] ?? '') === $indexPage
+        ) {
+            array_shift($segments);
+        }
+
+        $firstSegment = $segments[0] ?? '';
 
         if (!in_array($firstSegment, self::PUBLIC_FIRST_SEGMENTS, true)) {
             $response

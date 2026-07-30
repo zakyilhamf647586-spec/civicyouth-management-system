@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use App\Models\PublicPageModel;
 use CodeIgniter\Controller;
+use CodeIgniter\HTTP\RedirectResponse;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use Psr\Log\LoggerInterface;
@@ -51,6 +52,42 @@ abstract class BaseController extends Controller
     ): void {
         (new \App\Libraries\CmsAuditService())
             ->record($event);
+    }
+
+    /**
+     * Redirect back while preserving non-sensitive form values.
+     *
+     * CodeIgniter's withInput() stores the complete POST body in flashdata.
+     * Account forms contain passwords, so those fields must be removed before
+     * old input is made available to the next request.
+     *
+     * @param list<string> $sensitiveFields
+     */
+    protected function redirectBackWithSafeInput(
+        array $sensitiveFields = [
+            'password',
+            'password_confirm',
+            'current_password',
+            'new_password',
+            'new_password_confirm',
+        ]
+    ): RedirectResponse {
+        $superglobals = service('superglobals');
+        $post = $superglobals->getPostArray();
+
+        foreach ($sensitiveFields as $field) {
+            unset($post[$field]);
+        }
+
+        $security = config('Security');
+        unset($post[$security->tokenName]);
+
+        session()->setFlashdata('_ci_old_input', [
+            'get' => $superglobals->getGetArray(),
+            'post' => $post,
+        ]);
+
+        return redirect()->back();
     }
 
     /**

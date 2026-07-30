@@ -97,8 +97,7 @@ class UserManagementController extends BaseController
         ];
 
         if (!$this->validate($rules)) {
-            return redirect()->back()
-                ->withInput()
+            return $this->redirectBackWithSafeInput()
                 ->with('errors', $this->validator->getErrors());
         }
 
@@ -107,8 +106,7 @@ class UserManagementController extends BaseController
         );
 
         if ($this->userModel->emailExists($email)) {
-            return redirect()->back()
-                ->withInput()
+            return $this->redirectBackWithSafeInput()
                 ->with(
                     'errors',
                     ['Email sudah digunakan oleh akun lain.']
@@ -118,8 +116,7 @@ class UserManagementController extends BaseController
         $roleId = (int) $this->request->getPost('role_id');
 
         if (!$this->roleModel->find($roleId)) {
-            return redirect()->back()
-                ->withInput()
+            return $this->redirectBackWithSafeInput()
                 ->with(
                     'errors',
                     ['Peran pengguna tidak ditemukan.']
@@ -145,8 +142,7 @@ class UserManagementController extends BaseController
         ]);
 
         if (!$inserted) {
-            return redirect()->back()
-                ->withInput()
+            return $this->redirectBackWithSafeInput()
                 ->with(
                     'errors',
                     ['Akun pengguna gagal dibuat.']
@@ -197,8 +193,7 @@ class UserManagementController extends BaseController
         }
 
         if (!$this->validate($rules)) {
-            return redirect()->back()
-                ->withInput()
+            return $this->redirectBackWithSafeInput()
                 ->with('errors', $this->validator->getErrors());
         }
 
@@ -207,8 +202,7 @@ class UserManagementController extends BaseController
         );
 
         if ($this->userModel->emailExists($email, $id)) {
-            return redirect()->back()
-                ->withInput()
+            return $this->redirectBackWithSafeInput()
                 ->with(
                     'errors',
                     ['Email sudah digunakan oleh akun lain.']
@@ -224,8 +218,7 @@ class UserManagementController extends BaseController
         );
 
         if (!$this->roleModel->find($newRoleId)) {
-            return redirect()->back()
-                ->withInput()
+            return $this->redirectBackWithSafeInput()
                 ->with(
                     'errors',
                     ['Peran pengguna tidak ditemukan.']
@@ -239,8 +232,7 @@ class UserManagementController extends BaseController
                 || $newStatus !== 'active'
             )
         ) {
-            return redirect()->back()
-                ->withInput()
+            return $this->redirectBackWithSafeInput()
                 ->with(
                     'errors',
                     [
@@ -257,8 +249,7 @@ class UserManagementController extends BaseController
         );
 
         if ($continuityError !== null) {
-            return redirect()->back()
-                ->withInput()
+            return $this->redirectBackWithSafeInput()
                 ->with('errors', [$continuityError]);
         }
 
@@ -279,8 +270,7 @@ class UserManagementController extends BaseController
         }
 
         if (!$this->userModel->update($id, $data)) {
-            return redirect()->back()
-                ->withInput()
+            return $this->redirectBackWithSafeInput()
                 ->with(
                     'errors',
                     ['Akun pengguna gagal diperbarui.']
@@ -370,8 +360,7 @@ class UserManagementController extends BaseController
         ];
 
         if (!$this->validate($rules)) {
-            return redirect()->back()
-                ->withInput()
+            return $this->redirectBackWithSafeInput()
                 ->with('errors', $this->validator->getErrors());
         }
 

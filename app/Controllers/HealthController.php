@@ -60,7 +60,7 @@ class HealthController extends BaseController
         int $seconds
     ): bool {
         $key = $scope
-            . ':'
+            . '-'
             . hash('sha256', $this->request->getIPAddress());
 
         return service('throttler')->check(

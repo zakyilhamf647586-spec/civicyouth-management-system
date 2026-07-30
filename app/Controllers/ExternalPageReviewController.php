@@ -227,7 +227,7 @@ class ExternalPageReviewController extends PublicController
         int $seconds
     ): void {
         $key = $scope
-            . ':'
+            . '-'
             . hash(
                 'sha256',
                 $this->request->getIPAddress()

@@ -6,6 +6,9 @@ use App\Models\ContactMessageModel;
 
 class PublicContactController extends BaseController
 {
+    private const CONTACT_IP_CAPACITY = 5;
+    private const CONTACT_WINDOW_SECONDS = 600;
+
     protected ContactMessageModel $messageModel;
 
     public function __construct()
@@ -53,6 +56,14 @@ class PublicContactController extends BaseController
                 ->with(
                     'success',
                     'Pesan Anda berhasil dikirim.'
+                );
+        }
+
+        if (!$this->allowSubmission()) {
+            return redirect()->to('/kontak')
+                ->with(
+                    'error',
+                    'Terlalu banyak pesan dikirim dari jaringan ini. Tunggu beberapa menit lalu coba kembali.'
                 );
         }
 
@@ -161,5 +172,20 @@ class PublicContactController extends BaseController
                 'success',
                 'Pesan berhasil dikirim. Tim GARDA 01 akan menindaklanjutinya.'
             );
+    }
+
+    private function allowSubmission(): bool
+    {
+        $key = 'public-contact-'
+            . hash(
+                'sha256',
+                $this->request->getIPAddress()
+            );
+
+        return service('throttler')->check(
+            $key,
+            self::CONTACT_IP_CAPACITY,
+            self::CONTACT_WINDOW_SECONDS
+        );
     }
 }
