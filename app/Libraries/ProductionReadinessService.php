@@ -99,6 +99,8 @@ class ProductionReadinessService
             $categories[$check['category']][] = $check;
         }
 
+        $deploymentContext = $this->deploymentContext($this->checks);
+
         return [
             'generated_at' => date(DATE_ATOM),
             'environment' => [
@@ -120,9 +122,110 @@ class ProductionReadinessService
                 'total' => count($this->checks),
                 'counts' => $counts,
             ],
+            'deployment_context' => $deploymentContext,
             'categories' => $categories,
             'checks' => $this->checks,
         ];
+    }
+
+    /**
+     * Separate work that can be completed in the project now from checks
+     * that only become meaningful after a production host exists.
+     *
+     * @param list<array<string, mixed>> $checks
+     * @return array<string, mixed>
+     */
+    protected function deploymentContext(array $checks): array
+    {
+        $baseUrl = trim((string) config('App')->baseURL);
+        $host = strtolower((string) (parse_url($baseUrl, PHP_URL_HOST) ?? ''));
+        $localHosts = ['localhost', '127.0.0.1', '::1'];
+        $isLocalHost = $host === ''
+            || in_array($host, $localHosts, true)
+            || str_ends_with($host, '.local');
+        $isProduction = ENVIRONMENT === 'production' && !$isLocalHost;
+
+        $streams = [
+            'now' => [
+                'items' => [],
+                'blocking' => 0,
+                'warnings' => 0,
+            ],
+            'hosting' => [
+                'items' => [],
+                'blocking' => 0,
+                'warnings' => 0,
+            ],
+            'final' => [
+                'items' => [],
+                'blocking' => 0,
+                'warnings' => 0,
+            ],
+        ];
+
+        foreach ($checks as $check) {
+            if (($check['status'] ?? '') === 'pass') {
+                continue;
+            }
+
+            $stream = $this->deploymentStreamFor((string) ($check['id'] ?? ''));
+            $streams[$stream]['items'][] = $check;
+
+            if (
+                ($check['status'] ?? '') === 'fail'
+                && !empty($check['blocking'])
+            ) {
+                $streams[$stream]['blocking']++;
+            } elseif (($check['status'] ?? '') === 'warning') {
+                $streams[$stream]['warnings']++;
+            }
+        }
+
+        $currentStatus = $streams['now']['blocking'] > 0
+            ? 'needs_attention'
+            : ($streams['now']['warnings'] > 0 ? 'in_progress' : 'on_track');
+
+        return [
+            'is_local' => $isLocalHost || ENVIRONMENT !== 'production',
+            'is_production' => $isProduction,
+            'host' => $host,
+            'current_status' => $currentStatus,
+            'streams' => $streams,
+        ];
+    }
+
+    protected function deploymentStreamFor(string $checkId): string
+    {
+        if (str_starts_with($checkId, 'manual.')) {
+            return 'final';
+        }
+
+        if (str_starts_with($checkId, 'deployment.')) {
+            return 'hosting';
+        }
+
+        $hostingChecks = [
+            'runtime.recommended.opcache',
+            'environment.mode',
+            'environment.https',
+            'environment.public_host',
+            'environment.force_https',
+            'environment.display_errors',
+            'environment.release',
+            'security.encryption',
+            'security.cookie_secure',
+            'database.credentials',
+            'database.root',
+            'filesystem.env',
+            'filesystem.git',
+            'filesystem.dev_dependencies',
+            'filesystem.backups',
+            'recovery.mysql',
+        ];
+
+        return in_array($checkId, $hostingChecks, true)
+            ? 'hosting'
+            : 'now';
     }
 
     protected function runtimeChecks(): void
@@ -694,7 +797,7 @@ class ProductionReadinessService
             !$defaultAdmin
                 ? 'Email admin demo aktif tidak ditemukan.'
                 : 'admin@civicyouth.local masih aktif.',
-            'Buat Admin production lalu nonaktifkan akun demo.'
+            'Pastikan Admin personal sudah aktif dan berhasil login, buat backup, lalu nonaktifkan akun demo. Jangan menonaktifkan satu-satunya Admin.'
         );
 
         $this->add(

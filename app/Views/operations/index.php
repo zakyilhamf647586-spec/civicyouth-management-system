@@ -7,6 +7,27 @@ $counts = $report['counts'];
 $metrics = $report['metrics'];
 $status = $report['status'];
 $trend = array_reverse($snapshots);
+$isLocalEnvironment = !empty($report['environment']['is_local']);
+$availabilityStage = (string) ($statistics['availability_stage'] ?? 'empty');
+$availabilitySnapshots = (int) ($statistics['snapshots_24h'] ?? 0);
+$availabilityMinimum = (int) (
+    $statistics['availability_minimum_snapshots'] ?? 2
+);
+
+$priorityChecks = array_values(array_filter(
+    $report['checks'],
+    static fn (array $check): bool => ($check['status'] ?? 'pass') !== 'pass'
+));
+
+usort(
+    $priorityChecks,
+    static function (array $left, array $right): int {
+        $weight = ['critical' => 0, 'warning' => 1, 'pass' => 2];
+
+        return ($weight[$left['status'] ?? 'pass'] ?? 3)
+            <=> ($weight[$right['status'] ?? 'pass'] ?? 3);
+    }
+);
 
 $statusLabels = [
     'healthy' => 'Sehat',
@@ -69,12 +90,14 @@ $cssVersion = is_file($cssPath) ? (string) filemtime($cssPath) : '1';
             </form>
         <?php endif; ?>
 
-        <a
-            href="<?= base_url('/system/operations/export') ?>"
-            class="btn btn-secondary"
-        >
-            Ekspor JSON
-        </a>
+        <?php if (auth_can('system.operations.export')) : ?>
+            <a
+                href="<?= base_url('/system/operations/export') ?>"
+                class="btn btn-secondary"
+            >
+                Ekspor JSON
+            </a>
+        <?php endif; ?>
     </div>
 </div>
 
@@ -105,8 +128,8 @@ $cssVersion = is_file($cssPath) ? (string) filemtime($cssPath) : '1';
                 Satu atau lebih komponen kritis memerlukan penanganan
                 sebelum sistem dianggap aman untuk operasi penuh.
             <?php elseif ($status === 'degraded') : ?>
-                Sistem masih dapat digunakan, tetapi warning perlu
-                ditinjau agar tidak berkembang menjadi gangguan.
+                Sistem dapat digunakan. Warning tetap dicatat agar
+                dapat ditinjau tanpa menganggap layanan sedang mati.
             <?php else : ?>
                 Seluruh komponen operasional utama berada dalam kondisi
                 normal pada pemeriksaan terakhir.
@@ -129,6 +152,21 @@ $cssVersion = is_file($cssPath) ? (string) filemtime($cssPath) : '1';
     </div>
 </section>
 
+<?php if ($isLocalEnvironment) : ?>
+    <section class="operations-local-context" aria-label="Konteks operasional lokal">
+        <span aria-hidden="true">LOCAL</span>
+        <div>
+            <strong>Dashboard sedang membaca lingkungan pengembangan.</strong>
+            <p>
+                Riwayat error tetap tampil sebagai warning, tetapi tidak lagi
+                membuat endpoint readiness gagal setelah komponen utama pulih.
+                Penilaian server production dilakukan kembali saat hosting tersedia.
+            </p>
+        </div>
+        <small><?= esc($report['environment']['base_url'] ?? 'localhost') ?></small>
+    </section>
+<?php endif; ?>
+
 <section class="operations-stat-grid">
     <article class="is-pass">
         <span>Komponen Normal</span>
@@ -149,17 +187,29 @@ $cssVersion = is_file($cssPath) ? (string) filemtime($cssPath) : '1';
     </article>
 
     <article>
-        <span>Availability 24 Jam</span>
+        <span>Ketersediaan 24 Jam</span>
         <strong>
-            <?= $statistics['availability_percent'] !== null
-                ? esc(number_format(
+            <?php if ($availabilityStage === 'measured') : ?>
+                <?= esc(number_format(
                     (float) $statistics['availability_percent'],
                     2
-                )) . '%'
-                : '-' ?>
+                )) ?>%
+            <?php elseif ($availabilityStage === 'initial') : ?>
+                Data awal
+            <?php else : ?>
+                Belum ada
+            <?php endif; ?>
         </strong>
         <small>
-            <?= (int) $statistics['snapshots_24h'] ?> snapshot
+            <?php if ($availabilityStage === 'initial') : ?>
+                <?= $availabilitySnapshots ?> snapshot; minimal
+                <?= $availabilityMinimum ?> untuk persentase
+            <?php elseif ($availabilityStage === 'measured') : ?>
+                <?= $availabilitySnapshots ?> snapshot ·
+                <?= (int) ($statistics['unavailable_24h'] ?? 0) ?> kritis
+            <?php else : ?>
+                Ambil snapshot pertama
+            <?php endif; ?>
         </small>
     </article>
 </section>
@@ -210,24 +260,70 @@ $cssVersion = is_file($cssPath) ? (string) filemtime($cssPath) : '1';
     </article>
 </section>
 
+<section class="operations-priority-board" aria-labelledby="operations-priority-title">
+    <header>
+        <div>
+            <span>Action Center</span>
+            <h3 id="operations-priority-title">Apa yang perlu dilakukan berikutnya</h3>
+            <p>
+                Daftar ini diurutkan dari komponen paling penting berdasarkan
+                hasil pemeriksaan terbaru.
+            </p>
+        </div>
+        <strong><?= count($priorityChecks) ?></strong>
+    </header>
+
+    <?php if ($priorityChecks === []) : ?>
+        <div class="operations-priority-empty">
+            Semua komponen utama berada dalam kondisi normal.
+        </div>
+    <?php else : ?>
+        <div class="operations-priority-list">
+            <?php foreach (array_slice($priorityChecks, 0, 4) as $index => $check) : ?>
+                <article class="status-<?= esc($check['status'], 'attr') ?>">
+                    <b><?= str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT) ?></b>
+                    <div>
+                        <span><?= esc($checkLabels[$check['status']] ?? $check['status']) ?></span>
+                        <h4><?= esc($check['title']) ?></h4>
+                        <p><?= esc($check['message']) ?></p>
+                        <small><?= esc($check['recommendation']) ?></small>
+                    </div>
+                </article>
+            <?php endforeach; ?>
+        </div>
+
+        <?php if (count($priorityChecks) > 4) : ?>
+            <p class="operations-priority-more">
+                +<?= count($priorityChecks) - 4 ?> pemeriksaan lain tersedia pada daftar komponen.
+            </p>
+        <?php endif; ?>
+    <?php endif; ?>
+</section>
+
 <section class="operations-link-grid">
-    <a href="<?= base_url('/system/readiness') ?>">
-        <span>Production Readiness</span>
-        <strong>Pra-deploy & konfigurasi</strong>
-        <small>Buka pemeriksaan →</small>
-    </a>
+    <?php if (auth_can('system.readiness.view')) : ?>
+        <a href="<?= base_url('/system/readiness') ?>">
+            <span>Production Readiness</span>
+            <strong>Pra-deploy & konfigurasi</strong>
+            <small>Buka pemeriksaan →</small>
+        </a>
+    <?php endif; ?>
 
-    <a href="<?= base_url('/system/backups') ?>">
-        <span>Backup & Recovery</span>
-        <strong>Archive dan verifikasi</strong>
-        <small>Buka perlindungan data →</small>
-    </a>
+    <?php if (auth_can('system.backups.view')) : ?>
+        <a href="<?= base_url('/system/backups') ?>">
+            <span>Backup & Recovery</span>
+            <strong>Archive dan verifikasi</strong>
+            <small>Buka perlindungan data →</small>
+        </a>
+    <?php endif; ?>
 
-    <a href="<?= base_url('/website/audit') ?>">
-        <span>Audit Aktivitas CMS</span>
-        <strong>Jejak perubahan & keamanan</strong>
-        <small>Buka audit →</small>
-    </a>
+    <?php if (auth_can('website.audit.view')) : ?>
+        <a href="<?= base_url('/website/audit') ?>">
+            <span>Audit Aktivitas CMS</span>
+            <strong>Jejak perubahan & keamanan</strong>
+            <small>Buka audit →</small>
+        </a>
+    <?php endif; ?>
 
     <a href="<?= base_url('/health/ready') ?>" target="_blank" rel="noopener noreferrer">
         <span>Readiness Endpoint</span>
@@ -401,7 +497,9 @@ $cssVersion = is_file($cssPath) ? (string) filemtime($cssPath) : '1';
             <span>Security & Warning Feed</span>
             <h3>Event audit yang perlu perhatian</h3>
         </div>
-        <a href="<?= base_url('/website/audit') ?>">Lihat semua →</a>
+        <?php if (auth_can('website.audit.view')) : ?>
+            <a href="<?= base_url('/website/audit') ?>">Lihat semua →</a>
+        <?php endif; ?>
     </header>
 
     <?php if ($securityEvents === []) : ?>
@@ -422,9 +520,11 @@ $cssVersion = is_file($cssPath) ? (string) filemtime($cssPath) : '1';
                             )) ?>
                         </small>
                     </div>
-                    <a href="<?= base_url('/website/audit/' . (int) $event['id']) ?>">
-                        Detail
-                    </a>
+                    <?php if (auth_can('website.audit.view')) : ?>
+                        <a href="<?= base_url('/website/audit/' . (int) $event['id']) ?>">
+                            Detail
+                        </a>
+                    <?php endif; ?>
                 </article>
             <?php endforeach; ?>
         </div>

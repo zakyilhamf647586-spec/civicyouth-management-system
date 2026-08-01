@@ -405,6 +405,30 @@ try {
     if (@('healthy', 'degraded', 'critical') -contains $HealthReadyStatus) {
         Write-Host "[OK] Health ready payload: $HealthReadyStatus." -ForegroundColor Green
 
+        $ExpectedHealthReadyCode = if ($HealthReadyStatus -eq 'critical') {
+            503
+        } else {
+            200
+        }
+
+        if ([int]$HealthReady.StatusCode -eq $ExpectedHealthReadyCode) {
+            Write-Host `
+                "[OK] Status HTTP health ready konsisten dengan payload." `
+                -ForegroundColor Green
+        } else {
+            Write-Host `
+                "[FAIL] Status HTTP health ready tidak konsisten. HTTP $($HealthReady.StatusCode), payload $HealthReadyStatus." `
+                -ForegroundColor Red
+            $Failures += 'Konsistensi health ready'
+        }
+
+        $ReadyPass = [int]($HealthReadyPayload.checks.pass)
+        $ReadyWarning = [int]($HealthReadyPayload.checks.warning)
+        $ReadyCritical = [int]($HealthReadyPayload.checks.critical)
+        Write-Host `
+            "[INFO] Health checks: $ReadyPass normal, $ReadyWarning warning, $ReadyCritical kritis." `
+            -ForegroundColor DarkCyan
+
         if ($HealthReadyStatus -eq 'critical') {
             Write-Host '[WARN] Sistem melaporkan kondisi critical; tinjau Operational Dashboard sebelum production.' -ForegroundColor Yellow
         }

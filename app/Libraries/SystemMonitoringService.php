@@ -10,6 +10,8 @@ use Throwable;
 
 class SystemMonitoringService
 {
+    private const MIN_AVAILABILITY_SNAPSHOTS = 2;
+
     protected SystemMonitoring $config;
     protected SystemHealthSnapshotModel $snapshotModel;
     protected SystemHealthIncidentModel $incidentModel;
@@ -68,6 +70,12 @@ class SystemMonitoringService
             : ($counts['warning'] > 0 ? 'degraded' : 'healthy');
 
         $metrics = $this->metricsFromChecks();
+        $baseUrl = trim((string) config('App')->baseURL);
+        $host = strtolower((string) (parse_url($baseUrl, PHP_URL_HOST) ?? ''));
+        $isLocal = ENVIRONMENT !== 'production'
+            || $host === ''
+            || in_array($host, ['localhost', '127.0.0.1', '::1'], true)
+            || str_ends_with($host, '.local');
 
         return [
             'generated_at' => date(DATE_ATOM),
@@ -79,6 +87,8 @@ class SystemMonitoringService
             'metrics' => $metrics,
             'environment' => [
                 'name' => ENVIRONMENT,
+                'base_url' => $baseUrl,
+                'is_local' => $isLocal,
                 'php_version' => PHP_VERSION,
                 'release' => trim((string) env('deployment.release', '')),
                 'commit' => substr(
@@ -204,7 +214,11 @@ class SystemMonitoringService
                 'healthy_24h' => 0,
                 'degraded_24h' => 0,
                 'critical_24h' => 0,
+                'available_24h' => 0,
+                'unavailable_24h' => 0,
                 'availability_percent' => null,
+                'availability_stage' => 'empty',
+                'availability_minimum_snapshots' => self::MIN_AVAILABILITY_SNAPSHOTS,
                 'open_incidents' => 0,
                 'unacknowledged_incidents' => 0,
                 'last_snapshot_at' => null,
@@ -232,6 +246,19 @@ class SystemMonitoringService
             ->where('overall_status', 'critical')
             ->countAllResults();
 
+        // A degraded snapshot means the application is still serving
+        // requests, albeit with warnings. Availability therefore measures
+        // non-critical observations, while the health score communicates
+        // service quality separately.
+        $available = $healthy + $degraded;
+        $availabilityStage = $total === 0
+            ? 'empty'
+            : (
+                $total < self::MIN_AVAILABILITY_SNAPSHOTS
+                    ? 'initial'
+                    : 'measured'
+            );
+
         $latest = $this->snapshotModel
             ->orderBy('id', 'DESC')
             ->first();
@@ -250,9 +277,13 @@ class SystemMonitoringService
             'healthy_24h' => $healthy,
             'degraded_24h' => $degraded,
             'critical_24h' => $critical,
-            'availability_percent' => $total > 0
-                ? round(($healthy / $total) * 100, 2)
+            'available_24h' => $available,
+            'unavailable_24h' => $critical,
+            'availability_percent' => $availabilityStage === 'measured'
+                ? round(($available / $total) * 100, 2)
                 : null,
+            'availability_stage' => $availabilityStage,
+            'availability_minimum_snapshots' => self::MIN_AVAILABILITY_SNAPSHOTS,
             'open_incidents' => $open,
             'unacknowledged_incidents' => $unacknowledged,
             'last_snapshot_at' => $latest['created_at'] ?? null,
@@ -677,9 +708,13 @@ class SystemMonitoringService
         $errors = (int) $summary['error'];
         $warnings = (int) $summary['warning'];
 
-        $status = $critical > 0
-            ? 'critical'
-            : ($errors > 0 || $warnings > 20 ? 'warning' : 'pass');
+        // Log entries are retrospective evidence, not proof that the current
+        // request path is unavailable. Keep them visible as an incident and
+        // warning without making /health/ready return 503 indefinitely after
+        // the underlying problem has already recovered.
+        $status = $critical > 0 || $errors > 0 || $warnings > 20
+            ? 'warning'
+            : 'pass';
 
         $this->addCheck(
             'logs.application',
@@ -691,7 +726,7 @@ class SystemMonitoringService
                 . '.',
             $status === 'pass'
                 ? 'Tidak ada tindakan.'
-                : 'Tinjau file log terbaru dan selesaikan akar masalah.',
+                : 'Tinjau log dua hari terakhir dan selesaikan akar masalah; status kesiapan ditentukan oleh kondisi komponen saat ini.',
             true,
             $summary
         );
