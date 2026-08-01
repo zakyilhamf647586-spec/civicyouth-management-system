@@ -2,6 +2,8 @@
 
 <?= $this->section('content') ?>
 
+<?= $this->include('partials/admin_bilingual_assets') ?>
+
 <link
     rel="stylesheet"
     href="<?= base_url('assets/css/admin-activity-workflow.css') ?>?v=<?= filemtime(FCPATH . 'assets/css/admin-activity-workflow.css') ?>"
@@ -155,6 +157,8 @@
                 placeholder="Tuliskan hasil, manfaat, capaian, atau tindak lanjut kegiatan."
             ><?= esc(old('result')) ?></textarea>
         </div>
+
+        <?= view('activities/_bilingual_fields') ?>
 
         <div class="grid-2">
             <div class="form-group">

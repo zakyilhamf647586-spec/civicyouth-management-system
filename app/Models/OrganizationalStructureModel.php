@@ -11,14 +11,18 @@ class OrganizationalStructureModel extends Model
     protected $allowedFields = [
         'member_id',
         'position_name',
+        'position_name_en',
         'division',
+        'division_en',
         'rt_scope',
         'period',
         'description',
+        'description_en',
         'sort_order',
         'status',
         'photo',
         'short_bio',
+        'short_bio_en',
     ];
 
     protected $useTimestamps = true;

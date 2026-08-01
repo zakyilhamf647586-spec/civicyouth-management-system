@@ -30,7 +30,8 @@ class SeoController extends BaseController
 
         $xml = [
             '<?xml version="1.0" encoding="UTF-8"?>',
-            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"'
+                . ' xmlns:xhtml="http://www.w3.org/1999/xhtml">',
         ];
 
         foreach ($entries as $entry) {
@@ -65,6 +66,24 @@ class SeoController extends BaseController
                         (string) $entry['priority']
                     )
                     . '</priority>';
+            }
+
+            if (is_array(
+                $entry['alternates'] ?? null
+            )) {
+                foreach (
+                    $entry['alternates'] as
+                    $language => $url
+                ) {
+                    $xml[] = '    <xhtml:link rel="alternate"'
+                        . ' hreflang="'
+                        . $this->xmlEscape(
+                            (string) $language
+                        )
+                        . '" href="'
+                        . $this->xmlEscape((string) $url)
+                        . '" />';
+                }
             }
 
             $xml[] = '  </url>';

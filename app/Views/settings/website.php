@@ -2,6 +2,8 @@
 
 <?= $this->section('content') ?>
 
+<?= $this->include('partials/admin_bilingual_assets') ?>
+
 <div class="page-header">
     <div>
         <span class="website-settings-kicker">
@@ -196,6 +198,62 @@
 
                                 <?php endif; ?>
                             </div>
+
+                            <?php if (!empty(
+                                $field['translatable']
+                            )) : ?>
+                                <?php
+                                $valueEn = old(
+                                    $key . '_en',
+                                    $settingsEn[$key] ?? ''
+                                );
+                                ?>
+
+                                <div
+                                    class="form-group bilingual-setting-field
+                                    <?= $field['type'] === 'textarea'
+                                        ? 'website-setting-wide'
+                                        : '' ?>"
+                                >
+                                    <label for="<?= esc($key) ?>_en">
+                                        English <?= esc($field['label']) ?>
+                                        <span class="bilingual-field-badge">EN</span>
+                                    </label>
+
+                                    <?php if (
+                                        $field['type'] === 'textarea'
+                                    ) : ?>
+                                        <textarea
+                                            id="<?= esc($key) ?>_en"
+                                            name="<?= esc($key) ?>_en"
+                                            rows="4"
+                                            maxlength="<?= esc(
+                                                $field['max_length']
+                                                ?? 2000
+                                            ) ?>"
+                                        ><?= esc($valueEn) ?></textarea>
+                                    <?php else : ?>
+                                        <input
+                                            type="text"
+                                            id="<?= esc($key) ?>_en"
+                                            name="<?= esc($key) ?>_en"
+                                            value="<?= esc(
+                                                $valueEn,
+                                                'attr'
+                                            ) ?>"
+                                            maxlength="<?= esc(
+                                                $field['max_length']
+                                                ?? 255
+                                            ) ?>"
+                                        >
+                                    <?php endif; ?>
+
+                                    <small>
+                                        Versi resmi untuk pengunjung yang
+                                        memilih English.
+                                    </small>
+                                </div>
+                            <?php endif; ?>
 
                         <?php endforeach; ?>
 

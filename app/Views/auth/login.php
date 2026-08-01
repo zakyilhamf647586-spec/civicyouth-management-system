@@ -43,10 +43,28 @@ if (is_array($flashErrors)) {
 if (is_string($flashError) && trim($flashError) !== '') {
     $displayErrors[] = $flashError;
 }
+
+$publicLocale = public_locale();
+$loginTitle = $publicLocale === 'en'
+    ? 'Sign In — ' . $portalOrganizationName . ' Portal'
+    : 'Masuk — ' . $portalOrganizationName . ' Portal';
+$loginDescription = $publicLocale === 'en'
+    ? 'Internal management portal for '
+        . $portalOrganizationName
+        . ', the youth organization of RW 01, Randugarut.'
+    : 'Portal manajemen internal '
+        . $portalOrganizationName
+        . ', Karang Taruna RW 01 Kelurahan Randugarut.';
+$preferencesStylesheet =
+    'assets/css/public-preferences.css';
+$preferencesScript =
+    'assets/js/public-preferences.js';
+
+ob_start();
 ?>
 
 <!DOCTYPE html>
-<html lang="id">
+<html lang="<?= esc($publicLocale, 'attr') ?>">
 <head>
     <meta charset="UTF-8">
 
@@ -64,11 +82,11 @@ if (is_string($flashError) && trim($flashError) !== '') {
 
     <meta
         name="description"
-        content="Portal manajemen internal <?= esc($portalOrganizationName, 'attr') ?>, Karang Taruna RW 01 Kelurahan Randugarut."
+        content="<?= esc($loginDescription, 'attr') ?>"
     >
 
     <title>
-        Masuk — <?= esc($portalOrganizationName) ?> Portal
+        <?= esc($loginTitle) ?>
     </title>
 
     <link
@@ -76,13 +94,31 @@ if (is_string($flashError) && trim($flashError) !== '') {
         href="<?= esc($portalFaviconUrl, 'attr') ?>"
     >
 
+    <?= view('partials/public_theme_bootstrap') ?>
+
     <link
         rel="stylesheet"
         href="<?= base_url('assets/css/app.css') ?>?v=<?= esc($portalStylesheetVersion, 'attr') ?>"
     >
+
+    <?php if (is_file(FCPATH . $preferencesStylesheet)) : ?>
+        <link
+            rel="stylesheet"
+            href="<?= base_url($preferencesStylesheet) ?>?v=<?= esc(
+                (string) filemtime(
+                    FCPATH . $preferencesStylesheet
+                ),
+                'attr'
+            ) ?>"
+        >
+    <?php endif; ?>
 </head>
 
 <body class="garda-login-body">
+
+<?= view('partials/public_preferences', [
+    'preferenceContext' => 'login',
+]) ?>
 
 <div class="garda-login-shell">
 
@@ -104,7 +140,7 @@ if (is_string($flashError) && trim($flashError) !== '') {
         <header class="garda-login-brand-header">
 
             <a
-                href="<?= base_url('/') ?>"
+                href="<?= public_url('/') ?>"
                 class="garda-login-brand"
                 aria-label="Kembali ke website GARDA 01"
             >
@@ -120,7 +156,7 @@ if (is_string($flashError) && trim($flashError) !== '') {
             </a>
 
             <a
-                href="<?= base_url('/') ?>"
+                href="<?= public_url('/') ?>"
                 class="garda-login-public-link"
             >
                 <svg
@@ -282,7 +318,7 @@ if (is_string($flashError) && trim($flashError) !== '') {
             <?php endif; ?>
 
             <form
-                action="<?= base_url('login') ?>"
+                action="<?= public_url('/login') ?>"
                 method="post"
                 class="garda-login-form"
                 id="gardaLoginForm"
@@ -380,6 +416,18 @@ if (is_string($flashError) && trim($flashError) !== '') {
                             id="gardaPasswordToggle"
                             aria-label="Tampilkan kata sandi"
                             aria-pressed="false"
+                            data-label-show="<?= esc(
+                                public_translate_text(
+                                    'Tampilkan kata sandi'
+                                ),
+                                'attr'
+                            ) ?>"
+                            data-label-hide="<?= esc(
+                                public_translate_text(
+                                    'Sembunyikan kata sandi'
+                                ),
+                                'attr'
+                            ) ?>"
                         >
                             <svg
                                 class="garda-password-eye-open"
@@ -475,7 +523,7 @@ if (is_string($flashError) && trim($flashError) !== '') {
 
         <div class="garda-login-form-footer">
 
-            <a href="<?= base_url('/') ?>">
+            <a href="<?= public_url('/') ?>">
                 ← Kembali ke Website <?= esc($portalOrganizationName) ?>
             </a>
 
@@ -530,8 +578,14 @@ document.addEventListener('DOMContentLoaded', function () {
             passwordToggle.setAttribute(
                 'aria-label',
                 isVisible
-                    ? 'Tampilkan kata sandi'
-                    : 'Sembunyikan kata sandi'
+                    ? (
+                        passwordToggle.dataset.labelShow
+                        || 'Tampilkan kata sandi'
+                    )
+                    : (
+                        passwordToggle.dataset.labelHide
+                        || 'Sembunyikan kata sandi'
+                    )
             );
 
             passwordInput.focus();
@@ -545,12 +599,36 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (submitText) {
                 submitText.textContent =
-                    'Memverifikasi akun...';
+                    <?= json_encode(
+                        public_translate_text(
+                            'Memverifikasi akun...'
+                        ),
+                        JSON_UNESCAPED_UNICODE
+                        | JSON_HEX_TAG
+                        | JSON_HEX_AMP
+                        | JSON_HEX_APOS
+                        | JSON_HEX_QUOT
+                    ) ?>;
             }
         });
     }
 });
 </script>
 
+<?php if (is_file(FCPATH . $preferencesScript)) : ?>
+    <script
+        src="<?= base_url($preferencesScript) ?>?v=<?= esc(
+            (string) filemtime(
+                FCPATH . $preferencesScript
+            ),
+            'attr'
+        ) ?>"
+    ></script>
+<?php endif; ?>
+
 </body>
 </html>
+<?php
+$loginDocument = ob_get_clean();
+echo public_translate_html($loginDocument);
+?>

@@ -25,6 +25,7 @@ abstract class BaseController extends Controller
         'authorization',
         'public_cms',
         'website_navigation',
+        'public_experience',
     ];
 
     public function initController(
@@ -33,6 +34,51 @@ abstract class BaseController extends Controller
         LoggerInterface $logger
     ): void {
         parent::initController($request, $response, $logger);
+
+        $path = '/' . ltrim(
+            $request->getUri()->getPath(),
+            '/'
+        );
+
+        $path = preg_replace(
+            '#^/index\.php(?=/|$)#',
+            '',
+            $path
+        ) ?: '/';
+
+        if (
+            $path === '/en'
+            || str_starts_with($path, '/en/')
+        ) {
+            $request->setLocale('en');
+        } elseif (
+            preg_match(
+                '#^/(?:'
+                . 'home'
+                . '|profil'
+                . '|program(?:/[^/]+)?'
+                . '|pengurus'
+                . '|kegiatan(?:/[0-9]+)?'
+                . '|kontak(?:/kirim)?'
+                . '|login'
+                . ')?$#',
+                $path
+            ) === 1
+            || str_starts_with(
+                $path,
+                '/review/page/'
+            )
+            || str_starts_with(
+                $path,
+                '/website/pages/preview/'
+            )
+            || str_starts_with(
+                $path,
+                '/website/navigation/preview/'
+            )
+        ) {
+            $request->setLocale('id');
+        }
     }
 
     /**
@@ -111,11 +157,22 @@ abstract class BaseController extends Controller
                 ] ?? null
             ) === $pageKey
         ) {
+            $externalPage =
+                $this->externalCmsPreviewContext[
+                    'bundle'
+                ] ?? null;
+
+            if (
+                $externalPage !== null
+                && function_exists('public_localize_bundle')
+            ) {
+                $externalPage = public_localize_bundle(
+                    $externalPage
+                );
+            }
+
             return [
-                'page' =>
-                    $this->externalCmsPreviewContext[
-                        'bundle'
-                    ] ?? null,
+                'page' => $externalPage,
                 'preview' => true,
                 'external' => true,
                 'external_token' =>
@@ -168,6 +225,15 @@ abstract class BaseController extends Controller
 
             $page = (new PublicPageModel())
                 ->bundle($pageKey, $mode);
+
+            if (
+                $page !== null
+                && function_exists(
+                    'public_localize_bundle'
+                )
+            ) {
+                $page = public_localize_bundle($page);
+            }
 
             return [
                 'page' => $page,

@@ -20,6 +20,16 @@ class InternalNoIndexFilter implements FilterInterface
         'robots.txt',
     ];
 
+    private const PUBLIC_ENGLISH_PATHS = [
+        '',
+        'home',
+        'about',
+        'programs',
+        'team',
+        'activities',
+        'contact',
+    ];
+
     public function before(RequestInterface $request, $arguments = null)
     {
         return null;
@@ -47,9 +57,7 @@ class InternalNoIndexFilter implements FilterInterface
             array_shift($segments);
         }
 
-        $firstSegment = $segments[0] ?? '';
-
-        if (!in_array($firstSegment, self::PUBLIC_FIRST_SEGMENTS, true)) {
+        if (!$this->isPublicPath($segments)) {
             $response
                 ->setHeader(
                     'X-Robots-Tag',
@@ -64,5 +72,39 @@ class InternalNoIndexFilter implements FilterInterface
         }
 
         return $response;
+    }
+
+    /**
+     * @param list<string> $segments
+     */
+    private function isPublicPath(array $segments): bool
+    {
+        $firstSegment = $segments[0] ?? '';
+
+        if ($firstSegment !== 'en') {
+            return in_array(
+                $firstSegment,
+                self::PUBLIC_FIRST_SEGMENTS,
+                true
+            );
+        }
+
+        $englishPath = implode(
+            '/',
+            array_slice($segments, 1)
+        );
+
+        if (in_array(
+            $englishPath,
+            self::PUBLIC_ENGLISH_PATHS,
+            true
+        )) {
+            return true;
+        }
+
+        return preg_match(
+            '#^(?:programs/[^/]+|activities/[0-9]+)$#',
+            $englishPath
+        ) === 1;
     }
 }

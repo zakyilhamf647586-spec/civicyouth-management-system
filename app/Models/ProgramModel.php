@@ -14,13 +14,20 @@ class ProgramModel extends Model
 
     protected $allowedFields = [
         'name',
+        'name_en',
         'slug',
         'label',
+        'label_en',
         'tagline',
+        'tagline_en',
         'short_description',
+        'short_description_en',
         'description',
+        'description_en',
         'focus_items',
+        'focus_items_en',
         'campaign_items',
+        'campaign_items_en',
         'icon',
         'cover_image',
         'status',
@@ -84,6 +91,14 @@ class ProgramModel extends Model
 
         $program['campaigns'] = $this->decodeList(
             $program['campaign_items'] ?? null
+        );
+
+        $program['focus_en'] = $this->decodeList(
+            $program['focus_items_en'] ?? null
+        );
+
+        $program['campaigns_en'] = $this->decodeList(
+            $program['campaign_items_en'] ?? null
         );
 
         $program['number'] = str_pad(

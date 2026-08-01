@@ -20,6 +20,12 @@ $pageDescription = !empty($metaDescription)
     ? (string) $metaDescription
     : (string) $defaultSeoDescription;
 
+$publicLocale = public_locale();
+$pageTitle = public_translate_text($pageTitle);
+$pageDescription = public_translate_text(
+    $pageDescription
+);
+
 $pageKeywords = site_setting(
     'seo_keywords',
     'GARDA 01, Karang Taruna, Randugarut, RW 01'
@@ -98,6 +104,7 @@ $structuredData = $seoService->structuredData([
     'program' => $program ?? null,
     'programs' => $programs ?? [],
     'activities' => $activities ?? [],
+    'locale' => $publicLocale,
 ]);
 
 $structuredDataJson = json_encode(
@@ -132,9 +139,29 @@ $publicStylesheets = [
     'assets/css/public-cms-preview.css',
     'assets/css/public-external-review.css',
 ];
+
+$currentPath = parse_url(
+    $currentUrl,
+    PHP_URL_PATH
+);
+
+if (!is_string($currentPath) || $currentPath === '') {
+    $currentPath = '/';
+}
+
+$alternateIdUrl = public_url(
+    $currentPath,
+    'id'
+);
+$alternateEnUrl = public_url(
+    $currentPath,
+    'en'
+);
+
+ob_start();
 ?>
 <!DOCTYPE html>
-<html lang="id">
+<html lang="<?= esc($publicLocale, 'attr') ?>">
 <head>
     <meta charset="UTF-8">
 
@@ -199,7 +226,19 @@ $publicStylesheets = [
         content="<?= esc($organizationName, 'attr') ?>"
     >
 
-    <meta property="og:locale" content="id_ID">
+    <meta
+        property="og:locale"
+        content="<?= $publicLocale === 'en'
+            ? 'en_US'
+            : 'id_ID' ?>"
+    >
+
+    <meta
+        property="og:locale:alternate"
+        content="<?= $publicLocale === 'en'
+            ? 'id_ID'
+            : 'en_US' ?>"
+    >
 
     <meta
         property="og:image:alt"
@@ -300,7 +339,19 @@ $publicStylesheets = [
     <link
         rel="alternate"
         hreflang="id-ID"
-        href="<?= esc($currentUrl, 'attr') ?>"
+        href="<?= esc($alternateIdUrl, 'attr') ?>"
+    >
+
+    <link
+        rel="alternate"
+        hreflang="en"
+        href="<?= esc($alternateEnUrl, 'attr') ?>"
+    >
+
+    <link
+        rel="alternate"
+        hreflang="x-default"
+        href="<?= esc($alternateIdUrl, 'attr') ?>"
     >
 
     <link
@@ -317,6 +368,8 @@ $publicStylesheets = [
         rel="icon"
         href="<?= esc($faviconUrl, 'attr') ?>"
     >
+
+    <?= view('partials/public_theme_bootstrap') ?>
 
     <?php foreach ($publicStylesheets as $stylesheet) : ?>
         <?php
@@ -368,6 +421,25 @@ $publicStylesheets = [
             rel="stylesheet"
             href="<?= base_url($publicExperienceStylesheet) ?>?v=<?= esc(
                 (string) filemtime($publicExperienceStylesheetPath),
+                'attr'
+            ) ?>"
+        >
+    <?php endif; ?>
+
+    <?php
+    $publicPreferencesStylesheet =
+        'assets/css/public-preferences.css';
+    $publicPreferencesStylesheetPath =
+        FCPATH . $publicPreferencesStylesheet;
+    ?>
+
+    <?php if (is_file($publicPreferencesStylesheetPath)) : ?>
+        <link
+            rel="stylesheet"
+            href="<?= base_url($publicPreferencesStylesheet) ?>?v=<?= esc(
+                (string) filemtime(
+                    $publicPreferencesStylesheetPath
+                ),
                 'attr'
             ) ?>"
         >
@@ -531,5 +603,27 @@ $publicStylesheets = [
             ) ?>"
         ></script>
     <?php endif; ?>
+
+    <?php
+    $publicPreferencesScript =
+        'assets/js/public-preferences.js';
+    $publicPreferencesScriptPath =
+        FCPATH . $publicPreferencesScript;
+    ?>
+
+    <?php if (is_file($publicPreferencesScriptPath)) : ?>
+        <script
+            src="<?= base_url($publicPreferencesScript) ?>?v=<?= esc(
+                (string) filemtime(
+                    $publicPreferencesScriptPath
+                ),
+                'attr'
+            ) ?>"
+        ></script>
+    <?php endif; ?>
 </body>
 </html>
+<?php
+$publicDocument = ob_get_clean();
+echo public_translate_html($publicDocument);
+?>

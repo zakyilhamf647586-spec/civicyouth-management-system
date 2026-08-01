@@ -36,7 +36,15 @@ if (!function_exists('website_navigation_items')) {
             ? 'draft'
             : 'published';
 
-        $cacheKey = $menuKey . ':' . $mode;
+        $locale = function_exists('public_locale')
+            ? public_locale()
+            : 'id';
+
+        $cacheKey = $menuKey
+            . ':'
+            . $mode
+            . ':'
+            . $locale;
 
         if (isset($cache[$cacheKey])) {
             return $cache[$cacheKey];
@@ -104,11 +112,57 @@ if (!function_exists('website_navigation_items')) {
                 $activePages = [];
             }
 
-            $normalized[] = [
-                'item_key' => trim((string) (
+            $itemKey = trim((string) (
                     $item['item_key']
                     ?? 'item-' . ($index + 1)
-                )),
+                ));
+
+            if (
+                $locale === 'en'
+                && function_exists('public_t')
+            ) {
+                $editorialLabel = trim((string) (
+                    $item['label_en'] ?? ''
+                ));
+
+                if ($editorialLabel !== '') {
+                    $label = $editorialLabel;
+                }
+
+                $labelKey = match ($itemKey) {
+                    'home' => 'navigation.home',
+                    'profile' => $menuKey === 'footer'
+                        ? 'navigation.footer_profile'
+                        : 'navigation.profile',
+                    'programs' => $menuKey === 'footer'
+                        ? 'navigation.footer_programs'
+                        : 'navigation.programs',
+                    'activities' =>
+                        'navigation.activities',
+                    'officials' =>
+                        'navigation.officials',
+                    'contact' => $menuKey === 'footer'
+                        ? 'navigation.footer_contact'
+                        : 'navigation.contact',
+                    'portal' => 'navigation.portal',
+                    default => '',
+                };
+
+                if (
+                    $editorialLabel === ''
+                    && $labelKey !== ''
+                ) {
+                    $label = public_t(
+                        $labelKey,
+                        $label
+                    );
+                }
+
+                $label = public_translate_text($label);
+            }
+
+            $normalized[] = [
+                'item_key' => $itemKey,
                 'label' => $label,
                 'url' => $url,
                 'active_pages' =>
@@ -163,7 +217,11 @@ if (!function_exists('website_navigation_url')) {
             $url = '/' . ltrim($url, '/');
         }
 
-        $resolved = base_url($url);
+        if (function_exists('public_locale_path')) {
+            $url = public_locale_path($url);
+        }
+
+        $resolved = base_url(ltrim($url, '/'));
 
         if (
             $preservePreview

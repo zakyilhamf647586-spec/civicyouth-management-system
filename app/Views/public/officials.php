@@ -27,7 +27,11 @@ foreach ($officials as $official) {
         $activePeriod = trim((string) $official['period']);
     }
     $position = mb_strtolower(
-        trim($official['position_name'] ?? '')
+        trim(
+            $official['_position_source']
+            ?? $official['position_name']
+            ?? ''
+        )
     );
 
     if (
@@ -309,7 +313,7 @@ foreach ($officials as $official) {
                                                 'uploads/officials/'
                                                 . $official['photo']
                                             ) ?>"
-                                            alt="Foto <?= esc($name) ?>"
+                                            alt="<?= esc(public_translate_text('Foto')) ?> <?= esc($name) ?>"
                                             class="official-profile-photo"
                                             loading="lazy"
                                         >
@@ -346,7 +350,8 @@ foreach ($officials as $official) {
 
                                         <?php if (!empty($official['period'])) : ?>
                                             <span>
-                                                Periode <?= esc($official['period']) ?>
+                                                <?= esc(public_translate_text('Periode')) ?>
+                                                <?= esc($official['period']) ?>
                                             </span>
                                         <?php endif; ?>
                                     </div>
@@ -416,7 +421,7 @@ foreach ($officials as $official) {
                 </p>
             </div>
 
-            <a href="<?= base_url('/kontak') ?>" class="btn btn-primary">
+            <a href="<?= public_url('/kontak') ?>" class="btn btn-primary">
                 Hubungi Kami
             </a>
         </section>

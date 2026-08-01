@@ -1,6 +1,7 @@
 User-agent: *
 Allow: /
 Disallow: /login
+Disallow: /en/login
 Disallow: /logout
 Disallow: /dashboard
 Disallow: /users

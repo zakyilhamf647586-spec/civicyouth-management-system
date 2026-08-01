@@ -74,7 +74,9 @@ $responseNote = trim((string) site_setting(
 ));
 
 $whatsappUrl = site_whatsapp_url(
-    'Halo GARDA 01, saya ingin menghubungi pengurus.'
+    public_translate_text(
+        'Halo GARDA 01, saya ingin menghubungi pengurus.'
+    )
 );
 
 $mapParts = array_values(array_filter([
@@ -420,7 +422,7 @@ $valueItems = array_values(array_filter(array_map(
         <form
             action="<?= $externalPreview
                 ? '#external-review-panel'
-                : base_url('/kontak/kirim') ?>"
+                : public_url('/kontak/kirim') ?>"
             method="post"
             class="contact-public-form <?= $externalPreview
                 ? 'is-external-preview-disabled'

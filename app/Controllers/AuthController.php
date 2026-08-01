@@ -29,18 +29,49 @@ class AuthController extends BaseController
             return $this->redirectBackWithSafeInput()
                 ->with(
                     'error',
-                    'Terlalu banyak percobaan masuk. Tunggu beberapa menit lalu coba kembali.'
+                    public_t(
+                        'auth.rate_limit',
+                        'Terlalu banyak percobaan masuk. Tunggu beberapa menit lalu coba kembali.'
+                    )
                 );
         }
 
         $rules = [
             'email' => [
-                'label' => 'Alamat email',
+                'label' => public_t(
+                    'auth.label_email',
+                    'Alamat email'
+                ),
                 'rules' => 'required|valid_email|max_length[150]',
+                'errors' => [
+                    'required' => public_t(
+                        'validation.required'
+                    ),
+                    'valid_email' => public_t(
+                        'validation.valid_email'
+                    ),
+                    'max_length' => public_t(
+                        'validation.max_length'
+                    ),
+                ],
             ],
             'password' => [
-                'label' => 'Kata sandi',
+                'label' => public_t(
+                    'auth.label_password',
+                    'Kata sandi'
+                ),
                 'rules' => 'required|min_length[6]|max_length[255]',
+                'errors' => [
+                    'required' => public_t(
+                        'validation.required'
+                    ),
+                    'min_length' => public_t(
+                        'validation.min_length'
+                    ),
+                    'max_length' => public_t(
+                        'validation.max_length'
+                    ),
+                ],
             ],
         ];
 
@@ -59,20 +90,32 @@ class AuthController extends BaseController
             return $this->redirectBackWithSafeInput()
                 ->with(
                     'error',
-                    'Email atau kata sandi tidak sesuai.'
+                    public_t(
+                        'auth.invalid',
+                        'Email atau kata sandi tidak sesuai.'
+                    )
                 );
         }
 
         if (($user['status'] ?? '') !== 'active') {
             return $this->redirectBackWithSafeInput()
-                ->with('error', 'Akun Anda sedang tidak aktif.');
+                ->with(
+                    'error',
+                    public_t(
+                        'auth.inactive',
+                        'Akun Anda sedang tidak aktif.'
+                    )
+                );
         }
 
         if (empty($user['role_name'])) {
             return $this->redirectBackWithSafeInput()
                 ->with(
                     'error',
-                    'Peran akun belum dikonfigurasi. Hubungi administrator.'
+                    public_t(
+                        'auth.role_missing',
+                        'Peran akun belum dikonfigurasi. Hubungi administrator.'
+                    )
                 );
         }
 
@@ -129,9 +172,24 @@ class AuthController extends BaseController
 
     public function logout()
     {
+        $locale = $this->request->getCookie(
+            'g01_locale'
+        ) === 'en'
+            ? 'en'
+            : 'id';
+
+        $this->request->setLocale($locale);
         session()->destroy();
 
-        return redirect()->to('/login')
-            ->with('success', 'Anda telah keluar dari GARDA 01 Portal.');
+        return redirect()->to(
+            public_url('/login', $locale)
+        )
+            ->with(
+                'success',
+                public_t(
+                    'auth.logout',
+                    'Anda telah keluar dari GARDA 01 Portal.'
+                )
+            );
     }
 }

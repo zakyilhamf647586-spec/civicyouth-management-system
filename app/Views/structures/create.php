@@ -2,6 +2,8 @@
 
 <?= $this->section('content') ?>
 
+<?= $this->include('partials/admin_bilingual_assets') ?>
+
 <div class="page-header">
     <div>
         <h2>Tambah Struktur Pengurus</h2>
@@ -93,6 +95,8 @@
             <label>Biodata Singkat</label>
             <textarea name="short_bio" rows="4" placeholder="Contoh: Aktif dalam kegiatan kepemudaan, sosial, dan koordinasi warga RW 01."><?= old('short_bio') ?></textarea>
         </div>
+
+        <?= view('structures/_bilingual_fields') ?>
 
         <button type="submit" class="btn btn-primary">Simpan Data</button>
         <a href="<?= base_url('/structures') ?>" class="btn btn-secondary">Batal</a>

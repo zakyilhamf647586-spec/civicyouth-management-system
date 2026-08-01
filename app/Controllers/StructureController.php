@@ -60,6 +60,18 @@ class StructureController extends BaseController
                 'label' => 'Nama Pengurus',
                 'rules' => 'required|is_natural_no_zero',
             ],
+            'position_name_en' => [
+                'label' => 'English position name',
+                'rules' => 'permit_empty|max_length[150]',
+            ],
+            'division_en' => [
+                'label' => 'English division',
+                'rules' => 'permit_empty|max_length[150]',
+            ],
+            'status' => [
+                'label' => 'Status',
+                'rules' => 'required|in_list[active,inactive]',
+            ],
         ];
 
         if (!$this->validate($rules)) {
@@ -73,23 +85,50 @@ class StructureController extends BaseController
         try {
             $photoName = $this->processOfficialPhoto();
 
-            $inserted = $this->structureModel->insert([
+            $structureData = [
                 'member_id'       => $this->request->getPost('member_id'),
-                'position_name'   => $this->request->getPost('position_name'),
-                'division'        => $this->request->getPost('division'),
+                'position_name'   => trim((string) $this->request->getPost('position_name')),
+                'position_name_en' => trim((string) $this->request->getPost('position_name_en')),
+                'division'        => trim((string) $this->request->getPost('division')),
+                'division_en'     => trim((string) $this->request->getPost('division_en')),
                 'rt_scope'        => $this->request->getPost('rt_scope'),
                 'period'          => $this->request->getPost('period'),
                 'sort_order'      => $this->request->getPost('sort_order') ?: 0,
-                'description'     => $this->request->getPost('description'),
+                'description'     => trim((string) $this->request->getPost('description')),
+                'description_en'  => trim((string) $this->request->getPost('description_en')),
                 'photo'           => $photoName,
-                'short_bio'       => $this->request->getPost('short_bio'),
-            ], true);
+                'short_bio'       => trim((string) $this->request->getPost('short_bio')),
+                'short_bio_en'    => trim((string) $this->request->getPost('short_bio_en')),
+                'status'          => $this->request->getPost('status'),
+            ];
+
+            if ($structureData['status'] === 'active') {
+                $this->assertBilingualReady($structureData);
+            }
+
+            $inserted = $this->structureModel->insert(
+                $structureData,
+                true
+            );
 
             if ($inserted === false) {
                 throw new \RuntimeException(
                     'Data struktur gagal disimpan.'
                 );
             }
+
+            $this->recordCmsAudit([
+                'module' => 'structures',
+                'event_type' => 'structure.created',
+                'severity' => 'notice',
+                'subject_type' => 'organizational_structure',
+                'subject_id' => (int) $inserted,
+                'subject_label' => $structureData['position_name'],
+                'summary' => 'Struktur pengurus bilingual ditambahkan.',
+                'metadata' => [
+                    'status' => $structureData['status'],
+                ],
+            ]);
 
             return redirect()->to('/structures')
                 ->with('success', 'Data struktur berhasil ditambahkan.');
@@ -146,6 +185,18 @@ class StructureController extends BaseController
                 'label' => 'Nama Pengurus',
                 'rules' => 'required|is_natural_no_zero',
             ],
+            'position_name_en' => [
+                'label' => 'English position name',
+                'rules' => 'permit_empty|max_length[150]',
+            ],
+            'division_en' => [
+                'label' => 'English division',
+                'rules' => 'permit_empty|max_length[150]',
+            ],
+            'status' => [
+                'label' => 'Status',
+                'rules' => 'required|in_list[active,inactive]',
+            ],
         ];
 
         if (!$this->validate($rules)) {
@@ -162,17 +213,31 @@ class StructureController extends BaseController
             $photoName = $this->processOfficialPhoto($oldPhoto);
             $hasNewPhoto = $photoName !== $oldPhoto;
 
-            $updated = $this->structureModel->update($id, [
+            $structureData = [
                 'member_id'       => $this->request->getPost('member_id'),
-                'position_name'   => $this->request->getPost('position_name'),
-                'division'        => $this->request->getPost('division'),
+                'position_name'   => trim((string) $this->request->getPost('position_name')),
+                'position_name_en' => trim((string) $this->request->getPost('position_name_en')),
+                'division'        => trim((string) $this->request->getPost('division')),
+                'division_en'     => trim((string) $this->request->getPost('division_en')),
                 'rt_scope'        => $this->request->getPost('rt_scope'),
                 'period'          => $this->request->getPost('period'),
                 'sort_order'      => $this->request->getPost('sort_order') ?: 0,
-                'description'     => $this->request->getPost('description'),
+                'description'     => trim((string) $this->request->getPost('description')),
+                'description_en'  => trim((string) $this->request->getPost('description_en')),
                 'photo'           => $photoName,
-                'short_bio'       => $this->request->getPost('short_bio'),
-            ]);
+                'short_bio'       => trim((string) $this->request->getPost('short_bio')),
+                'short_bio_en'    => trim((string) $this->request->getPost('short_bio_en')),
+                'status'          => $this->request->getPost('status'),
+            ];
+
+            if ($structureData['status'] === 'active') {
+                $this->assertBilingualReady($structureData);
+            }
+
+            $updated = $this->structureModel->update(
+                $id,
+                $structureData
+            );
 
             if ($updated === false) {
                 throw new \RuntimeException(
@@ -183,6 +248,20 @@ class StructureController extends BaseController
             if ($hasNewPhoto && $oldPhoto !== null) {
                 $this->deleteOfficialPhoto($oldPhoto);
             }
+
+            $this->recordCmsAudit([
+                'module' => 'structures',
+                'event_type' => 'structure.updated',
+                'severity' => 'info',
+                'subject_type' => 'organizational_structure',
+                'subject_id' => (int) $id,
+                'subject_label' => $structureData['position_name'],
+                'summary' => 'Struktur pengurus bilingual diperbarui.',
+                'metadata' => [
+                    'status' => $structureData['status'],
+                    'photo_changed' => $hasNewPhoto,
+                ],
+            ]);
 
             return redirect()->to('/structures')
                 ->with('success', 'Data struktur berhasil diperbarui.');
@@ -241,6 +320,46 @@ class StructureController extends BaseController
         );
 
         return $stored['file_name'];
+    }
+
+    /**
+     * @param array<string, mixed> $structure
+     */
+    private function assertBilingualReady(array $structure): void
+    {
+        $pairs = [
+            'position_name' => [
+                'position_name_en',
+                'English position name',
+            ],
+            'division' => ['division_en', 'English division'],
+            'description' => [
+                'description_en',
+                'English role description',
+            ],
+            'short_bio' => [
+                'short_bio_en',
+                'English short biography',
+            ],
+        ];
+        $missing = [];
+
+        foreach ($pairs as $source => [$english, $label]) {
+            if (
+                trim((string) ($structure[$source] ?? '')) !== ''
+                && trim((string) ($structure[$english] ?? '')) === ''
+            ) {
+                $missing[] = $label;
+            }
+        }
+
+        if ($missing !== []) {
+            throw new \RuntimeException(
+                'Data pengurus aktif belum siap ditampilkan. Lengkapi: '
+                . implode(', ', $missing)
+                . '.'
+            );
+        }
     }
 
     private function deleteOfficialPhoto(?string $photoName): void

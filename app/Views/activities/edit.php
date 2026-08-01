@@ -2,6 +2,8 @@
 
 <?= $this->section('content') ?>
 
+<?= $this->include('partials/admin_bilingual_assets') ?>
+
 <link
     rel="stylesheet"
     href="<?= base_url('assets/css/admin-activity-workflow.css') ?>?v=<?= filemtime(FCPATH . 'assets/css/admin-activity-workflow.css') ?>"
@@ -259,6 +261,10 @@ $publicationBadgeClass = match (
                 old('result', $activity['result'] ?? '')
             ) ?></textarea>
         </div>
+
+        <?= view('activities/_bilingual_fields', [
+            'activity' => $activity,
+        ]) ?>
 
         <div class="grid-2">
             <div class="form-group">

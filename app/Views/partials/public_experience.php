@@ -32,6 +32,13 @@ $experiencePages = [
 $experiencePage = $experiencePages[$activePage]
     ?? ['00', 'GARDA 01', 'Guyub, bergerak, berdampak'];
 
+$experiencePage[1] = public_translate_text(
+    $experiencePage[1]
+);
+$experiencePage[2] = public_translate_text(
+    $experiencePage[2]
+);
+
 $navigationItems = website_navigation_items('header');
 ?>
 
@@ -39,6 +46,12 @@ $navigationItems = website_navigation_items('header');
     class="g01-arrival"
     id="g01Arrival"
     data-page-label="<?= esc($experiencePage[1], 'attr') ?>"
+    data-chapter-unit="<?= esc(
+        public_locale() === 'en'
+            ? 'chapters'
+            : 'bab',
+        'attr'
+    ) ?>"
     aria-hidden="true"
 >
     <div class="g01-arrival__grid" aria-hidden="true"></div>
@@ -107,7 +120,11 @@ $navigationItems = website_navigation_items('header');
     <div class="g01-chapter-rail__panel" id="g01ChapterPanel">
         <p>
             <span>Di halaman ini</span>
-            <small id="g01ChapterCount">00 bab</small>
+            <small id="g01ChapterCount">
+                00 <?= public_locale() === 'en'
+                    ? 'chapters'
+                    : 'bab' ?>
+            </small>
         </p>
 
         <nav
@@ -233,7 +250,7 @@ $navigationItems = website_navigation_items('header');
         </nav>
 
         <footer class="g01-deck__footer">
-            <a href="<?= base_url('/') ?>">
+            <a href="<?= public_url('/') ?>">
                 <span aria-hidden="true">←</span>
                 Kembali ke Introducing
             </a>

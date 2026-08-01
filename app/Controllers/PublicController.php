@@ -56,8 +56,10 @@ class PublicController extends BaseController
             ->select(
                 'activities.*, ' .
                 'programs.name AS program_name, ' .
+                'programs.name_en AS program_name_en, ' .
                 'programs.slug AS program_slug, ' .
-                'programs.label AS program_label'
+                'programs.label AS program_label, ' .
+                'programs.label_en AS program_label_en'
             )
             ->join(
                 'programs',
@@ -85,8 +87,10 @@ class PublicController extends BaseController
                 ->select(
                     'activities.*, ' .
                     'programs.name AS program_name, ' .
+                    'programs.name_en AS program_name_en, ' .
                     'programs.slug AS program_slug, ' .
-                    'programs.label AS program_label'
+                    'programs.label AS program_label, ' .
+                    'programs.label_en AS program_label_en'
                 )
                 ->join(
                     'programs',
@@ -107,8 +111,10 @@ class PublicController extends BaseController
             ->select(
                 'activities.*, ' .
                 'programs.name AS program_name, ' .
+                'programs.name_en AS program_name_en, ' .
                 'programs.slug AS program_slug, ' .
-                'programs.label AS program_label'
+                'programs.label AS program_label, ' .
+                'programs.label_en AS program_label_en'
             )
             ->join(
                 'programs',
@@ -142,8 +148,10 @@ class PublicController extends BaseController
                 ->select(
                     'activities.*, ' .
                     'programs.name AS program_name, ' .
+                    'programs.name_en AS program_name_en, ' .
                     'programs.slug AS program_slug, ' .
-                    'programs.label AS program_label'
+                    'programs.label AS program_label, ' .
+                    'programs.label_en AS program_label_en'
                 )
                 ->join(
                     'programs',
@@ -174,8 +182,10 @@ class PublicController extends BaseController
             ->select(
                 'activities.*, ' .
                 'programs.name AS program_name, ' .
+                'programs.name_en AS program_name_en, ' .
                 'programs.slug AS program_slug, ' .
-                'programs.label AS program_label'
+                'programs.label AS program_label, ' .
+                'programs.label_en AS program_label_en'
             )
             ->join(
                 'programs',
@@ -196,17 +206,34 @@ class PublicController extends BaseController
             ->limit(6)
             ->findAll();
 
+        $programs = public_localize_bundle($programs);
+        $featuredActivity = public_localize_bundle(
+            $featuredActivity
+        );
+        $impactActivity = public_localize_bundle(
+            $impactActivity
+        );
+        $latestActivities = public_localize_bundle(
+            $latestActivities
+        );
+
         $cmsState = $this->publicCmsPage('home');
         $cmsPage = $cmsState['page'];
 
         return view('public/home', [
             'title' =>
                 $cmsPage['title']
-                ?? 'GARDA 01 | Generasi Aktif Randugarut',
+                ?? public_t(
+                    'seo.home_title',
+                    'GARDA 01 | Generasi Aktif Randugarut'
+                ),
 
             'metaDescription' =>
                 $cmsPage['meta_description']
-                ?? 'Website resmi GARDA 01, Generasi Aktif Randugarut, Karang Taruna RW 01 Kelurahan Randugarut.',
+                ?? public_t(
+                    'seo.home_description',
+                    'Website resmi GARDA 01, Generasi Aktif Randugarut, Karang Taruna RW 01 Kelurahan Randugarut.'
+                ),
 
             'activePage'          => 'home',
             'cmsPage'             => $cmsPage,
@@ -244,8 +271,10 @@ class PublicController extends BaseController
             ->select(
                 'activities.*, ' .
                 'programs.name AS program_name, ' .
+                'programs.name_en AS program_name_en, ' .
                 'programs.slug AS program_slug, ' .
-                'programs.label AS program_label'
+                'programs.label AS program_label, ' .
+                'programs.label_en AS program_label_en'
             )
             ->join(
                 'programs',
@@ -262,26 +291,39 @@ class PublicController extends BaseController
             );
         }
 
-        return view('public/activities', [
-            'title' => 'Kegiatan GARDA 01 | Randugarut',
-
-            'metaDescription' =>
-                'Dokumentasi kegiatan GARDA 01, Karang Taruna RW 01 Kelurahan Randugarut.',
-
-            'activePage' => 'activities',
-
-            'activities' => $activityModel->paginate(
+        $activities = public_localize_bundle(
+            $activityModel->paginate(
                 9,
                 'public_activities'
-            ),
-
-            'pager' => $activityModel->pager,
-
-            'programs' => $programModel
+            )
+        );
+        $programs = public_localize_bundle(
+            $programModel
                 ->where('status', 'published')
                 ->orderBy('display_order', 'ASC')
                 ->orderBy('id', 'ASC')
-                ->findAll(),
+                ->findAll()
+        );
+
+        return view('public/activities', [
+            'title' => public_t(
+                'seo.activities_title',
+                'Kegiatan GARDA 01 | Randugarut'
+            ),
+
+            'metaDescription' =>
+                public_t(
+                    'seo.activities_description',
+                    'Dokumentasi kegiatan GARDA 01, Karang Taruna RW 01 Kelurahan Randugarut.'
+                ),
+
+            'activePage' => 'activities',
+
+            'activities' => $activities,
+
+            'pager' => $activityModel->pager,
+
+            'programs' => $programs,
 
             'selectedProgram' => $selectedProgram,
         ]);
@@ -296,9 +338,12 @@ class PublicController extends BaseController
             ->select(
                 'activities.*, ' .
                 'programs.name AS program_name, ' .
+                'programs.name_en AS program_name_en, ' .
                 'programs.slug AS program_slug, ' .
                 'programs.label AS program_label, ' .
-                'programs.tagline AS program_tagline'
+                'programs.label_en AS program_label_en, ' .
+                'programs.tagline AS program_tagline, ' .
+                'programs.tagline_en AS program_tagline_en'
             )
             ->join(
                 'programs',
@@ -309,8 +354,15 @@ class PublicController extends BaseController
             ->first();
 
         if (!$activity) {
-            return redirect()->to('/kegiatan')
-                ->with('error', 'Kegiatan tidak ditemukan.');
+            return redirect()->to(
+                public_url('/kegiatan')
+            )->with(
+                'error',
+                public_t(
+                    'activity.not_found',
+                    'Kegiatan tidak ditemukan.'
+                )
+            );
         }
 
         $imageModel = new ActivityImageModel();
@@ -329,6 +381,7 @@ class PublicController extends BaseController
             ->select(
                 'activities.*, ' .
                 'programs.name AS program_name, ' .
+                'programs.name_en AS program_name_en, ' .
                 'programs.slug AS program_slug'
             )
             ->join(
@@ -351,12 +404,28 @@ class PublicController extends BaseController
             ->limit(3)
             ->findAll();
 
+        $activity = public_localize_bundle($activity);
+        $relatedActivities = public_localize_bundle(
+            $relatedActivities
+        );
+        $galleryImages = public_localize_bundle(
+            $galleryImages
+        );
+
         return view('public/activity_detail', [
             'title' => $activity['title'] . ' | GARDA 01',
 
-            'metaDescription' => !empty($activity['description'])
-                ? mb_substr(strip_tags($activity['description']), 0, 155)
-                : 'Dokumentasi kegiatan GARDA 01 Randugarut.',
+            'metaDescription' => !empty(
+                $activity['description']
+            )
+                ? mb_substr(
+                    strip_tags($activity['description']),
+                    0,
+                    155
+                )
+                : public_translate_text(
+                    'Dokumentasi kegiatan GARDA 01 Randugarut.'
+                ),
 
             'activePage' => 'activity_detail',
             'activity' => $activity,
@@ -368,13 +437,36 @@ class PublicController extends BaseController
     public function officials()
     {
         $structureModel = new OrganizationalStructureModel();
+        $officialRows = $structureModel->publicOfficials();
+        $officials = array_map(
+            static function (array $official): array {
+                $positionSource = trim((string) (
+                    $official['position_name'] ?? ''
+                ));
+                $localized = public_localize_bundle($official);
 
-        $officials = $structureModel->publicOfficials();
+                if (!is_array($localized)) {
+                    $localized = $official;
+                }
+
+                // Hierarchy must be classified from the canonical role name,
+                // while the public label may be translated for display.
+                $localized['_position_source'] = $positionSource;
+
+                return $localized;
+            },
+            $officialRows
+        );
 
         return view('public/officials', [
-            'title' => 'Pengurus GARDA 01 | Karang Taruna RW 01',
-            'metaDescription' =>
-                'Struktur dan profil pengurus GARDA 01, Karang Taruna RW 01 Kelurahan Randugarut.',
+            'title' => public_t(
+                'seo.officials_title',
+                'Pengurus GARDA 01 | Karang Taruna RW 01'
+            ),
+            'metaDescription' => public_t(
+                'seo.officials_description',
+                'Struktur dan profil pengurus GARDA 01, Karang Taruna RW 01 Kelurahan Randugarut.'
+            ),
             'activePage' => 'officials',
             'officials' => $officials,
         ]);
@@ -387,10 +479,16 @@ class PublicController extends BaseController
 
         return view('public/profile', [
             'title' => $cmsPage['title']
-                ?? 'Profil GARDA 01 | Generasi Aktif Randugarut',
+                ?? public_t(
+                    'seo.profile_title',
+                    'Profil GARDA 01 | Generasi Aktif Randugarut'
+                ),
             'metaDescription' =>
                 $cmsPage['meta_description']
-                ?? 'Mengenal GARDA 01 — Generasi Aktif Randugarut, identitas Karang Taruna RW 01 Kelurahan Randugarut.',
+                ?? public_t(
+                    'seo.profile_description',
+                    'Mengenal GARDA 01 — Generasi Aktif Randugarut, identitas Karang Taruna RW 01 Kelurahan Randugarut.'
+                ),
             'activePage' => 'profile',
             'cmsPage' => $cmsPage,
             'cmsPreview' => $cmsState['preview'],
@@ -410,10 +508,18 @@ class PublicController extends BaseController
         $programModel = new ProgramModel();
 
         return view('public/programs', [
-            'title' => 'Program GARDA 01 | Karang Taruna RW 01',
-            'metaDescription' => 'Pilar program GARDA 01 dalam bidang sosial, lingkungan, olahraga, kreativitas, usaha, pendidikan, dan keagamaan.',
+            'title' => public_t(
+                'seo.programs_title',
+                'Program GARDA 01 | Karang Taruna RW 01'
+            ),
+            'metaDescription' => public_t(
+                'seo.programs_description',
+                'Pilar program GARDA 01 dalam bidang sosial, lingkungan, olahraga, kreativitas, usaha, pendidikan, dan keagamaan.'
+            ),
             'activePage' => 'programs',
-            'programs' => $programModel->getPublishedPrograms(),
+            'programs' => public_localize_bundle(
+                $programModel->getPublishedPrograms()
+            ),
         ]);
     }
 
@@ -425,14 +531,20 @@ class PublicController extends BaseController
 
         if (!$program) {
             throw PageNotFoundException::forPageNotFound(
-                'Program GARDA 01 tidak ditemukan.'
+                public_translate_text(
+                    'Program GARDA 01 tidak ditemukan.'
+                )
             );
         }
+
+        $program = public_localize_bundle($program);
 
         return view('public/program_detail', [
             'title' => $program['name'] . ' | GARDA 01',
             'metaDescription' => $program['short_description']
-                ?? 'Program GARDA 01 Randugarut.',
+                ?? public_translate_text(
+                    'Program GARDA 01 Randugarut.'
+                ),
             'activePage' => 'program_detail',
             'program' => $program,
         ]);

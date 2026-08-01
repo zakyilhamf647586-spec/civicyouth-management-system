@@ -1,5 +1,41 @@
 <?php
 
+if (!function_exists('public_cms_field_translatable')) {
+    /**
+     * @param array<string, mixed> $definition
+     */
+    function public_cms_field_translatable(
+        string $fieldKey,
+        array $definition,
+        ?string $value = null
+    ): bool {
+        if (array_key_exists('translatable', $definition)) {
+            return (bool) $definition['translatable'];
+        }
+
+        if (($definition['type'] ?? 'text') === 'url') {
+            return false;
+        }
+
+        if (preg_match(
+            '/(?:^|_)(?:url|link|route|count|limit|number|order|date|year|period)$/',
+            $fieldKey
+        )) {
+            return false;
+        }
+
+        if (
+            $value !== null
+            && trim($value) !== ''
+            && preg_match('/^-?\d+(?:[.,]\d+)?$/', trim($value))
+        ) {
+            return false;
+        }
+
+        return true;
+    }
+}
+
 if (!function_exists('public_cms_value')) {
     function public_cms_value(
         ?array $page,
@@ -57,9 +93,11 @@ if (!function_exists('public_cms_url')) {
             return $value;
         }
 
-        return base_url(
-            ltrim($value, '/')
-        );
+        if (function_exists('public_url')) {
+            return public_url($value);
+        }
+
+        return base_url(ltrim($value, '/'));
     }
 }
 
@@ -122,4 +160,3 @@ if (!function_exists('public_cms_int')) {
         );
     }
 }
-

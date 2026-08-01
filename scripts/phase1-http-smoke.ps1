@@ -106,6 +106,36 @@ function Assert-StatusIn {
     }
 }
 
+function Assert-ContentMatch {
+    param(
+        $Response,
+        [string]$ExpectedPattern,
+        [string]$Label
+    )
+
+    if ([string]$Response.Content -match $ExpectedPattern) {
+        Write-Host "[OK] $Label" -ForegroundColor Green
+    } else {
+        Write-Host "[FAIL] $Label" -ForegroundColor Red
+        $script:Failures += $Label
+    }
+}
+
+function Assert-ContentNotMatch {
+    param(
+        $Response,
+        [string]$UnexpectedPattern,
+        [string]$Label
+    )
+
+    if ([string]$Response.Content -notmatch $UnexpectedPattern) {
+        Write-Host "[OK] $Label" -ForegroundColor Green
+    } else {
+        Write-Host "[FAIL] $Label" -ForegroundColor Red
+        $script:Failures += $Label
+    }
+}
+
 Write-Host '=== GARDA 01 Phase 1 HTTP Smoke Test ===' -ForegroundColor Cyan
 
 $Introducing = Get-Page '/'
@@ -117,6 +147,14 @@ Assert-Status $PublicHome 200 'Beranda publik'
 Assert-Header $PublicHome 'X-Content-Type-Options' '^nosniff$' 'Security header nosniff'
 Assert-Header $PublicHome 'X-Frame-Options' '^SAMEORIGIN$' 'Security header frame'
 Assert-HeaderNotMatch $PublicHome 'X-Robots-Tag' 'noindex' 'Beranda dapat diindeks'
+Assert-ContentMatch `
+    $PublicHome `
+    'hreflang="en"' `
+    'Beranda memuat alternate English'
+Assert-ContentMatch `
+    $PublicHome `
+    'public-preferences\.css' `
+    'Beranda memuat kontrol bahasa dan tema'
 
 $Login = Get-Page '/login'
 Assert-Header $Login 'X-Robots-Tag' 'noindex' 'Login noindex header'
@@ -137,6 +175,80 @@ foreach ($PublicPath in @(
         "Indexability $PublicPath"
 }
 
+$EnglishPaths = @(
+    '/en',
+    '/en/home',
+    '/en/about',
+    '/en/programs',
+    '/en/activities',
+    '/en/team',
+    '/en/contact'
+)
+$EnglishResponses = @{}
+
+foreach ($EnglishPath in $EnglishPaths) {
+    $EnglishPage = Get-Page $EnglishPath
+    $EnglishResponses[$EnglishPath] = $EnglishPage
+    Assert-Status $EnglishPage 200 "English $EnglishPath"
+    Assert-ContentMatch `
+        $EnglishPage `
+        '<html[^>]+lang="en"' `
+        "Language marker $EnglishPath"
+    Assert-HeaderNotMatch `
+        $EnglishPage `
+        'X-Robots-Tag' `
+        'noindex' `
+        "Indexability $EnglishPath"
+}
+
+Assert-ContentMatch `
+    $EnglishResponses['/en'] `
+    'In a small community, impact does not have to wait' `
+    'Introducing English menerjemahkan narasi multiline'
+Assert-ContentNotMatch `
+    $EnglishResponses['/en'] `
+    '>\s*Di lingkungan kecil,' `
+    'Introducing English tidak menyisakan narasi Indonesia'
+
+Assert-ContentMatch `
+    $EnglishResponses['/en/programs'] `
+    'Each pillar has a clear focus' `
+    'Programs English menerjemahkan pengantar pilar'
+Assert-ContentMatch `
+    $EnglishResponses['/en/programs'] `
+    'United(?:\s|\u2022|&bull;|&#8226;)*In Motion(?:\s|\u2022|&bull;|&#8226;)*Making an Impact' `
+    'Footer English menerjemahkan slogan organisasi'
+
+Assert-ContentMatch `
+    $EnglishResponses['/en/activities'] `
+    'Programs, events, and activity documentation' `
+    'Activities English menerjemahkan judul dan pengantar'
+Assert-ContentNotMatch `
+    $EnglishResponses['/en/activities'] `
+    '>\s*(Peduli|Hijau|Belajar|Berkah|Sosialisasi|Kerja Bakti RW 01)\s*<|Kita bersama-sama melukis' `
+    'Activities English menerjemahkan label dan data terdaftar'
+
+Assert-ContentMatch `
+    $EnglishResponses['/en/team'] `
+    'Meet the team responsible for coordination' `
+    'Team English menerjemahkan pengantar pengurus'
+Assert-ContentMatch `
+    $EnglishResponses['/en/team'] `
+    'officials-chart-node-primary[\s\S]*?>\s*Chair\s*<[\s\S]*?officials-chart-grid[\s\S]*?>\s*Secretary\s*<' `
+    'Hierarki Team English mempertahankan Chair sebelum core team'
+Assert-ContentNotMatch `
+    $EnglishResponses['/en/team'] `
+    '>\s*(Seksi Olahraga|Inti|Tampan dan Berani|Koordinator Utama)\s*<' `
+    'Team English menerjemahkan jabatan, divisi, dan profil'
+
+$EnglishLogin = Get-Page '/en/login'
+Assert-Status $EnglishLogin 200 'English login'
+Assert-Header `
+    $EnglishLogin `
+    'X-Robots-Tag' `
+    'noindex' `
+    'English login noindex header'
+
 $Robots = Get-Page '/robots.txt'
 Assert-Status $Robots 200 'robots.txt'
 
@@ -147,6 +259,11 @@ if ([string]$Robots.Content -match 'Disallow:\s+/activities') {
     $Failures += 'robots.txt'
 }
 
+Assert-ContentMatch `
+    $Robots `
+    'Disallow:\s+/en/login' `
+    'robots.txt melindungi English login'
+
 $Sitemap = Get-Page '/sitemap.xml'
 Assert-Status $Sitemap 200 'sitemap.xml'
 
@@ -156,6 +273,15 @@ if ([string]$Sitemap.Content -match '/home</loc>') {
     Write-Host '[FAIL] sitemap.xml belum memuat /home.' -ForegroundColor Red
     $Failures += 'sitemap.xml /home'
 }
+
+Assert-ContentMatch `
+    $Sitemap `
+    '/en/home</loc>' `
+    'sitemap.xml memuat English home'
+Assert-ContentMatch `
+    $Sitemap `
+    'hreflang="en"' `
+    'sitemap.xml memuat alternate language'
 
 $HealthLive = Get-Page '/health/live'
 Assert-Status $HealthLive 200 'Health live'

@@ -33,7 +33,7 @@ $hasDocumentationImage =
     <div class="activity-detail-hero-copy">
 
         <a
-            href="<?= base_url('/kegiatan') ?>"
+            href="<?= public_url('/kegiatan') ?>"
             class="activity-detail-back"
         >
             ← Kembali ke Kegiatan
@@ -44,7 +44,7 @@ $hasDocumentationImage =
             && !empty($activity['program_slug'])
         ) : ?>
             <a
-                href="<?= base_url(
+                href="<?= public_url(
                     '/program/' . $activity['program_slug']
                 ) ?>"
                 class="activity-detail-program"
@@ -314,7 +314,7 @@ $hasDocumentationImage =
                 <article class="activity-related-card">
 
                     <a
-                        href="<?= base_url(
+                        href="<?= public_url(
                             '/kegiatan/' . $related['id']
                         ) ?>"
                         class="activity-related-media"
@@ -347,7 +347,7 @@ $hasDocumentationImage =
 
                         <h3>
                             <a
-                                href="<?= base_url(
+                                href="<?= public_url(
                                     '/kegiatan/' . $related['id']
                                 ) ?>"
                             >
@@ -398,14 +398,14 @@ $hasDocumentationImage =
 
     <div class="activity-detail-cta-actions">
         <a
-            href="<?= base_url('/kegiatan') ?>"
+            href="<?= public_url('/kegiatan') ?>"
             class="btn btn-primary"
         >
             Semua Kegiatan
         </a>
 
         <a
-            href="<?= base_url('/program') ?>"
+            href="<?= public_url('/program') ?>"
             class="btn btn-secondary"
         >
             Lihat Program

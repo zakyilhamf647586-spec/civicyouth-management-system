@@ -160,6 +160,10 @@ class WebsiteNavigationController extends BaseController
                 (string) ($postedItem['label'] ?? '')
             ));
 
+            $labelEn = trim(strip_tags(
+                (string) ($postedItem['label_en'] ?? '')
+            ));
+
             $url = trim(strip_tags(
                 (string) ($postedItem['url'] ?? '')
             ));
@@ -207,6 +211,13 @@ class WebsiteNavigationController extends BaseController
                     'Item '
                     . ($index + 1)
                     . ': label maksimal 80 karakter.';
+            }
+
+            if (mb_strlen($labelEn) > 80) {
+                $errors[] =
+                    'Item '
+                    . ($index + 1)
+                    . ': English label maksimal 80 karakter.';
             }
 
             if (
@@ -264,6 +275,7 @@ class WebsiteNavigationController extends BaseController
             $cleanItems[] = [
                 'item_key' => $itemKey,
                 'label' => $label,
+                'label_en' => $labelEn,
                 'url' => $url,
                 'active_pages' => $activePages,
                 'target' => $target,
@@ -365,6 +377,36 @@ class WebsiteNavigationController extends BaseController
                     'error',
                     'Menu navigasi tidak ditemukan.'
                 );
+        }
+
+        $draftItems = $this->decodeItems(
+            $menu['draft_items'] ?? null
+        );
+        $missingEnglish = [];
+
+        foreach ($draftItems as $index => $item) {
+            if (
+                empty($item['enabled'])
+                || trim((string) (
+                    $item['label_en'] ?? ''
+                )) !== ''
+            ) {
+                continue;
+            }
+
+            $missingEnglish[] =
+                (string) ($item['label'] ?? 'Item ' . ($index + 1));
+        }
+
+        if ($missingEnglish !== []) {
+            return redirect()->back()->with(
+                'errors',
+                [
+                    'Navigasi belum siap dipublikasikan. Lengkapi English label untuk: '
+                    . implode(', ', $missingEnglish)
+                    . '.',
+                ]
+            );
         }
 
         try {

@@ -3,13 +3,19 @@
 <?= $this->section('content') ?>
 
 <?= $this->include('public_pages/_assets') ?>
+<?= $this->include('partials/admin_bilingual_assets') ?>
 
 <?php
 $oldSections = old('sections');
+$oldSectionsEn = old('sections_en');
 $oldEnabled = old('section_enabled');
 
 if (!is_array($oldSections)) {
     $oldSections = [];
+}
+
+if (!is_array($oldSectionsEn)) {
+    $oldSectionsEn = [];
 }
 
 if (!is_array($oldEnabled)) {
@@ -24,6 +30,16 @@ $draftTitle = old(
 $draftMetaDescription = old(
     'draft_meta_description',
     $page['draft_meta_description'] ?? ''
+);
+
+$draftTitleEn = old(
+    'draft_title_en',
+    $page['draft_title_en'] ?? ''
+);
+
+$draftMetaDescriptionEn = old(
+    'draft_meta_description_en',
+    $page['draft_meta_description_en'] ?? ''
 );
 
 $revisionNote = old(
@@ -128,7 +144,18 @@ $editorLocked = $reviewReady
                 rel="noopener noreferrer"
                 class="btn btn-secondary"
             >
-                Preview Draft ↗
+                Preview ID ↗
+            </a>
+
+            <a
+                href="<?= base_url(
+                    '/website/pages/preview/' . $pageKey
+                ) ?>?locale=en"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn btn-secondary"
+            >
+                Preview EN ↗
             </a>
         <?php endif; ?>
 
@@ -418,6 +445,50 @@ $editorLocked = $reviewReady
                         dalam satu atau dua kalimat.
                     </small>
                 </div>
+
+                <div class="bilingual-editor-heading is-english">
+                    <span>EN</span>
+
+                    <div>
+                        <strong>English SEO & Metadata</strong>
+                        <small>
+                            Wajib lengkap sebelum draft dapat dikirim ke
+                            tahap review.
+                        </small>
+                    </div>
+                </div>
+
+                <div class="form-group bilingual-setting-field">
+                    <label for="draft_title_en">
+                        English SEO Title
+                        <span class="bilingual-field-badge">EN</span>
+                    </label>
+
+                    <input
+                        id="draft_title_en"
+                        type="text"
+                        name="draft_title_en"
+                        value="<?= esc(
+                            $draftTitleEn,
+                            'attr'
+                        ) ?>"
+                        maxlength="180"
+                    >
+                </div>
+
+                <div class="form-group bilingual-setting-field">
+                    <label for="draft_meta_description_en">
+                        English Meta Description
+                        <span class="bilingual-field-badge">EN</span>
+                    </label>
+
+                    <textarea
+                        id="draft_meta_description_en"
+                        name="draft_meta_description_en"
+                        rows="4"
+                        maxlength="255"
+                    ><?= esc($draftMetaDescriptionEn) ?></textarea>
+                </div>
             </section>
 
             <?php
@@ -431,6 +502,8 @@ $editorLocked = $reviewReady
                 <?php
                 $sectionRow = $sections[$sectionKey] ?? [];
                 $draftData = $sectionRow['draft_data'] ?? [];
+                $draftDataEn =
+                    $sectionRow['draft_data_en'] ?? [];
 
                 $isEnabled = $oldEnabled !== null
                     ? isset($oldEnabled[$sectionKey])
@@ -527,6 +600,9 @@ $editorLocked = $reviewReady
                             $oldSectionData =
                                 $oldSections[$sectionKey]
                                 ?? [];
+                            $oldSectionDataEn =
+                                $oldSectionsEn[$sectionKey]
+                                ?? [];
 
                             $fieldValue = is_array(
                                 $oldSectionData
@@ -547,6 +623,25 @@ $editorLocked = $reviewReady
                             $fieldType =
                                 $fieldDefinition['type']
                                 ?? 'text';
+
+                            $fieldTranslatable =
+                                public_cms_field_translatable(
+                                    $fieldKey,
+                                    $fieldDefinition,
+                                    (string) $fieldValue
+                                );
+
+                            $fieldValueEn = is_array(
+                                $oldSectionDataEn
+                            ) && array_key_exists(
+                                $fieldKey,
+                                $oldSectionDataEn
+                            )
+                                ? $oldSectionDataEn[$fieldKey]
+                                : (
+                                    $draftDataEn[$fieldKey]
+                                    ?? ''
+                                );
 
                             $isTextarea =
                                 $fieldType === 'textarea';
@@ -641,6 +736,78 @@ $editorLocked = $reviewReady
                                             ]
                                         ) ? 'required' : '' ?>
                                     >
+                                <?php endif; ?>
+
+                                <?php if ($fieldTranslatable) : ?>
+                                    <div class="bilingual-inline-field">
+                                        <label
+                                            for="<?= esc(
+                                                $sectionKey
+                                                . '-'
+                                                . $fieldKey
+                                                . '-en',
+                                                'attr'
+                                            ) ?>"
+                                        >
+                                            English
+                                            <?= esc(
+                                                $fieldDefinition['label']
+                                            ) ?>
+                                            <span class="bilingual-field-badge">EN</span>
+                                        </label>
+
+                                        <?php if ($isTextarea) : ?>
+                                            <textarea
+                                                id="<?= esc(
+                                                    $sectionKey
+                                                    . '-'
+                                                    . $fieldKey
+                                                    . '-en',
+                                                    'attr'
+                                                ) ?>"
+                                                name="sections_en[<?= esc(
+                                                    $sectionKey,
+                                                    'attr'
+                                                ) ?>][<?= esc(
+                                                    $fieldKey,
+                                                    'attr'
+                                                ) ?>]"
+                                                rows="5"
+                                                maxlength="<?= (int) (
+                                                    $fieldDefinition[
+                                                        'max'
+                                                    ] ?? 1000
+                                                ) ?>"
+                                            ><?= esc($fieldValueEn) ?></textarea>
+                                        <?php else : ?>
+                                            <input
+                                                id="<?= esc(
+                                                    $sectionKey
+                                                    . '-'
+                                                    . $fieldKey
+                                                    . '-en',
+                                                    'attr'
+                                                ) ?>"
+                                                type="text"
+                                                name="sections_en[<?= esc(
+                                                    $sectionKey,
+                                                    'attr'
+                                                ) ?>][<?= esc(
+                                                    $fieldKey,
+                                                    'attr'
+                                                ) ?>]"
+                                                value="<?= esc(
+                                                    $fieldValueEn,
+                                                    'attr'
+                                                ) ?>"
+                                                maxlength="<?= (int) (
+                                                    $fieldDefinition[
+                                                        'max'
+                                                    ] ?? 255
+                                                ) ?>"
+                                            >
+                                        <?php endif; ?>
+                                    </div>
                                 <?php endif; ?>
 
                                 <?php if (!empty(
@@ -744,7 +911,19 @@ $editorLocked = $reviewReady
                         rel="noopener noreferrer"
                         class="btn btn-secondary"
                     >
-                        Buka Preview Draft ↗
+                        Preview Draft ID ↗
+                    </a>
+
+                    <a
+                        href="<?= base_url(
+                            '/website/pages/preview/'
+                            . $pageKey
+                        ) ?>?locale=en"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="btn btn-secondary"
+                    >
+                        Preview Draft EN ↗
                     </a>
                 <?php endif; ?>
             </section>

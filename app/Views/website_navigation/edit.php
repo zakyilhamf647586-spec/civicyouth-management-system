@@ -3,6 +3,7 @@
 <?= $this->section('content') ?>
 
 <?= $this->include('website_navigation/_assets') ?>
+<?= $this->include('partials/admin_bilingual_assets') ?>
 
 <?php
 $oldItems = old('items');
@@ -230,6 +231,28 @@ $hasPublishedVersion = !empty(
                                 required
                                 data-item-label
                             >
+                        </div>
+
+                        <div class="form-group bilingual-setting-field">
+                            <label>
+                                English Label
+                                <span class="bilingual-field-badge">EN</span>
+                            </label>
+
+                            <input
+                                type="text"
+                                name="items[<?= $index ?>][label_en]"
+                                value="<?= esc(
+                                    $item['label_en'] ?? '',
+                                    'attr'
+                                ) ?>"
+                                maxlength="80"
+                                placeholder="Example: Activities"
+                            >
+
+                            <small>
+                                Wajib dilengkapi sebelum menu dipublikasikan.
+                            </small>
                         </div>
 
                         <div class="form-group navigation-url-field">
@@ -498,6 +521,22 @@ $hasPublishedVersion = !empty(
                     required
                     data-item-label
                 >
+            </div>
+
+            <div class="form-group bilingual-setting-field">
+                <label>
+                    English Label
+                    <span class="bilingual-field-badge">EN</span>
+                </label>
+                <input
+                    type="text"
+                    name="items[__INDEX__][label_en]"
+                    maxlength="80"
+                    placeholder="Example: Partners"
+                >
+                <small>
+                    Wajib dilengkapi sebelum menu dipublikasikan.
+                </small>
             </div>
 
             <div class="form-group navigation-url-field">

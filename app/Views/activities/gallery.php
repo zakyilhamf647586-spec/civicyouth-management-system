@@ -2,6 +2,8 @@
 
 <?= $this->section('content') ?>
 
+<?= $this->include('partials/admin_bilingual_assets') ?>
+
 <div class="page-header">
     <div>
         <span class="gallery-admin-kicker">
@@ -143,6 +145,26 @@
                             ><?= esc(
                                 $image['caption'] ?? ''
                             ) ?></textarea>
+                        </div>
+
+                        <div class="form-group bilingual-setting-field">
+                            <label>
+                                English Caption
+                                <span class="bilingual-field-badge">EN</span>
+                            </label>
+
+                            <textarea
+                                name="caption_en"
+                                rows="3"
+                                maxlength="255"
+                                placeholder="Describe this photo in English"
+                            ><?= esc(
+                                $image['caption_en'] ?? ''
+                            ) ?></textarea>
+
+                            <small>
+                                Wajib apabila caption Indonesia diisi.
+                            </small>
                         </div>
 
                         <div class="form-group">

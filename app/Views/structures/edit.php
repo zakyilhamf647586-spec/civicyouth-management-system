@@ -2,6 +2,8 @@
 
 <?= $this->section('content') ?>
 
+<?= $this->include('partials/admin_bilingual_assets') ?>
+
 <div class="page-header">
     <div>
         <h2>Edit Struktur Pengurus</h2>
@@ -104,6 +106,10 @@
             <label>Biodata Singkat</label>
             <textarea name="short_bio" rows="4" placeholder="Biodata singkat pengurus"><?= old('short_bio', $structure['short_bio'] ?? '') ?></textarea>
         </div>
+
+        <?= view('structures/_bilingual_fields', [
+            'structure' => $structure,
+        ]) ?>
 
         <button type="submit" class="btn btn-primary">Update Data</button>
         <a href="<?= base_url('/structures') ?>" class="btn btn-secondary">Batal</a>

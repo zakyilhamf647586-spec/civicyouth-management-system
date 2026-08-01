@@ -1,0 +1,1007 @@
+/* =========================================================
+   GARDA 01 — Language & Theme Preferences
+========================================================= */
+
+:root {
+    --g01-preferences-surface: rgba(8, 31, 54, 0.985);
+    --g01-preferences-text: #f8fbff;
+    --g01-preferences-muted: #a9bfd2;
+    --g01-preferences-border: rgba(231, 187, 71, 0.22);
+    --g01-preferences-shadow:
+        0 26px 70px rgba(0, 10, 23, 0.34);
+}
+
+.g01-preferences {
+    position: relative;
+    z-index: 130;
+    flex: 0 0 auto;
+}
+
+.g01-preferences__trigger {
+    min-width: 54px;
+    min-height: 40px;
+    padding: 8px 11px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: rgba(255, 255, 255, 0.82);
+    background: rgba(255, 255, 255, 0.055);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 12px;
+    cursor: pointer;
+    font: inherit;
+    transition:
+        color 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.g01-preferences__trigger:hover,
+.g01-preferences__trigger:focus-visible,
+.g01-preferences.is-open .g01-preferences__trigger {
+    color: #f5c948;
+    background: rgba(217, 163, 22, 0.1);
+    border-color: rgba(231, 187, 71, 0.5);
+}
+
+.g01-preferences__trigger:focus-visible {
+    outline: 3px solid rgba(231, 187, 71, 0.28);
+    outline-offset: 3px;
+}
+
+.g01-preferences__trigger svg {
+    width: 17px;
+    height: 17px;
+    flex: 0 0 auto;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.55;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.g01-preferences__trigger > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 9px;
+    font-weight: 850;
+    letter-spacing: 0.08em;
+}
+
+.g01-preferences__trigger i {
+    opacity: 0.4;
+    font-style: normal;
+}
+
+.g01-preferences__trigger b {
+    font: inherit;
+}
+
+.g01-preferences__panel {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    width: min(340px, calc(100vw - 24px));
+    padding: 18px;
+    color: var(--g01-preferences-text);
+    background:
+        linear-gradient(
+            145deg,
+            rgba(8, 39, 68, 0.985),
+            var(--g01-preferences-surface)
+        );
+    border: 1px solid var(--g01-preferences-border);
+    border-radius: 18px;
+    box-shadow: var(--g01-preferences-shadow);
+    backdrop-filter: blur(22px);
+}
+
+.g01-preferences__panel[hidden] {
+    display: none;
+}
+
+.g01-preferences__panel::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    right: 18px;
+    width: 11px;
+    height: 11px;
+    background: #082744;
+    border-top: 1px solid var(--g01-preferences-border);
+    border-left: 1px solid var(--g01-preferences-border);
+    transform: rotate(45deg);
+}
+
+.g01-preferences__panel header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.g01-preferences__panel header > span {
+    color: #e7bb47;
+    font-family: "Courier New", monospace;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.11em;
+    text-transform: uppercase;
+}
+
+.g01-preferences__panel header button {
+    position: relative;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    color: rgba(255, 255, 255, 0.7);
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.g01-preferences__panel header button span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 12px;
+    height: 1px;
+    background: currentColor;
+}
+
+.g01-preferences__panel header button span:first-child {
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.g01-preferences__panel header button span:last-child {
+    transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.g01-preferences__group {
+    margin-top: 17px;
+}
+
+.g01-preferences__group > span {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--g01-preferences-muted);
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+}
+
+.g01-preferences__choices,
+.g01-preferences__theme-grid {
+    display: grid;
+    gap: 7px;
+}
+
+.g01-preferences__choices {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.g01-preferences__choices a,
+.g01-preferences__theme-grid button {
+    min-width: 0;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: var(--g01-preferences-text);
+    background: rgba(255, 255, 255, 0.035);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 11px;
+    cursor: pointer;
+    font: inherit;
+    text-align: left;
+    text-decoration: none;
+    transition:
+        background 0.18s ease,
+        border-color 0.18s ease,
+        transform 0.18s ease;
+}
+
+.g01-preferences__choices a:hover,
+.g01-preferences__choices a:focus-visible,
+.g01-preferences__choices a.is-active,
+.g01-preferences__theme-grid button:hover,
+.g01-preferences__theme-grid button:focus-visible,
+.g01-preferences__theme-grid button.is-active {
+    background: rgba(217, 163, 22, 0.11);
+    border-color: rgba(231, 187, 71, 0.52);
+}
+
+.g01-preferences__choices a:focus-visible,
+.g01-preferences__theme-grid button:focus-visible {
+    outline: 2px solid rgba(231, 187, 71, 0.48);
+    outline-offset: 2px;
+}
+
+.g01-preferences__choices strong {
+    min-width: 27px;
+    color: #e7bb47;
+    font-size: 11px;
+}
+
+.g01-preferences__choices small,
+.g01-preferences__theme-grid small {
+    min-width: 0;
+    overflow: hidden;
+    color: var(--g01-preferences-muted);
+    font-size: 8.5px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.g01-preferences__theme-grid {
+    grid-template-columns: 1fr;
+}
+
+.g01-preferences__theme-grid button > span {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.g01-preferences__theme-grid strong {
+    color: var(--g01-preferences-text);
+    font-size: 10px;
+}
+
+.g01-preferences__swatch {
+    width: 24px;
+    height: 24px;
+    flex: 0 0 auto;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 7px;
+    box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.08);
+}
+
+.g01-preferences__swatch--auto {
+    background:
+        linear-gradient(
+            135deg,
+            #f7f3e9 0 50%,
+            #04172d 50% 100%
+        );
+}
+
+.g01-preferences__swatch--ivory {
+    background: #f7f3e9;
+}
+
+.g01-preferences__swatch--midnight {
+    background: #04172d;
+}
+
+.g01-preferences__note {
+    margin: 14px 0 0;
+    padding-top: 12px;
+    color: rgba(169, 191, 210, 0.72);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    font-size: 8.5px;
+    line-height: 1.5;
+}
+
+.public-navbar .public-navbar-inner {
+    gap: 14px;
+}
+
+.public-navbar .public-brand {
+    order: 1;
+}
+
+.public-navbar .public-nav-links {
+    order: 2;
+    margin-left: auto;
+}
+
+.public-navbar .g01-preferences {
+    order: 3;
+}
+
+.public-navbar .public-mobile-toggle {
+    order: 4;
+}
+
+/* Introducing and login placements */
+
+.g01-preferences--introducing {
+    position: fixed;
+    top: 1.5rem;
+    right: clamp(1rem, 2.6vw, 2.8rem);
+    z-index: 120;
+}
+
+.g01-preferences--introducing
+.g01-preferences__trigger {
+    color: rgba(241, 237, 223, 0.78);
+    background: rgba(3, 19, 33, 0.56);
+}
+
+.g01-preferences--login {
+    position: fixed;
+    top: 18px;
+    right: 20px;
+    z-index: 200;
+}
+
+.g01-preferences--login
+.g01-preferences__trigger {
+    color: #486581;
+    background: rgba(255, 255, 255, 0.82);
+    border-color: rgba(16, 42, 67, 0.14);
+    box-shadow: 0 8px 24px rgba(4, 23, 45, 0.08);
+}
+
+/* Midnight introducing chapters keep the cinematic rhythm without
+   reverting to an ivory canvas halfway through the journey. */
+
+html[data-g01-theme="midnight"]
+.g01-intro-manifesto {
+    color: #edf5fb;
+    background:
+        radial-gradient(
+            circle at 85% 18%,
+            rgba(217, 163, 22, 0.1),
+            transparent 29rem
+        ),
+        #0a2138;
+}
+
+html[data-g01-theme="midnight"]
+.g01-intro-manifesto-index {
+    color: rgba(213, 228, 241, 0.035);
+}
+
+html[data-g01-theme="midnight"]
+.g01-intro-manifesto-heading h2 span {
+    -webkit-text-stroke-color: #dce9f4;
+}
+
+html[data-g01-theme="midnight"]
+.g01-intro-manifesto-statement small {
+    color: rgba(202, 220, 235, 0.58);
+}
+
+html[data-g01-theme="midnight"]
+.g01-intro-kinetic {
+    border-block-color: rgba(244, 185, 20, 0.44);
+}
+
+html[data-g01-theme="midnight"]
+.g01-intro-universe {
+    color: #edf5fb;
+    background:
+        radial-gradient(
+            circle at 73% 52%,
+            rgba(244, 185, 20, 0.13),
+            transparent 29%
+        ),
+        #071b2e;
+}
+
+html[data-g01-theme="midnight"]
+.g01-intro-universe-copy > p:last-child {
+    color: rgba(202, 220, 235, 0.7);
+}
+
+html[data-g01-theme="midnight"]
+.g01-intro-system-ring {
+    border-color: rgba(202, 220, 235, 0.2);
+}
+
+html[data-g01-theme="midnight"]
+.g01-intro-system-ring--three {
+    border-color: rgba(244, 185, 20, 0.5);
+}
+
+html[data-g01-theme="midnight"]
+.g01-intro-system-ring::before {
+    background: #dce9f4;
+    box-shadow: 0 0 0 3px #071b2e;
+}
+
+html[data-g01-theme="midnight"]
+.g01-intro-system-core {
+    background: #031321;
+    border: 1px solid rgba(244, 185, 20, 0.25);
+    color: #edf5fb;
+}
+
+html[data-g01-theme="midnight"]
+.g01-intro-pillar {
+    color: #e4eef7;
+    border-bottom-color: rgba(202, 220, 235, 0.28);
+}
+
+html[data-g01-theme="midnight"]
+.g01-intro-pillar::before {
+    border-color: #071b2e;
+}
+
+html[data-g01-theme="midnight"]
+.g01-intro-pillar small {
+    color: rgba(202, 220, 235, 0.52);
+}
+
+/* Midnight public canvas */
+
+html[data-g01-theme="midnight"] body.public-body {
+    --cream: #06182a;
+    --text: #e6eef6;
+    --muted: #a5bbcf;
+    --border: #274660;
+    --color-ivory-100: #06182a;
+    --color-ivory-50: #0a2139;
+    --color-slate-900: #e6eef6;
+    --color-slate-700: #b4c7d8;
+    --color-slate-600: #9eb5ca;
+    --color-slate-300: #38556e;
+    --color-slate-200: #274660;
+    --color-slate-100: #102c48;
+    --g01-premium-border: rgba(177, 202, 224, 0.12);
+    --g01-premium-surface: rgba(13, 41, 70, 0.96);
+    --g01-premium-shadow:
+        0 20px 52px rgba(0, 8, 18, 0.28);
+    --g01-premium-shadow-hover:
+        0 28px 76px rgba(0, 5, 14, 0.42);
+
+    color: #e6eef6;
+    background:
+        radial-gradient(
+            circle at 8% 7%,
+            rgba(217, 163, 22, 0.1),
+            transparent 24rem
+        ),
+        radial-gradient(
+            circle at 96% 30%,
+            rgba(73, 133, 184, 0.12),
+            transparent 30rem
+        ),
+        #06182a;
+}
+
+html[data-g01-theme="midnight"]
+.public-body .public-main::before {
+    background-image:
+        linear-gradient(
+            rgba(196, 216, 233, 0.026) 1px,
+            transparent 1px
+        ),
+        linear-gradient(
+            90deg,
+            rgba(196, 216, 233, 0.026) 1px,
+            transparent 1px
+        );
+}
+
+html[data-g01-theme="midnight"]
+.public-body :where(
+    .public-content-card,
+    .public-activity-card,
+    .activity-related-card,
+    .contact-public-form-card,
+    .contact-public-location-card,
+    .contact-public-sidebar-card:not(:first-child),
+    .profile-mission-card,
+    .officials-structure-section,
+    .officials-profile-section,
+    .official-profile-card,
+    .program-pillar-card,
+    .activity-detail-main,
+    .activity-editorial-section,
+    .activity-related-section
+) {
+    color: #e6eef6;
+    background: #0c2844;
+    border-color: rgba(177, 202, 224, 0.13);
+    box-shadow: 0 18px 50px rgba(0, 8, 18, 0.26);
+}
+
+html[data-g01-theme="midnight"]
+.public-body :where(
+    .public-content-section,
+    .garda-home-section,
+    .public-section-header,
+    .garda-home-section-heading,
+    .officials-section-heading,
+    .contact-public-heading
+) :where(h1, h2, h3, strong) {
+    color: #eef5fb;
+}
+
+html[data-g01-theme="midnight"]
+.public-body :where(
+    .public-content-section,
+    .garda-home-section,
+    .public-section-header,
+    .garda-home-section-heading,
+    .officials-section-heading,
+    .contact-public-heading
+) :where(p, small, span) {
+    color: #a9bfd2;
+}
+
+html[data-g01-theme="midnight"]
+.public-body :where(
+    input,
+    select,
+    textarea
+) {
+    color: #e9f1f8;
+    background: #0a223b;
+    border-color: #2a4d69;
+}
+
+html[data-g01-theme="midnight"]
+.public-body :where(
+    input,
+    textarea
+)::placeholder {
+    color: #7892aa;
+}
+
+html[data-g01-theme="midnight"]
+.public-body :where(
+    .activity-public-filter,
+    .public-pagination a,
+    .public-pagination span,
+    .officials-chart-node,
+    .officials-chart-node-soft
+) {
+    color: #dce8f3;
+    background: #0f2d4b;
+    border-color: #31536d;
+}
+
+html[data-g01-theme="midnight"]
+.public-body .g01-footer {
+    border-top-color: rgba(231, 187, 71, 0.36);
+}
+
+html[data-g01-theme="midnight"]
+.public-body :where(
+    .garda-home-featured,
+    .garda-home-statistics article,
+    .garda-home-value-grid article,
+    .garda-home-program-card,
+    .garda-home-impact,
+    .garda-home-activity-card,
+    .public-brand-lockup-card,
+    .public-program-summary,
+    .profile-mission-card,
+    .profile-value-grid article,
+    .program-pillar-card,
+    .program-detail-number,
+    .program-focus-grid div,
+    .activity-public-filter,
+    .public-activity-card,
+    .activity-detail-program-card,
+    .activity-detail-main,
+    .activity-editorial-section,
+    .activity-related-card,
+    .officials-hero-emblem,
+    .officials-structure-section,
+    .officials-profile-section,
+    .official-profile-card,
+    .officials-chart-node:not(.officials-chart-node-primary),
+    .contact-public-identity,
+    .contact-public-form-card,
+    .contact-public-location-card,
+    .contact-channel-section,
+    .contact-channel-grid article,
+    .public-page-cta,
+    .public-empty
+) {
+    color: #e6eef6;
+    background: #0c2844;
+    border-color: rgba(177, 202, 224, 0.14);
+    box-shadow: 0 18px 50px rgba(0, 8, 18, 0.26);
+}
+
+html[data-g01-theme="midnight"]
+.public-body :where(
+    .garda-home-featured-content,
+    .garda-home-statistics article,
+    .garda-home-value-grid article,
+    .garda-home-program-card,
+    .garda-home-impact-content,
+    .garda-home-activity-content,
+    .public-brand-lockup-card,
+    .public-program-summary,
+    .public-content-card,
+    .profile-mission-card,
+    .profile-value-grid article,
+    .program-pillar-card,
+    .program-detail-number,
+    .program-focus-grid div,
+    .public-activity-card-content,
+    .activity-detail-program-card,
+    .activity-detail-main,
+    .activity-editorial-section,
+    .activity-related-content,
+    .officials-hero-emblem,
+    .officials-section-heading,
+    .official-profile-content,
+    .officials-chart-node:not(.officials-chart-node-primary),
+    .contact-public-identity,
+    .contact-public-form-card,
+    .contact-public-location-card,
+    .contact-channel-section,
+    .contact-channel-grid article,
+    .public-page-cta
+) :where(h1, h2, h3, h4, strong, b, dt, dd) {
+    color: #edf5fb;
+}
+
+html[data-g01-theme="midnight"]
+.public-body :where(
+    .garda-home-featured-content,
+    .garda-home-statistics article,
+    .garda-home-value-grid article,
+    .garda-home-program-card,
+    .garda-home-impact-content,
+    .garda-home-activity-content,
+    .public-brand-lockup-card,
+    .public-program-summary,
+    .public-content-card,
+    .profile-mission-card,
+    .profile-value-grid article,
+    .program-pillar-card,
+    .program-detail-number,
+    .program-focus-grid div,
+    .public-activity-card-content,
+    .activity-detail-program-card,
+    .activity-detail-main,
+    .activity-editorial-section,
+    .activity-related-content,
+    .officials-hero-emblem,
+    .officials-section-heading,
+    .official-profile-content,
+    .officials-chart-node:not(.officials-chart-node-primary),
+    .contact-public-identity,
+    .contact-public-form-card,
+    .contact-public-location-card,
+    .contact-channel-section,
+    .contact-channel-grid article,
+    .public-page-cta
+) :where(p, small, li, span, address) {
+    color: #a9bfd2;
+}
+
+html[data-g01-theme="midnight"]
+.public-body :where(
+    .public-program-summary > div,
+    .garda-home-impact-meta span,
+    .contact-response-strip,
+    .contact-public-note
+) {
+    color: #dce8f3;
+    background: rgba(217, 163, 22, 0.09);
+    border-color: rgba(231, 187, 71, 0.32);
+}
+
+html[data-g01-theme="midnight"]
+.public-body .program-focus-grid div:hover {
+    background: #113250;
+}
+
+html[data-g01-theme="midnight"]
+.public-body .officials-chart-node-secondary {
+    background: rgba(217, 163, 22, 0.1);
+    border-color: rgba(231, 187, 71, 0.36);
+}
+
+html[data-g01-theme="midnight"]
+.public-body :where(
+    .garda-home-program-number,
+    .program-pillar-number
+) {
+    color: rgba(206, 224, 239, 0.055);
+}
+
+html[data-g01-theme="midnight"]
+.public-body .public-experience-v2
+.garda-home-program-card,
+html[data-g01-theme="midnight"]
+.public-body .public-experience-v2
+.program-pillar-card {
+    background:
+        radial-gradient(
+            circle at 100% 0%,
+            rgba(217, 163, 22, 0.1),
+            transparent 34%
+        ),
+        #0c2844;
+}
+
+html[data-g01-theme="midnight"]
+.public-body .public-main .btn-secondary {
+    color: #e4eef7;
+    background: rgba(15, 48, 78, 0.94);
+    border-color: rgba(177, 202, 224, 0.2);
+    box-shadow: 0 8px 22px rgba(0, 8, 18, 0.18);
+}
+
+html[data-g01-theme="midnight"]
+.public-body .public-page-hero h1 {
+    color: #edf5fb;
+    text-shadow: 0 8px 30px rgba(0, 7, 17, 0.24);
+}
+
+html[data-g01-theme="midnight"]
+.public-body .public-page-hero p {
+    color: #a9bfd2;
+}
+
+html[data-g01-theme="midnight"]
+.public-body .activity-public-filter a:not(.active) {
+    color: #cbdbe8;
+    background: #102f4d;
+    border-color: #31536d;
+}
+
+html[data-g01-theme="midnight"]
+.public-body .activity-public-filter a:not(.active):hover,
+html[data-g01-theme="midnight"]
+.public-body .activity-public-filter a:not(.active):focus-visible {
+    color: #fff3c4;
+    background: #163a5a;
+    border-color: rgba(231, 187, 71, 0.5);
+}
+
+html[data-g01-theme="midnight"]
+.public-body .officials-public-cta {
+    color: #e6eef6;
+    background:
+        radial-gradient(
+            circle at 100% 0%,
+            rgba(217, 163, 22, 0.13),
+            transparent 36%
+        ),
+        #0c2844;
+    border-color: rgba(231, 187, 71, 0.3);
+    box-shadow: 0 18px 50px rgba(0, 8, 18, 0.28);
+}
+
+html[data-g01-theme="midnight"]
+.public-body .officials-public-cta h2 {
+    color: #edf5fb;
+}
+
+html[data-g01-theme="midnight"]
+.public-body .officials-public-cta p {
+    color: #a9bfd2;
+}
+
+html[data-g01-theme="midnight"]
+.public-body .official-profile-details span {
+    color: #bfd1e0;
+    background: #123552;
+}
+
+html[data-g01-theme="midnight"]
+.public-body .officials-carousel-fade-left {
+    background: linear-gradient(
+        90deg,
+        rgba(12, 40, 68, 0.98),
+        transparent
+    );
+}
+
+html[data-g01-theme="midnight"]
+.public-body .officials-carousel-fade-right {
+    background: linear-gradient(
+        270deg,
+        rgba(12, 40, 68, 0.98),
+        transparent
+    );
+}
+
+html[data-g01-theme="midnight"]
+.public-body .contact-location-complete address {
+    color: #a9bfd2;
+}
+
+html[data-g01-theme="midnight"]
+.public-body .contact-location-complete > a {
+    color: #f0c85e;
+}
+
+html[data-g01-theme="midnight"]
+.public-body .contact-location-complete > a:hover,
+html[data-g01-theme="midnight"]
+.public-body .contact-location-complete > a:focus-visible {
+    color: #ffe18a;
+}
+
+html[data-g01-theme="midnight"]
+.public-body .public-main .btn-secondary:hover {
+    color: #fff;
+    background: #163b5d;
+    border-color: rgba(231, 187, 71, 0.42);
+}
+
+html[data-g01-theme="midnight"]
+.public-body .public-activity-status {
+    color: #f0c85e;
+    background: rgba(217, 163, 22, 0.11);
+}
+
+html[data-g01-theme="midnight"]
+.public-body .public-pagination :where(a, span) {
+    color: #dce8f3;
+    background: #0f2d4b;
+    border-color: #31536d;
+}
+
+html[data-g01-theme="midnight"]
+.public-body .public-pagination .active {
+    color: #04172d;
+    background: #e7bb47;
+    border-color: #e7bb47;
+}
+
+html[data-g01-theme="midnight"]
+body.garda-login-body {
+    color: #e6eef6;
+    background: #06182a;
+}
+
+html[data-g01-theme="midnight"]
+.garda-login-form-panel {
+    background:
+        radial-gradient(
+            circle at 100% 0%,
+            rgba(217, 163, 22, 0.12),
+            transparent 30%
+        ),
+        #06182a;
+}
+
+html[data-g01-theme="midnight"]
+.garda-login-card {
+    color: #e6eef6;
+    background: rgba(12, 40, 68, 0.98);
+    border-color: rgba(177, 202, 224, 0.12);
+    box-shadow:
+        0 30px 85px rgba(0, 7, 17, 0.42),
+        0 8px 25px rgba(0, 7, 17, 0.2);
+}
+
+html[data-g01-theme="midnight"]
+.garda-login-card :where(h2, label, strong) {
+    color: #edf5fb;
+}
+
+html[data-g01-theme="midnight"]
+.garda-login-card :where(p, .garda-login-label-row > span) {
+    color: #a9bfd2;
+}
+
+html[data-g01-theme="midnight"]
+.garda-login-input-wrapper input {
+    color: #edf5fb;
+    background: #081e35;
+    border-color: #294a66;
+}
+
+html[data-g01-theme="midnight"]
+.garda-login-input-wrapper input:focus {
+    background: #0b2743;
+}
+
+html[data-g01-theme="midnight"]
+.garda-login-password-toggle:hover {
+    color: #edf5fb;
+    background: #123552;
+}
+
+html[data-g01-theme="midnight"]
+.garda-login-alert.error {
+    color: #ffc4c9;
+    background: rgba(141, 38, 52, 0.2);
+    border-color: rgba(255, 153, 165, 0.3);
+}
+
+html[data-g01-theme="midnight"]
+.garda-login-alert.success {
+    color: #bcebd1;
+    background: rgba(28, 112, 73, 0.2);
+    border-color: rgba(130, 220, 173, 0.3);
+}
+
+html[data-g01-theme="midnight"]
+.garda-login-security-note {
+    background: rgba(217, 163, 22, 0.09);
+}
+
+html[data-g01-theme="midnight"]
+.garda-login-mobile-brand strong {
+    color: #edf5fb;
+}
+
+html[data-g01-theme="midnight"]
+.garda-login-form-footer a {
+    color: #b9ccdc;
+}
+
+html[data-g01-theme="midnight"]
+.g01-preferences--login
+.g01-preferences__trigger {
+    color: #dce8f2;
+    background: rgba(12, 40, 68, 0.9);
+    border-color: rgba(177, 202, 224, 0.18);
+}
+
+@media (max-width: 1180px) {
+    .public-navbar .public-nav-links {
+        gap: 15px;
+    }
+
+    .public-navbar .g01-preferences__trigger > span {
+        display: none;
+    }
+}
+
+@media (max-width: 920px) {
+    .public-navbar .g01-preferences {
+        margin-left: auto;
+    }
+
+    .public-navbar .g01-preferences__panel {
+        position: fixed;
+        top: 76px;
+        right: 12px;
+    }
+}
+
+@media (max-width: 640px) {
+    .g01-preferences--introducing {
+        top: 0.75rem;
+        right: auto;
+        left: 1rem;
+    }
+
+    .g01-preferences--introducing
+    .g01-preferences__trigger > span {
+        display: none;
+    }
+
+    .g01-preferences--introducing
+    .g01-preferences__panel {
+        right: auto;
+        left: 0;
+    }
+
+    .g01-preferences--introducing
+    .g01-preferences__panel::before {
+        right: auto;
+        left: 18px;
+    }
+
+    .g01-preferences--login {
+        top: 12px;
+        right: 12px;
+    }
+
+    .g01-preferences--login
+    .g01-preferences__trigger > span {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .g01-preferences *,
+    .g01-preferences *::before,
+    .g01-preferences *::after {
+        transition-duration: 0.01ms !important;
+    }
+}

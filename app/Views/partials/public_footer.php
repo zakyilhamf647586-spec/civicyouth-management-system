@@ -95,7 +95,9 @@ $logoUrl = site_asset_url(
 );
 
 $whatsappUrl = site_whatsapp_url(
-    'Halo GARDA 01, saya ingin menghubungi pengurus.'
+    public_translate_text(
+        'Halo GARDA 01, saya ingin menghubungi pengurus.'
+    )
 );
 
 $extractSocialHandle = static function (
@@ -216,7 +218,7 @@ $mapLabel = $mapLabelParts !== []
 
             <section class="g01-footer__identity">
                 <a
-                    href="<?= base_url('/') ?>"
+                    href="<?= public_url('/') ?>"
                     class="g01-footer__brand"
                     aria-label="Kembali ke Introducing <?= esc($organizationName) ?>"
                 >
@@ -441,7 +443,7 @@ $mapLabel = $mapLabelParts !== []
                 <?php endif; ?>
 
                 <a
-                    href="<?= base_url('/kontak') ?>"
+                    href="<?= public_url('/kontak') ?>"
                     class="g01-footer__contact-cta"
                 >
                     <span>Hubungi <?= esc($organizationName) ?></span>
@@ -454,15 +456,16 @@ $mapLabel = $mapLabelParts !== []
         <div class="g01-footer__bottom">
             <div>
                 <p>
-                    © <?= date('Y') ?> <?= esc($footerCopyright) ?>.
+                    © <?= date('Y') ?>
+                    <?= esc(public_translate_text($footerCopyright)) ?>.
                 </p>
                 <small><?= esc($footerNote) ?></small>
             </div>
 
             <nav aria-label="Navigasi legal footer">
-                <a href="<?= base_url('/profil') ?>">Profil Organisasi</a>
-                <a href="<?= base_url('/kontak') ?>">Kontak</a>
-                <a href="<?= base_url('/login') ?>">Portal Internal</a>
+                <a href="<?= public_url('/profil') ?>">Profil Organisasi</a>
+                <a href="<?= public_url('/kontak') ?>">Kontak</a>
+                <a href="<?= public_url('/login') ?>">Portal Internal</a>
             </nav>
         </div>
     </div>

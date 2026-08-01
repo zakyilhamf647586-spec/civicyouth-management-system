@@ -14,6 +14,7 @@ class ActivityImageModel extends Model
         'activity_id',
         'image_file',
         'caption',
+        'caption_en',
         'is_cover',
         'display_order',
     ];

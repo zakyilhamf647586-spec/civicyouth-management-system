@@ -15,9 +15,13 @@ class PublicPageModel extends Model
         'name',
         'route_path',
         'draft_title',
+        'draft_title_en',
         'published_title',
+        'published_title_en',
         'draft_meta_description',
+        'draft_meta_description_en',
         'published_meta_description',
+        'published_meta_description_en',
         'has_unpublished_changes',
         'workflow_status',
         'revision_note',
@@ -80,6 +84,14 @@ class PublicPageModel extends Model
                 true
             );
 
+            $contentEn = json_decode(
+                (string) (
+                    $section[$mode . '_content_en']
+                    ?? ''
+                ),
+                true
+            );
+
             $sections[$section['section_key']] = [
                 'key' => $section['section_key'],
                 'name' => $section['section_name'],
@@ -93,6 +105,9 @@ class PublicPageModel extends Model
                 'content' => is_array($content)
                     ? $content
                     : [],
+                'content_en' => is_array($contentEn)
+                    ? $contentEn
+                    : [],
             ];
         }
 
@@ -102,8 +117,12 @@ class PublicPageModel extends Model
             'name' => $page['name'],
             'route_path' => $page['route_path'],
             'title' => $page[$mode . '_title'] ?? null,
+            'title_en' =>
+                $page[$mode . '_title_en'] ?? null,
             'meta_description' =>
                 $page[$mode . '_meta_description'] ?? null,
+            'meta_description_en' =>
+                $page[$mode . '_meta_description_en'] ?? null,
             'has_unpublished_changes' =>
                 (bool) $page['has_unpublished_changes'],
             'published_at' => $page['published_at'],

@@ -685,6 +685,11 @@ class PublicPageExternalReviewService
                 )
                     ? $section['content']
                     : [],
+                'content_en' => is_array(
+                    $section['content_en'] ?? null
+                )
+                    ? $section['content_en']
+                    : [],
             ];
         }
 
@@ -697,9 +702,15 @@ class PublicPageExternalReviewService
                 (string) $page['route_path'],
             'title' =>
                 $pageSnapshot['title'] ?? null,
+            'title_en' =>
+                $pageSnapshot['title_en'] ?? null,
             'meta_description' =>
                 $pageSnapshot[
                     'meta_description'
+                ] ?? null,
+            'meta_description_en' =>
+                $pageSnapshot[
+                    'meta_description_en'
                 ] ?? null,
             'has_unpublished_changes' => true,
             'published_at' =>

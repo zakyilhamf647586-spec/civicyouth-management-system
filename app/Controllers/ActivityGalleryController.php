@@ -129,6 +129,7 @@ class ActivityGalleryController extends BaseController
                     'activity_id'   => $activityId,
                     'image_file'    => $newName,
                     'caption'       => null,
+                    'caption_en'    => null,
                     'is_cover'      => $isCover ? 1 : 0,
                     'display_order' => $nextOrder,
                 ]);
@@ -204,6 +205,10 @@ class ActivityGalleryController extends BaseController
             (string) $this->request->getPost('caption')
         );
 
+        $captionEn = trim(
+            (string) $this->request->getPost('caption_en')
+        );
+
         $displayOrder = (int) $this->request
             ->getPost('display_order');
 
@@ -215,8 +220,25 @@ class ActivityGalleryController extends BaseController
                 );
         }
 
+        if (mb_strlen($captionEn) > 255) {
+            return redirect()->back()
+                ->with(
+                    'error',
+                    'English caption maksimal 255 karakter.'
+                );
+        }
+
+        if ($caption !== '' && $captionEn === '') {
+            return redirect()->back()
+                ->with(
+                    'error',
+                    'English caption wajib diisi ketika caption Indonesia digunakan.'
+                );
+        }
+
         $this->imageModel->update($imageId, [
             'caption'       => $caption,
+            'caption_en'    => $captionEn,
             'display_order' => max(0, $displayOrder),
         ]);
 

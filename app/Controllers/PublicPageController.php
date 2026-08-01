@@ -216,6 +216,17 @@ class PublicPageController extends BaseController
                 ? $content
                 : [];
 
+            $contentEn = json_decode(
+                (string) (
+                    $section['draft_content_en'] ?? ''
+                ),
+                true
+            );
+
+            $section['draft_data_en'] = is_array($contentEn)
+                ? $contentEn
+                : [];
+
             $sectionMap[$section['section_key']] =
                 $section;
         }
@@ -259,6 +270,8 @@ class PublicPageController extends BaseController
                 );
         }
 
+        $definition = $this->definition($pageKey);
+
         if (
             $this->reviewWorkflowReady()
             && in_array(
@@ -289,6 +302,16 @@ class PublicPageController extends BaseController
                 ->getPost('draft_meta_description')
         );
 
+        $titleEn = trim(
+            (string) $this->request
+                ->getPost('draft_title_en')
+        );
+
+        $metaDescriptionEn = trim(
+            (string) $this->request
+                ->getPost('draft_meta_description_en')
+        );
+
         $revisionNote = trim(
             (string) $this->request
                 ->getPost('revision_note')
@@ -299,6 +322,13 @@ class PublicPageController extends BaseController
 
         if (!is_array($postedSections)) {
             $postedSections = [];
+        }
+
+        $postedSectionsEn = $this->request
+            ->getPost('sections_en');
+
+        if (!is_array($postedSectionsEn)) {
+            $postedSectionsEn = [];
         }
 
         $enabledSections = $this->request
@@ -323,6 +353,16 @@ class PublicPageController extends BaseController
                 'Meta description wajib diisi maksimal 255 karakter.';
         }
 
+        if (mb_strlen($titleEn) > 180) {
+            $errors[] =
+                'English SEO title maksimal 180 karakter.';
+        }
+
+        if (mb_strlen($metaDescriptionEn) > 255) {
+            $errors[] =
+                'English meta description maksimal 255 karakter.';
+        }
+
         if (mb_strlen($revisionNote) > 255) {
             $errors[] =
                 'Catatan revisi maksimal 255 karakter.';
@@ -342,6 +382,13 @@ class PublicPageController extends BaseController
             }
 
             $cleanValues = [];
+            $cleanValuesEn = [];
+            $postedValuesEn = $postedSectionsEn[$sectionKey]
+                ?? [];
+
+            if (!is_array($postedValuesEn)) {
+                $postedValuesEn = [];
+            }
 
             foreach (
                 $sectionDefinition['fields'] as
@@ -396,6 +443,31 @@ class PublicPageController extends BaseController
                 }
 
                 $cleanValues[$fieldKey] = $value;
+
+                if (public_cms_field_translatable(
+                    $fieldKey,
+                    $fieldDefinition,
+                    $value
+                )) {
+                    $valueEn = trim(strip_tags(
+                        (string) (
+                            $postedValuesEn[$fieldKey]
+                            ?? ''
+                        )
+                    ));
+
+                    if (mb_strlen($valueEn) > $max) {
+                        $errors[] =
+                            $sectionDefinition['name']
+                            . ': English '
+                            . $label
+                            . ' maksimal '
+                            . $max
+                            . ' karakter.';
+                    }
+
+                    $cleanValuesEn[$fieldKey] = $valueEn;
+                }
             }
 
             $encoded = json_encode(
@@ -411,6 +483,19 @@ class PublicPageController extends BaseController
                     . ' gagal diproses.';
             }
 
+            $encodedEn = json_encode(
+                $cleanValuesEn,
+                JSON_UNESCAPED_UNICODE
+                | JSON_UNESCAPED_SLASHES
+            );
+
+            if ($encodedEn === false) {
+                $errors[] =
+                    'Konten English section '
+                    . $sectionDefinition['name']
+                    . ' gagal diproses.';
+            }
+
             $toggleable = (bool) (
                 $sectionDefinition['toggleable']
                 ?? true
@@ -418,6 +503,7 @@ class PublicPageController extends BaseController
 
             $sectionPayloads[$sectionKey] = [
                 'draft_content' => $encoded ?: '{}',
+                'draft_content_en' => $encodedEn ?: '{}',
                 'draft_enabled' => $toggleable
                     ? (
                         isset(
@@ -440,8 +526,14 @@ class PublicPageController extends BaseController
         try {
             $pageUpdate = [
                 'draft_title' => $title,
+                'draft_title_en' =>
+                    $titleEn !== '' ? $titleEn : null,
                 'draft_meta_description' =>
                     $metaDescription,
+                'draft_meta_description_en' =>
+                    $metaDescriptionEn !== ''
+                        ? $metaDescriptionEn
+                        : null,
                 'revision_note' =>
                     $revisionNote !== ''
                         ? $revisionNote
@@ -549,6 +641,8 @@ class PublicPageController extends BaseController
     {
         $this->assertReviewWorkflowReady();
 
+        $definition = $this->definition($pageKey);
+
         $page = $this->pageModel
             ->findByKey($pageKey);
 
@@ -593,6 +687,23 @@ class PublicPageController extends BaseController
             return redirect()->back()->with(
                 'error',
                 'Isi Catatan Revisi lalu simpan draft sebelum mengirim halaman untuk review.'
+            );
+        }
+
+        $bilingualErrors = $this->bilingualDraftErrors(
+            $page,
+            $definition
+        );
+
+        if ($bilingualErrors !== []) {
+            return redirect()->back()->with(
+                'errors',
+                array_merge(
+                    [
+                        'Draft belum siap direview karena pasangan konten English belum lengkap.',
+                    ],
+                    $bilingualErrors
+                )
             );
         }
 
@@ -885,10 +996,16 @@ class PublicPageController extends BaseController
             $pageUpdate = [
                 'published_title' =>
                     $page['draft_title'],
+                'published_title_en' =>
+                    $page['draft_title_en'] ?? null,
                 'published_meta_description' =>
                     $page[
                         'draft_meta_description'
                     ],
+                'published_meta_description_en' =>
+                    $page[
+                        'draft_meta_description_en'
+                    ] ?? null,
                 'published_by' =>
                     $this->currentUserId(),
                 'published_at' =>
@@ -912,6 +1029,9 @@ class PublicPageController extends BaseController
                     [
                         'published_content' =>
                             $section['draft_content'],
+                        'published_content_en' =>
+                            $section['draft_content_en']
+                            ?? null,
                         'published_enabled' =>
                             (int) $section[
                                 'draft_enabled'
@@ -1000,10 +1120,16 @@ class PublicPageController extends BaseController
             $pageUpdate = [
                 'draft_title' =>
                     $page['published_title'],
+                'draft_title_en' =>
+                    $page['published_title_en'] ?? null,
                 'draft_meta_description' =>
                     $page[
                         'published_meta_description'
                     ],
+                'draft_meta_description_en' =>
+                    $page[
+                        'published_meta_description_en'
+                    ] ?? null,
                 'has_unpublished_changes' => 0,
                 'revision_note' => null,
                 'last_edited_by' =>
@@ -1039,6 +1165,10 @@ class PublicPageController extends BaseController
                             $section[
                                 'published_content'
                             ],
+                        'draft_content_en' =>
+                            $section[
+                                'published_content_en'
+                            ] ?? null,
                         'draft_enabled' =>
                             (int) $section[
                                 'published_enabled'
@@ -1262,6 +1392,15 @@ class PublicPageController extends BaseController
         $this->assertReady();
 
         $definition = $this->definition($pageKey);
+        $locale = (string) $this->request->getGet(
+            'locale'
+        ) === 'en' ? 'en' : 'id';
+        $previewRoute = $locale === 'en'
+            ? public_locale_path(
+                (string) $definition['route'],
+                'en'
+            )
+            : (string) $definition['route'];
 
         $this->recordCmsAudit([
             'module' => 'public_pages',
@@ -1271,13 +1410,16 @@ class PublicPageController extends BaseController
             'subject_key' => $pageKey,
             'subject_label' => $definition['name'] ?? $pageKey,
             'summary' => 'Preview draft halaman dibuka.',
+            'metadata' => [
+                'locale' => $locale,
+            ],
         ]);
 
         return redirect()->to(
-            $definition['route']
+            $previewRoute
             . (
                 str_contains(
-                    $definition['route'],
+                    $previewRoute,
                     '?'
                 )
                     ? '&'
@@ -1477,6 +1619,93 @@ class PublicPageController extends BaseController
         }
 
         return $definition;
+    }
+
+    /**
+     * @param array<string, mixed> $page
+     * @param array<string, mixed> $definition
+     * @return list<string>
+     */
+    private function bilingualDraftErrors(
+        array $page,
+        array $definition
+    ): array {
+        $errors = [];
+
+        if (trim((string) (
+            $page['draft_title_en'] ?? ''
+        )) === '') {
+            $errors[] = 'English SEO title wajib diisi.';
+        }
+
+        if (trim((string) (
+            $page['draft_meta_description_en'] ?? ''
+        )) === '') {
+            $errors[] = 'English meta description wajib diisi.';
+        }
+
+        $sections = $this->sectionModel
+            ->where(
+                'public_page_id',
+                (int) $page['id']
+            )
+            ->findAll();
+        $sectionMap = [];
+
+        foreach ($sections as $section) {
+            $sectionMap[(string) $section['section_key']] =
+                $section;
+        }
+
+        foreach (
+            $definition['sections'] as
+            $sectionKey => $sectionDefinition
+        ) {
+            $section = $sectionMap[$sectionKey] ?? [];
+            $source = json_decode(
+                (string) ($section['draft_content'] ?? ''),
+                true
+            );
+            $english = json_decode(
+                (string) ($section['draft_content_en'] ?? ''),
+                true
+            );
+
+            $source = is_array($source) ? $source : [];
+            $english = is_array($english) ? $english : [];
+
+            foreach (
+                $sectionDefinition['fields'] as
+                $fieldKey => $fieldDefinition
+            ) {
+                $sourceValue = trim((string) (
+                    $source[$fieldKey] ?? ''
+                ));
+
+                if (
+                    $sourceValue === ''
+                    || !public_cms_field_translatable(
+                        $fieldKey,
+                        $fieldDefinition,
+                        $sourceValue
+                    )
+                ) {
+                    continue;
+                }
+
+                if (trim((string) (
+                    $english[$fieldKey] ?? ''
+                )) === '') {
+                    $errors[] =
+                        $sectionDefinition['name']
+                        . ': English '
+                        . $fieldDefinition['label']
+                        . ' wajib diisi.';
+                }
+            }
+        }
+
+        return $errors;
     }
 
     private function cmsReady(): bool

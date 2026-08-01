@@ -44,7 +44,7 @@ $isNavActive = static function (
     <div class="public-navbar-inner">
 
         <a
-            href="<?= base_url('/') ?>"
+            href="<?= public_url('/') ?>"
             class="public-brand"
             aria-label="Kembali ke Introducing <?= esc($organizationName) ?>"
         >
@@ -59,6 +59,10 @@ $isNavActive = static function (
                 <span><?= esc($organizationFullName) ?></span>
             </span>
         </a>
+
+        <?= view('partials/public_preferences', [
+            'preferenceContext' => 'navbar',
+        ]) ?>
 
         <button
             type="button"

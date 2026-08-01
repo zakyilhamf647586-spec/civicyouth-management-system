@@ -272,9 +272,15 @@ class PublicPageRevisionService
                 [
                     'draft_title' =>
                         $pageData['title'] ?? null,
+                    'draft_title_en' =>
+                        $pageData['title_en'] ?? null,
                     'draft_meta_description' =>
                         $pageData[
                             'meta_description'
+                        ] ?? null,
+                    'draft_meta_description_en' =>
+                        $pageData[
+                            'meta_description_en'
                         ] ?? null,
                     'has_unpublished_changes' => 1,
                     'workflow_status' => 'draft',
@@ -321,10 +327,28 @@ class PublicPageRevisionService
                     );
                 }
 
+                $contentEn = json_encode(
+                    is_array(
+                        $sectionSnapshot['content_en']
+                        ?? null
+                    )
+                        ? $sectionSnapshot['content_en']
+                        : [],
+                    JSON_UNESCAPED_UNICODE
+                    | JSON_UNESCAPED_SLASHES
+                );
+
+                if ($contentEn === false) {
+                    throw new RuntimeException(
+                        'Konten English section snapshot gagal diproses.'
+                    );
+                }
+
                 $this->sectionModel->update(
                     (int) $section['id'],
                     [
                         'draft_content' => $content,
+                        'draft_content_en' => $contentEn,
                         'draft_enabled' =>
                             !empty(
                                 $sectionSnapshot[
@@ -391,6 +415,14 @@ class PublicPageRevisionService
                 true
             );
 
+            $decodedEn = json_decode(
+                (string) (
+                    $section[$mode . '_content_en']
+                    ?? ''
+                ),
+                true
+            );
+
             $sectionSnapshots[] = [
                 'section_key' =>
                     (string) $section['section_key'],
@@ -406,11 +438,14 @@ class PublicPageRevisionService
                 'content' => is_array($decoded)
                     ? $decoded
                     : [],
+                'content_en' => is_array($decodedEn)
+                    ? $decodedEn
+                    : [],
             ];
         }
 
         return [
-            'schema_version' => 1,
+            'schema_version' => 2,
             'captured_mode' => $mode,
             'page' => [
                 'page_key' =>
@@ -421,9 +456,15 @@ class PublicPageRevisionService
                     (string) $page['route_path'],
                 'title' =>
                     $page[$mode . '_title'] ?? null,
+                'title_en' =>
+                    $page[$mode . '_title_en'] ?? null,
                 'meta_description' =>
                     $page[
                         $mode . '_meta_description'
+                    ] ?? null,
+                'meta_description_en' =>
+                    $page[
+                        $mode . '_meta_description_en'
                     ] ?? null,
                 'workflow_status' =>
                     $page['workflow_status'] ?? null,
@@ -467,6 +508,18 @@ class PublicPageRevisionService
             $leftPage['meta_description'] ?? null
         ) !== (
             $rightPage['meta_description'] ?? null
+        );
+
+        $titleEnChanged = (
+            $leftPage['title_en'] ?? null
+        ) !== (
+            $rightPage['title_en'] ?? null
+        );
+
+        $metaEnChanged = (
+            $leftPage['meta_description_en'] ?? null
+        ) !== (
+            $rightPage['meta_description_en'] ?? null
         );
 
         $leftSections = $this->sectionMap(
@@ -516,6 +569,26 @@ class PublicPageRevisionService
                     : []
             );
 
+            foreach ($this->flatten(
+                is_array(
+                    $leftSection['content_en'] ?? null
+                )
+                    ? $leftSection['content_en']
+                    : []
+            ) as $fieldKey => $fieldValue) {
+                $leftFields['en.' . $fieldKey] = $fieldValue;
+            }
+
+            foreach ($this->flatten(
+                is_array(
+                    $rightSection['content_en'] ?? null
+                )
+                    ? $rightSection['content_en']
+                    : []
+            ) as $fieldKey => $fieldValue) {
+                $rightFields['en.' . $fieldKey] = $fieldValue;
+            }
+
             $fieldKeys = array_values(array_unique(
                 array_merge(
                     array_keys($leftFields),
@@ -562,6 +635,8 @@ class PublicPageRevisionService
         return [
             'title_changed' => $titleChanged,
             'meta_changed' => $metaChanged,
+            'title_en_changed' => $titleEnChanged,
+            'meta_en_changed' => $metaEnChanged,
             'changed_section_count' =>
                 count($sectionChanges),
             'changed_field_count' =>
@@ -570,6 +645,8 @@ class PublicPageRevisionService
             'has_changes' =>
                 $titleChanged
                 || $metaChanged
+                || $titleEnChanged
+                || $metaEnChanged
                 || $sectionChanges !== [],
         ];
     }

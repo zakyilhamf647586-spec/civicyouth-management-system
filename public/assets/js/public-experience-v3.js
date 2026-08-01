@@ -147,9 +147,18 @@
     });
 
     if (chapterCount) {
+        const arrival = document.getElementById(
+            'g01Arrival'
+        );
+        const chapterUnit = arrival
+            ? arrival.dataset.chapterUnit
+            : '';
+
         chapterCount.textContent = String(
             chapters.length
-        ).padStart(2, '0') + ' bab';
+        ).padStart(2, '0')
+            + ' '
+            + (chapterUnit || 'bab');
     }
 
     if (chapterRail && chapters.length < 2) {

@@ -6,6 +6,14 @@ $isEdit = isset($program);
 
     <div class="program-form-main">
 
+        <div class="bilingual-editor-heading">
+            <span>ID</span>
+            <div>
+                <strong>Konten utama Bahasa Indonesia</strong>
+                <small>Menjadi sumber resmi dan fallback apabila pasangan English belum tersedia.</small>
+            </div>
+        </div>
+
         <div class="form-group">
             <label for="name">Nama Program</label>
 
@@ -105,6 +113,99 @@ $isEdit = isset($program);
             <small>
                 Contoh: GARDA 01 Berbagi, Aksi Berbagi Ramadan.
             </small>
+        </div>
+
+        <div class="bilingual-editor-heading is-english">
+            <span>EN</span>
+            <div>
+                <strong>Official English Content</strong>
+                <small>Required before a program can be published. Proper names may remain unchanged.</small>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="name_en">Program Name — English</label>
+            <input
+                type="text"
+                id="name_en"
+                name="name_en"
+                maxlength="150"
+                value="<?= esc(old('name_en', $program['name_en'] ?? '')) ?>"
+                placeholder="Example: GARDA 01 Care"
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="label_en">Category / Scope — English</label>
+            <input
+                type="text"
+                id="label_en"
+                name="label_en"
+                maxlength="150"
+                value="<?= esc(old('label_en', $program['label_en'] ?? '')) ?>"
+                placeholder="Example: Social and Humanitarian"
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="tagline_en">Tagline — English</label>
+            <input
+                type="text"
+                id="tagline_en"
+                name="tagline_en"
+                maxlength="255"
+                value="<?= esc(old('tagline_en', $program['tagline_en'] ?? '')) ?>"
+            >
+        </div>
+
+        <div class="form-group">
+            <label for="short_description_en">Short Description — English</label>
+            <textarea
+                id="short_description_en"
+                name="short_description_en"
+                rows="4"
+            ><?= esc(old(
+                'short_description_en',
+                $program['short_description_en'] ?? ''
+            )) ?></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="description_en">Full Description — English</label>
+            <textarea
+                id="description_en"
+                name="description_en"
+                rows="8"
+            ><?= esc(old(
+                'description_en',
+                $program['description_en'] ?? ''
+            )) ?></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="focus_items_en">Program Focus — English</label>
+            <textarea
+                id="focus_items_en"
+                name="focus_items_en"
+                rows="6"
+                placeholder="One focus item per line."
+            ><?= esc(old(
+                'focus_items_en',
+                $program['focus_text_en'] ?? ''
+            )) ?></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="campaign_items_en">Programs / Campaigns — English</label>
+            <textarea
+                id="campaign_items_en"
+                name="campaign_items_en"
+                rows="6"
+                placeholder="One program or campaign per line."
+            ><?= esc(old(
+                'campaign_items_en',
+                $program['campaign_text_en'] ?? ''
+            )) ?></textarea>
         </div>
 
     </div>

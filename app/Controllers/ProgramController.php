@@ -61,12 +61,24 @@ class ProgramController extends BaseController
                 'label' => 'Nama program',
                 'rules' => 'required|min_length[3]|max_length[150]',
             ],
+            'name_en' => [
+                'label' => 'English program name',
+                'rules' => 'permit_empty|max_length[150]',
+            ],
             'label' => [
                 'label' => 'Kategori program',
                 'rules' => 'permit_empty|max_length[150]',
             ],
             'tagline' => [
                 'label' => 'Tagline',
+                'rules' => 'permit_empty|max_length[255]',
+            ],
+            'label_en' => [
+                'label' => 'English program category',
+                'rules' => 'permit_empty|max_length[150]',
+            ],
+            'tagline_en' => [
+                'label' => 'English tagline',
                 'rules' => 'permit_empty|max_length[255]',
             ],
             'status' => [
@@ -91,24 +103,44 @@ class ProgramController extends BaseController
             $name      = trim((string) $this->request->getPost('name'));
             $coverName = $this->processCoverImage();
 
-            $inserted = $this->programModel->insert([
+            $programData = [
                 'name'              => $name,
+                'name_en'           => trim((string) $this->request->getPost('name_en')),
                 'slug'              => $this->createUniqueSlug($name),
                 'label'             => trim((string) $this->request->getPost('label')),
+                'label_en'          => trim((string) $this->request->getPost('label_en')),
                 'tagline'           => trim((string) $this->request->getPost('tagline')),
+                'tagline_en'        => trim((string) $this->request->getPost('tagline_en')),
                 'short_description' => trim((string) $this->request->getPost('short_description')),
+                'short_description_en' => trim((string) $this->request->getPost('short_description_en')),
                 'description'       => trim((string) $this->request->getPost('description')),
+                'description_en'    => trim((string) $this->request->getPost('description_en')),
                 'focus_items'       => $this->encodeLineList(
                     (string) $this->request->getPost('focus_items')
                 ),
+                'focus_items_en'    => $this->encodeLineList(
+                    (string) $this->request->getPost('focus_items_en')
+                ),
                 'campaign_items'    => $this->encodeLineList(
                     (string) $this->request->getPost('campaign_items')
+                ),
+                'campaign_items_en' => $this->encodeLineList(
+                    (string) $this->request->getPost('campaign_items_en')
                 ),
                 'cover_image'       => $coverName,
                 'status'            => $this->request->getPost('status'),
                 'display_order'     => (int) $this->request->getPost('display_order'),
                 'created_by'        => session()->get('user_id') ?: null,
-            ], true);
+            ];
+
+            if ($programData['status'] === 'published') {
+                $this->assertBilingualReady($programData);
+            }
+
+            $inserted = $this->programModel->insert(
+                $programData,
+                true
+            );
 
             if ($inserted === false) {
                 throw new \RuntimeException(
@@ -171,6 +203,16 @@ class ProgramController extends BaseController
             $prepared['campaigns'] ?? []
         );
 
+        $program['focus_text_en'] = implode(
+            PHP_EOL,
+            $prepared['focus_en'] ?? []
+        );
+
+        $program['campaign_text_en'] = implode(
+            PHP_EOL,
+            $prepared['campaigns_en'] ?? []
+        );
+
         return view('programs/edit', [
             'title'   => 'Edit Program GARDA 01',
             'program' => $program,
@@ -191,12 +233,24 @@ class ProgramController extends BaseController
                 'label' => 'Nama program',
                 'rules' => 'required|min_length[3]|max_length[150]',
             ],
+            'name_en' => [
+                'label' => 'English program name',
+                'rules' => 'permit_empty|max_length[150]',
+            ],
             'label' => [
                 'label' => 'Kategori program',
                 'rules' => 'permit_empty|max_length[150]',
             ],
             'tagline' => [
                 'label' => 'Tagline',
+                'rules' => 'permit_empty|max_length[255]',
+            ],
+            'label_en' => [
+                'label' => 'English program category',
+                'rules' => 'permit_empty|max_length[150]',
+            ],
+            'tagline_en' => [
+                'label' => 'English tagline',
                 'rules' => 'permit_empty|max_length[255]',
             ],
             'status' => [
@@ -225,23 +279,43 @@ class ProgramController extends BaseController
             $coverName = $this->processCoverImage($oldCover);
             $hasNewCover = $coverName !== $oldCover;
 
-            $updated = $this->programModel->update($id, [
+            $programData = [
                 'name'              => $name,
+                'name_en'           => trim((string) $this->request->getPost('name_en')),
                 'slug'              => $this->createUniqueSlug($name, $id),
                 'label'             => trim((string) $this->request->getPost('label')),
+                'label_en'          => trim((string) $this->request->getPost('label_en')),
                 'tagline'           => trim((string) $this->request->getPost('tagline')),
+                'tagline_en'        => trim((string) $this->request->getPost('tagline_en')),
                 'short_description' => trim((string) $this->request->getPost('short_description')),
+                'short_description_en' => trim((string) $this->request->getPost('short_description_en')),
                 'description'       => trim((string) $this->request->getPost('description')),
+                'description_en'    => trim((string) $this->request->getPost('description_en')),
                 'focus_items'       => $this->encodeLineList(
                     (string) $this->request->getPost('focus_items')
+                ),
+                'focus_items_en'    => $this->encodeLineList(
+                    (string) $this->request->getPost('focus_items_en')
                 ),
                 'campaign_items'    => $this->encodeLineList(
                     (string) $this->request->getPost('campaign_items')
                 ),
+                'campaign_items_en' => $this->encodeLineList(
+                    (string) $this->request->getPost('campaign_items_en')
+                ),
                 'cover_image'       => $coverName,
                 'status'            => $this->request->getPost('status'),
                 'display_order'     => (int) $this->request->getPost('display_order'),
-            ]);
+            ];
+
+            if ($programData['status'] === 'published') {
+                $this->assertBilingualReady($programData);
+            }
+
+            $updated = $this->programModel->update(
+                $id,
+                $programData
+            );
 
             if ($updated === false) {
                 throw new \RuntimeException(
@@ -295,6 +369,13 @@ class ProgramController extends BaseController
         if (!$program) {
             return redirect()->to('/programs')
                 ->with('error', 'Program tidak ditemukan.');
+        }
+
+        try {
+            $this->assertBilingualReady($program);
+        } catch (\RuntimeException $exception) {
+            return redirect()->to('/programs/edit/' . $id)
+                ->with('errors', [$exception->getMessage()]);
         }
 
         $this->programModel->update($id, [
@@ -370,6 +451,52 @@ class ProgramController extends BaseController
             $items,
             JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
         );
+    }
+
+    /**
+     * @param array<string, mixed> $program
+     */
+    private function assertBilingualReady(array $program): void
+    {
+        $pairs = [
+            'name' => ['name_en', 'English program name'],
+            'label' => ['label_en', 'English program category'],
+            'tagline' => ['tagline_en', 'English tagline'],
+            'short_description' => [
+                'short_description_en',
+                'English short description',
+            ],
+            'description' => [
+                'description_en',
+                'English full description',
+            ],
+            'focus_items' => [
+                'focus_items_en',
+                'English program focus',
+            ],
+            'campaign_items' => [
+                'campaign_items_en',
+                'English campaign list',
+            ],
+        ];
+        $missing = [];
+
+        foreach ($pairs as $source => [$english, $label]) {
+            if (
+                trim((string) ($program[$source] ?? '')) !== ''
+                && trim((string) ($program[$english] ?? '')) === ''
+            ) {
+                $missing[] = $label;
+            }
+        }
+
+        if ($missing !== []) {
+            throw new \RuntimeException(
+                'Program belum siap dipublikasikan. Lengkapi: '
+                . implode(', ', $missing)
+                . '.'
+            );
+        }
     }
 
     private function createUniqueSlug(

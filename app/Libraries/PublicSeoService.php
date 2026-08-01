@@ -128,6 +128,13 @@ class PublicSeoService
             ? $context['activities']
             : [];
 
+        $locale = ($context['locale'] ?? '') === 'en'
+            ? 'en'
+            : 'id';
+        $languageTag = $locale === 'en'
+            ? 'en-US'
+            : 'id-ID';
+
         $organizationId = rtrim(
             base_url('/'),
             '/'
@@ -159,7 +166,7 @@ class PublicSeoService
                 'publisher' => [
                     '@id' => $organizationId,
                 ],
-                'inLanguage' => 'id-ID',
+                'inLanguage' => $languageTag,
             ],
         ];
 
@@ -185,7 +192,7 @@ class PublicSeoService
             'publisher' => [
                 '@id' => $organizationId,
             ],
-            'inLanguage' => 'id-ID',
+            'inLanguage' => $languageTag,
         ];
 
         if ($image !== '') {
@@ -216,7 +223,8 @@ class PublicSeoService
                 $canonical,
                 $image,
                 $description,
-                $organizationId
+                $organizationId,
+                $languageTag
             );
         }
 
@@ -228,7 +236,8 @@ class PublicSeoService
                 $program,
                 $canonical,
                 $image,
-                $organizationId
+                $organizationId,
+                $languageTag
             );
         }
 
@@ -433,9 +442,47 @@ class PublicSeoService
             );
         }
 
-        $unique = [];
+        $localizedEntries = [];
 
         foreach ($entries as $entry) {
+            $path = parse_url(
+                (string) $entry['loc'],
+                PHP_URL_PATH
+            );
+
+            if (!is_string($path) || $path === '') {
+                $path = '/';
+            }
+
+            $idUrl = function_exists('public_url')
+                ? public_url($path, 'id')
+                : (string) $entry['loc'];
+            $enUrl = function_exists('public_url')
+                ? public_url($path, 'en')
+                : (string) $entry['loc'];
+
+            $alternates = [
+                'id-ID' => $idUrl,
+                'en' => $enUrl,
+                'x-default' => $idUrl,
+            ];
+
+            $idEntry = $entry;
+            $idEntry['loc'] = $idUrl;
+            $idEntry['locale'] = 'id';
+            $idEntry['alternates'] = $alternates;
+            $localizedEntries[] = $idEntry;
+
+            $enEntry = $entry;
+            $enEntry['loc'] = $enUrl;
+            $enEntry['locale'] = 'en';
+            $enEntry['alternates'] = $alternates;
+            $localizedEntries[] = $enEntry;
+        }
+
+        $unique = [];
+
+        foreach ($localizedEntries as $entry) {
             $unique[$entry['loc']] = $entry;
         }
 
@@ -672,6 +719,7 @@ class PublicSeoService
     {
         $disallowed = [
             '/login',
+            '/en/login',
             '/logout',
             '/dashboard',
             '/users',
@@ -918,8 +966,14 @@ class PublicSeoService
     ): ?array {
         $items = [
             [
-                'name' => 'Beranda',
-                'url' => base_url('home'),
+                'name' => function_exists(
+                    'public_translate_text'
+                )
+                    ? public_translate_text('Beranda')
+                    : 'Beranda',
+                'url' => function_exists('public_url')
+                    ? public_url('/home')
+                    : base_url('home'),
             ],
         ];
 
@@ -929,22 +983,28 @@ class PublicSeoService
 
             case 'profile':
                 $items[] = [
-                    'name' => 'Profil',
-                    'url' => base_url('profil'),
+                    'name' => public_locale() === 'en'
+                        ? 'About'
+                        : 'Profil',
+                    'url' => public_url('/profil'),
                 ];
                 break;
 
             case 'programs':
                 $items[] = [
-                    'name' => 'Program',
-                    'url' => base_url('program'),
+                    'name' => public_translate_text(
+                        'Program'
+                    ),
+                    'url' => public_url('/program'),
                 ];
                 break;
 
             case 'program_detail':
                 $items[] = [
-                    'name' => 'Program',
-                    'url' => base_url('program'),
+                    'name' => public_translate_text(
+                        'Program'
+                    ),
+                    'url' => public_url('/program'),
                 ];
                 $items[] = [
                     'name' => (string) (
@@ -957,15 +1017,19 @@ class PublicSeoService
 
             case 'activities':
                 $items[] = [
-                    'name' => 'Kegiatan',
-                    'url' => base_url('kegiatan'),
+                    'name' => public_translate_text(
+                        'Kegiatan'
+                    ),
+                    'url' => public_url('/kegiatan'),
                 ];
                 break;
 
             case 'activity_detail':
                 $items[] = [
-                    'name' => 'Kegiatan',
-                    'url' => base_url('kegiatan'),
+                    'name' => public_translate_text(
+                        'Kegiatan'
+                    ),
+                    'url' => public_url('/kegiatan'),
                 ];
                 $items[] = [
                     'name' => (string) (
@@ -978,15 +1042,19 @@ class PublicSeoService
 
             case 'officials':
                 $items[] = [
-                    'name' => 'Pengurus',
-                    'url' => base_url('pengurus'),
+                    'name' => public_translate_text(
+                        'Pengurus'
+                    ),
+                    'url' => public_url('/pengurus'),
                 ];
                 break;
 
             case 'contact':
                 $items[] = [
-                    'name' => 'Kontak',
-                    'url' => base_url('kontak'),
+                    'name' => public_translate_text(
+                        'Kontak'
+                    ),
+                    'url' => public_url('/kontak'),
                 ];
                 break;
 
@@ -1024,7 +1092,8 @@ class PublicSeoService
         string $canonical,
         string $image,
         string $description,
-        string $organizationId
+        string $organizationId,
+        string $languageTag
     ): array {
         $schema = [
             '@type' => 'Article',
@@ -1054,7 +1123,7 @@ class PublicSeoService
                 ?? $activity['published_at']
                 ?? null
             ),
-            'inLanguage' => 'id-ID',
+            'inLanguage' => $languageTag,
         ];
 
         if ($image !== '') {
@@ -1089,7 +1158,8 @@ class PublicSeoService
         array $program,
         string $canonical,
         string $image,
-        string $organizationId
+        string $organizationId,
+        string $languageTag
     ): array {
         $schema = [
             '@type' => 'CreativeWork',
@@ -1113,7 +1183,7 @@ class PublicSeoService
             'publisher' => [
                 '@id' => $organizationId,
             ],
-            'inLanguage' => 'id-ID',
+            'inLanguage' => $languageTag,
         ];
 
         if ($image !== '') {
@@ -1150,8 +1220,8 @@ class PublicSeoService
                     $program['name']
                     ?? 'Program'
                 ),
-                'url' => base_url(
-                    'program/' . $program['slug']
+                'url' => public_url(
+                    '/program/' . $program['slug']
                 ),
             ];
         }
@@ -1193,8 +1263,8 @@ class PublicSeoService
                     $activity['title']
                     ?? 'Kegiatan'
                 ),
-                'url' => base_url(
-                    'kegiatan/' . $activity['id']
+                'url' => public_url(
+                    '/kegiatan/' . $activity['id']
                 ),
             ];
         }

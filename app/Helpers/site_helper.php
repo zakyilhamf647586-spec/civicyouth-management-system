@@ -20,8 +20,12 @@ if (!function_exists('site_settings')) {
 
             $model = new SiteSettingModel();
 
+            $locale = function_exists('public_locale')
+                ? public_locale()
+                : 'id';
+
             return $settings =
-                $model->getSettingsArray(true);
+                $model->getSettingsArray(true, $locale);
         } catch (\Throwable $exception) {
             return $settings = [];
         }
@@ -39,6 +43,14 @@ if (!function_exists('site_setting')) {
 
         if ($value === null || $value === '') {
             return $default;
+        }
+
+        if (
+            function_exists('public_locale')
+            && public_locale() === 'en'
+            && function_exists('public_translate_text')
+        ) {
+            return public_translate_text((string) $value);
         }
 
         return $value;

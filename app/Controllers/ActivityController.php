@@ -790,6 +790,18 @@ class ActivityController extends BaseController
                 'label' => 'Ringkasan publik',
                 'rules' => 'permit_empty|max_length[220]',
             ],
+            'title_en' => [
+                'label' => 'English activity title',
+                'rules' => 'permit_empty|max_length[150]',
+            ],
+            'location_en' => [
+                'label' => 'English activity location',
+                'rules' => 'permit_empty|max_length[200]',
+            ],
+            'summary_en' => [
+                'label' => 'English public summary',
+                'rules' => 'permit_empty|max_length[220]',
+            ],
             'status' => [
                 'label' => 'Status kegiatan',
                 'rules' =>
@@ -813,21 +825,36 @@ class ActivityController extends BaseController
             'title' => trim(
                 (string) $this->request->getPost('title')
             ),
+            'title_en' => trim(
+                (string) $this->request->getPost('title_en')
+            ),
             'summary' => trim(
                 (string) $this->request->getPost('summary')
             ),
+            'summary_en' => trim(
+                (string) $this->request->getPost('summary_en')
+            ),
             'description' => trim(
                 (string) $this->request->getPost('description')
+            ),
+            'description_en' => trim(
+                (string) $this->request->getPost('description_en')
             ),
             'activity_date' =>
                 $this->request->getPost('activity_date'),
             'location' => trim(
                 (string) $this->request->getPost('location')
             ),
+            'location_en' => trim(
+                (string) $this->request->getPost('location_en')
+            ),
             'status' =>
                 $this->request->getPost('status'),
             'result' => trim(
                 (string) $this->request->getPost('result')
+            ),
+            'result_en' => trim(
+                (string) $this->request->getPost('result_en')
             ),
             'documentation_link' => trim(
                 (string) $this->request->getPost(
@@ -994,6 +1021,42 @@ class ActivityController extends BaseController
 
         if (trim((string) ($activity['location'] ?? '')) === '') {
             $errors[] = 'Lokasi kegiatan wajib diisi.';
+        }
+
+        $bilingualPairs = [
+            'title' => ['title_en', 'English activity title'],
+            'location' => [
+                'location_en',
+                'English activity location',
+            ],
+            'summary' => [
+                'summary_en',
+                'English public summary',
+            ],
+            'description' => [
+                'description_en',
+                'English activity description',
+            ],
+            'result' => [
+                'result_en',
+                'English result and impact',
+            ],
+        ];
+
+        foreach (
+            $bilingualPairs as
+            $sourceField => [$englishField, $label]
+        ) {
+            if (
+                trim((string) (
+                    $activity[$sourceField] ?? ''
+                )) !== ''
+                && trim((string) (
+                    $activity[$englishField] ?? ''
+                )) === ''
+            ) {
+                $errors[] = $label . ' wajib diisi.';
+            }
         }
 
         if ($errors !== []) {

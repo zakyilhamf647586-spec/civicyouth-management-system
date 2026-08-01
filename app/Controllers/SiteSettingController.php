@@ -22,6 +22,8 @@ class SiteSettingController extends BaseController
             'title'    => 'Pengaturan Website',
             'settings' => $this->settingModel
                 ->getSettingsArray(),
+            'settingsEn' => $this->settingModel
+                ->getEnglishSettingsArray(),
             'groups'   => $this->getSettingGroups(),
         ]);
     }
@@ -30,7 +32,10 @@ class SiteSettingController extends BaseController
     {
         $groups = $this->getSettingGroups();
         $beforeValues = $this->settingModel->getSettingsArray();
+        $beforeValuesEn = $this->settingModel
+            ->getEnglishSettingsArray();
         $values = [];
+        $valuesEn = [];
         $errors = [];
 
         foreach ($groups as $group) {
@@ -94,6 +99,34 @@ class SiteSettingController extends BaseController
                 }
 
                 $values[$key] = $value;
+
+                if (!empty($field['translatable'])) {
+                    $valueEn = trim(
+                        (string) $this->request->getPost(
+                            $key . '_en'
+                        )
+                    );
+
+                    if (mb_strlen($valueEn) > $maxLength) {
+                        $errors[] =
+                            'English '
+                            . $field['label']
+                            . ' maksimal '
+                            . $maxLength
+                            . ' karakter.';
+                        continue;
+                    }
+
+                    if ($value !== '' && $valueEn === '') {
+                        $errors[] =
+                            'English '
+                            . $field['label']
+                            . ' wajib diisi agar website tetap konsisten bilingual.';
+                        continue;
+                    }
+
+                    $valuesEn[$key] = $valueEn;
+                }
             }
         }
 
@@ -136,9 +169,12 @@ class SiteSettingController extends BaseController
                 }
             }
 
-            if (!$this->settingModel->saveValues($values)) {
+            if (!$this->settingModel->saveLocalizedValues(
+                $values,
+                $valuesEn
+            )) {
                 throw new \RuntimeException(
-                    'Pengaturan gagal disimpan.'
+                    'Pengaturan bilingual gagal disimpan.'
                 );
             }
 
@@ -156,6 +192,17 @@ class SiteSettingController extends BaseController
                 }
             }
 
+            $changedEnglishKeys = [];
+
+            foreach ($valuesEn as $key => $value) {
+                if (
+                    (string) ($beforeValuesEn[$key] ?? '')
+                    !== (string) $value
+                ) {
+                    $changedEnglishKeys[] = $key;
+                }
+            }
+
             $this->recordCmsAudit([
                 'module' => 'settings',
                 'event_type' => 'settings.website_updated',
@@ -167,6 +214,10 @@ class SiteSettingController extends BaseController
                 'metadata' => [
                     'changed_count' => count($changedKeys),
                     'changed_keys' => $changedKeys,
+                    'changed_english_count' =>
+                        count($changedEnglishKeys),
+                    'changed_english_keys' =>
+                        $changedEnglishKeys,
                 ],
             ]);
 
@@ -262,24 +313,28 @@ class SiteSettingController extends BaseController
                     'organization_full_name' => [
                         'label' => 'Kepanjangan GARDA 01',
                         'type'  => 'text',
+                        'translatable' => true,
                         'max_length' => 150,
                         'required' => true,
                     ],
                     'organization_legal_name' => [
                         'label' => 'Nama Resmi Organisasi',
                         'type'  => 'text',
+                        'translatable' => true,
                         'max_length' => 180,
                         'required' => true,
                     ],
                     'organization_tagline' => [
                         'label' => 'Slogan',
                         'type'  => 'text',
+                        'translatable' => true,
                         'max_length' => 150,
                         'required' => true,
                     ],
                     'organization_description' => [
                         'label' => 'Deskripsi Singkat',
                         'type'  => 'textarea',
+                        'translatable' => true,
                         'max_length' => 700,
                     ],
                     'site_logo' => [
@@ -312,31 +367,37 @@ class SiteSettingController extends BaseController
                     'contact_address' => [
                         'label' => 'Alamat',
                         'type'  => 'textarea',
+                        'translatable' => true,
                         'max_length' => 500,
                     ],
                     'contact_village' => [
                         'label' => 'Kelurahan',
                         'type'  => 'text',
+                        'translatable' => true,
                         'max_length' => 100,
                     ],
                     'contact_district' => [
                         'label' => 'Kecamatan',
                         'type'  => 'text',
+                        'translatable' => true,
                         'max_length' => 100,
                     ],
                     'contact_city' => [
                         'label' => 'Kota',
                         'type'  => 'text',
+                        'translatable' => true,
                         'max_length' => 100,
                     ],
                     'contact_province' => [
                         'label' => 'Provinsi',
                         'type'  => 'text',
+                        'translatable' => true,
                         'max_length' => 100,
                     ],
                     'contact_location_description' => [
                         'label' => 'Deskripsi Lokasi',
                         'type'  => 'textarea',
+                        'translatable' => true,
                         'max_length' => 700,
                     ],
                     'contact_maps_url' => [
@@ -347,11 +408,13 @@ class SiteSettingController extends BaseController
                     'contact_office_hours' => [
                         'label' => 'Jam Respons / Operasional',
                         'type'  => 'text',
+                        'translatable' => true,
                         'max_length' => 180,
                     ],
                     'contact_response_note' => [
                         'label' => 'Catatan Waktu Respons',
                         'type'  => 'textarea',
+                        'translatable' => true,
                         'max_length' => 500,
                     ],
                 ],
@@ -395,51 +458,61 @@ class SiteSettingController extends BaseController
                     'footer_heading' => [
                         'label' => 'Judul Footer',
                         'type'  => 'text',
+                        'translatable' => true,
                         'max_length' => 100,
                     ],
                     'footer_description' => [
                         'label' => 'Deskripsi Footer',
                         'type'  => 'textarea',
+                        'translatable' => true,
                         'max_length' => 700,
                     ],
                     'footer_note' => [
                         'label' => 'Catatan Resmi',
                         'type'  => 'text',
+                        'translatable' => true,
                         'max_length' => 255,
                     ],
                     'footer_navigation_heading' => [
                         'label' => 'Judul Kolom Navigasi',
                         'type'  => 'text',
+                        'translatable' => true,
                         'max_length' => 80,
                     ],
                     'footer_location_heading' => [
                         'label' => 'Judul Kolom Lokasi',
                         'type'  => 'text',
+                        'translatable' => true,
                         'max_length' => 80,
                     ],
                     'footer_contact_heading' => [
                         'label' => 'Judul Kolom Kontak',
                         'type'  => 'text',
+                        'translatable' => true,
                         'max_length' => 80,
                     ],
                     'footer_contact_intro' => [
                         'label' => 'Pengantar Kolom Kontak',
                         'type'  => 'textarea',
+                        'translatable' => true,
                         'max_length' => 500,
                     ],
                     'footer_map_label' => [
                         'label' => 'Label Kartu Maps',
                         'type'  => 'text',
+                        'translatable' => true,
                         'max_length' => 100,
                     ],
                     'footer_map_action' => [
                         'label' => 'Teks Aksi Maps',
                         'type'  => 'text',
+                        'translatable' => true,
                         'max_length' => 100,
                     ],
                     'footer_copyright' => [
                         'label' => 'Teks Hak Cipta',
                         'type'  => 'text',
+                        'translatable' => true,
                         'max_length' => 180,
                     ],
                 ],
@@ -454,16 +527,19 @@ class SiteSettingController extends BaseController
                     'seo_title' => [
                         'label' => 'Judul SEO Default',
                         'type'  => 'text',
+                        'translatable' => true,
                         'max_length' => 180,
                     ],
                     'seo_description' => [
                         'label' => 'Deskripsi SEO',
                         'type'  => 'textarea',
+                        'translatable' => true,
                         'max_length' => 500,
                     ],
                     'seo_keywords' => [
                         'label' => 'Kata Kunci',
                         'type'  => 'text',
+                        'translatable' => true,
                         'max_length' => 500,
                     ],
                     'seo_og_image' => [
@@ -473,6 +549,7 @@ class SiteSettingController extends BaseController
                     'seo_og_image_alt' => [
                         'label' => 'Alt Gambar Berbagi Sosial',
                         'type'  => 'text',
+                        'translatable' => true,
                         'max_length' => 180,
                     ],
                     'seo_twitter_handle' => [

@@ -27,7 +27,7 @@
 
     <div class="activity-public-filter">
         <a
-            href="<?= base_url('/kegiatan') ?>"
+            href="<?= public_url('/kegiatan') ?>"
             class="<?= empty($selectedProgram) ? 'active' : '' ?>"
         >
             Semua
@@ -43,7 +43,7 @@
             ?>
 
             <a
-                href="<?= base_url('/kegiatan')
+                href="<?= public_url('/kegiatan')
                     . '?program='
                     . urlencode($program['slug']) ?>"
                 class="<?= ($selectedProgram ?? '') === $program['slug']
@@ -103,7 +103,7 @@
 
                     <?php if ($hasDocumentationImage) : ?>
                         <a
-                            href="<?= base_url(
+                            href="<?= public_url(
                                 '/kegiatan/' . $activity['id']
                             ) ?>"
                             class="public-activity-image-link"
@@ -119,7 +119,7 @@
                         </a>
                     <?php else : ?>
                         <a
-                            href="<?= base_url(
+                            href="<?= public_url(
                                 '/kegiatan/' . $activity['id']
                             ) ?>"
                             class="public-activity-placeholder"
@@ -136,7 +136,7 @@
                             && !empty($activity['program_slug'])
                         ) : ?>
                             <a
-                                href="<?= base_url(
+                                href="<?= public_url(
                                     '/program/'
                                     . $activity['program_slug']
                                 ) ?>"
@@ -171,7 +171,7 @@
 
                         <h3>
                             <a
-                                href="<?= base_url(
+                                href="<?= public_url(
                                     '/kegiatan/' . $activity['id']
                                 ) ?>"
                             >
@@ -193,7 +193,7 @@
                         <?php endif; ?>
 
                         <a
-                            href="<?= base_url(
+                            href="<?= public_url(
                                 '/kegiatan/' . $activity['id']
                             ) ?>"
                             class="public-read-more"
@@ -231,7 +231,7 @@
             </p>
 
             <a
-                href="<?= base_url('/kegiatan') ?>"
+                href="<?= public_url('/kegiatan') ?>"
                 class="btn btn-primary"
             >
                 Lihat Semua Kegiatan
@@ -260,7 +260,7 @@
     </div>
 
     <a
-        href="<?= base_url('/program') ?>"
+        href="<?= public_url('/program') ?>"
         class="btn btn-primary"
     >
         Jelajahi Program

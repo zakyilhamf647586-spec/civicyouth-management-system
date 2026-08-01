@@ -1,0 +1,145 @@
+/*
+ * GARDA 01 — bilingual editorial controls.
+ * Shared only by internal CMS forms that manage public ID/EN content.
+ */
+
+.bilingual-editor-heading {
+    margin: 2px 0 18px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    border: 1px solid #dfe7ed;
+    border-radius: 13px;
+    background: #f8fafb;
+}
+
+.bilingual-editor-heading > span {
+    width: 34px;
+    min-width: 34px;
+    height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    color: #ffffff;
+    background: #08223d;
+    font-size: 9px;
+    font-weight: 900;
+    letter-spacing: .08em;
+}
+
+.bilingual-editor-heading strong,
+.bilingual-editor-heading small {
+    display: block;
+}
+
+.bilingual-editor-heading strong {
+    color: #08223d;
+    font-size: 11px;
+}
+
+.bilingual-editor-heading small {
+    margin-top: 4px;
+    color: #607585;
+    font-size: 9px;
+    line-height: 1.5;
+}
+
+.bilingual-editor-heading.is-english {
+    margin-top: 24px;
+    border-color: rgba(217, 163, 22, .38);
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255, 247, 218, .92),
+            rgba(255, 255, 255, .98)
+        );
+}
+
+.bilingual-editor-heading.is-english > span {
+    color: #08223d;
+    background: #efb91b;
+}
+
+.bilingual-editor-section {
+    margin: 24px 0;
+    padding: 20px;
+    border: 1px solid rgba(217, 163, 22, .35);
+    border-radius: 16px;
+    background:
+        linear-gradient(
+            150deg,
+            rgba(255, 249, 229, .8),
+            #ffffff 38%
+        );
+}
+
+.bilingual-editor-section .bilingual-editor-heading {
+    margin-top: 0;
+}
+
+.bilingual-inline-field,
+.bilingual-setting-field {
+    position: relative;
+    border-color: rgba(217, 163, 22, .42) !important;
+}
+
+.bilingual-inline-field {
+    margin-top: 12px;
+    padding: 13px;
+    border: 1px solid rgba(217, 163, 22, .34);
+    border-radius: 11px;
+    background: #fffaf0;
+}
+
+.bilingual-inline-field > label,
+.bilingual-setting-field > label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    color: #775806;
+}
+
+.bilingual-inline-field input,
+.bilingual-inline-field textarea,
+.bilingual-setting-field input,
+.bilingual-setting-field textarea {
+    border-color: rgba(217, 163, 22, .5) !important;
+    background: #fffef9 !important;
+}
+
+.bilingual-inline-field input:focus,
+.bilingual-inline-field textarea:focus,
+.bilingual-setting-field input:focus,
+.bilingual-setting-field textarea:focus {
+    border-color: #c38e05 !important;
+    box-shadow: 0 0 0 3px rgba(217, 163, 22, .13) !important;
+}
+
+.bilingual-field-badge {
+    padding: 3px 5px;
+    border-radius: 5px;
+    color: #08223d;
+    background: #efb91b;
+    font-size: 7px;
+    font-weight: 950;
+    letter-spacing: .08em;
+}
+
+.bilingual-setting-field {
+    padding: 12px !important;
+    border: 1px solid rgba(217, 163, 22, .34) !important;
+    border-radius: 11px;
+    background: #fffaf0;
+}
+
+@media (max-width: 720px) {
+    .bilingual-editor-section {
+        padding: 14px;
+    }
+
+    .bilingual-editor-heading {
+        padding: 12px;
+    }
+}

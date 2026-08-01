@@ -29,6 +29,39 @@ $routes->get('/kegiatan/(:num)', 'PublicController::activityDetail/$1');
 $routes->get('/kontak', 'PublicContactController::index');
 $routes->post('/kontak/kirim', 'PublicContactController::submit');
 
+/* English public experience */
+$routes->group('en', static function (
+    RouteCollection $routes
+): void {
+    $routes->get('', 'IntroducingController::index');
+    $routes->get('home', 'PublicController::index');
+    $routes->get('about', 'PublicController::profile');
+    $routes->get('programs', 'PublicController::programs');
+    $routes->get(
+        'programs/(:segment)',
+        'PublicController::programDetail/$1'
+    );
+    $routes->get('team', 'PublicController::officials');
+    $routes->get(
+        'activities',
+        'PublicController::activities'
+    );
+    $routes->get(
+        'activities/(:num)',
+        'PublicController::activityDetail/$1'
+    );
+    $routes->get(
+        'contact',
+        'PublicContactController::index'
+    );
+    $routes->post(
+        'contact/send',
+        'PublicContactController::submit'
+    );
+    $routes->get('login', 'AuthController::login');
+    $routes->post('login', 'AuthController::attemptLogin');
+});
+
 /* Secure external page review */
 $routes->get('/review/page/(:segment)', 'ExternalPageReviewController::show/$1');
 $routes->post('/review/page/(:segment)/feedback', 'ExternalPageReviewController::feedback/$1');

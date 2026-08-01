@@ -23,11 +23,17 @@ class PublicContactController extends BaseController
 
         return view('public/contact', [
             'title' => $cmsPage['title']
-                ?? 'Kontak dan Kolaborasi | GARDA 01',
+                ?? public_t(
+                    'seo.contact_title',
+                    'Kontak dan Kolaborasi | GARDA 01'
+                ),
 
             'metaDescription' =>
                 $cmsPage['meta_description']
-                ?? 'Hubungi GARDA 01 untuk kolaborasi kegiatan, program sosial, lingkungan, kepemudaan, usaha, media, dan pemberdayaan masyarakat.',
+                ?? public_t(
+                    'seo.contact_description',
+                    'Hubungi GARDA 01 untuk kolaborasi kegiatan, program sosial, lingkungan, kepemudaan, usaha, media, dan pemberdayaan masyarakat.'
+                ),
 
             'activePage' => 'contact',
             'cmsPage' => $cmsPage,
@@ -52,18 +58,24 @@ class PublicContactController extends BaseController
         if (
             trim((string) $this->request->getPost('website')) !== ''
         ) {
-            return redirect()->to('/kontak')
+            return redirect()->to(public_url('/kontak'))
                 ->with(
                     'success',
-                    'Pesan Anda berhasil dikirim.'
+                    public_t(
+                        'contact.success_generic',
+                        'Pesan Anda berhasil dikirim.'
+                    )
                 );
         }
 
         if (!$this->allowSubmission()) {
-            return redirect()->to('/kontak')
+            return redirect()->to(public_url('/kontak'))
                 ->with(
                     'error',
-                    'Terlalu banyak pesan dikirim dari jaringan ini. Tunggu beberapa menit lalu coba kembali.'
+                    public_t(
+                        'contact.rate_limit',
+                        'Terlalu banyak pesan dikirim dari jaringan ini. Tunggu beberapa menit lalu coba kembali.'
+                    )
                 );
         }
 
@@ -82,40 +94,121 @@ class PublicContactController extends BaseController
                 ->withInput()
                 ->with(
                     'error',
-                    'Mohon tunggu sebentar sebelum mengirim pesan berikutnya.'
+                    public_t(
+                        'contact.session_limit',
+                        'Mohon tunggu sebentar sebelum mengirim pesan berikutnya.'
+                    )
                 );
         }
 
         $rules = [
             'name' => [
-                'label' => 'Nama lengkap',
+                'label' => public_t(
+                    'contact.label_name',
+                    'Nama lengkap'
+                ),
                 'rules' => 'required|min_length[3]|max_length[120]',
+                'errors' => [
+                    'required' => public_t(
+                        'validation.required'
+                    ),
+                    'min_length' => public_t(
+                        'validation.min_length'
+                    ),
+                    'max_length' => public_t(
+                        'validation.max_length'
+                    ),
+                ],
             ],
 
             'email' => [
-                'label' => 'Alamat email',
+                'label' => public_t(
+                    'contact.label_email',
+                    'Alamat email'
+                ),
                 'rules' => 'permit_empty|valid_email|max_length[150]',
+                'errors' => [
+                    'valid_email' => public_t(
+                        'validation.valid_email'
+                    ),
+                    'max_length' => public_t(
+                        'validation.max_length'
+                    ),
+                ],
             ],
 
             'phone' => [
-                'label' => 'Nomor WhatsApp',
+                'label' => public_t(
+                    'contact.label_phone',
+                    'Nomor WhatsApp'
+                ),
                 'rules' => 'required|min_length[8]|max_length[30]',
+                'errors' => [
+                    'required' => public_t(
+                        'validation.required'
+                    ),
+                    'min_length' => public_t(
+                        'validation.min_length'
+                    ),
+                    'max_length' => public_t(
+                        'validation.max_length'
+                    ),
+                ],
             ],
 
             'category' => [
-                'label' => 'Kategori pesan',
+                'label' => public_t(
+                    'contact.label_category',
+                    'Kategori pesan'
+                ),
                 'rules' =>
                     'required|in_list[collaboration,activity,social,business,media,general]',
+                'errors' => [
+                    'required' => public_t(
+                        'validation.required'
+                    ),
+                    'in_list' => public_t(
+                        'validation.in_list'
+                    ),
+                ],
             ],
 
             'subject' => [
-                'label' => 'Subjek',
+                'label' => public_t(
+                    'contact.label_subject',
+                    'Subjek'
+                ),
                 'rules' => 'required|min_length[4]|max_length[180]',
+                'errors' => [
+                    'required' => public_t(
+                        'validation.required'
+                    ),
+                    'min_length' => public_t(
+                        'validation.min_length'
+                    ),
+                    'max_length' => public_t(
+                        'validation.max_length'
+                    ),
+                ],
             ],
 
             'message' => [
-                'label' => 'Isi pesan',
+                'label' => public_t(
+                    'contact.label_message',
+                    'Isi pesan'
+                ),
                 'rules' => 'required|min_length[10]|max_length[2000]',
+                'errors' => [
+                    'required' => public_t(
+                        'validation.required'
+                    ),
+                    'min_length' => public_t(
+                        'validation.min_length'
+                    ),
+                    'max_length' => public_t(
+                        'validation.max_length'
+                    ),
+                ],
             ],
         ];
 
@@ -167,10 +260,13 @@ class PublicContactController extends BaseController
             time()
         );
 
-        return redirect()->to('/kontak')
+        return redirect()->to(public_url('/kontak'))
             ->with(
                 'success',
-                'Pesan berhasil dikirim. Tim GARDA 01 akan menindaklanjutinya.'
+                public_t(
+                    'contact.success',
+                    'Pesan berhasil dikirim. Tim GARDA 01 akan menindaklanjutinya.'
+                )
             );
     }
 

@@ -215,7 +215,7 @@ $visibleLatestActivities = array_slice(
             <?php if (!empty($featuredActivity)) : ?>
 
                 <a
-                    href="<?= base_url(
+                    href="<?= public_url(
                         '/kegiatan/' . $featuredActivity['id']
                     ) ?>"
                     class="garda-home-featured-media"
@@ -278,7 +278,7 @@ $visibleLatestActivities = array_slice(
 
                     <h3>
                         <a
-                            href="<?= base_url(
+                            href="<?= public_url(
                                 '/kegiatan/'
                                 . $featuredActivity['id']
                             ) ?>"
@@ -306,7 +306,7 @@ $visibleLatestActivities = array_slice(
                     </p>
 
                     <a
-                        href="<?= base_url(
+                        href="<?= public_url(
                             '/kegiatan/'
                             . $featuredActivity['id']
                         ) ?>"
@@ -689,7 +689,7 @@ $visibleLatestActivities = array_slice(
                             </p>
 
                             <a
-                                href="<?= base_url(
+                                href="<?= public_url(
                                     '/program/' . $program['slug']
                                 ) ?>"
                             >
@@ -855,7 +855,7 @@ $visibleLatestActivities = array_slice(
                 </div>
 
                 <a
-                    href="<?= base_url(
+                    href="<?= public_url(
                         '/kegiatan/' . $impactActivity['id']
                     ) ?>"
                     class="g01-impact-story__button"
@@ -964,7 +964,7 @@ $visibleLatestActivities = array_slice(
                         <article class="garda-home-activity-card">
 
                             <a
-                                href="<?= base_url(
+                                href="<?= public_url(
                                     '/kegiatan/' . $activity['id']
                                 ) ?>"
                                 class="garda-home-activity-media"
@@ -1030,7 +1030,7 @@ $visibleLatestActivities = array_slice(
 
                                 <h3>
                                     <a
-                                        href="<?= base_url(
+                                        href="<?= public_url(
                                             '/kegiatan/'
                                             . $activity['id']
                                         ) ?>"
@@ -1047,7 +1047,7 @@ $visibleLatestActivities = array_slice(
                                 </p>
 
                                 <a
-                                    href="<?= base_url(
+                                    href="<?= public_url(
                                         '/kegiatan/' . $activity['id']
                                     ) ?>"
                                     class="garda-home-text-link"

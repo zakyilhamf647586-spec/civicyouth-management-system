@@ -22,7 +22,7 @@
                 Lihat Seluruh Pilar
             </a>
 
-            <a href="<?= base_url('/profil') ?>" class="btn btn-secondary">
+            <a href="<?= public_url('/profil') ?>" class="btn btn-secondary">
                 Tentang GARDA 01
             </a>
         </div>
@@ -75,7 +75,7 @@
 
                 <p><?= esc($program['short_description']) ?></p>
 
-                <a href="<?= base_url(
+                <a href="<?= public_url(
                     '/program/' . $program['slug']
                 ) ?>">
                     Lihat Program
@@ -100,7 +100,7 @@
         </p>
     </div>
 
-    <a href="<?= base_url('/kegiatan') ?>" class="btn btn-primary">
+    <a href="<?= public_url('/kegiatan') ?>" class="btn btn-primary">
         Lihat Kegiatan
     </a>
 </section>

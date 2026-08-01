@@ -395,9 +395,18 @@
                 );
 
             const selectDestination = function (button) {
+                const fallbackButton =
+                    destinationButtons[0] || null;
                 const name =
                     button.getAttribute('data-name')
-                    || 'Beranda';
+                    || (
+                        fallbackButton
+                            ? fallbackButton.getAttribute(
+                                'data-name'
+                            )
+                            : ''
+                    )
+                    || 'GARDA 01';
 
                 const url =
                     button.getAttribute('data-url')
@@ -425,8 +434,15 @@
                 }
 
                 if (enterLabel) {
+                    const prefix =
+                        enterLink
+                            ? enterLink.getAttribute(
+                                'data-enter-prefix'
+                            )
+                            : null;
+
                     enterLabel.textContent =
-                        'Masuk ke ' + name;
+                        (prefix || 'Masuk ke ') + name;
                 }
 
                 if (enterLink) {
@@ -476,7 +492,15 @@
                             enterLink.getAttribute(
                                 'data-name'
                             )
-                            || 'Beranda';
+                            || (
+                                destinationButtons[0]
+                                    ? destinationButtons[0]
+                                        .getAttribute(
+                                            'data-name'
+                                        )
+                                    : ''
+                            )
+                            || 'GARDA 01';
 
                         let path = targetUrl;
 

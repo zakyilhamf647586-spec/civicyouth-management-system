@@ -31,9 +31,22 @@ $pageTitle = $title
 $pageDescription = $metaDescription
     ?? 'Gerbang digital GARDA 01, Generasi Aktif Randugarut.';
 
-$canonicalUrl = base_url('/');
+$publicLocale = public_locale();
+$pageTitle = public_translate_text(
+    (string) $pageTitle
+);
+$pageDescription = public_translate_text(
+    (string) $pageDescription
+);
+$canonicalUrl = public_url('/');
+$alternateIdUrl = public_url('/', 'id');
+$alternateEnUrl = public_url('/', 'en');
 $stylesheet = 'assets/css/public-introducing.css';
 $script = 'assets/js/public-introducing.js';
+$preferencesStylesheet =
+    'assets/css/public-preferences.css';
+$preferencesScript =
+    'assets/js/public-preferences.js';
 
 $stylesheetVersion = is_file(FCPATH . $stylesheet)
     ? (string) filemtime(FCPATH . $stylesheet)
@@ -45,45 +58,63 @@ $scriptVersion = is_file(FCPATH . $script)
 
 $destinations = [
     [
-        'name' => 'Beranda',
-        'url' => base_url('home'),
+        'name' => public_t(
+            'navigation.home',
+            'Beranda'
+        ),
+        'url' => public_url('/home'),
         'index' => '01',
     ],
     [
-        'name' => 'Tentang',
-        'url' => base_url('profil'),
+        'name' => public_t(
+            'navigation.profile',
+            'Tentang'
+        ),
+        'url' => public_url('/profil'),
         'index' => '02',
     ],
     [
-        'name' => 'Program',
-        'url' => base_url('program'),
+        'name' => public_t(
+            'navigation.programs',
+            'Program'
+        ),
+        'url' => public_url('/program'),
         'index' => '03',
     ],
     [
-        'name' => 'Kegiatan',
-        'url' => base_url('kegiatan'),
+        'name' => public_t(
+            'navigation.activities',
+            'Kegiatan'
+        ),
+        'url' => public_url('/kegiatan'),
         'index' => '04',
     ],
     [
-        'name' => 'Pengurus',
-        'url' => base_url('pengurus'),
+        'name' => public_t(
+            'navigation.officials',
+            'Pengurus'
+        ),
+        'url' => public_url('/pengurus'),
         'index' => '05',
     ],
     [
-        'name' => 'Kontak',
-        'url' => base_url('kontak'),
+        'name' => public_t(
+            'navigation.contact',
+            'Kontak'
+        ),
+        'url' => public_url('/kontak'),
         'index' => '06',
     ],
 ];
 
 $pillars = [
-    ['name' => 'Peduli', 'code' => '01', 'x' => '50%', 'y' => '4%'],
-    ['name' => 'Hijau', 'code' => '02', 'x' => '78%', 'y' => '17%'],
+    ['name' => $publicLocale === 'en' ? 'Care' : 'Peduli', 'code' => '01', 'x' => '50%', 'y' => '4%'],
+    ['name' => $publicLocale === 'en' ? 'Green' : 'Hijau', 'code' => '02', 'x' => '78%', 'y' => '17%'],
     ['name' => 'Sport', 'code' => '03', 'x' => '92%', 'y' => '50%'],
-    ['name' => 'Kreatif', 'code' => '04', 'x' => '76%', 'y' => '82%'],
+    ['name' => $publicLocale === 'en' ? 'Creative' : 'Kreatif', 'code' => '04', 'x' => '76%', 'y' => '82%'],
     ['name' => 'Enterprise', 'code' => '05', 'x' => '49%', 'y' => '94%'],
-    ['name' => 'Belajar', 'code' => '06', 'x' => '12%', 'y' => '70%'],
-    ['name' => 'Berkah', 'code' => '07', 'x' => '7%', 'y' => '28%'],
+    ['name' => $publicLocale === 'en' ? 'Learning' : 'Belajar', 'code' => '06', 'x' => '12%', 'y' => '70%'],
+    ['name' => $publicLocale === 'en' ? 'Values' : 'Berkah', 'code' => '07', 'x' => '7%', 'y' => '28%'],
 ];
 
 $structuredData = json_encode([
@@ -92,6 +123,9 @@ $structuredData = json_encode([
     'name' => $pageTitle,
     'description' => $pageDescription,
     'url' => $canonicalUrl,
+    'inLanguage' => $publicLocale === 'en'
+        ? 'en-US'
+        : 'id-ID',
     'isPartOf' => [
         '@type' => 'WebSite',
         'name' => $organizationName,
@@ -103,9 +137,11 @@ $structuredData = json_encode([
     | JSON_HEX_AMP
     | JSON_HEX_APOS
     | JSON_HEX_QUOT);
+
+ob_start();
 ?>
 <!DOCTYPE html>
-<html lang="id">
+<html lang="<?= esc($publicLocale, 'attr') ?>">
 <head>
     <meta charset="UTF-8">
     <meta
@@ -126,6 +162,24 @@ $structuredData = json_encode([
     <link
         rel="canonical"
         href="<?= esc($canonicalUrl, 'attr') ?>"
+    >
+
+    <link
+        rel="alternate"
+        hreflang="id-ID"
+        href="<?= esc($alternateIdUrl, 'attr') ?>"
+    >
+
+    <link
+        rel="alternate"
+        hreflang="en"
+        href="<?= esc($alternateEnUrl, 'attr') ?>"
+    >
+
+    <link
+        rel="alternate"
+        hreflang="x-default"
+        href="<?= esc($alternateIdUrl, 'attr') ?>"
     >
 
     <link
@@ -154,7 +208,19 @@ $structuredData = json_encode([
         property="og:site_name"
         content="<?= esc($organizationName, 'attr') ?>"
     >
-    <meta property="og:locale" content="id_ID">
+    <meta
+        property="og:locale"
+        content="<?= $publicLocale === 'en'
+            ? 'en_US'
+            : 'id_ID' ?>"
+    >
+
+    <meta
+        property="og:locale:alternate"
+        content="<?= $publicLocale === 'en'
+            ? 'id_ID'
+            : 'en_US' ?>"
+    >
 
     <meta name="twitter:card" content="summary">
     <meta
@@ -174,6 +240,8 @@ $structuredData = json_encode([
         <script type="application/ld+json"><?= $structuredData ?></script>
     <?php endif; ?>
 
+    <?= view('partials/public_theme_bootstrap') ?>
+
     <link
         rel="stylesheet"
         href="<?= base_url($stylesheet) ?>?v=<?= esc(
@@ -181,6 +249,18 @@ $structuredData = json_encode([
             'attr'
         ) ?>"
     >
+
+    <?php if (is_file(FCPATH . $preferencesStylesheet)) : ?>
+        <link
+            rel="stylesheet"
+            href="<?= base_url($preferencesStylesheet) ?>?v=<?= esc(
+                (string) filemtime(
+                    FCPATH . $preferencesStylesheet
+                ),
+                'attr'
+            ) ?>"
+        >
+    <?php endif; ?>
 
     <script
         src="<?= base_url($script) ?>?v=<?= esc(
@@ -190,6 +270,10 @@ $structuredData = json_encode([
     ></script>
 </head>
 <body class="g01-intro-body">
+    <?= view('partials/public_preferences', [
+        'preferenceContext' => 'introducing',
+    ]) ?>
+
     <main class="g01-intro" id="g01-intro-main">
         <div class="g01-intro-noise" aria-hidden="true"></div>
         <div class="g01-intro-pointer" aria-hidden="true"></div>
@@ -561,7 +645,13 @@ $structuredData = json_encode([
 
                 <a
                     id="g01IntroEnter"
-                    href="<?= base_url('home') ?>"
+                    href="<?= public_url('/home') ?>"
+                    data-enter-prefix="<?= esc(
+                        $publicLocale === 'en'
+                            ? 'Enter '
+                            : 'Masuk ke ',
+                        'attr'
+                    ) ?>"
                 >
                     <span id="g01IntroEnterLabel">Masuk ke Beranda</span>
                     <i aria-hidden="true">→</i>
@@ -571,7 +661,7 @@ $structuredData = json_encode([
             <div class="g01-intro-portal-utility" data-intro-reveal>
                 <span>Area internal organisasi</span>
 
-                <a href="<?= base_url('login') ?>">
+                <a href="<?= public_url('/login') ?>">
                     Portal Pengurus
                     <i aria-hidden="true">↗</i>
                 </a>
@@ -608,5 +698,22 @@ $structuredData = json_encode([
             <small>Memasuki ruang GARDA 01...</small>
         </div>
     </main>
+
+    <?php if (is_file(FCPATH . $preferencesScript)) : ?>
+        <script
+            src="<?= base_url($preferencesScript) ?>?v=<?= esc(
+                (string) filemtime(
+                    FCPATH . $preferencesScript
+                ),
+                'attr'
+            ) ?>"
+        ></script>
+    <?php endif; ?>
 </body>
 </html>
+<?php
+$introducingDocument = ob_get_clean();
+echo public_translate_html(
+    $introducingDocument
+);
+?>

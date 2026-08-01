@@ -2,6 +2,8 @@
 
 <?= $this->section('content') ?>
 
+<?= $this->include('partials/admin_bilingual_assets') ?>
+
 <div class="page-header">
     <div>
         <h2>Edit Program GARDA 01</h2>

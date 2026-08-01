@@ -6,7 +6,7 @@
     <div class="program-detail-copy">
 
         <a
-            href="<?= base_url('/program') ?>"
+            href="<?= public_url('/program') ?>"
             class="program-detail-back"
         >
             ← Seluruh Program
@@ -28,14 +28,14 @@
 
         <div class="public-editorial-actions">
             <a
-                href="<?= base_url('/kegiatan') ?>"
+                href="<?= public_url('/kegiatan') ?>"
                 class="btn btn-primary"
             >
                 Lihat Kegiatan
             </a>
 
             <a
-                href="<?= base_url('/pengurus') ?>"
+                href="<?= public_url('/pengurus') ?>"
                 class="btn btn-secondary"
             >
                 Kenali Pengurus
@@ -93,7 +93,7 @@
                 <?php endforeach; ?>
             </ul>
 
-            <a href="<?= base_url('/kegiatan') ?>">
+            <a href="<?= public_url('/kegiatan') ?>">
                 Lihat dokumentasi kegiatan →
             </a>
         </aside>
@@ -115,7 +115,7 @@
         </p>
     </div>
 
-    <a href="<?= base_url('/profil') ?>" class="btn btn-primary">
+    <a href="<?= public_url('/profil') ?>" class="btn btn-primary">
         Tentang GARDA 01
     </a>
 </section>
