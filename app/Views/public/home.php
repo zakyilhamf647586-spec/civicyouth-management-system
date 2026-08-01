@@ -3,39 +3,6 @@
 <?= $this->section('content') ?>
 
 <?php
-$formatPublicDate = static function (?string $date): string {
-    if (empty($date)) {
-        return '-';
-    }
-
-    $timestamp = strtotime($date);
-
-    if (!$timestamp) {
-        return '-';
-    }
-
-    $months = [
-        1  => 'Januari',
-        2  => 'Februari',
-        3  => 'Maret',
-        4  => 'April',
-        5  => 'Mei',
-        6  => 'Juni',
-        7  => 'Juli',
-        8  => 'Agustus',
-        9  => 'September',
-        10 => 'Oktober',
-        11 => 'November',
-        12 => 'Desember',
-    ];
-
-    return date('d', $timestamp)
-        . ' '
-        . $months[(int) date('n', $timestamp)]
-        . ' '
-        . date('Y', $timestamp);
-};
-
 $activityHasImage = static function (?array $activity): bool {
     if (
         empty($activity)
@@ -230,6 +197,9 @@ $visibleLatestActivities = array_slice(
                             alt="<?= esc(
                                 $featuredActivity['title']
                             ) ?>"
+                            loading="eager"
+                            fetchpriority="high"
+                            decoding="async"
                         >
                     <?php else : ?>
                         <div
@@ -291,7 +261,7 @@ $visibleLatestActivities = array_slice(
 
                     <p>
                         <?= esc(
-                            $formatPublicDate(
+                            public_format_date(
                                 $featuredActivity['activity_date']
                                 ?? null
                             )
@@ -336,6 +306,7 @@ $visibleLatestActivities = array_slice(
                             'attr'
                         ) ?>"
                         alt=""
+                        decoding="async"
                     >
 
                     <span>
@@ -770,6 +741,7 @@ $visibleLatestActivities = array_slice(
                         ) ?>"
                         alt="<?= esc($impactActivity['title']) ?>"
                         loading="lazy"
+                        decoding="async"
                     >
                 <?php else : ?>
                     <div class="g01-impact-story__fallback">
@@ -834,7 +806,7 @@ $visibleLatestActivities = array_slice(
                         </svg>
 
                         <?= esc(
-                            $formatPublicDate(
+                            public_format_date(
                                 $impactActivity['activity_date']
                                 ?? null
                             )
@@ -982,6 +954,7 @@ $visibleLatestActivities = array_slice(
                                             $activity['title']
                                         ) ?>"
                                         loading="lazy"
+                                        decoding="async"
                                     >
                                 <?php else : ?>
                                     <div
@@ -1021,7 +994,7 @@ $visibleLatestActivities = array_slice(
 
                                 <span class="garda-home-activity-date">
                                     <?= esc(
-                                        $formatPublicDate(
+                                        public_format_date(
                                             $activity['activity_date']
                                             ?? null
                                         )

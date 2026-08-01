@@ -72,6 +72,62 @@ class PublicExperience extends BaseConfig
             'id' => 'Pilihan tersimpan di perangkat ini.',
             'en' => 'Your choice is saved on this device.',
         ],
+        'accessibility.return_to_intro' => [
+            'id' => 'Kembali ke Introducing {organization}',
+            'en' => 'Return to the {organization} Introducing experience',
+        ],
+        'accessibility.open_map' => [
+            'id' => 'Buka lokasi {organization} di Google Maps',
+            'en' => 'Open the {organization} location in Google Maps',
+        ],
+        'accessibility.carousel_item' => [
+            'id' => 'Tampilkan pengurus ke-{number}',
+            'en' => 'Show team member {number}',
+        ],
+        'accessibility.carousel_previous' => [
+            'id' => 'Lihat pengurus sebelumnya',
+            'en' => 'Show previous team member',
+        ],
+        'accessibility.carousel_next' => [
+            'id' => 'Lihat pengurus berikutnya',
+            'en' => 'Show next team member',
+        ],
+        'accessibility.carousel_list' => [
+            'id' => 'Daftar profil pengurus',
+            'en' => 'Team profile list',
+        ],
+        'accessibility.gallery_dialog' => [
+            'id' => 'Galeri dokumentasi kegiatan',
+            'en' => 'Activity documentation gallery',
+        ],
+        'accessibility.gallery_position' => [
+            'id' => 'Foto {current} dari {total}',
+            'en' => 'Photo {current} of {total}',
+        ],
+        'accessibility.gallery_open' => [
+            'id' => 'Buka foto {number} di galeri',
+            'en' => 'Open photo {number} in the gallery',
+        ],
+        'accessibility.gallery_close' => [
+            'id' => 'Tutup galeri',
+            'en' => 'Close gallery',
+        ],
+        'accessibility.gallery_previous' => [
+            'id' => 'Foto sebelumnya',
+            'en' => 'Previous photo',
+        ],
+        'accessibility.gallery_next' => [
+            'id' => 'Foto berikutnya',
+            'en' => 'Next photo',
+        ],
+        'accessibility.navigation_open' => [
+            'id' => 'Buka menu navigasi',
+            'en' => 'Open navigation menu',
+        ],
+        'accessibility.navigation_close' => [
+            'id' => 'Tutup menu navigasi',
+            'en' => 'Close navigation menu',
+        ],
         'navigation.home' => [
             'id' => 'Beranda',
             'en' => 'Home',

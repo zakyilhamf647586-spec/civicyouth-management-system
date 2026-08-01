@@ -397,19 +397,23 @@ $valueItems = array_values(array_filter(array_map(
         <?php endif; ?>
 
         <?php if (session()->getFlashdata('success')) : ?>
-            <div class="alert-success">
+            <div
+                class="alert-success"
+                role="status"
+                aria-live="polite"
+            >
                 <?= esc(session()->getFlashdata('success')) ?>
             </div>
         <?php endif; ?>
 
         <?php if (session()->getFlashdata('error')) : ?>
-            <div class="alert-error">
+            <div class="alert-error" role="alert">
                 <?= esc(session()->getFlashdata('error')) ?>
             </div>
         <?php endif; ?>
 
         <?php if (session()->getFlashdata('errors')) : ?>
-            <div class="alert-error">
+            <div class="alert-error" role="alert">
                 <?php foreach (
                     session()->getFlashdata('errors')
                     as $error
@@ -456,6 +460,7 @@ $valueItems = array_values(array_filter(array_map(
                         name="name"
                         value="<?= esc(old('name')) ?>"
                         placeholder="Nama Anda"
+                        autocomplete="name"
                         required
                     >
                 </div>
@@ -463,11 +468,13 @@ $valueItems = array_values(array_filter(array_map(
                 <div class="form-group">
                     <label for="phone">Nomor WhatsApp</label>
                     <input
-                        type="text"
+                        type="tel"
                         id="phone"
                         name="phone"
                         value="<?= esc(old('phone')) ?>"
                         placeholder="Contoh: 081234567890"
+                        autocomplete="tel"
+                        inputmode="tel"
                         required
                     >
                 </div>
@@ -480,6 +487,8 @@ $valueItems = array_values(array_filter(array_map(
                         name="email"
                         value="<?= esc(old('email')) ?>"
                         placeholder="Opsional"
+                        autocomplete="email"
+                        inputmode="email"
                     >
                 </div>
 
@@ -533,6 +542,7 @@ $valueItems = array_values(array_filter(array_map(
                     name="subject"
                     value="<?= esc(old('subject')) ?>"
                     placeholder="Ringkasan kebutuhan atau tujuan Anda"
+                    autocomplete="off"
                     required
                 >
             </div>
@@ -545,6 +555,7 @@ $valueItems = array_values(array_filter(array_map(
                     rows="8"
                     maxlength="2000"
                     placeholder="Tuliskan informasi selengkap mungkin."
+                    aria-describedby="contactSubmitNote"
                     required
                 ><?= esc(old('message')) ?></textarea>
             </div>
@@ -565,7 +576,7 @@ $valueItems = array_values(array_filter(array_map(
                     )) ?>
                 </button>
 
-                <p>
+                <p id="contactSubmitNote">
                     <?php if ($externalPreview) : ?>
                         Form kontak dinonaktifkan selama review eksternal.
                     <?php else : ?>

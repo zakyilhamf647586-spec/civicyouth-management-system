@@ -37,6 +37,11 @@
                     ?: ($activity['title'] ?? 'Dokumentasi GARDA 01'),
                     'attr'
                 ) ?>"
+                aria-label="<?= esc(public_t(
+                    'accessibility.gallery_open',
+                    'Buka foto {number} di galeri',
+                    ['number' => $index + 1]
+                ), 'attr') ?>"
             >
                 <img
                     src="<?= base_url(
@@ -48,6 +53,7 @@
                         ?: ($activity['title'] ?? 'Dokumentasi GARDA 01')
                     ) ?>"
                     loading="lazy"
+                    decoding="async"
                 >
 
                 <span class="public-gallery-overlay">
@@ -71,12 +77,30 @@
     class="public-gallery-lightbox"
     id="publicGalleryLightbox"
     aria-hidden="true"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="publicGalleryTitle"
+    aria-describedby="publicGalleryCaption"
+    inert
 >
+    <h2
+        class="g01-visually-hidden"
+        id="publicGalleryTitle"
+    >
+        <?= esc(public_t(
+            'accessibility.gallery_dialog',
+            'Galeri dokumentasi kegiatan'
+        )) ?>
+    </h2>
+
     <button
         type="button"
         class="public-gallery-close"
         id="publicGalleryClose"
-        aria-label="Tutup galeri"
+        aria-label="<?= esc(public_t(
+            'accessibility.gallery_close',
+            'Tutup galeri'
+        ), 'attr') ?>"
     >
         ×
     </button>
@@ -85,7 +109,10 @@
         type="button"
         class="public-gallery-nav public-gallery-prev"
         id="publicGalleryPrev"
-        aria-label="Foto sebelumnya"
+        aria-label="<?= esc(public_t(
+            'accessibility.gallery_previous',
+            'Foto sebelumnya'
+        ), 'attr') ?>"
     >
         ‹
     </button>
@@ -95,6 +122,7 @@
             src=""
             alt=""
             id="publicGalleryImage"
+            decoding="async"
         >
 
         <figcaption id="publicGalleryCaption"></figcaption>
@@ -104,7 +132,10 @@
         type="button"
         class="public-gallery-nav public-gallery-next"
         id="publicGalleryNext"
-        aria-label="Foto berikutnya"
+        aria-label="<?= esc(public_t(
+            'accessibility.gallery_next',
+            'Foto berikutnya'
+        ), 'attr') ?>"
     >
         ›
     </button>
@@ -112,6 +143,13 @@
     <div
         class="public-gallery-counter"
         id="publicGalleryCounter"
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        data-label-template="<?= esc(public_t(
+            'accessibility.gallery_position',
+            'Foto {current} dari {total}'
+        ), 'attr') ?>"
     ></div>
 </div>
 
@@ -158,6 +196,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     let activeIndex = 0;
+    let lastFocusedElement = null;
 
     const renderImage = function () {
         const item = items[activeIndex];
@@ -175,28 +214,55 @@ document.addEventListener('DOMContentLoaded', function () {
                 (activeIndex + 1)
                 + ' / '
                 + items.length;
+
+            const labelTemplate =
+                counter.dataset.labelTemplate ||
+                'Foto {current} dari {total}';
+
+            counter.setAttribute(
+                'aria-label',
+                labelTemplate
+                    .replace('{current}', activeIndex + 1)
+                    .replace('{total}', items.length)
+            );
         }
     };
 
     const openLightbox = function (index) {
+        lastFocusedElement = document.activeElement;
         activeIndex = index;
         renderImage();
 
+        lightbox.removeAttribute('inert');
         lightbox.classList.add('active');
         lightbox.setAttribute('aria-hidden', 'false');
 
         document.body.classList.add(
             'gallery-lightbox-open'
         );
+
+        window.requestAnimationFrame(function () {
+            closeButton?.focus({ preventScroll: true });
+        });
     };
 
     const closeLightbox = function () {
         lightbox.classList.remove('active');
         lightbox.setAttribute('aria-hidden', 'true');
+        lightbox.setAttribute('inert', '');
 
         document.body.classList.remove(
             'gallery-lightbox-open'
         );
+
+        if (
+            lastFocusedElement
+            && document.contains(lastFocusedElement)
+        ) {
+            lastFocusedElement.focus({ preventScroll: true });
+        }
+
+        lastFocusedElement = null;
     };
 
     const showPrevious = function () {
@@ -248,15 +314,51 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         if (event.key === 'Escape') {
+            event.preventDefault();
             closeLightbox();
+            return;
         }
 
         if (event.key === 'ArrowLeft') {
+            event.preventDefault();
             showPrevious();
         }
 
         if (event.key === 'ArrowRight') {
+            event.preventDefault();
             showNext();
+        }
+
+        if (event.key === 'Tab') {
+            const focusable = [
+                closeButton,
+                prevButton,
+                nextButton,
+            ].filter(function (element) {
+                return element && !element.disabled;
+            });
+
+            if (!focusable.length) {
+                event.preventDefault();
+                return;
+            }
+
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+
+            if (
+                event.shiftKey
+                && document.activeElement === first
+            ) {
+                event.preventDefault();
+                last.focus();
+            } else if (
+                !event.shiftKey
+                && document.activeElement === last
+            ) {
+                event.preventDefault();
+                first.focus();
+            }
         }
     });
 });

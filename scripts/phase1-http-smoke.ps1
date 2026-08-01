@@ -136,6 +136,25 @@ function Assert-ContentNotMatch {
     }
 }
 
+function Assert-ContentDecodedMatch {
+    param(
+        $Response,
+        [string]$ExpectedPattern,
+        [string]$Label
+    )
+
+    $DecodedContent = [System.Net.WebUtility]::HtmlDecode(
+        [string]$Response.Content
+    )
+
+    if ($DecodedContent -match $ExpectedPattern) {
+        Write-Host "[OK] $Label" -ForegroundColor Green
+    } else {
+        Write-Host "[FAIL] $Label" -ForegroundColor Red
+        $script:Failures += $Label
+    }
+}
+
 Write-Host '=== GARDA 01 Phase 1 HTTP Smoke Test ===' -ForegroundColor Cyan
 
 $Introducing = Get-Page '/'
@@ -219,6 +238,19 @@ Assert-ContentMatch `
     'United(?:\s|\u2022|&bull;|&#8226;)*In Motion(?:\s|\u2022|&bull;|&#8226;)*Making an Impact' `
     'Footer English menerjemahkan slogan organisasi'
 
+Assert-ContentDecodedMatch `
+    $EnglishResponses['/en/home'] `
+    'aria-label="Return to the [^"]+ Introducing experience"' `
+    'Label aksesibilitas brand mengikuti bahasa English'
+Assert-ContentDecodedMatch `
+    $EnglishResponses['/en/home'] `
+    'aria-label="Open the [^"]+ location in Google Maps"' `
+    'Label aksesibilitas peta mengikuti bahasa English'
+Assert-ContentMatch `
+    $EnglishResponses['/en/home'] `
+    'fetchpriority="high"' `
+    'Gambar utama Beranda memiliki prioritas pemuatan'
+
 Assert-ContentMatch `
     $EnglishResponses['/en/activities'] `
     'Programs, events, and activity documentation' `
@@ -240,6 +272,75 @@ Assert-ContentNotMatch `
     $EnglishResponses['/en/team'] `
     '>\s*(Seksi Olahraga|Inti|Tampan dan Berani|Koordinator Utama)\s*<' `
     'Team English menerjemahkan jabatan, divisi, dan profil'
+Assert-ContentDecodedMatch `
+    $EnglishResponses['/en/team'] `
+    'aria-label="Show team member 1"' `
+    'Label carousel Team mengikuti bahasa English'
+
+foreach ($EnglishDatePath in @(
+    '/en/home',
+    '/en/activities'
+)) {
+    Assert-ContentNotMatch `
+        $EnglishResponses[$EnglishDatePath] `
+        '>\s*\d{2}\s+(Januari|Februari|Maret|April|Mei|Juni|Juli|Agustus|September|Oktober|November|Desember)\s+\d{4}\s*<' `
+        "Tanggal dinamis $EnglishDatePath mengikuti bahasa English"
+}
+
+$EnglishActivityIds = @(
+    [regex]::Matches(
+        [string]$EnglishResponses['/en/activities'].Content,
+        'href="[^"]*/en/activities/(\d+)"'
+    ) |
+        ForEach-Object { $_.Groups[1].Value } |
+        Select-Object -Unique
+)
+
+$EnglishActivityDetail = $null
+$EnglishGalleryDetail = $null
+
+foreach ($EnglishActivityId in $EnglishActivityIds) {
+    $CandidateActivityDetail = Get-Page "/en/activities/$EnglishActivityId"
+
+    if ($null -eq $EnglishActivityDetail) {
+        $EnglishActivityDetail = $CandidateActivityDetail
+    }
+
+    $DecodedCandidateContent = [System.Net.WebUtility]::HtmlDecode(
+        [string]$CandidateActivityDetail.Content
+    )
+
+    if ($DecodedCandidateContent -match 'id="publicGalleryClose"') {
+        $EnglishGalleryDetail = $CandidateActivityDetail
+        break
+    }
+}
+
+if ($null -ne $EnglishActivityDetail) {
+    Assert-Status `
+        $EnglishActivityDetail `
+        200 `
+        'English activity detail'
+    Assert-ContentNotMatch `
+        $EnglishActivityDetail `
+        '>\s*\d{2}\s+(Januari|Februari|Maret|April|Mei|Juni|Juli|Agustus|September|Oktober|November|Desember)\s+\d{4}\s*<' `
+        'Tanggal detail kegiatan mengikuti bahasa English'
+} else {
+    Write-Host '[WARN] Detail kegiatan English dilewati karena belum ada kegiatan yang dapat diperiksa.' -ForegroundColor Yellow
+}
+
+if ($null -ne $EnglishGalleryDetail) {
+    Assert-ContentDecodedMatch `
+        $EnglishGalleryDetail `
+        'id="publicGalleryLightbox"[\s\S]*?role="dialog"[\s\S]*?aria-modal="true"' `
+        'Galeri kegiatan menggunakan dialog aksesibel'
+    Assert-ContentDecodedMatch `
+        $EnglishGalleryDetail `
+        'id="publicGalleryClose"[\s\S]*?aria-label="Close gallery"' `
+        'Kontrol galeri mengikuti bahasa English'
+} else {
+    Write-Host '[WARN] Pemeriksaan galeri dilewati karena belum ada kegiatan English dengan foto galeri.' -ForegroundColor Yellow
+}
 
 $EnglishLogin = Get-Page '/en/login'
 Assert-Status $EnglishLogin 200 'English login'

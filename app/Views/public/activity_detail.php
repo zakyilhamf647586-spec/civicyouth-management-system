@@ -77,12 +77,9 @@ $hasDocumentationImage =
                 <span>Tanggal</span>
 
                 <strong>
-                    <?= !empty($activity['activity_date'])
-                        ? date(
-                            'd M Y',
-                            strtotime($activity['activity_date'])
-                        )
-                        : '-' ?>
+                    <?= esc(public_format_date(
+                        $activity['activity_date'] ?? null
+                    )) ?>
                 </strong>
             </div>
 
@@ -111,6 +108,7 @@ $hasDocumentationImage =
         <img
             src="<?= esc(site_asset_url('site_logo', 'assets/img/logo-rw01.png'), 'attr') ?>"
             alt="Logo <?= esc(site_setting('organization_name', 'GARDA 01')) ?>"
+            decoding="async"
         >
 
         <span>Dokumentasi Resmi</span>
@@ -139,12 +137,16 @@ $hasDocumentationImage =
                 ) ?>"
                 alt="<?= esc($activity['title']) ?>"
                 class="activity-detail-main-image"
+                loading="eager"
+                fetchpriority="high"
+                decoding="async"
             >
         <?php else : ?>
             <div class="activity-detail-image-placeholder">
                 <img
                     src="<?= esc(site_asset_url('site_logo', 'assets/img/logo-rw01.png'), 'attr') ?>"
                     alt=""
+                    decoding="async"
                 >
 
                 <strong>GARDA 01</strong>
@@ -193,12 +195,9 @@ $hasDocumentationImage =
                 <dt>Tanggal</dt>
 
                 <dd>
-                    <?= !empty($activity['activity_date'])
-                        ? date(
-                            'd M Y',
-                            strtotime($activity['activity_date'])
-                        )
-                        : '-' ?>
+                    <?= esc(public_format_date(
+                        $activity['activity_date'] ?? null
+                    )) ?>
                 </dd>
             </div>
 
@@ -327,6 +326,7 @@ $hasDocumentationImage =
                                 ) ?>"
                                 alt="<?= esc($related['title']) ?>"
                                 loading="lazy"
+                                decoding="async"
                             >
                         <?php else : ?>
                             <div>
@@ -356,14 +356,9 @@ $hasDocumentationImage =
                         </h3>
 
                         <p>
-                            <?= !empty($related['activity_date'])
-                                ? date(
-                                    'd M Y',
-                                    strtotime(
-                                        $related['activity_date']
-                                    )
-                                )
-                                : '-' ?>
+                            <?= esc(public_format_date(
+                                $related['activity_date'] ?? null
+                            )) ?>
 
                             · <?= esc(
                                 $related['location']

@@ -1801,3 +1801,71 @@
 .public-body--external-review .g01-arrival {
     display: none;
 }
+
+/* Keyboard clarity and assistive text */
+
+.g01-visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+.public-body :where(
+    a,
+    button,
+    input,
+    select,
+    textarea,
+    [tabindex]:not([tabindex="-1"])
+):focus-visible {
+    outline: 3px solid #f4b914;
+    outline-offset: 3px;
+}
+
+.public-gallery-item:focus-visible
+.public-gallery-overlay {
+    opacity: 1;
+}
+
+.public-gallery-item:focus-visible img {
+    transform: scale(1.035);
+}
+
+.public-gallery-close:focus-visible,
+.public-gallery-nav:focus-visible {
+    color: #04172d;
+    background: #f4b914;
+    border-color: #f4b914;
+}
+
+.officials-carousel-viewport:focus-visible {
+    border-radius: 1rem;
+    box-shadow: 0 0 0 4px rgba(244, 185, 20, 0.25);
+}
+
+.officials-carousel-dots button:focus-visible {
+    width: 1.625rem;
+}
+
+@media (forced-colors: active) {
+    .public-body :where(
+        a,
+        button,
+        input,
+        select,
+        textarea,
+        [tabindex]:not([tabindex="-1"])
+    ):focus-visible {
+        outline: 3px solid Highlight;
+    }
+
+    .public-gallery-overlay,
+    .g01-deck__backdrop {
+        forced-color-adjust: auto;
+    }
+}

@@ -50,6 +50,61 @@ if (!function_exists('public_t')) {
     }
 }
 
+if (!function_exists('public_format_date')) {
+    function public_format_date(
+        ?string $value,
+        string $fallback = '-'
+    ): string {
+        $value = trim((string) $value);
+
+        if ($value === '') {
+            return $fallback;
+        }
+
+        $timestamp = strtotime($value);
+
+        if ($timestamp === false) {
+            return $fallback;
+        }
+
+        $months = public_locale() === 'en'
+            ? [
+                1 => 'January',
+                2 => 'February',
+                3 => 'March',
+                4 => 'April',
+                5 => 'May',
+                6 => 'June',
+                7 => 'July',
+                8 => 'August',
+                9 => 'September',
+                10 => 'October',
+                11 => 'November',
+                12 => 'December',
+            ]
+            : [
+                1 => 'Januari',
+                2 => 'Februari',
+                3 => 'Maret',
+                4 => 'April',
+                5 => 'Mei',
+                6 => 'Juni',
+                7 => 'Juli',
+                8 => 'Agustus',
+                9 => 'September',
+                10 => 'Oktober',
+                11 => 'November',
+                12 => 'Desember',
+            ];
+
+        return date('d', $timestamp)
+            . ' '
+            . $months[(int) date('n', $timestamp)]
+            . ' '
+            . date('Y', $timestamp);
+    }
+}
+
 if (!function_exists('public_locale_path')) {
     function public_locale_path(
         string $url,

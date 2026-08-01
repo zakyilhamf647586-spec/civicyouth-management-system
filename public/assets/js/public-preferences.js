@@ -368,6 +368,18 @@
             });
     });
 
+    document.addEventListener('focusin', function (event) {
+        document
+            .querySelectorAll(
+                '[data-g01-preferences].is-open'
+            )
+            .forEach(function (menu) {
+                if (!menu.contains(event.target)) {
+                    closeMenu(menu, false);
+                }
+            });
+    });
+
     document.addEventListener('keydown', function (event) {
         if (event.key !== 'Escape') {
             return;

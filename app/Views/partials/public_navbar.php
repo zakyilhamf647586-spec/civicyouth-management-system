@@ -46,12 +46,17 @@ $isNavActive = static function (
         <a
             href="<?= public_url('/') ?>"
             class="public-brand"
-            aria-label="Kembali ke Introducing <?= esc($organizationName) ?>"
+            aria-label="<?= esc(public_t(
+                'accessibility.return_to_intro',
+                'Kembali ke Introducing {organization}',
+                ['organization' => $organizationName]
+            ), 'attr') ?>"
         >
             <img
                 src="<?= esc($logoUrl, 'attr') ?>"
                 alt="Logo <?= esc($organizationName) ?>"
                 class="public-brand-mark"
+                decoding="async"
             >
 
             <span class="public-brand-copy">
@@ -68,9 +73,20 @@ $isNavActive = static function (
             type="button"
             class="public-mobile-toggle"
             id="publicMobileToggle"
-            aria-label="Buka menu navigasi"
+            aria-label="<?= esc(public_t(
+                'accessibility.navigation_open',
+                'Buka menu navigasi'
+            ), 'attr') ?>"
             aria-controls="publicNavLinks"
             aria-expanded="false"
+            data-label-open="<?= esc(public_t(
+                'accessibility.navigation_open',
+                'Buka menu navigasi'
+            ), 'attr') ?>"
+            data-label-close="<?= esc(public_t(
+                'accessibility.navigation_close',
+                'Tutup menu navigasi'
+            ), 'attr') ?>"
         >
             <span></span>
             <span></span>
@@ -178,6 +194,10 @@ document.addEventListener('DOMContentLoaded', function () {
         navigation.classList.remove('active');
         toggle.classList.remove('active');
         toggle.setAttribute('aria-expanded', 'false');
+        toggle.setAttribute(
+            'aria-label',
+            toggle.dataset.labelOpen || 'Buka menu navigasi'
+        );
         document.body.classList.remove('public-navigation-open');
     };
 
@@ -186,6 +206,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
         toggle.classList.toggle('active', isOpen);
         toggle.setAttribute('aria-expanded', String(isOpen));
+        toggle.setAttribute(
+            'aria-label',
+            isOpen
+                ? (toggle.dataset.labelClose || 'Tutup menu navigasi')
+                : (toggle.dataset.labelOpen || 'Buka menu navigasi')
+        );
         document.body.classList.toggle(
             'public-navigation-open',
             isOpen
@@ -198,6 +224,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.addEventListener('keydown', function (event) {
         if (event.key === 'Escape') {
+            closeNavigation();
+        }
+    });
+
+    document.addEventListener('pointerdown', function (event) {
+        const navbar = toggle.closest('.public-navbar');
+
+        if (
+            navigation.classList.contains('active')
+            && navbar
+            && !navbar.contains(event.target)
+        ) {
             closeNavigation();
         }
     });

@@ -220,12 +220,18 @@ $mapLabel = $mapLabelParts !== []
                 <a
                     href="<?= public_url('/') ?>"
                     class="g01-footer__brand"
-                    aria-label="Kembali ke Introducing <?= esc($organizationName) ?>"
+                    aria-label="<?= esc(public_t(
+                        'accessibility.return_to_intro',
+                        'Kembali ke Introducing {organization}',
+                        ['organization' => $organizationName]
+                    ), 'attr') ?>"
                 >
                     <span class="g01-footer__brand-mark">
                         <img
                             src="<?= esc($logoUrl, 'attr') ?>"
                             alt="Logo <?= esc($organizationName) ?>"
+                            loading="lazy"
+                            decoding="async"
                         >
                     </span>
 
@@ -321,7 +327,11 @@ $mapLabel = $mapLabelParts !== []
                     target="_blank"
                     rel="noopener noreferrer"
                     class="g01-footer__map-preview"
-                    aria-label="Buka lokasi <?= esc($organizationName) ?> di Google Maps"
+                    aria-label="<?= esc(public_t(
+                        'accessibility.open_map',
+                        'Buka lokasi {organization} di Google Maps',
+                        ['organization' => $organizationName]
+                    ), 'attr') ?>"
                 >
                     <span class="g01-footer__map-visual">
                         <span class="g01-footer__map-road road-one"></span>

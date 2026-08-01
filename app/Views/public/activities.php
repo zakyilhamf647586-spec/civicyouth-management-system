@@ -115,6 +115,7 @@
                                 ) ?>"
                                 alt="<?= esc($activity['title']) ?>"
                                 loading="lazy"
+                                decoding="async"
                             >
                         </a>
                     <?php else : ?>
@@ -154,14 +155,10 @@
 
                         <div class="public-activity-meta">
                             <span>
-                                <?= !empty($activity['activity_date'])
-                                    ? date(
-                                        'd M Y',
-                                        strtotime(
-                                            $activity['activity_date']
-                                        )
-                                    )
-                                    : '-' ?>
+                                <?= esc(public_format_date(
+                                    $activity['activity_date']
+                                        ?? null
+                                )) ?>
                             </span>
 
                             <span class="public-activity-status">

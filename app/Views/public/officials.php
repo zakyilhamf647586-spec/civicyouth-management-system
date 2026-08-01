@@ -104,6 +104,7 @@ foreach ($officials as $official) {
                 <img
                     src="<?= esc(site_asset_url('site_logo', 'assets/img/logo-rw01.png'), 'attr') ?>"
                     alt="Logo <?= esc(site_setting('organization_name', 'GARDA 01')) ?>"
+                    decoding="async"
                 >
 
                 <strong>Karang Taruna RW 01</strong>
@@ -269,7 +270,12 @@ foreach ($officials as $official) {
                     </p>
                 </div>
 
-                <div class="officials-carousel-status">
+                <div
+                    class="officials-carousel-status"
+                    role="status"
+                    aria-live="polite"
+                    aria-atomic="true"
+                >
                     <strong id="officialCurrent">1</strong>
                     <span>/ <?= max(count($officials), 1) ?></span>
                 </div>
@@ -282,7 +288,10 @@ foreach ($officials as $official) {
                         type="button"
                         class="officials-carousel-arrow officials-carousel-prev"
                         id="officialPrev"
-                        aria-label="Lihat pengurus sebelumnya"
+                        aria-label="<?= esc(public_t(
+                            'accessibility.carousel_previous',
+                            'Lihat pengurus sebelumnya'
+                        ), 'attr') ?>"
                     >
                         ‹
                     </button>
@@ -291,7 +300,10 @@ foreach ($officials as $official) {
                         class="officials-carousel-viewport"
                         id="officialsCarousel"
                         tabindex="0"
-                        aria-label="Daftar profil pengurus"
+                        aria-label="<?= esc(public_t(
+                            'accessibility.carousel_list',
+                            'Daftar profil pengurus'
+                        ), 'attr') ?>"
                     >
                         <?php foreach ($officials as $index => $official) : ?>
                             <?php
@@ -316,6 +328,7 @@ foreach ($officials as $official) {
                                             alt="<?= esc(public_translate_text('Foto')) ?> <?= esc($name) ?>"
                                             class="official-profile-photo"
                                             loading="lazy"
+                                            decoding="async"
                                         >
                                     <?php else : ?>
                                         <div class="official-profile-fallback">
@@ -376,7 +389,10 @@ foreach ($officials as $official) {
                         type="button"
                         class="officials-carousel-arrow officials-carousel-next"
                         id="officialNext"
-                        aria-label="Lihat pengurus berikutnya"
+                        aria-label="<?= esc(public_t(
+                            'accessibility.carousel_next',
+                            'Lihat pengurus berikutnya'
+                        ), 'attr') ?>"
                     >
                         ›
                     </button>
@@ -391,7 +407,14 @@ foreach ($officials as $official) {
                             type="button"
                             class="<?= $index === 0 ? 'active' : '' ?>"
                             data-dot-index="<?= $index ?>"
-                            aria-label="Tampilkan pengurus ke-<?= $index + 1 ?>"
+                            aria-label="<?= esc(public_t(
+                                'accessibility.carousel_item',
+                                'Tampilkan pengurus ke-{number}',
+                                ['number' => $index + 1]
+                            ), 'attr') ?>"
+                            aria-pressed="<?= $index === 0
+                                ? 'true'
+                                : 'false' ?>"
                         ></button>
                     <?php endforeach; ?>
                 </div>
@@ -407,6 +430,8 @@ foreach ($officials as $official) {
                 <img
                     src="<?= esc(site_asset_url('site_logo', 'assets/img/logo-rw01.png'), 'attr') ?>"
                     alt=""
+                    loading="lazy"
+                    decoding="async"
                 >
             </div>
 
@@ -447,6 +472,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const cards = Array.from(
         carousel.querySelectorAll('.official-profile-card')
     );
+    const reduceMotion = window.matchMedia(
+        '(prefers-reduced-motion: reduce)'
+    ).matches;
+    const scrollBehavior = reduceMotion ? 'auto' : 'smooth';
 
     if (!cards.length) {
         return;
@@ -494,9 +523,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         dots.forEach(function (dot, index) {
-            dot.classList.toggle(
-                'active',
-                index === activeIndex
+            const isActive = index === activeIndex;
+
+            dot.classList.toggle('active', isActive);
+            dot.setAttribute(
+                'aria-pressed',
+                String(isActive)
             );
         });
 
@@ -521,21 +553,21 @@ document.addEventListener('DOMContentLoaded', function () {
             left:
                 target.offsetLeft
                 - ((carousel.clientWidth - target.offsetWidth) / 2),
-            behavior: 'smooth'
+            behavior: scrollBehavior
         });
     };
 
     prevButton?.addEventListener('click', function () {
         carousel.scrollBy({
             left: -getStep(),
-            behavior: 'smooth'
+            behavior: scrollBehavior
         });
     });
 
     nextButton?.addEventListener('click', function () {
         carousel.scrollBy({
             left: getStep(),
-            behavior: 'smooth'
+            behavior: scrollBehavior
         });
     });
 
@@ -556,7 +588,7 @@ document.addEventListener('DOMContentLoaded', function () {
             event.preventDefault();
             carousel.scrollBy({
                 left: -getStep(),
-                behavior: 'smooth'
+                behavior: scrollBehavior
             });
         }
 
@@ -564,7 +596,7 @@ document.addEventListener('DOMContentLoaded', function () {
             event.preventDefault();
             carousel.scrollBy({
                 left: getStep(),
-                behavior: 'smooth'
+                behavior: scrollBehavior
             });
         }
     });
