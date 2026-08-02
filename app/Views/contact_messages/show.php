@@ -190,6 +190,7 @@ $telephoneNumber = preg_replace(
             </dl>
         </div>
 
+        <?php if (auth_can('messages.manage')) : ?>
         <div class="message-status-card">
             <h3>Perbarui Status</h3>
 
@@ -232,6 +233,7 @@ $telephoneNumber = preg_replace(
                 </button>
             </form>
         </div>
+        <?php endif; ?>
 
     </aside>
 

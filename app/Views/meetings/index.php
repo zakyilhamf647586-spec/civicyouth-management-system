@@ -2,13 +2,25 @@
 
 <?= $this->section('content') ?>
 
+<?php
+$canCreateMeetings = auth_can('meetings.create');
+$canUpdateMeetings = auth_can('meetings.update');
+$canDeleteMeetings = auth_can('meetings.delete');
+$canViewAttendanceRecap = auth_can('attendances.recap');
+$hasMeetingRowActions = $canViewAttendanceRecap
+    || $canUpdateMeetings
+    || $canDeleteMeetings;
+?>
+
 <div class="page-header">
     <div>
         <h2>Agenda Rapat</h2>
         <p>Kelola jadwal, pembahasan, keputusan, dan catatan rapat organisasi.</p>
     </div>
 
-    <a href="<?= base_url('/meetings/create') ?>" class="btn btn-primary">+ Tambah Rapat</a>
+    <?php if ($canCreateMeetings) : ?>
+        <a href="<?= base_url('/meetings/create') ?>" class="btn btn-primary">+ Tambah Rapat</a>
+    <?php endif; ?>
 </div>
 
 <?php if (session()->getFlashdata('success')) : ?>
@@ -74,7 +86,9 @@
                 <th>Waktu</th>
                 <th>Tempat</th>
                 <th>Status</th>
-                <th width="250">Aksi</th>
+                <?php if ($hasMeetingRowActions) : ?>
+                    <th width="250">Aksi</th>
+                <?php endif; ?>
             </tr>
         </thead>
         <tbody>
@@ -110,26 +124,36 @@
                                 <span class="badge badge-danger">Dibatalkan</span>
                             <?php endif; ?>
                         </td>
-                        <td>
-                            <a href="<?= base_url('/attendances/recap/' . $meeting['id']) ?>" class="btn btn-primary">Rekap</a>
-                            <a href="<?= base_url('/meetings/edit/' . $meeting['id']) ?>" class="btn btn-warning">Edit</a>
-                            <form
-                                action="<?= base_url('/meetings/delete/' . $meeting['id']) ?>"
-                                method="post"
-                                class="inline-action-form"
-                                onsubmit="return confirm('Yakin ingin menghapus agenda rapat ini?')"
-                            >
-                                <?= csrf_field() ?>
-                                <button type="submit" class="btn btn-danger">
-                                    Hapus
-                                </button>
-                            </form>
-                        </td>
+                        <?php if ($hasMeetingRowActions) : ?>
+                            <td>
+                                <?php if ($canViewAttendanceRecap) : ?>
+                                    <a href="<?= base_url('/attendances/recap/' . $meeting['id']) ?>" class="btn btn-primary">Rekap</a>
+                                <?php endif; ?>
+
+                                <?php if ($canUpdateMeetings) : ?>
+                                    <a href="<?= base_url('/meetings/edit/' . $meeting['id']) ?>" class="btn btn-warning">Edit</a>
+                                <?php endif; ?>
+
+                                <?php if ($canDeleteMeetings) : ?>
+                                    <form
+                                        action="<?= base_url('/meetings/delete/' . $meeting['id']) ?>"
+                                        method="post"
+                                        class="inline-action-form"
+                                        onsubmit="return confirm('Yakin ingin menghapus agenda rapat ini?')"
+                                    >
+                                        <?= csrf_field() ?>
+                                        <button type="submit" class="btn btn-danger">
+                                            Hapus
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
+                            </td>
+                        <?php endif; ?>
                     </tr>
                 <?php endforeach; ?>
             <?php else : ?>
                 <tr>
-                    <td colspan="7" class="empty">Data rapat tidak ditemukan.</td>
+                    <td colspan="<?= $hasMeetingRowActions ? 7 : 6 ?>" class="empty">Data rapat tidak ditemukan.</td>
                 </tr>
             <?php endif; ?>
         </tbody>

@@ -24,29 +24,54 @@ class ReportController extends BaseController
 
     public function index()
     {
-        $totalIncome = $this->cashModel
-            ->selectSum('amount')
-            ->where('transaction_type', 'income')
-            ->first();
+        $canViewMemberReports = auth_can('reports.members');
+        $canViewCashReports = auth_can('reports.cash');
+        $canViewMeetingReports = auth_can('reports.meetings');
+        $canViewActivitySummary = auth_can('activities.view');
 
-        $totalExpense = $this->cashModel
-            ->selectSum('amount')
-            ->where('transaction_type', 'expense')
-            ->first();
+        $income = null;
+        $expense = null;
+        $balance = null;
 
-        $income  = $totalIncome['amount'] ?? 0;
-        $expense = $totalExpense['amount'] ?? 0;
-        $balance = $income - $expense;
+        if ($canViewCashReports) {
+            $totalIncome = $this->cashModel
+                ->selectSum('amount')
+                ->where('transaction_type', 'income')
+                ->first();
+
+            $totalExpense = $this->cashModel
+                ->selectSum('amount')
+                ->where('transaction_type', 'expense')
+                ->first();
+
+            $income = $totalIncome['amount'] ?? 0;
+            $expense = $totalExpense['amount'] ?? 0;
+            $balance = $income - $expense;
+        }
 
         $data = [
-            'title'            => 'Laporan',
-            'total_members'    => $this->memberModel->countAllResults(),
-            'active_members'   => $this->memberModel->where('membership_status', 'active')->countAllResults(),
-            'total_meetings'   => $this->meetingModel->countAllResults(),
-            'total_activities' => $this->activityModel->countAllResults(),
-            'total_income'     => $income,
-            'total_expense'    => $expense,
-            'balance'          => $balance,
+            'title' => 'Laporan',
+            'can_view_member_reports' => $canViewMemberReports,
+            'can_view_cash_reports' => $canViewCashReports,
+            'can_view_meeting_reports' => $canViewMeetingReports,
+            'can_view_activity_summary' => $canViewActivitySummary,
+            'total_members' => $canViewMemberReports
+                ? $this->memberModel->countAllResults()
+                : null,
+            'active_members' => $canViewMemberReports
+                ? $this->memberModel
+                    ->where('membership_status', 'active')
+                    ->countAllResults()
+                : null,
+            'total_meetings' => $canViewMeetingReports
+                ? $this->meetingModel->countAllResults()
+                : null,
+            'total_activities' => $canViewActivitySummary
+                ? $this->activityModel->countAllResults()
+                : null,
+            'total_income' => $income,
+            'total_expense' => $expense,
+            'balance' => $balance,
         ];
 
         return view('reports/index', $data);

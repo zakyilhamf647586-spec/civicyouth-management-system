@@ -2,6 +2,24 @@
 
 <?= $this->section('content') ?>
 
+<?php
+$canViewMemberReports = isset($can_view_member_reports)
+    ? !empty($can_view_member_reports)
+    : auth_can('reports.members');
+$canViewCashReports = isset($can_view_cash_reports)
+    ? !empty($can_view_cash_reports)
+    : auth_can('reports.cash');
+$canViewMeetingReports = isset($can_view_meeting_reports)
+    ? !empty($can_view_meeting_reports)
+    : auth_can('reports.meetings');
+$canViewActivitySummary = isset($can_view_activity_summary)
+    ? !empty($can_view_activity_summary)
+    : auth_can('activities.view');
+$hasSpecificReports = $canViewMemberReports
+    || $canViewCashReports
+    || $canViewMeetingReports;
+?>
+
 <div class="page-header">
     <div>
         <h2>Laporan</h2>
@@ -10,54 +28,74 @@
 </div>
 
 <div class="cards">
-    <div class="card">
-        <span>Total Anggota</span>
-        <h3><?= esc($total_members) ?></h3>
-    </div>
+    <?php if ($canViewMemberReports) : ?>
+        <div class="card">
+            <span>Total Anggota</span>
+            <h3><?= esc($total_members) ?></h3>
+        </div>
 
-    <div class="card">
-        <span>Anggota Aktif</span>
-        <h3><?= esc($active_members) ?></h3>
-    </div>
+        <div class="card">
+            <span>Anggota Aktif</span>
+            <h3><?= esc($active_members) ?></h3>
+        </div>
+    <?php endif; ?>
 
-    <div class="card">
-        <span>Total Rapat</span>
-        <h3><?= esc($total_meetings) ?></h3>
-    </div>
+    <?php if ($canViewMeetingReports) : ?>
+        <div class="card">
+            <span>Total Rapat</span>
+            <h3><?= esc($total_meetings) ?></h3>
+        </div>
+    <?php endif; ?>
 
-    <div class="card">
-        <span>Total Kegiatan</span>
-        <h3><?= esc($total_activities) ?></h3>
-    </div>
+    <?php if ($canViewActivitySummary) : ?>
+        <div class="card">
+            <span>Total Kegiatan</span>
+            <h3><?= esc($total_activities) ?></h3>
+        </div>
+    <?php endif; ?>
 
-    <div class="card">
-        <span>Total Pemasukan</span>
-        <h3>Rp<?= number_format($total_income, 0, ',', '.') ?></h3>
-    </div>
+    <?php if ($canViewCashReports) : ?>
+        <div class="card">
+            <span>Total Pemasukan</span>
+            <h3>Rp<?= number_format((float) $total_income, 0, ',', '.') ?></h3>
+        </div>
 
-    <div class="card">
-        <span>Saldo Kas</span>
-        <h3>Rp<?= number_format($balance, 0, ',', '.') ?></h3>
-    </div>
+        <div class="card">
+            <span>Saldo Kas</span>
+            <h3>Rp<?= number_format((float) $balance, 0, ',', '.') ?></h3>
+        </div>
+    <?php endif; ?>
 </div>
 
 <div class="section">
     <h3>Daftar Laporan</h3>
-    <p>Pilih jenis laporan yang ingin dibuka dan dicetak.</p>
+    <p>Pilih jenis laporan yang tersedia sesuai kewenangan akun Anda.</p>
 
-    <div class="menu-list">
-        <a href="<?= base_url('/reports/members') ?>" class="menu-item">
-            Laporan Data Anggota
-        </a>
+    <?php if ($hasSpecificReports) : ?>
+        <div class="menu-list">
+            <?php if ($canViewMemberReports) : ?>
+                <a href="<?= base_url('/reports/members') ?>" class="menu-item">
+                    Laporan Data Anggota
+                </a>
+            <?php endif; ?>
 
-        <a href="<?= base_url('/reports/cash') ?>" class="menu-item">
-            Laporan Kas Organisasi
-        </a>
+            <?php if ($canViewCashReports) : ?>
+                <a href="<?= base_url('/reports/cash') ?>" class="menu-item">
+                    Laporan Kas Organisasi
+                </a>
+            <?php endif; ?>
 
-        <a href="<?= base_url('/reports/meetings') ?>" class="menu-item">
-            Laporan Agenda Rapat
-        </a>
-    </div>
+            <?php if ($canViewMeetingReports) : ?>
+                <a href="<?= base_url('/reports/meetings') ?>" class="menu-item">
+                    Laporan Agenda Rapat
+                </a>
+            <?php endif; ?>
+        </div>
+    <?php else : ?>
+        <div class="empty">
+            Tidak ada laporan rinci yang tersedia untuk peran akun ini.
+        </div>
+    <?php endif; ?>
 </div>
 
 <?= $this->endSection() ?>

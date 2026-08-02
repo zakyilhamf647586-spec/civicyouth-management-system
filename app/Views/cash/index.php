@@ -2,16 +2,31 @@
 
 <?= $this->section('content') ?>
 
+<?php
+$canExportCash = auth_can('cash.export');
+$canCreateCash = auth_can('cash.create');
+$canUpdateCash = auth_can('cash.update');
+$canDeleteCash = auth_can('cash.delete');
+$hasCashRowActions = $canUpdateCash || $canDeleteCash;
+?>
+
 <div class="page-header">
     <div>
         <h2>Kas Organisasi</h2>
         <p>Kelola pemasukan, pengeluaran, dan saldo kas Karang Taruna RW 01.</p>
     </div>
 
-    <div>
-        <a href="<?= base_url('/exports/cash') ?>" class="btn btn-secondary">Export Excel</a>
-        <a href="<?= base_url('/cash/create') ?>" class="btn btn-primary">+ Tambah Transaksi</a>
-    </div>
+    <?php if ($canExportCash || $canCreateCash) : ?>
+        <div>
+            <?php if ($canExportCash) : ?>
+                <a href="<?= base_url('/exports/cash') ?>" class="btn btn-secondary">Export Excel</a>
+            <?php endif; ?>
+
+            <?php if ($canCreateCash) : ?>
+                <a href="<?= base_url('/cash/create') ?>" class="btn btn-primary">+ Tambah Transaksi</a>
+            <?php endif; ?>
+        </div>
+    <?php endif; ?>
 </div>
 
 <div class="cards">
@@ -96,7 +111,9 @@
                 <th>Nominal</th>
                 <th>Keterangan</th>
                 <th>Dicatat Oleh</th>
-                <th width="170">Aksi</th>
+                <?php if ($hasCashRowActions) : ?>
+                    <th width="170">Aksi</th>
+                <?php endif; ?>
             </tr>
         </thead>
         <tbody>
@@ -124,25 +141,32 @@
                         </td>
                         <td><?= esc($transaction['description'] ?? '-') ?></td>
                         <td><?= esc($transaction['created_by'] ?? '-') ?></td>
-                        <td>
-                            <a href="<?= base_url('/cash/edit/' . $transaction['id']) ?>" class="btn btn-warning">Edit</a>
-                            <form
-                                action="<?= base_url('/cash/delete/' . $transaction['id']) ?>"
-                                method="post"
-                                class="inline-action-form"
-                                onsubmit="return confirm('Yakin ingin menghapus transaksi ini?')"
-                            >
-                                <?= csrf_field() ?>
-                                <button type="submit" class="btn btn-danger">
-                                    Hapus
-                                </button>
-                            </form>
-                        </td>
+                        <?php if ($hasCashRowActions) : ?>
+                            <td>
+                                <?php if ($canUpdateCash) : ?>
+                                    <a href="<?= base_url('/cash/edit/' . $transaction['id']) ?>" class="btn btn-warning">Edit</a>
+                                <?php endif; ?>
+
+                                <?php if ($canDeleteCash) : ?>
+                                    <form
+                                        action="<?= base_url('/cash/delete/' . $transaction['id']) ?>"
+                                        method="post"
+                                        class="inline-action-form"
+                                        onsubmit="return confirm('Yakin ingin menghapus transaksi ini?')"
+                                    >
+                                        <?= csrf_field() ?>
+                                        <button type="submit" class="btn btn-danger">
+                                            Hapus
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
+                            </td>
+                        <?php endif; ?>
                     </tr>
                 <?php endforeach; ?>
             <?php else : ?>
                 <tr>
-                    <td colspan="8" class="empty">Data transaksi kas tidak ditemukan.</td>
+                    <td colspan="<?= $hasCashRowActions ? 8 : 7 ?>" class="empty">Data transaksi kas tidak ditemukan.</td>
                 </tr>
             <?php endif; ?>
         </tbody>

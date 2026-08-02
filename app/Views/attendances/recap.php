@@ -2,6 +2,13 @@
 
 <?= $this->section('content') ?>
 
+<?php
+$canBulkAttendances = auth_can('attendances.bulk');
+$canCreateAttendances = auth_can('attendances.create');
+$canUpdateAttendances = auth_can('attendances.update');
+$hasAttendanceRecapActions = $canCreateAttendances || $canUpdateAttendances;
+?>
+
 <div class="page-header">
     <div>
         <h2>Rekap Absensi Rapat</h2>
@@ -9,9 +16,11 @@
     </div>
 
     <div>
-        <a href="<?= base_url('/attendances/bulk/' . $meeting['id']) ?>" class="btn btn-primary">
-            Input Absensi Massal
-        </a>
+        <?php if ($canBulkAttendances) : ?>
+            <a href="<?= base_url('/attendances/bulk/' . $meeting['id']) ?>" class="btn btn-primary">
+                Input Absensi Massal
+            </a>
+        <?php endif; ?>
 
         <a href="<?= base_url('/attendances/recap/' . $meeting['id'] . '/print') ?>" class="btn btn-secondary" target="_blank">
             Cetak / Save PDF
@@ -96,7 +105,9 @@
                 <th>Jabatan/Posisi</th>
                 <th>Status Absensi</th>
                 <th>Catatan</th>
-                <th width="180">Aksi</th>
+                <?php if ($hasAttendanceRecapActions) : ?>
+                    <th width="180">Aksi</th>
+                <?php endif; ?>
             </tr>
         </thead>
         <tbody>
@@ -119,18 +130,22 @@
                             <?php endif; ?>
                         </td>
                         <td><?= esc($member['note'] ?? '-') ?></td>
-                        <td>
-                            <?php if (!empty($member['attendance_id'])) : ?>
-                                <a href="<?= base_url('/attendances/edit/' . $member['attendance_id']) ?>" class="btn btn-warning">Edit</a>
-                            <?php else : ?>
-                                <a href="<?= base_url('/attendances/create?meeting_id=' . $meeting['id'] . '&member_id=' . $member['member_id']) ?>" class="btn btn-primary">Catat</a>
-                            <?php endif; ?>
-                        </td>
+                        <?php if ($hasAttendanceRecapActions) : ?>
+                            <td>
+                                <?php if (!empty($member['attendance_id'])) : ?>
+                                    <?php if ($canUpdateAttendances) : ?>
+                                        <a href="<?= base_url('/attendances/edit/' . $member['attendance_id']) ?>" class="btn btn-warning">Edit</a>
+                                    <?php endif; ?>
+                                <?php elseif ($canCreateAttendances) : ?>
+                                    <a href="<?= base_url('/attendances/create?meeting_id=' . $meeting['id'] . '&member_id=' . $member['member_id']) ?>" class="btn btn-primary">Catat</a>
+                                <?php endif; ?>
+                            </td>
+                        <?php endif; ?>
                     </tr>
                 <?php endforeach; ?>
             <?php else : ?>
                 <tr>
-                    <td colspan="7" class="empty">Belum ada anggota aktif.</td>
+                    <td colspan="<?= $hasAttendanceRecapActions ? 7 : 6 ?>" class="empty">Belum ada anggota aktif.</td>
                 </tr>
             <?php endif; ?>
         </tbody>

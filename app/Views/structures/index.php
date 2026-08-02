@@ -2,13 +2,22 @@
 
 <?= $this->section('content') ?>
 
+<?php
+$canCreateStructures = auth_can('structures.create');
+$canUpdateStructures = auth_can('structures.update');
+$canDeleteStructures = auth_can('structures.delete');
+$hasStructureRowActions = $canUpdateStructures || $canDeleteStructures;
+?>
+
 <div class="page-header">
     <div>
         <h2>Struktur Pengurus</h2>
         <p>Kelola susunan kepengurusan Karang Taruna RW 01.</p>
     </div>
 
-    <a href="<?= base_url('/structures/create') ?>" class="btn btn-primary">+ Tambah Struktur</a>
+    <?php if ($canCreateStructures) : ?>
+        <a href="<?= base_url('/structures/create') ?>" class="btn btn-primary">+ Tambah Struktur</a>
+    <?php endif; ?>
 </div>
 
 <?php if (session()->getFlashdata('success')) : ?>
@@ -35,7 +44,9 @@
                 <th>RT</th>
                 <th>Periode</th>
                 <th>Status</th>
-                <th width="170">Aksi</th>
+                <?php if ($hasStructureRowActions) : ?>
+                    <th width="170">Aksi</th>
+                <?php endif; ?>
             </tr>
         </thead>
         <tbody>
@@ -68,25 +79,32 @@
                                 <span class="badge badge-danger">Tidak Aktif</span>
                             <?php endif; ?>
                         </td>
-                        <td>
-                            <a href="<?= base_url('/structures/edit/' . $structure['id']) ?>" class="btn btn-warning">Edit</a>
-                            <form
-                                action="<?= base_url('/structures/delete/' . $structure['id']) ?>"
-                                method="post"
-                                class="inline-action-form"
-                                onsubmit="return confirm('Yakin ingin menghapus data struktur ini?')"
-                            >
-                                <?= csrf_field() ?>
-                                <button type="submit" class="btn btn-danger">
-                                    Hapus
-                                </button>
-                            </form>
-                        </td>
+                        <?php if ($hasStructureRowActions) : ?>
+                            <td>
+                                <?php if ($canUpdateStructures) : ?>
+                                    <a href="<?= base_url('/structures/edit/' . $structure['id']) ?>" class="btn btn-warning">Edit</a>
+                                <?php endif; ?>
+
+                                <?php if ($canDeleteStructures) : ?>
+                                    <form
+                                        action="<?= base_url('/structures/delete/' . $structure['id']) ?>"
+                                        method="post"
+                                        class="inline-action-form"
+                                        onsubmit="return confirm('Yakin ingin menghapus data struktur ini?')"
+                                    >
+                                        <?= csrf_field() ?>
+                                        <button type="submit" class="btn btn-danger">
+                                            Hapus
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
+                            </td>
+                        <?php endif; ?>
                     </tr>
                 <?php endforeach; ?>
             <?php else : ?>
                 <tr>
-                    <td colspan="8" class="empty">Belum ada data struktur pengurus.</td>
+                    <td colspan="<?= $hasStructureRowActions ? 9 : 8 ?>" class="empty">Belum ada data struktur pengurus.</td>
                 </tr>
             <?php endif; ?>
         </tbody>

@@ -2,13 +2,22 @@
 
 <?= $this->section('content') ?>
 
+<?php
+$canCreateAttendances = auth_can('attendances.create');
+$canUpdateAttendances = auth_can('attendances.update');
+$canDeleteAttendances = auth_can('attendances.delete');
+$hasAttendanceRowActions = $canUpdateAttendances || $canDeleteAttendances;
+?>
+
 <div class="page-header">
     <div>
         <h2>Absensi Rapat</h2>
         <p>Kelola data kehadiran anggota dalam setiap agenda rapat.</p>
     </div>
 
-    <a href="<?= base_url('/attendances/create') ?>" class="btn btn-primary">+ Tambah Absensi</a>
+    <?php if ($canCreateAttendances) : ?>
+        <a href="<?= base_url('/attendances/create') ?>" class="btn btn-primary">+ Tambah Absensi</a>
+    <?php endif; ?>
 </div>
 
 <?php if (session()->getFlashdata('success')) : ?>
@@ -34,7 +43,9 @@
                 <th>RT</th>
                 <th>Status Kehadiran</th>
                 <th>Catatan</th>
-                <th width="170">Aksi</th>
+                <?php if ($hasAttendanceRowActions) : ?>
+                    <th width="170">Aksi</th>
+                <?php endif; ?>
             </tr>
         </thead>
         <tbody>
@@ -56,25 +67,32 @@
                             <?php endif; ?>
                         </td>
                         <td><?= esc($attendance['note'] ?? '-') ?></td>
-                        <td>
-                            <a href="<?= base_url('/attendances/edit/' . $attendance['id']) ?>" class="btn btn-warning">Edit</a>
-                            <form
-                                action="<?= base_url('/attendances/delete/' . $attendance['id']) ?>"
-                                method="post"
-                                class="inline-action-form"
-                                onsubmit="return confirm('Yakin ingin menghapus data absensi ini?')"
-                            >
-                                <?= csrf_field() ?>
-                                <button type="submit" class="btn btn-danger">
-                                    Hapus
-                                </button>
-                            </form>
-                        </td>
+                        <?php if ($hasAttendanceRowActions) : ?>
+                            <td>
+                                <?php if ($canUpdateAttendances) : ?>
+                                    <a href="<?= base_url('/attendances/edit/' . $attendance['id']) ?>" class="btn btn-warning">Edit</a>
+                                <?php endif; ?>
+
+                                <?php if ($canDeleteAttendances) : ?>
+                                    <form
+                                        action="<?= base_url('/attendances/delete/' . $attendance['id']) ?>"
+                                        method="post"
+                                        class="inline-action-form"
+                                        onsubmit="return confirm('Yakin ingin menghapus data absensi ini?')"
+                                    >
+                                        <?= csrf_field() ?>
+                                        <button type="submit" class="btn btn-danger">
+                                            Hapus
+                                        </button>
+                                    </form>
+                                <?php endif; ?>
+                            </td>
+                        <?php endif; ?>
                     </tr>
                 <?php endforeach; ?>
             <?php else : ?>
                 <tr>
-                    <td colspan="8" class="empty">Belum ada data absensi rapat.</td>
+                    <td colspan="<?= $hasAttendanceRowActions ? 8 : 7 ?>" class="empty">Belum ada data absensi rapat.</td>
                 </tr>
             <?php endif; ?>
         </tbody>

@@ -50,14 +50,16 @@ $scoreClass = $score >= 80
             Buka Sitemap ↗
         </a>
 
-        <a
-            href="<?= base_url(
-                '/settings/website'
-            ) ?>"
-            class="btn btn-primary"
-        >
-            Kelola SEO Default
-        </a>
+        <?php if (auth_can('settings.website.manage')) : ?>
+            <a
+                href="<?= base_url(
+                    '/settings/website'
+                ) ?>"
+                class="btn btn-primary"
+            >
+                Kelola SEO Default
+            </a>
+        <?php endif; ?>
     </div>
 </div>
 
@@ -274,33 +276,41 @@ $scoreClass = $score >= 80
 </section>
 
 <section class="seo-action-grid">
-    <a href="<?= base_url('/website/pages') ?>">
-        <strong>Metadata Halaman</strong>
-        <span>
-            Kelola judul dan deskripsi Beranda, Profil, dan Kontak.
-        </span>
-    </a>
+    <?php if (auth_can('website.pages.view')) : ?>
+        <a href="<?= base_url('/website/pages') ?>">
+            <strong>Metadata Halaman</strong>
+            <span>
+                Kelola judul dan deskripsi Beranda, Profil, dan Kontak.
+            </span>
+        </a>
+    <?php endif; ?>
 
-    <a href="<?= base_url('/programs') ?>">
-        <strong>Kualitas Program</strong>
-        <span>
-            Lengkapi deskripsi singkat dan cover setiap program.
-        </span>
-    </a>
+    <?php if (auth_can('programs.view')) : ?>
+        <a href="<?= base_url('/programs') ?>">
+            <strong>Kualitas Program</strong>
+            <span>
+                Lengkapi deskripsi singkat dan cover setiap program.
+            </span>
+        </a>
+    <?php endif; ?>
 
-    <a href="<?= base_url('/activities/quality') ?>">
-        <strong>Kualitas Kegiatan</strong>
-        <span>
-            Periksa ringkasan, gambar, dan kesiapan publikasi.
-        </span>
-    </a>
+    <?php if (auth_can('activities.view')) : ?>
+        <a href="<?= base_url('/activities/quality') ?>">
+            <strong>Kualitas Kegiatan</strong>
+            <span>
+                Periksa ringkasan, gambar, dan kesiapan publikasi.
+            </span>
+        </a>
+    <?php endif; ?>
 
-    <a href="<?= base_url('/settings/website') ?>">
-        <strong>SEO Default</strong>
-        <span>
-            Atur OG image, kode verifikasi, dan metadata global.
-        </span>
-    </a>
+    <?php if (auth_can('settings.website.manage')) : ?>
+        <a href="<?= base_url('/settings/website') ?>">
+            <strong>SEO Default</strong>
+            <span>
+                Atur OG image, kode verifikasi, dan metadata global.
+            </span>
+        </a>
+    <?php endif; ?>
 </section>
 
 </div>

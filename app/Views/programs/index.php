@@ -2,15 +2,27 @@
 
 <?= $this->section('content') ?>
 
+<?php
+$canCreatePrograms = auth_can('programs.create');
+$canUpdatePrograms = auth_can('programs.update');
+$canPublishPrograms = auth_can('programs.publish');
+$canArchivePrograms = auth_can('programs.archive');
+$hasProgramRowActions = $canUpdatePrograms
+    || $canPublishPrograms
+    || $canArchivePrograms;
+?>
+
 <div class="page-header">
     <div>
         <h2>Program GARDA 01</h2>
         <p>Kelola pilar, urutan, dan status publikasi program.</p>
     </div>
 
-    <a href="<?= base_url('/programs/create') ?>" class="btn btn-primary">
-        + Tambah Program
-    </a>
+    <?php if ($canCreatePrograms) : ?>
+        <a href="<?= base_url('/programs/create') ?>" class="btn btn-primary">
+            + Tambah Program
+        </a>
+    <?php endif; ?>
 </div>
 
 <?php if (session()->getFlashdata('success')) : ?>
@@ -97,7 +109,9 @@
                     <th>Kategori</th>
                     <th>Status</th>
                     <th>Diperbarui</th>
-                    <th>Aksi</th>
+                    <?php if ($hasProgramRowActions) : ?>
+                        <th>Aksi</th>
+                    <?php endif; ?>
                 </tr>
             </thead>
 
@@ -173,64 +187,74 @@
                                     : '-' ?>
                             </td>
 
-                            <td>
-                                <div class="table-actions">
-                                    <a
-                                        href="<?= base_url(
-                                            '/programs/edit/' . $program['id']
-                                        ) ?>"
-                                        class="btn btn-warning"
-                                    >
-                                        Edit
-                                    </a>
-
-                                    <?php if ($program['status'] !== 'published') : ?>
-                                        <form
-                                            action="<?= base_url(
-                                                '/programs/publish/'
-                                                . $program['id']
-                                            ) ?>"
-                                            method="post"
-                                        >
-                                            <?= csrf_field() ?>
-
-                                            <button
-                                                type="submit"
-                                                class="btn btn-success"
+                            <?php if ($hasProgramRowActions) : ?>
+                                <td>
+                                    <div class="table-actions">
+                                        <?php if ($canUpdatePrograms) : ?>
+                                            <a
+                                                href="<?= base_url(
+                                                    '/programs/edit/' . $program['id']
+                                                ) ?>"
+                                                class="btn btn-warning"
                                             >
-                                                Publikasikan
-                                            </button>
-                                        </form>
-                                    <?php endif; ?>
+                                                Edit
+                                            </a>
+                                        <?php endif; ?>
 
-                                    <?php if ($program['status'] !== 'archived') : ?>
-                                        <form
-                                            action="<?= base_url(
-                                                '/programs/archive/'
-                                                . $program['id']
-                                            ) ?>"
-                                            method="post"
-                                            onsubmit="return confirm(
-                                                'Arsipkan program ini?'
-                                            )"
-                                        >
-                                            <?= csrf_field() ?>
-
-                                            <button
-                                                type="submit"
-                                                class="btn btn-danger"
+                                        <?php if (
+                                            $canPublishPrograms
+                                            && $program['status'] !== 'published'
+                                        ) : ?>
+                                            <form
+                                                action="<?= base_url(
+                                                    '/programs/publish/'
+                                                    . $program['id']
+                                                ) ?>"
+                                                method="post"
                                             >
-                                                Arsipkan
-                                            </button>
-                                        </form>
-                                    <?php endif; ?>
-                                </div>
-                            </td>
+                                                <?= csrf_field() ?>
+
+                                                <button
+                                                    type="submit"
+                                                    class="btn btn-success"
+                                                >
+                                                    Publikasikan
+                                                </button>
+                                            </form>
+                                        <?php endif; ?>
+
+                                        <?php if (
+                                            $canArchivePrograms
+                                            && $program['status'] !== 'archived'
+                                        ) : ?>
+                                            <form
+                                                action="<?= base_url(
+                                                    '/programs/archive/'
+                                                    . $program['id']
+                                                ) ?>"
+                                                method="post"
+                                                onsubmit="return confirm(
+                                                    'Arsipkan program ini?'
+                                                )"
+                                            >
+                                                <?= csrf_field() ?>
+
+                                                <button
+                                                    type="submit"
+                                                    class="btn btn-danger"
+                                                >
+                                                    Arsipkan
+                                                </button>
+                                            </form>
+                                        <?php endif; ?>
+                                    </div>
+                                </td>
+                            <?php endif; ?>
                         </tr>
                     <?php endforeach; ?>
                 <?php else : ?>
                     <tr>
-                        <td colspan="6" class="empty-text">
+                        <td colspan="<?= $hasProgramRowActions ? 6 : 5 ?>" class="empty-text">
                             Data program tidak ditemukan.
                         </td>
                     </tr>

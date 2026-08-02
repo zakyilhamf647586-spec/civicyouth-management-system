@@ -2,13 +2,20 @@
 
 <?= $this->section('content') ?>
 
+<?php
+$canCreateContent = auth_can('content_studio.create');
+$canDeleteContent = auth_can('content_studio.delete');
+?>
+
 <div class="page-header">
     <div>
         <h2>AI Content Studio</h2>
         <p>Buat draft caption, hashtag, dan konten media sosial berdasarkan gambar kegiatan.</p>
     </div>
 
-    <a href="<?= base_url('/content-studio/create') ?>" class="btn btn-primary">+ Buat Konten</a>
+    <?php if ($canCreateContent) : ?>
+        <a href="<?= base_url('/content-studio/create') ?>" class="btn btn-primary">+ Buat Konten</a>
+    <?php endif; ?>
 </div>
 
 <?php if (session()->getFlashdata('success')) : ?>
@@ -65,17 +72,19 @@
                         <td><?= esc($post['created_at'] ?? '-') ?></td>
                         <td>
                             <a href="<?= base_url('/content-studio/show/' . $post['id']) ?>" class="btn btn-primary">Buka</a>
-                            <form
-                                action="<?= base_url('/content-studio/delete/' . $post['id']) ?>"
-                                method="post"
-                                class="inline-action-form"
-                                onsubmit="return confirm('Yakin ingin menghapus konten ini?')"
-                            >
-                                <?= csrf_field() ?>
-                                <button type="submit" class="btn btn-danger">
-                                    Hapus
-                                </button>
-                            </form>
+                            <?php if ($canDeleteContent) : ?>
+                                <form
+                                    action="<?= base_url('/content-studio/delete/' . $post['id']) ?>"
+                                    method="post"
+                                    class="inline-action-form"
+                                    onsubmit="return confirm('Yakin ingin menghapus konten ini?')"
+                                >
+                                    <?= csrf_field() ?>
+                                    <button type="submit" class="btn btn-danger">
+                                        Hapus
+                                    </button>
+                                </form>
+                            <?php endif; ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>
