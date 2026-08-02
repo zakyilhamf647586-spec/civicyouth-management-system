@@ -29,6 +29,19 @@ $roleClasses = [
     'bendahara' => 'role-bendahara',
     'pengurus' => 'role-pengurus',
 ];
+
+$defaultAdminActive = !empty(
+    $statistics['default_admin_active']
+);
+$personalActiveAdmins = (int) (
+    $statistics['personal_active_admins'] ?? 0
+);
+$adminTransitionReady = $defaultAdminActive
+    && $personalActiveAdmins > 0;
+$adminTransitionComplete = !$defaultAdminActive
+    && $personalActiveAdmins > 0;
+$adminTransitionCritical = !$defaultAdminActive
+    && $personalActiveAdmins === 0;
 ?>
 
 <div class="user-management-page">
@@ -78,6 +91,75 @@ $roleClasses = [
             <?php endforeach; ?>
         </div>
     <?php endif; ?>
+
+    <section class="user-admin-transition <?= $adminTransitionCritical
+        ? 'is-critical'
+        : ($adminTransitionComplete
+            ? 'is-complete'
+            : ($adminTransitionReady ? 'is-ready' : 'is-pending')) ?>">
+        <div class="user-admin-transition-copy">
+            <span>Transisi Admin</span>
+
+            <?php if ($adminTransitionCritical) : ?>
+                <h3>Tidak ada Admin personal aktif</h3>
+                <p>
+                    Aktifkan atau buat satu akun Admin personal sekarang.
+                    Kondisi ini harus diselesaikan sebelum perubahan akses
+                    lain dilakukan.
+                </p>
+            <?php elseif ($adminTransitionComplete) : ?>
+                <h3>Akun demo sudah tidak aktif</h3>
+                <p>
+                    Akses penuh kini ditangani oleh akun Admin personal.
+                    Pengaman sistem tetap mencegah Admin aktif terakhir
+                    dinonaktifkan atau diturunkan perannya.
+                </p>
+            <?php elseif ($adminTransitionReady) : ?>
+                <h3>Admin personal tersedia—selesaikan verifikasi</h3>
+                <p>
+                    Uji login akun Admin personal pada jendela privat,
+                    buat backup terverifikasi, lalu nonaktifkan
+                    <strong>admin@civicyouth.local</strong>.
+                </p>
+            <?php else : ?>
+                <h3>Buat Admin personal sebelum melepas akun demo</h3>
+                <p>
+                    Jangan nonaktifkan akun demo terlebih dahulu. Sistem
+                    akan menolak tindakan itu sampai minimal satu Admin
+                    personal aktif tersedia.
+                </p>
+            <?php endif; ?>
+        </div>
+
+        <ol aria-label="Tahapan transisi akun Admin">
+            <li class="<?= $personalActiveAdmins > 0 ? 'is-done' : 'is-current' ?>">
+                <b>01</b>
+                <span>Buat Admin personal</span>
+            </li>
+            <li class="<?= $adminTransitionComplete
+                ? 'is-done'
+                : ($adminTransitionReady ? 'is-current' : '') ?>">
+                <b>02</b>
+                <span>Uji login & buat backup</span>
+            </li>
+            <li class="<?= $adminTransitionComplete ? 'is-done' : '' ?>">
+                <b>03</b>
+                <span>Nonaktifkan akun demo</span>
+            </li>
+        </ol>
+
+        <?php if (
+            $personalActiveAdmins === 0
+            && auth_can('users.create')
+        ) : ?>
+            <a
+                href="<?= base_url('/users/create') ?>"
+                class="btn btn-primary"
+            >
+                + Buat Admin Personal
+            </a>
+        <?php endif; ?>
+    </section>
 
     <section class="user-account-summary-grid">
         <article>
@@ -217,9 +299,18 @@ $roleClasses = [
                                 === (int) $currentUserId;
 
                             $status = $user['status'] ?? 'inactive';
+                            $isDefaultAdmin = mb_strtolower(
+                                trim((string) ($user['email'] ?? ''))
+                            ) === 'admin@civicyouth.local';
+                            $isProtectedLastAdmin =
+                                $roleKey === 'admin'
+                                && $status === 'active'
+                                && (int) ($statistics['active_admins'] ?? 0) <= 1;
                             ?>
 
-                            <tr>
+                            <tr class="<?= $isDefaultAdmin
+                                ? 'is-default-admin-row'
+                                : '' ?>">
                                 <td><?= $number++ ?></td>
 
                                 <td>
@@ -244,6 +335,12 @@ $roleClasses = [
                                             <?php if ($isCurrent) : ?>
                                                 <small class="current-account">
                                                     Akun Anda
+                                                </small>
+                                            <?php endif; ?>
+
+                                            <?php if ($isDefaultAdmin) : ?>
+                                                <small class="default-admin-account">
+                                                    Akun demo bawaan
                                                 </small>
                                             <?php endif; ?>
 
@@ -328,6 +425,7 @@ $roleClasses = [
                                     <?php if (
                                         auth_can('users.status')
                                         && !$isCurrent
+                                        && !$isProtectedLastAdmin
                                     ) : ?>
                                         <form
                                             action="<?= base_url(
@@ -360,6 +458,12 @@ $roleClasses = [
                                                     : 'Aktifkan' ?>
                                             </button>
                                         </form>
+                                    <?php endif; ?>
+
+                                    <?php if ($isProtectedLastAdmin) : ?>
+                                        <span class="badge badge-secondary">
+                                            Admin terakhir dilindungi
+                                        </span>
                                     <?php endif; ?>
 
                                     <?php if (

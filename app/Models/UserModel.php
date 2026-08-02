@@ -93,6 +93,7 @@ class UserModel extends Model
             ->getRowArray();
 
         $activeAdmins = 0;
+        $defaultAdminActive = false;
 
         if ($adminRole) {
             $activeAdmins = $this->db
@@ -100,6 +101,13 @@ class UserModel extends Model
                 ->where('role_id', (int) $adminRole['id'])
                 ->where('status', 'active')
                 ->countAllResults();
+
+            $defaultAdminActive = $this->db
+                ->table($this->table)
+                ->where('role_id', (int) $adminRole['id'])
+                ->where('status', 'active')
+                ->where('email', 'admin@civicyouth.local')
+                ->countAllResults() > 0;
         }
 
         return [
@@ -107,6 +115,11 @@ class UserModel extends Model
             'active' => (int) ($summary['active'] ?? 0),
             'inactive' => (int) ($summary['inactive'] ?? 0),
             'active_admins' => $activeAdmins,
+            'default_admin_active' => $defaultAdminActive,
+            'personal_active_admins' => max(
+                0,
+                $activeAdmins - ($defaultAdminActive ? 1 : 0)
+            ),
         ];
     }
 

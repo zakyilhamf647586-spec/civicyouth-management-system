@@ -174,6 +174,10 @@ Assert-ContentMatch `
     $PublicHome `
     'public-preferences\.css' `
     'Beranda memuat kontrol bahasa dan tema'
+Assert-ContentNotMatch `
+    $PublicHome `
+    '(?:href|action)="[^"]*/index\.php(?:/|\?|\#|\")' `
+    'Beranda menghasilkan URL internal tanpa index.php'
 
 $Login = Get-Page '/login'
 Assert-Header $Login 'X-Robots-Tag' 'noindex' 'Login noindex header'

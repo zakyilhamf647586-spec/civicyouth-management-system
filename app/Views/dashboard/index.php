@@ -108,6 +108,30 @@ $formatRelativeTime = static function (
 
     return $formatDate($date, true);
 };
+
+$dashboardAccess = array_replace([
+    'members' => false,
+    'cash' => false,
+    'meetings' => false,
+    'activities' => false,
+    'programs' => false,
+    'messages' => false,
+], $dashboardAccess ?? []);
+
+$hasSummaryAccess = auth_can_any([
+    'members.view',
+    'cash.view',
+    'meetings.view',
+    'activities.view',
+    'messages.view',
+]);
+$hasWebsiteContentAccess = !empty($dashboardAccess['programs'])
+    || !empty($dashboardAccess['activities'])
+    || !empty($dashboardAccess['messages']);
+$hasRecentDataAccess = !empty($dashboardAccess['activities'])
+    || !empty($dashboardAccess['meetings'])
+    || !empty($dashboardAccess['messages'])
+    || !empty($dashboardAccess['cash']);
 ?>
 
 <div class="portal-dashboard">
@@ -154,8 +178,10 @@ $formatRelativeTime = static function (
     </header>
 
     <!-- RINGKASAN UTAMA -->
+    <?php if ($hasSummaryAccess) : ?>
     <section class="portal-dashboard-summary-grid">
 
+        <?php if (!empty($dashboardAccess['members'])) : ?>
         <a
             href="<?= base_url('/members') ?>"
             class="portal-dashboard-summary-card"
@@ -176,7 +202,9 @@ $formatRelativeTime = static function (
                 →
             </span>
         </a>
+        <?php endif; ?>
 
+        <?php if (!empty($dashboardAccess['cash'])) : ?>
         <a
             href="<?= base_url('/cash') ?>"
             class="portal-dashboard-summary-card featured"
@@ -205,7 +233,9 @@ $formatRelativeTime = static function (
                 →
             </span>
         </a>
+        <?php endif; ?>
 
+        <?php if (!empty($dashboardAccess['meetings'])) : ?>
         <a
             href="<?= base_url('/meetings') ?>"
             class="portal-dashboard-summary-card"
@@ -239,7 +269,9 @@ $formatRelativeTime = static function (
                 →
             </span>
         </a>
+        <?php endif; ?>
 
+        <?php if (!empty($dashboardAccess['activities'])) : ?>
         <a
             href="<?= base_url('/activities') ?>"
             class="portal-dashboard-summary-card"
@@ -266,7 +298,9 @@ $formatRelativeTime = static function (
                 →
             </span>
         </a>
+        <?php endif; ?>
 
+        <?php if (!empty($dashboardAccess['messages'])) : ?>
         <a
             href="<?= base_url('/messages') ?>"
             class="portal-dashboard-summary-card
@@ -294,11 +328,14 @@ $formatRelativeTime = static function (
                 →
             </span>
         </a>
+        <?php endif; ?>
 
     </section>
+    <?php endif; ?>
 
 
     <!-- WORKFLOW PUBLIKASI KEGIATAN -->
+    <?php if (!empty($dashboardAccess['activities'])) : ?>
     <section class="g01-publication-dashboard">
         <div class="g01-publication-heading">
             <div>
@@ -649,6 +686,7 @@ $formatRelativeTime = static function (
             </aside>
         </div>
     </section>
+    <?php endif; ?>
 
     <!-- PERHATIAN + AKSI CEPAT -->
     <section class="portal-dashboard-primary-grid">
@@ -772,8 +810,10 @@ $formatRelativeTime = static function (
     </section>
 
     <!-- AGENDA DAN WEBSITE -->
+    <?php if (!empty($dashboardAccess['meetings']) || $hasWebsiteContentAccess) : ?>
     <section class="portal-dashboard-secondary-grid">
 
+        <?php if (!empty($dashboardAccess['meetings'])) : ?>
         <article class="portal-dashboard-panel">
             <div class="portal-dashboard-panel-header inline">
                 <div>
@@ -798,10 +838,12 @@ $formatRelativeTime = static function (
                     ) : ?>
                         <a
                             href="<?= !empty($meeting['id'])
-                                ? base_url(
-                                    '/meetings/edit/'
-                                    . $meeting['id']
-                                )
+                                ? (auth_can('meetings.update')
+                                    ? base_url(
+                                        '/meetings/edit/'
+                                        . $meeting['id']
+                                    )
+                                    : base_url('/meetings'))
                                 : base_url('/meetings') ?>"
                             class="portal-dashboard-agenda-item"
                         >
@@ -889,18 +931,22 @@ $formatRelativeTime = static function (
                         tampil di sini.
                     </p>
 
-                    <a
-                        href="<?= base_url('/meetings/create') ?>"
-                        class="btn btn-primary"
-                    >
-                        + Buat Rapat
-                    </a>
+                    <?php if (auth_can('meetings.create')) : ?>
+                        <a
+                            href="<?= base_url('/meetings/create') ?>"
+                            class="btn btn-primary"
+                        >
+                            + Buat Rapat
+                        </a>
+                    <?php endif; ?>
                 </div>
 
             <?php endif; ?>
 
         </article>
+        <?php endif; ?>
 
+        <?php if ($hasWebsiteContentAccess) : ?>
         <article class="portal-dashboard-panel website-panel">
             <div class="portal-dashboard-panel-header inline">
                 <div>
@@ -922,6 +968,7 @@ $formatRelativeTime = static function (
 
             <div class="portal-dashboard-website-stats">
 
+                <?php if (!empty($dashboardAccess['programs'])) : ?>
                 <a href="<?= base_url('/programs') ?>">
                     <span>Program Aktif</span>
 
@@ -951,7 +998,9 @@ $formatRelativeTime = static function (
                         Menunggu penyelesaian
                     </small>
                 </a>
+                <?php endif; ?>
 
+                <?php if (!empty($dashboardAccess['activities'])) : ?>
                 <a href="<?= base_url('/activities') ?>">
                     <span>Tanpa Cover</span>
 
@@ -965,7 +1014,9 @@ $formatRelativeTime = static function (
                         Dokumentasi belum lengkap
                     </small>
                 </a>
+                <?php endif; ?>
 
+                <?php if (!empty($dashboardAccess['messages'])) : ?>
                 <a href="<?= base_url('/messages') ?>">
                     <span>Pesan Publik</span>
 
@@ -977,31 +1028,40 @@ $formatRelativeTime = static function (
                         Belum ditindaklanjuti
                     </small>
                 </a>
+                <?php endif; ?>
 
             </div>
 
             <div class="portal-dashboard-website-actions">
+                <?php if (!empty($dashboardAccess['programs'])) : ?>
                 <a
                     href="<?= base_url('/programs') ?>"
                     class="btn btn-primary"
                 >
                     Kelola Program
                 </a>
+                <?php endif; ?>
 
+                <?php if (!empty($dashboardAccess['activities'])) : ?>
                 <a
                     href="<?= base_url('/activities') ?>"
                     class="btn btn-secondary"
                 >
                     Kelola Kegiatan
                 </a>
+                <?php endif; ?>
             </div>
         </article>
+        <?php endif; ?>
 
     </section>
+    <?php endif; ?>
 
     <!-- KEUANGAN DAN AKTIVITAS -->
+    <?php if (!empty($dashboardAccess['cash']) || $hasRecentDataAccess) : ?>
     <section class="portal-dashboard-bottom-grid">
 
+        <?php if (!empty($dashboardAccess['cash'])) : ?>
         <article class="portal-dashboard-panel finance-panel">
             <div class="portal-dashboard-panel-header inline">
                 <div>
@@ -1091,7 +1151,9 @@ $formatRelativeTime = static function (
                 </div>
             </div>
         </article>
+        <?php endif; ?>
 
+        <?php if ($hasRecentDataAccess) : ?>
         <article class="portal-dashboard-panel">
             <div class="portal-dashboard-panel-header">
                 <div>
@@ -1176,8 +1238,10 @@ $formatRelativeTime = static function (
 
             <?php endif; ?>
         </article>
+        <?php endif; ?>
 
     </section>
+    <?php endif; ?>
 
 </div>
 

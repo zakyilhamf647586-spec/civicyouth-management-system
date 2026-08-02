@@ -15,45 +15,82 @@ class DashboardController extends BaseController
 
     public function index()
     {
-        $activeMembers = $this->countActiveMembers();
-        $membersWithoutPhone = $this->countMembersWithoutPhone();
+        $access = [
+            'members' => auth_can('members.view'),
+            'cash' => auth_can('cash.view'),
+            'meetings' => auth_can('meetings.view'),
+            'activities' => auth_can('activities.view'),
+            'programs' => auth_can('programs.view'),
+            'messages' => auth_can('messages.view'),
+        ];
 
-        $finance = $this->getFinanceSummary();
+        $activeMembers = $access['members']
+            ? $this->countActiveMembers()
+            : 0;
+        $membersWithoutPhone = $access['members']
+            ? $this->countMembersWithoutPhone()
+            : 0;
 
-        $nextMeeting = $this->getNextMeeting();
-        $upcomingMeetings = $this->getUpcomingMeetings(3);
+        $finance = $access['cash']
+            ? $this->getFinanceSummary()
+            : [];
 
-        $completedActivities = $this->countActivitiesByStatus([
-            'completed',
-            'selesai',
-        ]);
+        $nextMeeting = $access['meetings']
+            ? $this->getNextMeeting()
+            : null;
+        $upcomingMeetings = $access['meetings']
+            ? $this->getUpcomingMeetings(3)
+            : [];
+
+        $completedActivities = $access['activities']
+            ? $this->countActivitiesByStatus([
+                'completed',
+                'selesai',
+            ])
+            : 0;
 
         $missingActivityCovers =
-            $this->countActivitiesWithoutCover();
+            $access['activities']
+                ? $this->countActivitiesWithoutCover()
+                : 0;
 
         $publicationSummary =
-            $this->getActivityPublicationSummary();
+            $access['activities']
+                ? $this->getActivityPublicationSummary()
+                : [];
 
         $reviewQueue =
-            $this->getActivityReviewQueue(5);
+            $access['activities']
+                ? $this->getActivityReviewQueue(5)
+                : [];
 
         $scheduledPublicationQueue =
-            $this->getScheduledPublicationQueue(3);
+            $access['activities']
+                ? $this->getScheduledPublicationQueue(3)
+                : [];
 
         $activitiesWithoutProgram =
-            $this->countActivitiesWithoutProgram();
+            $access['activities']
+                ? $this->countActivitiesWithoutProgram()
+                : 0;
 
-        $publishedPrograms = $this->countProgramsByStatus([
-            'published',
-        ]);
+        $publishedPrograms = $access['programs']
+            ? $this->countProgramsByStatus([
+                'published',
+            ])
+            : 0;
 
-        $draftPrograms = $this->countProgramsByStatus([
-            'draft',
-        ]);
+        $draftPrograms = $access['programs']
+            ? $this->countProgramsByStatus([
+                'draft',
+            ])
+            : 0;
 
-        $unreadMessages = $this->countMessagesByStatus([
-            'unread',
-        ]);
+        $unreadMessages = $access['messages']
+            ? $this->countMessagesByStatus([
+                'unread',
+            ])
+            : 0;
 
         $attentionItems = $this->buildAttentionItems(
             $membersWithoutPhone,
@@ -62,11 +99,14 @@ class DashboardController extends BaseController
             $draftPrograms,
             $publicationSummary,
             $activitiesWithoutProgram,
-            $nextMeeting
+            $nextMeeting,
+            $access
         );
 
         return view('dashboard/index', [
             'title' => 'Ringkasan Organisasi',
+
+            'dashboardAccess' => $access,
 
             'activeMembers' => $activeMembers,
 
@@ -101,7 +141,7 @@ class DashboardController extends BaseController
             'attentionItems' => $attentionItems,
 
             'recentActivities' =>
-                $this->getRecentPortalActivities(),
+                $this->getRecentPortalActivities($access),
 
             'quickActions' => $this->getQuickActions(),
         ]);
@@ -849,7 +889,8 @@ class DashboardController extends BaseController
         int $draftPrograms,
         array $publicationSummary,
         int $activitiesWithoutProgram,
-        ?array $nextMeeting
+        ?array $nextMeeting,
+        array $access
     ): array {
         $items = [];
 
@@ -865,7 +906,7 @@ class DashboardController extends BaseController
             $publicationSummary['scheduled'] ?? 0
         );
 
-        if ($reviewActivities > 0) {
+        if (!empty($access['activities']) && $reviewActivities > 0) {
             $items[] = [
                 'tone' => 'danger',
                 'title' => $reviewActivities
@@ -878,7 +919,7 @@ class DashboardController extends BaseController
             ];
         }
 
-        if ($draftActivities > 0) {
+        if (!empty($access['activities']) && $draftActivities > 0) {
             $items[] = [
                 'tone' => 'info',
                 'title' => $draftActivities
@@ -891,7 +932,7 @@ class DashboardController extends BaseController
             ];
         }
 
-        if ($scheduledActivities > 0) {
+        if (!empty($access['activities']) && $scheduledActivities > 0) {
             $items[] = [
                 'tone' => 'info',
                 'title' => $scheduledActivities
@@ -904,7 +945,7 @@ class DashboardController extends BaseController
             ];
         }
 
-        if ($activitiesWithoutProgram > 0) {
+        if (!empty($access['activities']) && $activitiesWithoutProgram > 0) {
             $items[] = [
                 'tone' => 'warning',
                 'title' => $activitiesWithoutProgram
@@ -916,7 +957,7 @@ class DashboardController extends BaseController
             ];
         }
 
-        if ($membersWithoutPhone > 0) {
+        if (!empty($access['members']) && $membersWithoutPhone > 0) {
             $items[] = [
                 'tone' => 'warning',
                 'title' =>
@@ -931,7 +972,7 @@ class DashboardController extends BaseController
             ];
         }
 
-        if ($missingActivityCovers > 0) {
+        if (!empty($access['activities']) && $missingActivityCovers > 0) {
             $items[] = [
                 'tone' => 'warning',
                 'title' =>
@@ -946,7 +987,7 @@ class DashboardController extends BaseController
             ];
         }
 
-        if ($unreadMessages > 0) {
+        if (!empty($access['messages']) && $unreadMessages > 0) {
             $items[] = [
                 'tone' => 'danger',
                 'title' =>
@@ -961,7 +1002,7 @@ class DashboardController extends BaseController
             ];
         }
 
-        if ($draftPrograms > 0) {
+        if (!empty($access['programs']) && $draftPrograms > 0) {
             $items[] = [
                 'tone' => 'info',
                 'title' =>
@@ -976,7 +1017,7 @@ class DashboardController extends BaseController
             ];
         }
 
-        if (!empty($nextMeeting['date'])) {
+        if (!empty($access['meetings']) && !empty($nextMeeting['date'])) {
             $meetingTimestamp = strtotime(
                 (string) $nextMeeting['date']
             );
@@ -1015,46 +1056,79 @@ class DashboardController extends BaseController
         }
 
         if ($items === []) {
+            $fallback = $this->attentionFallback($access);
+            $hasModuleAccess = in_array(true, $access, true);
+
             $items[] = [
                 'tone' => 'success',
 
-                'title' =>
-                    'Tidak ada masalah mendesak',
+                'title' => $hasModuleAccess
+                    ? 'Tidak ada masalah mendesak'
+                    : 'Tidak ada prioritas untuk akses Anda',
 
-                'description' =>
-                    'Data utama organisasi berada dalam kondisi baik.',
+                'description' => $hasModuleAccess
+                    ? 'Modul yang dapat Anda akses berada dalam kondisi baik.'
+                    : 'Dashboard hanya menampilkan data yang diizinkan untuk peran ini.',
 
-                'url' => '/activities',
-                'action' => 'Lihat Kegiatan',
+                'url' => $fallback['url'],
+                'action' => $fallback['action'],
             ];
         }
 
         return $items;
     }
 
-    private function getRecentPortalActivities(): array
+    /** @param array<string, bool> $access */
+    private function attentionFallback(array $access): array
+    {
+        foreach ([
+            'activities' => ['/activities', 'Lihat Kegiatan'],
+            'programs' => ['/programs', 'Lihat Program'],
+            'meetings' => ['/meetings', 'Lihat Rapat'],
+            'members' => ['/members', 'Lihat Anggota'],
+            'messages' => ['/messages', 'Lihat Pesan'],
+            'cash' => ['/cash', 'Lihat Kas'],
+        ] as $key => [$url, $action]) {
+            if (!empty($access[$key])) {
+                return ['url' => $url, 'action' => $action];
+            }
+        }
+
+        return ['url' => '/dashboard', 'action' => 'Tetap di Ringkasan'];
+    }
+
+    /** @param array<string, bool> $access */
+    private function getRecentPortalActivities(array $access): array
     {
         $items = [];
 
-        $items = array_merge(
-            $items,
-            $this->getRecentActivityRecords()
-        );
+        if (!empty($access['activities'])) {
+            $items = array_merge(
+                $items,
+                $this->getRecentActivityRecords()
+            );
+        }
 
-        $items = array_merge(
-            $items,
-            $this->getRecentMeetingRecords()
-        );
+        if (!empty($access['meetings'])) {
+            $items = array_merge(
+                $items,
+                $this->getRecentMeetingRecords()
+            );
+        }
 
-        $items = array_merge(
-            $items,
-            $this->getRecentMessageRecords()
-        );
+        if (!empty($access['messages'])) {
+            $items = array_merge(
+                $items,
+                $this->getRecentMessageRecords()
+            );
+        }
 
-        $items = array_merge(
-            $items,
-            $this->getRecentCashRecords()
-        );
+        if (!empty($access['cash'])) {
+            $items = array_merge(
+                $items,
+                $this->getRecentCashRecords()
+            );
+        }
 
         usort(
             $items,
@@ -1145,7 +1219,9 @@ class DashboardController extends BaseController
                     : 0,
 
                 'url' => isset($row['id'])
-                    ? '/activities/edit/' . $row['id']
+                    ? (auth_can('activities.update')
+                        ? '/activities/edit/' . $row['id']
+                        : '/activities')
                     : '/activities',
             ];
         }
@@ -1219,7 +1295,9 @@ class DashboardController extends BaseController
                     : 0,
 
                 'url' => isset($row['id'])
-                    ? '/meetings/edit/' . $row['id']
+                    ? (auth_can('meetings.update')
+                        ? '/meetings/edit/' . $row['id']
+                        : '/meetings')
                     : '/meetings',
             ];
         }
