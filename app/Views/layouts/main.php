@@ -27,6 +27,11 @@ $pageContexts = [
         'label'   => 'Manajemen Akun',
     ],
 
+    'account' => [
+        'section' => 'Akun Anda',
+        'label'   => 'Keamanan Akun',
+    ],
+
     'members' => [
         'section' => 'Organisasi',
         'label'   => 'Data Anggota',
@@ -1062,6 +1067,14 @@ $todayLabel =
                                 <span><?= esc($userRole) ?></span>
                             </div>
                         </div>
+
+                        <a href="<?= base_url('/account/password') ?>">
+                            <svg aria-hidden="true">
+                                <use href="#icon-user"></use>
+                            </svg>
+
+                            Keamanan Akun
+                        </a>
 
                         <a href="<?= base_url('/') ?>">
                             <svg aria-hidden="true">

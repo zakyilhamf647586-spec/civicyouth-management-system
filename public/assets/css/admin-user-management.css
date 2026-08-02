@@ -126,7 +126,7 @@
 .user-account-summary-grid {
     margin-bottom: 20px;
     display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 13px;
 }
 
@@ -244,6 +244,45 @@
     font-weight: 900;
     letter-spacing: 0.45px;
     text-transform: uppercase;
+}
+
+.user-password-required {
+    margin-top: 7px;
+    display: block;
+    color: #9c4221;
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: 0.35px;
+    text-transform: uppercase;
+}
+
+.user-security-activity {
+    min-width: 145px;
+}
+
+.user-security-activity span,
+.user-security-activity strong,
+.user-security-activity small {
+    display: block;
+}
+
+.user-security-activity span {
+    color: #829ab1;
+    font-size: 7.5px;
+    font-weight: 850;
+    text-transform: uppercase;
+}
+
+.user-security-activity strong {
+    margin-top: 4px;
+    color: #102a43;
+    font-size: 9px;
+}
+
+.user-security-activity small {
+    margin-top: 6px;
+    color: #829ab1;
+    font-size: 7.5px;
 }
 
 .is-default-admin-row {
@@ -443,6 +482,14 @@
 .user-account-security-panel .btn {
     width: 100%;
     justify-content: center;
+}
+
+.user-revoke-session-form {
+    margin-top: 9px;
+}
+
+.user-own-password-card .form-card-header {
+    align-items: center;
 }
 
 .user-account-metadata {

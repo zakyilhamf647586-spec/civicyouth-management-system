@@ -190,48 +190,71 @@
                 </div>
             </section>
 
-            <section class="form-card">
-                <div class="form-card-header">
-                    <div>
-                        <span>Opsional</span>
-                        <h3>Ganti kata sandi sekaligus</h3>
-                        <p>
-                            Kosongkan kedua kolom apabila tidak ingin
-                            mengubah kata sandi.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="password">
-                            Kata Sandi Baru
-                        </label>
-                        <input
-                            type="password"
-                            id="password"
-                            name="password"
-                            minlength="8"
-                            maxlength="72"
-                            autocomplete="new-password"
-                        >
+            <?php if (!$isCurrentUser) : ?>
+                <section class="form-card">
+                    <div class="form-card-header">
+                        <div>
+                            <span>Opsional</span>
+                            <h3>Ganti kata sandi sekaligus</h3>
+                            <p>
+                                Kata sandi minimal 12 karakter. Setelah
+                                disimpan, seluruh sesi lama dicabut dan
+                                pengguna wajib membuat kata sandi pribadi.
+                            </p>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="password_confirm">
-                            Konfirmasi Kata Sandi Baru
-                        </label>
-                        <input
-                            type="password"
-                            id="password_confirm"
-                            name="password_confirm"
-                            minlength="8"
-                            maxlength="72"
-                            autocomplete="new-password"
-                        >
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="password">
+                                Kata Sandi Baru
+                            </label>
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                minlength="12"
+                                maxlength="72"
+                                autocomplete="new-password"
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="password_confirm">
+                                Konfirmasi Kata Sandi Baru
+                            </label>
+                            <input
+                                type="password"
+                                id="password_confirm"
+                                name="password_confirm"
+                                minlength="12"
+                                maxlength="72"
+                                autocomplete="new-password"
+                            >
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
+            <?php else : ?>
+                <section class="form-card user-own-password-card">
+                    <div class="form-card-header">
+                        <div>
+                            <span>Keamanan Personal</span>
+                            <h3>Kata sandi akun Anda dikelola terpisah</h3>
+                            <p>
+                                Perubahan kata sandi sendiri memerlukan
+                                verifikasi kata sandi saat ini.
+                            </p>
+                        </div>
+
+                        <a
+                            href="<?= base_url('/account/password') ?>"
+                            class="btn btn-secondary"
+                        >
+                            Buka Keamanan Akun
+                        </a>
+                    </div>
+                </section>
+            <?php endif; ?>
 
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">
@@ -253,61 +276,100 @@
             <aside class="user-account-security-panel">
                 <span>Reset Kredensial</span>
 
-                <h3>Atur ulang kata sandi</h3>
+                <?php if (!$isCurrentUser) : ?>
+                    <h3>Atur ulang kata sandi</h3>
 
-                <p>
-                    Gunakan ketika pengguna lupa kata sandi.
-                    Kata sandi lama tidak dapat dilihat kembali.
-                </p>
+                    <p>
+                        Gunakan ketika pengguna lupa kata sandi. Seluruh
+                        sesi lama akan dicabut dan pengguna wajib mengganti
+                        kata sandi reset saat login berikutnya.
+                    </p>
 
-                <form
-                    action="<?= base_url(
-                        '/users/'
-                        . $user['id']
-                        . '/reset-password'
-                    ) ?>"
-                    method="post"
-                >
-                    <?= csrf_field() ?>
-
-                    <div class="form-group">
-                        <label for="new_password">
-                            Kata Sandi Baru
-                        </label>
-                        <input
-                            type="password"
-                            id="new_password"
-                            name="new_password"
-                            minlength="8"
-                            maxlength="72"
-                            autocomplete="new-password"
-                            required
-                        >
-                    </div>
-
-                    <div class="form-group">
-                        <label for="new_password_confirm">
-                            Konfirmasi Kata Sandi
-                        </label>
-                        <input
-                            type="password"
-                            id="new_password_confirm"
-                            name="new_password_confirm"
-                            minlength="8"
-                            maxlength="72"
-                            autocomplete="new-password"
-                            required
-                        >
-                    </div>
-
-                    <button
-                        type="submit"
-                        class="btn btn-warning"
-                        onclick="return confirm('Reset kata sandi akun ini?')"
+                    <form
+                        action="<?= base_url(
+                            '/users/'
+                            . $user['id']
+                            . '/reset-password'
+                        ) ?>"
+                        method="post"
                     >
-                        Reset Kata Sandi
-                    </button>
-                </form>
+                        <?= csrf_field() ?>
+
+                        <div class="form-group">
+                            <label for="new_password">
+                                Kata Sandi Reset
+                            </label>
+                            <input
+                                type="password"
+                                id="new_password"
+                                name="new_password"
+                                minlength="12"
+                                maxlength="72"
+                                autocomplete="new-password"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="new_password_confirm">
+                                Konfirmasi Kata Sandi
+                            </label>
+                            <input
+                                type="password"
+                                id="new_password_confirm"
+                                name="new_password_confirm"
+                                minlength="12"
+                                maxlength="72"
+                                autocomplete="new-password"
+                                required
+                            >
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="btn btn-warning"
+                            onclick="return confirm('Reset kata sandi dan cabut seluruh sesi akun ini?')"
+                        >
+                            Reset & Cabut Sesi
+                        </button>
+                    </form>
+
+                    <?php if (auth_can('users.revoke_sessions')) : ?>
+                        <form
+                            action="<?= base_url(
+                                '/users/'
+                                . $user['id']
+                                . '/revoke-sessions'
+                            ) ?>"
+                            method="post"
+                            class="user-revoke-session-form"
+                            onsubmit="return confirm('Cabut seluruh sesi aktif akun ini?')"
+                        >
+                            <?= csrf_field() ?>
+
+                            <button
+                                type="submit"
+                                class="btn btn-secondary"
+                            >
+                                Cabut Sesi Tanpa Reset
+                            </button>
+                        </form>
+                    <?php endif; ?>
+                <?php else : ?>
+                    <h3>Keamanan akun Anda</h3>
+                    <p>
+                        Verifikasi kata sandi saat ini diperlukan agar
+                        perubahan tidak dapat dilakukan hanya dengan sesi
+                        browser yang terbuka.
+                    </p>
+
+                    <a
+                        href="<?= base_url('/account/password') ?>"
+                        class="btn btn-warning"
+                    >
+                        Buka Keamanan Akun
+                    </a>
+                <?php endif; ?>
 
                 <div class="user-account-metadata">
                     <div>
@@ -339,6 +401,29 @@
                                     )
                                 )
                                 : '-' ?>
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Login Terakhir</span>
+                        <strong>
+                            <?= !empty($user['last_login_at'])
+                                ? esc(
+                                    date(
+                                        'd M Y, H.i',
+                                        strtotime($user['last_login_at'])
+                                    )
+                                )
+                                : 'Belum tercatat' ?>
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Status Kata Sandi</span>
+                        <strong>
+                            <?= !empty($user['must_change_password'])
+                                ? 'Wajib diganti saat login'
+                                : 'Siap digunakan' ?>
                         </strong>
                     </div>
                 </div>

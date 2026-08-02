@@ -182,6 +182,16 @@ Assert-ContentNotMatch `
 $Login = Get-Page '/login'
 Assert-Header $Login 'X-Robots-Tag' 'noindex' 'Login noindex header'
 
+$AccountSecurity = Get-Page '/account/password'
+Assert-Status `
+    $AccountSecurity `
+    200 `
+    'Keamanan akun tanpa sesi diarahkan ke login'
+Assert-ContentMatch `
+    $AccountSecurity `
+    'id="gardaLoginForm"' `
+    'Keamanan akun tidak terbuka tanpa autentikasi'
+
 foreach ($PublicPath in @(
     '/profil',
     '/program',
@@ -368,6 +378,10 @@ Assert-ContentMatch `
     $Robots `
     'Disallow:\s+/en/login' `
     'robots.txt melindungi English login'
+Assert-ContentMatch `
+    $Robots `
+    'Disallow:\s+/account' `
+    'robots.txt melindungi keamanan akun'
 
 $Sitemap = Get-Page '/sitemap.xml'
 Assert-Status $Sitemap 200 'sitemap.xml'

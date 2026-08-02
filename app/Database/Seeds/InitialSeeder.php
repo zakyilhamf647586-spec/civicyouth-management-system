@@ -65,7 +65,7 @@ class InitialSeeder extends Seeder
             ->getRow();
 
         if (!$existingAdmin && $adminRole) {
-            $this->db->table('users')->insert([
+            $adminData = [
                 'role_id'    => $adminRole->id,
                 'name'       => 'CivicYouth Admin',
                 'email'      => 'admin@civicyouth.local',
@@ -73,7 +73,17 @@ class InitialSeeder extends Seeder
                 'status'     => 'active',
                 'created_at' => $now,
                 'updated_at' => $now,
-            ]);
+            ];
+
+            if ($this->db->fieldExists('session_version', 'users')) {
+                $adminData += [
+                    'session_version' => 1,
+                    'must_change_password' => 1,
+                    'password_changed_at' => $now,
+                ];
+            }
+
+            $this->db->table('users')->insert($adminData);
         }
     }
 }

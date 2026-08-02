@@ -3,6 +3,7 @@
 $flashError   = session()->getFlashdata('error');
 $flashErrors  = session()->getFlashdata('errors');
 $flashSuccess = session()->getFlashdata('success');
+$loginNotice  = $loginNotice ?? null;
 
 $portalOrganizationName = site_setting(
     'organization_name',
@@ -295,6 +296,23 @@ ob_start();
                 </div>
             <?php endif; ?>
 
+            <?php if (is_string($loginNotice) && $loginNotice !== '') : ?>
+                <div
+                    class="garda-login-alert success"
+                    role="status"
+                >
+                    <svg
+                        viewBox="0 0 24 24"
+                        aria-hidden="true"
+                    >
+                        <circle cx="12" cy="12" r="9"></circle>
+                        <path d="M12 7v5l3 2"></path>
+                    </svg>
+
+                    <div><?= esc($loginNotice) ?></div>
+                </div>
+            <?php endif; ?>
+
             <?php if (!empty($displayErrors)) : ?>
                 <div
                     class="garda-login-alert error"
@@ -407,6 +425,7 @@ ob_start();
                             placeholder="Masukkan kata sandi"
                             autocomplete="current-password"
                             minlength="6"
+                            maxlength="72"
                             required
                         >
 

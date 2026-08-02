@@ -721,6 +721,7 @@ class PublicSeoService
             '/login',
             '/en/login',
             '/logout',
+            '/account',
             '/dashboard',
             '/users',
             '/members',

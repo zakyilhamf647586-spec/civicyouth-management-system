@@ -422,9 +422,11 @@ class CmsAuditService
     {
         return in_array(strtolower($key), [
             'password',
+            'password_confirm',
             'password_confirmation',
             'current_password',
             'new_password',
+            'new_password_confirm',
             'raw_token',
             'token_hash',
             'authorization',

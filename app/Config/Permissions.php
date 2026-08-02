@@ -164,6 +164,7 @@ class Permissions extends BaseConfig
         'users.update'         => 'mengubah akun pengguna',
         'users.status'         => 'mengaktifkan atau menonaktifkan akun',
         'users.reset_password' => 'mereset kata sandi pengguna',
+        'users.revoke_sessions' => 'mencabut seluruh sesi pengguna',
 
         'members.view'   => 'melihat data anggota',
         'members.create' => 'menambah anggota',

@@ -534,6 +534,34 @@ class ProductionReadinessService
             'Gunakan session.cookieName = garda01_session.'
         );
 
+        $this->add(
+            'security.session_regenerate_destroy',
+            'security',
+            'Session ID lama dihancurkan',
+            $session->regenerateDestroy ? 'pass' : 'fail',
+            true,
+            $session->regenerateDestroy
+                ? 'Session ID lama dihancurkan setelah regenerasi.'
+                : 'Session ID lama masih dipertahankan setelah regenerasi.',
+            'Atur session.regenerateDestroy = true.'
+        );
+
+        $sessionExpiration = (int) $session->expiration;
+
+        $this->add(
+            'security.session_expiration',
+            'security',
+            'Masa berlaku sesi dibatasi',
+            $sessionExpiration > 0 && $sessionExpiration <= 7200
+                ? 'pass'
+                : 'warning',
+            false,
+            $sessionExpiration > 0
+                ? 'Cookie sesi berlaku ' . $sessionExpiration . ' detik.'
+                : 'Cookie sesi berlaku hingga browser ditutup.',
+            'Gunakan masa berlaku sesi maksimal dua jam.'
+        );
+
         $security = config('Security');
         $csrf = in_array(
             strtolower((string) $security->csrfProtection),
@@ -746,6 +774,39 @@ class ProductionReadinessService
                     : 'Jalankan php spark migrate sebelum go-live.'
             );
         }
+
+        $accountSecurityFields = [
+            'session_version',
+            'must_change_password',
+            'password_changed_at',
+            'last_login_at',
+            'last_login_ip_hash',
+            'last_login_user_agent',
+        ];
+        $missingAccountSecurityFields = [];
+
+        if ($db->tableExists('users')) {
+            foreach ($accountSecurityFields as $field) {
+                if (!$db->fieldExists($field, 'users')) {
+                    $missingAccountSecurityFields[] = $field;
+                }
+            }
+        } else {
+            $missingAccountSecurityFields = $accountSecurityFields;
+        }
+
+        $this->add(
+            'database.account_security',
+            'database',
+            'Fondasi keamanan akun tersedia',
+            $missingAccountSecurityFields === [] ? 'pass' : 'fail',
+            true,
+            $missingAccountSecurityFields === []
+                ? 'Versi sesi, status kata sandi, dan jejak login tersedia.'
+                : 'Kolom belum tersedia: '
+                    . implode(', ', $missingAccountSecurityFields),
+            'Jalankan php spark migrate.'
+        );
 
         $activeAdmins = 0;
         $defaultAdmin = false;

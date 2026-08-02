@@ -180,6 +180,14 @@ $adminTransitionCritical = !$defaultAdminActive
             <small>Akses login sedang diblokir.</small>
         </article>
 
+        <article>
+            <span>Wajib Ganti Sandi</span>
+            <strong>
+                <?= esc($statistics['must_change_password'] ?? 0) ?>
+            </strong>
+            <small>Belum membuat kredensial pribadi.</small>
+        </article>
+
         <article class="featured">
             <span>Admin Aktif</span>
             <strong>
@@ -217,7 +225,6 @@ $adminTransitionCritical = !$defaultAdminActive
                                     : '' ?>
                             >
                                 <?= esc($role['role_name']) ?>
-                            </option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -271,7 +278,7 @@ $adminTransitionCritical = !$defaultAdminActive
                         <th>Pengguna</th>
                         <th>Peran</th>
                         <th>Status</th>
-                        <th>Diperbarui</th>
+                        <th>Keamanan</th>
                         <th width="230">Aksi</th>
                     </tr>
                 </thead>
@@ -392,19 +399,42 @@ $adminTransitionCritical = !$defaultAdminActive
                                             ?? ucfirst($status)
                                         ) ?>
                                     </span>
+
+                                    <?php if (!empty(
+                                        $user['must_change_password']
+                                    )) : ?>
+                                        <small class="user-password-required">
+                                            Wajib ganti kata sandi
+                                        </small>
+                                    <?php endif; ?>
                                 </td>
 
                                 <td>
-                                    <?= !empty($user['updated_at'])
-                                        ? esc(
-                                            date(
-                                                'd M Y, H.i',
-                                                strtotime(
-                                                    $user['updated_at']
-                                                )
-                                            )
-                                        )
-                                        : '-' ?>
+                                    <div class="user-security-activity">
+                                        <span>Login terakhir</span>
+                                        <strong>
+                                            <?= !empty($user['last_login_at'])
+                                                ? esc(date(
+                                                    'd M Y, H.i',
+                                                    strtotime(
+                                                        $user['last_login_at']
+                                                    )
+                                                ))
+                                                : 'Belum tercatat' ?>
+                                        </strong>
+
+                                        <small>
+                                            Perubahan data:
+                                            <?= !empty($user['updated_at'])
+                                                ? esc(date(
+                                                    'd M Y, H.i',
+                                                    strtotime(
+                                                        $user['updated_at']
+                                                    )
+                                                ))
+                                                : '-' ?>
+                                        </small>
+                                    </div>
                                 </td>
 
                                 <td>

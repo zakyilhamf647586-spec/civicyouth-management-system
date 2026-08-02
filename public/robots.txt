@@ -3,6 +3,7 @@ Allow: /
 Disallow: /login
 Disallow: /en/login
 Disallow: /logout
+Disallow: /account
 Disallow: /dashboard
 Disallow: /users
 Disallow: /members

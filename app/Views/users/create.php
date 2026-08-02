@@ -145,8 +145,9 @@
                     <span>Keamanan</span>
                     <h3>Kata sandi awal</h3>
                     <p>
-                        Gunakan minimal delapan karakter dan sampaikan
-                        kepada pemilik akun secara pribadi.
+                        Gunakan minimal 12 karakter dan sampaikan hanya
+                        kepada pemilik akun. Pengguna wajib menggantinya
+                        ketika pertama kali masuk.
                     </p>
                 </div>
             </div>
@@ -158,7 +159,7 @@
                         type="password"
                         id="password"
                         name="password"
-                        minlength="8"
+                        minlength="12"
                         maxlength="72"
                         autocomplete="new-password"
                         required
@@ -173,7 +174,7 @@
                         type="password"
                         id="password_confirm"
                         name="password_confirm"
-                        minlength="8"
+                        minlength="12"
                         maxlength="72"
                         autocomplete="new-password"
                         required

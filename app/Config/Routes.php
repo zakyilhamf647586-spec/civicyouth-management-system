@@ -71,6 +71,23 @@ $routes->get('/login', 'AuthController::login');
 $routes->post('/login', 'AuthController::attemptLogin');
 $routes->get('/logout', 'AuthController::logout');
 
+/* Personal account security */
+$routes->get(
+    '/account/password',
+    'AccountSecurityController::password',
+    ['filter' => 'auth']
+);
+$routes->post(
+    '/account/password',
+    'AccountSecurityController::updatePassword',
+    ['filter' => 'auth']
+);
+$routes->post(
+    '/account/sessions/revoke',
+    'AccountSecurityController::revokeSessions',
+    ['filter' => 'auth']
+);
+
 /* Dashboard */
 $routes->get(
     '/dashboard',
@@ -86,6 +103,7 @@ $routes->get('/users/edit/(:num)', 'UserManagementController::edit/$1', $guard('
 $routes->post('/users/update/(:num)', 'UserManagementController::update/$1', $guard('users.update'));
 $routes->post('/users/(:num)/status', 'UserManagementController::updateStatus/$1', $guard('users.status'));
 $routes->post('/users/(:num)/reset-password', 'UserManagementController::resetPassword/$1', $guard('users.reset_password'));
+$routes->post('/users/(:num)/revoke-sessions', 'UserManagementController::revokeSessions/$1', $guard('users.revoke_sessions'));
 
 /* Members */
 $routes->get('/members', 'MemberController::index', $guard('members.view'));

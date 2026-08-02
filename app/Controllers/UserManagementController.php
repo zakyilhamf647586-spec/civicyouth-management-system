@@ -88,7 +88,7 @@ class UserManagementController extends BaseController
 
         $rules['password'] = [
             'label' => 'Kata sandi',
-            'rules' => 'required|min_length[8]|max_length[72]',
+            'rules' => 'required|min_length[12]|max_length[72]',
         ];
 
         $rules['password_confirm'] = [
@@ -127,7 +127,14 @@ class UserManagementController extends BaseController
             'password'
         );
 
-        $inserted = $this->userModel->insert([
+        $policyError = $this->passwordPolicyError($password);
+
+        if ($policyError !== null) {
+            return $this->redirectBackWithSafeInput()
+                ->with('errors', [$policyError]);
+        }
+
+        $insertData = [
             'role_id' => $roleId,
             'name' => trim(
                 (string) $this->request->getPost('name')
@@ -139,7 +146,17 @@ class UserManagementController extends BaseController
             ),
             'status' => (string) $this->request
                 ->getPost('status'),
-        ]);
+        ];
+
+        if ($this->userModel->securitySchemaReady()) {
+            $insertData += [
+                'session_version' => 1,
+                'must_change_password' => 1,
+                'password_changed_at' => date('Y-m-d H:i:s'),
+            ];
+        }
+
+        $inserted = $this->userModel->insert($insertData, true);
 
         if (!$inserted) {
             return $this->redirectBackWithSafeInput()
@@ -149,10 +166,23 @@ class UserManagementController extends BaseController
                 );
         }
 
+        $this->recordAccountAudit(
+            'account.created',
+            'Akun pengguna baru dibuat.',
+            (int) $inserted,
+            $insertData['name'],
+            'notice',
+            [
+                'role_id' => $roleId,
+                'status' => $insertData['status'],
+                'must_change_password' => true,
+            ]
+        );
+
         return redirect()->to('/users')
             ->with(
                 'success',
-                'Akun pengguna berhasil dibuat.'
+                'Akun berhasil dibuat. Pengguna wajib mengganti kata sandi awal saat login pertama.'
             );
     }
 
@@ -183,7 +213,7 @@ class UserManagementController extends BaseController
         if ($password !== '') {
             $rules['password'] = [
                 'label' => 'Kata sandi baru',
-                'rules' => 'min_length[8]|max_length[72]',
+                'rules' => 'min_length[12]|max_length[72]',
             ];
 
             $rules['password_confirm'] = [
@@ -195,6 +225,33 @@ class UserManagementController extends BaseController
         if (!$this->validate($rules)) {
             return $this->redirectBackWithSafeInput()
                 ->with('errors', $this->validator->getErrors());
+        }
+
+        if ($isCurrentUser && $password !== '') {
+            return $this->redirectBackWithSafeInput()
+                ->with(
+                    'errors',
+                    [
+                        'Gunakan halaman Keamanan Akun untuk mengganti kata sandi akun yang sedang dipakai.',
+                    ]
+                );
+        }
+
+        if ($password !== '') {
+            $policyError = $this->passwordPolicyError($password);
+
+            if ($policyError !== null) {
+                return $this->redirectBackWithSafeInput()
+                    ->with('errors', [$policyError]);
+            }
+
+            if (password_verify($password, (string) $user['password'])) {
+                return $this->redirectBackWithSafeInput()
+                    ->with(
+                        'errors',
+                        ['Kata sandi baru harus berbeda dari kata sandi saat ini.']
+                    );
+            }
         }
 
         $email = $this->normalizeEmail(
@@ -262,11 +319,38 @@ class UserManagementController extends BaseController
             'status' => $newStatus,
         ];
 
+        $changedFields = [];
+
+        foreach (['role_id', 'name', 'email', 'status'] as $field) {
+            if ((string) ($user[$field] ?? '') !== (string) $data[$field]) {
+                $changedFields[] = $field;
+            }
+        }
+
+        $securityChanged = in_array('role_id', $changedFields, true)
+            || in_array('email', $changedFields, true)
+            || in_array('status', $changedFields, true)
+            || $password !== '';
+
         if ($password !== '') {
             $data['password'] = password_hash(
                 $password,
                 PASSWORD_DEFAULT
             );
+            $changedFields[] = 'password';
+        }
+
+        if (
+            $securityChanged
+            && $this->userModel->securitySchemaReady()
+        ) {
+            $data['session_version'] = $this->userModel
+                ->nextSessionVersion($user);
+
+            if ($password !== '') {
+                $data['must_change_password'] = 1;
+                $data['password_changed_at'] = date('Y-m-d H:i:s');
+            }
         }
 
         if (!$this->userModel->update($id, $data)) {
@@ -280,6 +364,18 @@ class UserManagementController extends BaseController
         if ($isCurrentUser) {
             $this->refreshCurrentSession($id);
         }
+
+        $this->recordAccountAudit(
+            'account.updated',
+            'Akun pengguna diperbarui.',
+            $id,
+            $data['name'],
+            $securityChanged ? 'security' : 'notice',
+            [
+                'changed_fields' => $changedFields,
+                'sessions_revoked' => $securityChanged,
+            ]
+        );
 
         return redirect()->to('/users')
             ->with(
@@ -315,6 +411,11 @@ class UserManagementController extends BaseController
                 );
         }
 
+        if ($newStatus === (string) ($user['status'] ?? '')) {
+            return redirect()->to('/users')
+                ->with('success', 'Status akun tidak berubah.');
+        }
+
         $continuityError = $this->adminContinuityError(
             $user,
             (int) $user['role_id'],
@@ -326,9 +427,16 @@ class UserManagementController extends BaseController
                 ->with('error', $continuityError);
         }
 
-        if (!$this->userModel->update($id, [
+        $statusData = [
             'status' => $newStatus,
-        ])) {
+        ];
+
+        if ($this->userModel->securitySchemaReady()) {
+            $statusData['session_version'] = $this->userModel
+                ->nextSessionVersion($user);
+        }
+
+        if (!$this->userModel->update($id, $statusData)) {
             return redirect()->to('/users')
                 ->with(
                     'error',
@@ -340,6 +448,20 @@ class UserManagementController extends BaseController
             ? 'Akun berhasil diaktifkan.'
             : 'Akun berhasil dinonaktifkan.';
 
+        $this->recordAccountAudit(
+            $newStatus === 'active'
+                ? 'account.activated'
+                : 'account.deactivated',
+            $message,
+            $id,
+            $user['name'] ?? 'Akun Portal',
+            'security',
+            [
+                'status' => $newStatus,
+                'sessions_revoked' => true,
+            ]
+        );
+
         return redirect()->to('/users')
             ->with('success', $message);
     }
@@ -348,10 +470,18 @@ class UserManagementController extends BaseController
     {
         $user = $this->findUserOrFail($id);
 
+        if ($id === (int) session()->get('user_id')) {
+            return redirect()->to('/account/password')
+                ->with(
+                    'error',
+                    'Gunakan halaman ini untuk mengganti kata sandi akun Anda dengan verifikasi kata sandi saat ini.'
+                );
+        }
+
         $rules = [
             'new_password' => [
                 'label' => 'Kata sandi baru',
-                'rules' => 'required|min_length[8]|max_length[72]',
+                'rules' => 'required|min_length[12]|max_length[72]',
             ],
             'new_password_confirm' => [
                 'label' => 'Konfirmasi kata sandi baru',
@@ -368,12 +498,38 @@ class UserManagementController extends BaseController
             'new_password'
         );
 
-        if (!$this->userModel->update($id, [
+        $policyError = $this->passwordPolicyError($newPassword);
+
+        if ($policyError !== null) {
+            return $this->redirectBackWithSafeInput()
+                ->with('errors', [$policyError]);
+        }
+
+        if (password_verify($newPassword, (string) $user['password'])) {
+            return $this->redirectBackWithSafeInput()
+                ->with(
+                    'errors',
+                    ['Kata sandi reset harus berbeda dari kata sandi saat ini.']
+                );
+        }
+
+        $resetData = [
             'password' => password_hash(
                 $newPassword,
                 PASSWORD_DEFAULT
             ),
-        ])) {
+        ];
+
+        if ($this->userModel->securitySchemaReady()) {
+            $resetData += [
+                'session_version' => $this->userModel
+                    ->nextSessionVersion($user),
+                'must_change_password' => 1,
+                'password_changed_at' => date('Y-m-d H:i:s'),
+            ];
+        }
+
+        if (!$this->userModel->update($id, $resetData)) {
             return redirect()->back()
                 ->with(
                     'errors',
@@ -381,13 +537,69 @@ class UserManagementController extends BaseController
                 );
         }
 
+        $this->recordAccountAudit(
+            'account.password_reset',
+            'Kata sandi akun direset oleh pengelola akun.',
+            $id,
+            $user['name'] ?? 'Akun Portal',
+            'security',
+            [
+                'must_change_password' => true,
+                'sessions_revoked' => true,
+            ]
+        );
+
         return redirect()
             ->to('/users/edit/' . $id)
             ->with(
                 'success',
                 'Kata sandi untuk '
                 . $user['name']
-                . ' berhasil direset.'
+                . ' berhasil direset. Seluruh sesi lama dicabut dan pengguna wajib menggantinya saat login.'
+            );
+    }
+
+    public function revokeSessions(int $id)
+    {
+        $user = $this->findUserOrFail($id);
+
+        if (!$this->userModel->securitySchemaReady()) {
+            return redirect()->to('/users/edit/' . $id)
+                ->with(
+                    'errors',
+                    ['Jalankan migration keamanan akun sebelum mencabut sesi.']
+                );
+        }
+
+        if ($id === (int) session()->get('user_id')) {
+            return redirect()->to('/account/password')
+                ->with(
+                    'error',
+                    'Gunakan verifikasi kata sandi untuk mencabut sesi lain akun Anda.'
+                );
+        }
+
+        if (!$this->userModel->update($id, [
+            'session_version' => $this->userModel
+                ->nextSessionVersion($user),
+        ])) {
+            return redirect()->to('/users/edit/' . $id)
+                ->with('errors', ['Sesi pengguna gagal dicabut.']);
+        }
+
+        $this->recordAccountAudit(
+            'account.sessions_revoked_by_admin',
+            'Seluruh sesi akun dicabut oleh pengelola akun.',
+            $id,
+            $user['name'] ?? 'Akun Portal',
+            'security',
+            ['sessions_revoked' => true]
+        );
+
+        return redirect()->to('/users/edit/' . $id)
+            ->with(
+                'success',
+                'Seluruh sesi untuk ' . $user['name'] . ' berhasil dicabut.'
             );
     }
 
@@ -483,7 +695,58 @@ class UserManagementController extends BaseController
             'email' => $updatedUser['email'],
             'role_id' => (int) $updatedUser['role_id'],
             'role_name' => $updatedUser['role_name'],
+            'session_version' => $this->userModel
+                ->sessionVersion($updatedUser),
+            'must_change_password' => !empty(
+                $updatedUser['must_change_password']
+            ),
             'auth_checked_at' => time(),
+        ]);
+    }
+
+    private function passwordPolicyError(string $password): ?string
+    {
+        if (strlen($password) > 72) {
+            return 'Kata sandi maksimal 72 byte.';
+        }
+
+        $blocked = [
+            'admin123',
+            'admin12345678',
+            'password1234',
+            'password12345',
+            '123456789012',
+            'garda012026',
+        ];
+
+        if (in_array(mb_strtolower(trim($password)), $blocked, true)) {
+            return 'Kata sandi tersebut terlalu mudah ditebak. Gunakan frasa yang lebih panjang dan unik.';
+        }
+
+        return null;
+    }
+
+    /**
+     * @param array<string, mixed> $metadata
+     */
+    private function recordAccountAudit(
+        string $eventType,
+        string $summary,
+        int $userId,
+        string $userLabel,
+        string $severity,
+        array $metadata = []
+    ): void {
+        $this->recordCmsAudit([
+            'module' => 'security',
+            'event_type' => $eventType,
+            'severity' => $severity,
+            'subject_type' => 'user_account',
+            'subject_id' => $userId,
+            'subject_key' => 'user:' . $userId,
+            'subject_label' => $userLabel,
+            'summary' => $summary,
+            'metadata' => $metadata,
         ]);
     }
 }
