@@ -152,10 +152,6 @@ class PublicExperience extends BaseConfig
             'id' => 'Kontak',
             'en' => 'Contact',
         ],
-        'navigation.portal' => [
-            'id' => 'Portal Pengurus',
-            'en' => 'Team Portal',
-        ],
         'navigation.footer_profile' => [
             'id' => 'Tentang GARDA 01',
             'en' => 'About GARDA 01',
@@ -335,8 +331,6 @@ class PublicExperience extends BaseConfig
         'Pengurus' => 'Team',
         'Kontak' => 'Contact',
         'Kontak & Kolaborasi' => 'Contact & Collaboration',
-        'Portal Pengurus' => 'Team Portal',
-        'Portal Internal' => 'Internal Portal',
         'Karang Taruna RW 01 • Kelurahan Randugarut' => 'RW 01 Youth Organization • Randugarut',
         'Karang Taruna RW 01 Kelurahan Randugarut' => 'RW 01 Randugarut Youth Organization',
         'Karang Taruna RW 01 Randugarut' => 'RW 01 Randugarut Youth Organization',
@@ -417,7 +411,7 @@ class PublicExperience extends BaseConfig
         'Gunakan kanal resmi berikut untuk menyampaikan kebutuhan, undangan, atau peluang kolaborasi.' => 'Use these official channels to share a need, invitation, or collaboration opportunity.',
         'Belum dicantumkan oleh pengurus.' => 'Not yet provided by the team.',
         'Isi informasi dengan lengkap agar tim GARDA 01 dapat menindaklanjuti pesan dengan tepat.' => 'Provide complete information so the GARDA 01 team can respond appropriately.',
-        'Pesan akan masuk ke Portal Pengurus GARDA 01.' => 'Your message will be delivered to the GARDA 01 Team Portal.',
+        'Pesan akan diteruskan kepada tim GARDA 01 untuk ditinjau dan ditindaklanjuti.' => 'Your message will be forwarded to the GARDA 01 team for review and follow-up.',
         "Program sosial dan kemanusiaan\nKegiatan lingkungan dan kebersihan\nOlahraga serta kepemudaan\nPendidikan dan keterampilan\nMedia, desain, dan dokumentasi\nUsaha produktif dan UMKM" => "Social and humanitarian programs\nEnvironmental and clean-up activities\nSports and youth development\nEducation and skills\nMedia, design, and documentation\nYouth enterprise and small businesses",
         'Basis gerakan pemuda GARDA 01 di wilayah Kelurahan Randugarut, Kecamatan Tugu, Kota Semarang.' => 'GARDA 01 is rooted in Randugarut, Tugu District, Semarang City.',
         'Untuk kondisi darurat, layanan pemerintahan, keamanan, atau kesehatan, silakan menghubungi instansi resmi yang berwenang.' => 'For emergencies, government services, security, or health matters, please contact the appropriate official authority.',

@@ -584,7 +584,7 @@ $valueItems = array_values(array_filter(array_map(
                             $cmsPage,
                             'form_intro',
                             'submit_note',
-                            'Pesan akan masuk ke Portal Pengurus GARDA 01.'
+                            'Pesan akan diteruskan kepada tim GARDA 01 untuk ditinjau dan ditindaklanjuti.'
                         )) ?>
                     <?php endif; ?>
                 </p>

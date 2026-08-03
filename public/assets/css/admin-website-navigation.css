@@ -588,3 +588,10 @@
         justify-content: center;
     }
 }
+
+/* V4.9 — public/internal boundary notice */
+.navigation-editor > .navigation-safety-note {
+    margin-bottom: 18px;
+    border-left: 4px solid var(--nav-gold);
+    background: linear-gradient(135deg, #fffaf0, #ffffff);
+}

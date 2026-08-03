@@ -139,6 +139,16 @@ $hasPublishedVersion = !empty(
     </div>
 </section>
 
+<section class="navigation-safety-note" aria-label="Batas navigasi publik">
+    <strong>Website publik dan Portal internal dipisahkan.</strong>
+    <p>
+        Menu publik tidak dapat diarahkan ke login, autentikasi,
+        dashboard, CMS, backup, monitoring, atau route internal lainnya.
+        Akses pengurus tetap tersedia melalui URL Portal yang dibagikan
+        secara terpisah.
+    </p>
+</section>
+
 <form
     action="<?= base_url(
         '/website/navigation/update/' . $menuKey
@@ -329,45 +339,11 @@ $hasPublishedVersion = !empty(
                             </select>
                         </div>
 
-                        <?php if ($menuKey === 'header') : ?>
-                            <div class="form-group">
-                                <label>Gaya</label>
-
-                                <select
-                                    name="items[<?= $index ?>][style]"
-                                >
-                                    <option
-                                        value="default"
-                                        <?= (
-                                            $item['style']
-                                            ?? 'default'
-                                        ) === 'default'
-                                            ? 'selected'
-                                            : '' ?>
-                                    >
-                                        Menu biasa
-                                    </option>
-
-                                    <option
-                                        value="portal"
-                                        <?= (
-                                            $item['style']
-                                            ?? 'default'
-                                        ) === 'portal'
-                                            ? 'selected'
-                                            : '' ?>
-                                    >
-                                        Tombol Portal
-                                    </option>
-                                </select>
-                            </div>
-                        <?php else : ?>
-                            <input
-                                type="hidden"
-                                name="items[<?= $index ?>][style]"
-                                value="default"
-                            >
-                        <?php endif; ?>
+                        <input
+                            type="hidden"
+                            name="items[<?= $index ?>][style]"
+                            value="default"
+                        >
 
                         <label class="navigation-enabled-toggle">
                             <input
@@ -573,27 +549,11 @@ $hasPublishedVersion = !empty(
                 </select>
             </div>
 
-            <?php if ($menuKey === 'header') : ?>
-                <div class="form-group">
-                    <label>Gaya</label>
-                    <select
-                        name="items[__INDEX__][style]"
-                    >
-                        <option value="default">
-                            Menu biasa
-                        </option>
-                        <option value="portal">
-                            Tombol Portal
-                        </option>
-                    </select>
-                </div>
-            <?php else : ?>
-                <input
-                    type="hidden"
-                    name="items[__INDEX__][style]"
-                    value="default"
-                >
-            <?php endif; ?>
+            <input
+                type="hidden"
+                name="items[__INDEX__][style]"
+                value="default"
+            >
 
             <label class="navigation-enabled-toggle">
                 <input

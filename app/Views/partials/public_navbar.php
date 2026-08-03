@@ -102,10 +102,6 @@ $isNavActive = static function (
                 $navigationItems as $item
             ) : ?>
                 <?php
-                $isPortal =
-                    ($item['style'] ?? 'default')
-                    === 'portal';
-
                 $isCurrent =
                     website_navigation_item_active(
                         $item,
@@ -117,16 +113,13 @@ $isNavActive = static function (
                     === 'blank';
 
                 $itemUrl = website_navigation_url(
-                    (string) $item['url'],
-                    !$isPortal
+                    (string) $item['url']
                 );
                 ?>
 
                 <a
                     href="<?= esc($itemUrl, 'attr') ?>"
-                    class="<?= $isPortal
-                        ? 'public-portal-button'
-                        : ($isCurrent ? 'active' : '') ?>"
+                    class="<?= $isCurrent ? 'active' : '' ?>"
                     <?= $isCurrent
                         ? 'aria-current="page"'
                         : '' ?>
@@ -134,39 +127,6 @@ $isNavActive = static function (
                         ? 'target="_blank" rel="noopener noreferrer"'
                         : '' ?>
                 >
-                    <?php if ($isPortal) : ?>
-                        <svg
-                            viewBox="0 0 24 24"
-                            aria-hidden="true"
-                            class="public-portal-icon public-portal-button-icon"
-                        >
-                            <path
-                                d="M7 10V8a5 5 0 0 1 10 0v2"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="1.8"
-                                stroke-linecap="round"
-                            ></path>
-
-                            <rect
-                                x="5"
-                                y="10"
-                                width="14"
-                                height="10"
-                                rx="2.5"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="1.8"
-                            ></rect>
-
-                            <circle
-                                cx="12"
-                                cy="15"
-                                r="1.2"
-                                fill="currentColor"
-                            ></circle>
-                        </svg>
-                    <?php endif; ?>
 
                     <span><?= esc($item['label']) ?></span>
                 </a>

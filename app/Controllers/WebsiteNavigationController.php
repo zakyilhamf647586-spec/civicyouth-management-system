@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Libraries\PublicInternalBoundary;
 use App\Models\WebsiteNavigationMenuModel;
 use Config\WebsiteNavigation;
 use RuntimeException;
@@ -181,14 +182,16 @@ class WebsiteNavigationController extends BaseController
                 ? 'blank'
                 : 'self';
 
-            $style = (
+            $requestedStyle = (string) (
                 $postedItem['style'] ?? 'default'
-            ) === 'portal'
-                ? 'portal'
-                : 'default';
+            );
+            $style = 'default';
 
-            if ($menuKey !== 'header') {
-                $style = 'default';
+            if ($requestedStyle === 'portal') {
+                $errors[] =
+                    'Item '
+                    . ($index + 1)
+                    . ': gaya Portal tidak tersedia pada navigasi publik.';
             }
 
             $enabled = isset(
@@ -227,7 +230,24 @@ class WebsiteNavigationController extends BaseController
                 $errors[] =
                     'Item '
                     . ($index + 1)
-                    . ': URL harus berupa path internal, anchor, atau URL http/https yang valid.';
+                    . ': URL harus berupa path publik, anchor, atau URL http/https yang valid.';
+            }
+
+            $boundaryCandidate = [
+                'item_key' => (string) (
+                    $postedItem['item_key'] ?? ''
+                ),
+                'label' => $label,
+                'label_en' => $labelEn,
+                'url' => $url,
+                'style' => $requestedStyle,
+            ];
+
+            if (PublicInternalBoundary::isRestrictedItem($boundaryCandidate)) {
+                $errors[] =
+                    'Item '
+                    . ($index + 1)
+                    . ': navigasi publik tidak boleh mengarah ke login, autentikasi, atau area Portal internal.';
             }
 
             $itemKey = $this->cleanItemKey(

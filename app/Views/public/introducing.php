@@ -658,15 +658,6 @@ ob_start();
                 </a>
             </div>
 
-            <div class="g01-intro-portal-utility" data-intro-reveal>
-                <span>Area internal organisasi</span>
-
-                <a href="<?= public_url('/login') ?>">
-                    Portal Pengurus
-                    <i aria-hidden="true">↗</i>
-                </a>
-            </div>
-
             <footer class="g01-intro-closing">
                 <div class="g01-intro-closing-brand">
                     <span>

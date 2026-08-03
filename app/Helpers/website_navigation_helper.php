@@ -1,5 +1,6 @@
 <?php
 
+use App\Libraries\PublicInternalBoundary;
 use App\Models\WebsiteNavigationMenuModel;
 use Config\WebsiteNavigation;
 
@@ -82,6 +83,10 @@ if (!function_exists('website_navigation_items')) {
             );
         }
 
+        $items = PublicInternalBoundary::filterNavigationItems(
+            array_values(array_filter($items, 'is_array'))
+        );
+
         $normalized = [];
 
         foreach ($items as $index => $item) {
@@ -144,7 +149,6 @@ if (!function_exists('website_navigation_items')) {
                     'contact' => $menuKey === 'footer'
                         ? 'navigation.footer_contact'
                         : 'navigation.contact',
-                    'portal' => 'navigation.portal',
                     default => '',
                 };
 
@@ -180,11 +184,7 @@ if (!function_exists('website_navigation_items')) {
                 ) === 'blank'
                     ? 'blank'
                     : 'self',
-                'style' => (
-                    $item['style'] ?? 'default'
-                ) === 'portal'
-                    ? 'portal'
-                    : 'default',
+                'style' => 'default',
                 'enabled' => true,
             ];
         }

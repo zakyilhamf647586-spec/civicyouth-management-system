@@ -199,10 +199,6 @@ $navigationItems = website_navigation_items('header');
         <nav class="g01-deck__navigation" aria-label="Direktori situs">
             <?php foreach ($navigationItems as $index => $item) : ?>
                 <?php
-                $isPortal =
-                    ($item['style'] ?? 'default')
-                    === 'portal';
-
                 $isCurrent =
                     website_navigation_item_active(
                         $item,
@@ -214,18 +210,15 @@ $navigationItems = website_navigation_items('header');
                     === 'blank';
 
                 $itemUrl = website_navigation_url(
-                    (string) $item['url'],
-                    !$isPortal
+                    (string) $item['url']
                 );
                 ?>
 
                 <a
                     href="<?= esc($itemUrl, 'attr') ?>"
-                    class="g01-deck__link <?= $isPortal
-                        ? 'g01-deck__link--portal'
-                        : '' ?> <?= $isCurrent
-                            ? 'is-current'
-                            : '' ?>"
+                    class="g01-deck__link <?= $isCurrent
+                        ? 'is-current'
+                        : '' ?>"
                     <?= $isCurrent
                         ? 'aria-current="page"'
                         : '' ?>

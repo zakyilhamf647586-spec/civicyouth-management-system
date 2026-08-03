@@ -78,15 +78,6 @@ class WebsiteNavigation extends BaseConfig
                     'style' => 'default',
                     'enabled' => true,
                 ],
-                [
-                    'item_key' => 'portal',
-                    'label' => 'Portal Pengurus',
-                    'url' => '/login',
-                    'active_pages' => [],
-                    'target' => 'self',
-                    'style' => 'portal',
-                    'enabled' => true,
-                ],
             ],
         ],
 

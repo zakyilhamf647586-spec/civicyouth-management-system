@@ -1178,7 +1178,7 @@ class PublicCms extends BaseConfig
                             'max' => 180,
                             'required' => true,
                             'default' =>
-                                'Pesan akan masuk ke Portal Pengurus GARDA 01.',
+                                'Pesan akan diteruskan kepada tim GARDA 01 untuk ditinjau dan ditindaklanjuti.',
                         ],
                     ],
                 ],

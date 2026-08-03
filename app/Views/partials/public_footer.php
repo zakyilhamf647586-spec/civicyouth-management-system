@@ -475,7 +475,6 @@ $mapLabel = $mapLabelParts !== []
             <nav aria-label="Navigasi legal footer">
                 <a href="<?= public_url('/profil') ?>">Profil Organisasi</a>
                 <a href="<?= public_url('/kontak') ?>">Kontak</a>
-                <a href="<?= public_url('/login') ?>">Portal Internal</a>
             </nav>
         </div>
     </div>

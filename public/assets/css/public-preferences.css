@@ -1005,3 +1005,45 @@ html[data-g01-theme="midnight"]
         transition-duration: 0.01ms !important;
     }
 }
+
+
+/* V4.9 — Contact form contrast in Midnight mode */
+html[data-g01-theme="midnight"]
+.public-body .contact-public-form-card
+.contact-public-heading p,
+html[data-g01-theme="midnight"]
+.public-body .contact-public-form-card
+.contact-public-submit p,
+html[data-g01-theme="midnight"]
+.public-body .contact-public-form-card
+.form-group > small {
+    color: #bfd0df;
+}
+
+html[data-g01-theme="midnight"]
+.public-body .contact-public-form-card
+.form-group > label {
+    color: #eef5fb;
+}
+
+html[data-g01-theme="midnight"]
+.public-body .contact-public-form-card
+:where(input, select, textarea) {
+    color: #f3f7fb;
+    background: #081f36;
+    border-color: #426681;
+}
+
+html[data-g01-theme="midnight"]
+.public-body .contact-public-form-card
+:where(input, textarea)::placeholder {
+    color: #91a9bc;
+    opacity: 1;
+}
+
+html[data-g01-theme="midnight"]
+.public-body .contact-public-form-card
+:where(input, select, textarea):focus {
+    border-color: #d9a316;
+    box-shadow: 0 0 0 4px rgba(217, 163, 22, 0.16);
+}
