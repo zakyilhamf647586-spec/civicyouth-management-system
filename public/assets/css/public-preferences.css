@@ -1006,44 +1006,278 @@ html[data-g01-theme="midnight"]
     }
 }
 
+/* =========================================================
+   GARDA 01 V4.10 — Premium activity pillar filter
+   Scope: public activities page only
+   ========================================================= */
 
-/* V4.9 — Contact form contrast in Midnight mode */
-html[data-g01-theme="midnight"]
-.public-body .contact-public-form-card
-.contact-public-heading p,
-html[data-g01-theme="midnight"]
-.public-body .contact-public-form-card
-.contact-public-submit p,
-html[data-g01-theme="midnight"]
-.public-body .contact-public-form-card
-.form-group > small {
-    color: #bfd0df;
+.public-body.public-page--activities .activity-public-filter {
+    --activity-filter-surface: rgba(255, 255, 255, 0.82);
+    --activity-filter-border: rgba(8, 39, 68, 0.11);
+    --activity-filter-divider: rgba(8, 39, 68, 0.08);
+    --activity-filter-ink: #0a2a48;
+    --activity-filter-muted: #6b7f92;
+    --activity-filter-gold: #d8a514;
+    --activity-filter-gold-soft: rgba(216, 165, 20, 0.12);
+    --activity-filter-active-start: #092744;
+    --activity-filter-active-end: #061b31;
+
+    position: relative;
+    isolation: isolate;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
+    gap: 7px;
+    width: min(calc(100% - 48px), var(--container-width));
+    max-width: var(--container-width);
+    margin: 0 auto 34px;
+    padding: 10px;
+    overflow: hidden;
+    counter-reset: activity-pillar;
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255, 255, 255, 0.96),
+            var(--activity-filter-surface)
+        );
+    border: 1px solid var(--activity-filter-border);
+    border-radius: 18px;
+    box-shadow:
+        0 18px 46px rgba(5, 27, 49, 0.075),
+        inset 0 1px 0 rgba(255, 255, 255, 0.92);
 }
 
-html[data-g01-theme="midnight"]
-.public-body .contact-public-form-card
-.form-group > label {
-    color: #eef5fb;
+.public-body.public-page--activities .activity-public-filter::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    top: 0;
+    left: 20px;
+    width: min(190px, 32%);
+    height: 2px;
+    background: linear-gradient(
+        90deg,
+        var(--activity-filter-gold),
+        rgba(216, 165, 20, 0)
+    );
 }
 
-html[data-g01-theme="midnight"]
-.public-body .contact-public-form-card
-:where(input, select, textarea) {
-    color: #f3f7fb;
-    background: #081f36;
-    border-color: #426681;
+.public-body.public-page--activities .activity-public-filter a {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    min-width: 0;
+    min-height: 56px;
+    padding: 10px 12px;
+    overflow: hidden;
+    color: var(--activity-filter-ink);
+    background: rgba(255, 255, 255, 0.36);
+    border: 1px solid transparent;
+    border-radius: 11px;
+    box-shadow: none;
+    font-size: 12.5px;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+        color 220ms ease,
+        background-color 220ms ease,
+        border-color 220ms ease,
+        box-shadow 220ms ease,
+        transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-html[data-g01-theme="midnight"]
-.public-body .contact-public-form-card
-:where(input, textarea)::placeholder {
-    color: #91a9bc;
+.public-body.public-page--activities .activity-public-filter a::before {
+    content: counter(activity-pillar, decimal-leading-zero);
+    flex: 0 0 auto;
+    color: var(--activity-filter-gold);
+    font-size: 8px;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    opacity: 0.82;
+    transform: translateY(-0.5px);
+}
+
+.public-body.public-page--activities
+.activity-public-filter a:first-child::before {
+    content: "00";
+}
+
+.public-body.public-page--activities
+.activity-public-filter a:not(:first-child) {
+    counter-increment: activity-pillar;
+}
+
+.public-body.public-page--activities .activity-public-filter a::after {
+    content: "";
+    position: absolute;
+    right: 12px;
+    bottom: 8px;
+    left: 12px;
+    height: 1px;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(216, 165, 20, 0.78),
+        transparent
+    );
+    opacity: 0;
+    transform: scaleX(0.45);
+    transition:
+        opacity 220ms ease,
+        transform 220ms ease;
+}
+
+.public-body.public-page--activities .activity-public-filter a:hover {
+    color: var(--activity-filter-ink);
+    background: rgba(255, 255, 255, 0.92);
+    border-color: rgba(216, 165, 20, 0.28);
+    box-shadow: 0 10px 24px rgba(5, 27, 49, 0.08);
+    transform: translateY(-2px);
+}
+
+.public-body.public-page--activities .activity-public-filter a:hover::after {
+    opacity: 0.7;
+    transform: scaleX(1);
+}
+
+.public-body.public-page--activities .activity-public-filter a.active,
+.public-body.public-page--activities .activity-public-filter a[aria-current="page"] {
+    color: #ffffff;
+    background:
+        radial-gradient(
+            circle at 100% 0%,
+            rgba(216, 165, 20, 0.18),
+            transparent 42%
+        ),
+        linear-gradient(
+            145deg,
+            var(--activity-filter-active-start),
+            var(--activity-filter-active-end)
+        );
+    border-color: rgba(216, 165, 20, 0.38);
+    box-shadow:
+        0 13px 28px rgba(4, 23, 45, 0.19),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transform: none;
+}
+
+.public-body.public-page--activities
+.activity-public-filter a.active::before,
+.public-body.public-page--activities
+.activity-public-filter a[aria-current="page"]::before {
+    color: #f0bd2e;
     opacity: 1;
 }
 
+.public-body.public-page--activities
+.activity-public-filter a.active::after,
+.public-body.public-page--activities
+.activity-public-filter a[aria-current="page"]::after {
+    opacity: 1;
+    transform: scaleX(1);
+}
+
+.public-body.public-page--activities .activity-public-filter a:focus-visible {
+    outline: 3px solid rgba(216, 165, 20, 0.34);
+    outline-offset: 3px;
+}
+
 html[data-g01-theme="midnight"]
-.public-body .contact-public-form-card
-:where(input, select, textarea):focus {
-    border-color: #d9a316;
-    box-shadow: 0 0 0 4px rgba(217, 163, 22, 0.16);
+.public-body.public-page--activities .activity-public-filter {
+    --activity-filter-surface: rgba(10, 36, 61, 0.92);
+    --activity-filter-border: rgba(132, 169, 199, 0.2);
+    --activity-filter-divider: rgba(177, 202, 224, 0.12);
+    --activity-filter-ink: #e7f0f8;
+    --activity-filter-muted: #9db3c7;
+    --activity-filter-active-start: #173f61;
+    --activity-filter-active-end: #0b2946;
+
+    color: #e7f0f8;
+    background:
+        radial-gradient(
+            circle at 100% 0%,
+            rgba(216, 165, 20, 0.09),
+            transparent 36%
+        ),
+        linear-gradient(
+            145deg,
+            rgba(13, 43, 70, 0.98),
+            var(--activity-filter-surface)
+        );
+    border-color: var(--activity-filter-border);
+    box-shadow:
+        0 20px 48px rgba(0, 8, 18, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.055);
+}
+
+html[data-g01-theme="midnight"]
+.public-body.public-page--activities .activity-public-filter a:not(.active) {
+    color: #d8e5ef;
+    background: rgba(255, 255, 255, 0.025);
+    border-color: rgba(177, 202, 224, 0.08);
+}
+
+html[data-g01-theme="midnight"]
+.public-body.public-page--activities .activity-public-filter a:not(.active):hover,
+html[data-g01-theme="midnight"]
+.public-body.public-page--activities .activity-public-filter a:not(.active):focus-visible {
+    color: #fff4c9;
+    background: rgba(26, 67, 98, 0.88);
+    border-color: rgba(231, 187, 71, 0.38);
+    box-shadow: 0 12px 28px rgba(0, 8, 18, 0.25);
+}
+
+@media (max-width: 1100px) {
+    .public-body.public-page--activities .activity-public-filter {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 720px) {
+    .public-body.public-page--activities .activity-public-filter {
+        display: grid;
+        grid-template-columns: none;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(132px, 42vw);
+        gap: 7px;
+        width: calc(100% - 32px);
+        margin-bottom: 26px;
+        padding: 8px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        border-radius: 16px;
+        scroll-padding-inline: 8px;
+        scroll-snap-type: x proximity;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .public-body.public-page--activities
+    .activity-public-filter::-webkit-scrollbar {
+        display: none;
+    }
+
+    .public-body.public-page--activities .activity-public-filter a {
+        min-height: 52px;
+        scroll-snap-align: start;
+    }
+}
+
+@media (max-width: 420px) {
+    .public-body.public-page--activities .activity-public-filter {
+        grid-auto-columns: minmax(126px, 48vw);
+        width: calc(100% - 24px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .public-body.public-page--activities .activity-public-filter a,
+    .public-body.public-page--activities .activity-public-filter a::after {
+        transition: none;
+    }
 }

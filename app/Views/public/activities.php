@@ -29,6 +29,9 @@
         <a
             href="<?= public_url('/kegiatan') ?>"
             class="<?= empty($selectedProgram) ? 'active' : '' ?>"
+            <?= empty($selectedProgram)
+                ? 'aria-current="page"'
+                : '' ?>
         >
             Semua
         </a>
@@ -49,6 +52,9 @@
                 class="<?= ($selectedProgram ?? '') === $program['slug']
                     ? 'active'
                     : '' ?>"
+                <?= ($selectedProgram ?? '') === $program['slug']
+                    ? 'aria-current="page"'
+                    : '' ?>
             >
                 <?= esc($programName) ?>
             </a>
