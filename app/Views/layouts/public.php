@@ -444,8 +444,27 @@ ob_start();
             ) ?>"
         >
     <?php endif; ?>
+
+    <?php
+    $gardaDesignSystemStylesheet =
+        'assets/css/garda-design-system-v5.css';
+    $gardaDesignSystemStylesheetPath =
+        FCPATH . $gardaDesignSystemStylesheet;
+    ?>
+
+    <?php if (is_file($gardaDesignSystemStylesheetPath)) : ?>
+        <link
+            rel="stylesheet"
+            href="<?= base_url($gardaDesignSystemStylesheet) ?>?v=<?= esc(
+                (string) filemtime(
+                    $gardaDesignSystemStylesheetPath
+                ),
+                'attr'
+            ) ?>"
+        >
+    <?php endif; ?>
 </head>
-<body class="public-body public-experience-v2 public-experience-v3 public-page--<?= esc(
+<body class="public-body public-experience-v2 public-experience-v3 garda-design-v5 public-page--<?= esc(
     $publicPageClass,
     'attr'
 ) ?> <?= !empty($cmsPreview)

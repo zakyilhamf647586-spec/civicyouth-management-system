@@ -1,0 +1,446 @@
+/* =========================================================
+   GARDA 01 — Unified Design System V5
+   Phase V5.0A: canonical tokens, compatibility bridge,
+   shared interaction primitives, and homepage regression fix.
+
+   This file is intentionally loaded last in both the public
+   site and the management portal. Every visible override is
+   scoped to .garda-design-v5 so legacy pages remain stable
+   while the application is migrated module by module.
+========================================================= */
+
+:root {
+    /* Canonical brand palette */
+    --garda-navy-950: #04172d;
+    --garda-navy-900: #061b31;
+    --garda-navy-850: #07223b;
+    --garda-navy-800: #082744;
+    --garda-navy-700: #0d355b;
+
+    --garda-gold-650: #a97705;
+    --garda-gold-600: #b88408;
+    --garda-gold-500: #d9a316;
+    --garda-gold-400: #e7bb47;
+    --garda-gold-200: #f4dda1;
+
+    --garda-ivory-100: #f7f3e9;
+    --garda-ivory-50: #fbf9f4;
+    --garda-white: #ffffff;
+
+    --garda-slate-950: #102a43;
+    --garda-slate-800: #243f55;
+    --garda-slate-700: #486581;
+    --garda-slate-600: #627d98;
+    --garda-slate-400: #9eb0c0;
+    --garda-slate-250: #bcccdc;
+    --garda-slate-150: #d9e2ec;
+    --garda-slate-100: #f0f4f7;
+
+    --garda-success-700: #176b49;
+    --garda-success-100: #e4f4ec;
+    --garda-warning-700: #8a6505;
+    --garda-warning-100: #fff4cf;
+    --garda-danger-700: #9f2f3b;
+    --garda-danger-100: #fde9eb;
+
+    /* Typography */
+    --garda-font-ui:
+        "Segoe UI Variable",
+        "Segoe UI",
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        Arial,
+        sans-serif;
+    --garda-font-editorial: Georgia, "Times New Roman", serif;
+    --garda-font-mono: "Cascadia Mono", "Courier New", monospace;
+
+    /* Geometry */
+    --garda-radius-control: 12px;
+    --garda-radius-card: 20px;
+    --garda-radius-feature: 28px;
+    --garda-radius-shell: 32px;
+    --garda-radius-pill: 999px;
+
+    /* Elevation */
+    --garda-shadow-xs: 0 4px 14px rgba(4, 23, 45, 0.05);
+    --garda-shadow-sm: 0 10px 28px rgba(4, 23, 45, 0.07);
+    --garda-shadow-card: 0 18px 48px rgba(4, 23, 45, 0.09);
+    --garda-shadow-card-hover: 0 26px 68px rgba(4, 23, 45, 0.135);
+    --garda-shadow-overlay: 0 32px 90px rgba(2, 14, 28, 0.28);
+
+    /* Motion */
+    --garda-ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1);
+    --garda-ease-emphasis: cubic-bezier(0.22, 1, 0.36, 1);
+    --garda-duration-fast: 160ms;
+    --garda-duration-normal: 260ms;
+    --garda-duration-slow: 420ms;
+
+    /* Layout */
+    --garda-container: 1180px;
+    --garda-page-gutter: clamp(16px, 2vw, 24px);
+
+    /* Compatibility bridge — legacy CSS now resolves to one source. */
+    --color-navy-950: var(--garda-navy-950);
+    --color-navy-900: var(--garda-navy-900);
+    --color-navy-800: var(--garda-navy-800);
+    --color-navy-700: var(--garda-navy-700);
+    --color-gold-600: var(--garda-gold-600);
+    --color-gold-500: var(--garda-gold-500);
+    --color-gold-400: var(--garda-gold-400);
+    --color-gold-200: var(--garda-gold-200);
+    --color-ivory-100: var(--garda-ivory-100);
+    --color-ivory-50: var(--garda-ivory-50);
+    --color-white: var(--garda-white);
+    --color-slate-900: var(--garda-slate-950);
+    --color-slate-700: var(--garda-slate-700);
+    --color-slate-600: var(--garda-slate-600);
+    --color-slate-300: var(--garda-slate-250);
+    --color-slate-200: var(--garda-slate-150);
+    --color-slate-100: var(--garda-slate-100);
+    --radius-sm: var(--garda-radius-control);
+    --radius-md: 16px;
+    --radius-lg: var(--garda-radius-card);
+    --radius-xl: var(--garda-radius-feature);
+    --radius-pill: var(--garda-radius-pill);
+    --shadow-sm: var(--garda-shadow-sm);
+    --shadow-card: var(--garda-shadow-card);
+    --shadow-large: var(--garda-shadow-overlay);
+    --container-width: var(--garda-container);
+    --transition-fast: var(--garda-duration-fast) ease;
+    --transition-normal: var(--garda-duration-normal) var(--garda-ease-standard);
+}
+
+/* =========================================================
+   Shared surface contracts
+========================================================= */
+
+.garda-design-v5 {
+    font-family: var(--garda-font-ui);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.public-body.garda-design-v5 {
+    --garda-canvas: var(--garda-ivory-100);
+    --garda-canvas-soft: var(--garda-ivory-50);
+    --garda-surface: rgba(255, 255, 255, 0.96);
+    --garda-surface-strong: #ffffff;
+    --garda-surface-muted: #f1f4f6;
+    --garda-border: rgba(9, 43, 73, 0.11);
+    --garda-border-strong: rgba(9, 43, 73, 0.19);
+    --garda-text: var(--garda-navy-950);
+    --garda-text-secondary: var(--garda-slate-700);
+    --garda-text-muted: var(--garda-slate-600);
+    --garda-focus: rgba(216, 165, 31, 0.38);
+}
+
+html[data-g01-theme="midnight"] .public-body.garda-design-v5 {
+    --garda-canvas: #04172d;
+    --garda-canvas-soft: #071d33;
+    --garda-surface: #0b2945;
+    --garda-surface-strong: #0f3252;
+    --garda-surface-muted: #102f4d;
+    --garda-border: rgba(170, 198, 220, 0.15);
+    --garda-border-strong: rgba(227, 187, 72, 0.28);
+    --garda-text: #f1f6fa;
+    --garda-text-secondary: #c0d0dd;
+    --garda-text-muted: #93aabf;
+    --garda-focus: rgba(237, 192, 79, 0.48);
+}
+
+.garda-admin-body.garda-design-v5 {
+    --garda-canvas: #f5f1e8;
+    --garda-canvas-soft: #faf8f3;
+    --garda-surface: #ffffff;
+    --garda-surface-strong: #ffffff;
+    --garda-surface-muted: #f0f4f7;
+    --garda-border: rgba(9, 43, 73, 0.1);
+    --garda-border-strong: rgba(9, 43, 73, 0.17);
+    --garda-text: var(--garda-slate-950);
+    --garda-text-secondary: var(--garda-slate-700);
+    --garda-text-muted: var(--garda-slate-600);
+    --garda-focus: rgba(216, 165, 31, 0.38);
+}
+
+/* Consistent keyboard focus without changing component layout. */
+.garda-design-v5 :where(
+    a,
+    button,
+    input,
+    select,
+    textarea,
+    summary,
+    [tabindex]:not([tabindex="-1"])
+):focus-visible {
+    outline: 3px solid var(--garda-focus);
+    outline-offset: 3px;
+}
+
+/* A restrained compatibility baseline for existing buttons. */
+.garda-design-v5 :where(.btn, button) {
+    font-family: inherit;
+}
+
+.garda-design-v5 :where(.btn) {
+    border-radius: var(--garda-radius-control);
+    transition:
+        transform var(--garda-duration-fast) var(--garda-ease-standard),
+        box-shadow var(--garda-duration-normal) var(--garda-ease-standard),
+        background-color var(--garda-duration-fast) ease,
+        border-color var(--garda-duration-fast) ease,
+        color var(--garda-duration-fast) ease;
+}
+
+.garda-design-v5 :where(.btn):not(:disabled):hover {
+    transform: translateY(-1px);
+}
+
+/* Form controls share one geometry while retaining module colors. */
+.garda-design-v5 :where(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="hidden"]),
+    select,
+    textarea
+) {
+    border-radius: var(--garda-radius-control);
+    font-family: inherit;
+    transition:
+        border-color var(--garda-duration-fast) ease,
+        box-shadow var(--garda-duration-fast) ease,
+        background-color var(--garda-duration-fast) ease;
+}
+
+/* =========================================================
+   V5.0A regression fix — Homepage impact statistics
+
+   The connected black strip originated from the desktop rule
+   in public-experience-v3.css. The V5 contract restores four
+   independent premium cards in Ivory and Midnight, so the
+   component no longer changes character at the 921px boundary.
+========================================================= */
+
+.public-body.garda-design-v5.public-page--home
+.garda-home-statistics {
+    width: calc(100% - var(--garda-page-gutter) - var(--garda-page-gutter));
+    max-width: var(--garda-container);
+    margin: 0 auto;
+    padding: 10px 0 48px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
+    overflow: visible;
+    color: var(--garda-text);
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+.public-body.garda-design-v5.public-page--home
+.garda-home-statistics article {
+    position: relative;
+    min-width: 0;
+    min-height: 154px;
+    padding: 24px 23px 22px;
+    overflow: hidden;
+    color: var(--garda-text);
+    background:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.99),
+            rgba(250, 248, 242, 0.96)
+        );
+    border: 1px solid var(--garda-border);
+    border-radius: var(--garda-radius-card);
+    box-shadow: var(--garda-shadow-sm);
+    transition:
+        transform var(--garda-duration-normal) var(--garda-ease-emphasis),
+        border-color var(--garda-duration-normal) ease,
+        box-shadow var(--garda-duration-normal) var(--garda-ease-standard);
+}
+
+.public-body.garda-design-v5.public-page--home
+.garda-home-statistics article::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 22px;
+    left: 22px;
+    width: auto;
+    height: 3px;
+    background: linear-gradient(
+        90deg,
+        var(--garda-gold-500),
+        var(--garda-gold-400)
+    );
+    border-radius: 0 0 999px 999px;
+    transform: none;
+}
+
+.public-body.garda-design-v5.public-page--home
+.garda-home-statistics article::after {
+    content: "";
+    position: absolute;
+    right: -34px;
+    bottom: -48px;
+    width: 118px;
+    height: 118px;
+    border: 1px solid rgba(216, 165, 31, 0.12);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.public-body.garda-design-v5.public-page--home
+.garda-home-statistics article:hover {
+    color: var(--garda-text);
+    background:
+        linear-gradient(
+            145deg,
+            #ffffff,
+            #fbf8f0
+        );
+    border-color: rgba(216, 165, 31, 0.28);
+    box-shadow: var(--garda-shadow-card);
+    transform: translateY(-4px);
+}
+
+.public-body.garda-design-v5.public-page--home
+.garda-home-statistics article:hover::before {
+    transform: none;
+}
+
+.public-body.garda-design-v5.public-page--home
+.garda-home-statistics strong {
+    display: block;
+    margin: 0;
+    color: var(--garda-navy-950);
+    font-size: clamp(38px, 4vw, 54px);
+    font-weight: 850;
+    line-height: 0.95;
+    letter-spacing: -0.065em;
+}
+
+.public-body.garda-design-v5.public-page--home
+.garda-home-statistics span {
+    display: block;
+    margin-top: 14px;
+    color: var(--garda-navy-850);
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1.35;
+}
+
+.public-body.garda-design-v5.public-page--home
+.garda-home-statistics small {
+    display: block;
+    margin-top: 7px;
+    color: var(--garda-slate-600);
+    font-size: 10px;
+    line-height: 1.55;
+}
+
+html[data-g01-theme="midnight"]
+.public-body.garda-design-v5.public-page--home
+.garda-home-statistics article {
+    color: var(--garda-text);
+    background:
+        radial-gradient(
+            circle at 100% 0,
+            rgba(216, 165, 31, 0.09),
+            transparent 46%
+        ),
+        linear-gradient(145deg, #0f3252, #0a2742);
+    border-color: var(--garda-border);
+    box-shadow: 0 18px 44px rgba(0, 7, 17, 0.24);
+}
+
+html[data-g01-theme="midnight"]
+.public-body.garda-design-v5.public-page--home
+.garda-home-statistics article:hover {
+    background:
+        radial-gradient(
+            circle at 100% 0,
+            rgba(216, 165, 31, 0.14),
+            transparent 48%
+        ),
+        linear-gradient(145deg, #123a5d, #0c2d4b);
+    border-color: rgba(237, 192, 79, 0.34);
+    box-shadow: 0 24px 60px rgba(0, 5, 14, 0.38);
+}
+
+html[data-g01-theme="midnight"]
+.public-body.garda-design-v5.public-page--home
+.garda-home-statistics strong {
+    color: var(--garda-gold-400);
+}
+
+html[data-g01-theme="midnight"]
+.public-body.garda-design-v5.public-page--home
+.garda-home-statistics span {
+    color: #f1f6fa;
+}
+
+html[data-g01-theme="midnight"]
+.public-body.garda-design-v5.public-page--home
+.garda-home-statistics small {
+    color: #9eb4c6;
+}
+
+@media (max-width: 920px) {
+    .public-body.garda-design-v5.public-page--home
+    .garda-home-statistics {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        padding-bottom: 42px;
+    }
+
+    .public-body.garda-design-v5.public-page--home
+    .garda-home-statistics article {
+        min-height: 142px;
+        padding: 21px 20px 20px;
+        border: 1px solid var(--garda-border);
+        border-radius: 18px;
+    }
+}
+
+@media (max-width: 520px) {
+    .public-body.garda-design-v5.public-page--home
+    .garda-home-statistics {
+        width: calc(100% - 28px);
+        gap: 10px;
+    }
+
+    .public-body.garda-design-v5.public-page--home
+    .garda-home-statistics article {
+        min-height: 132px;
+        padding: 19px 17px 18px;
+    }
+
+    .public-body.garda-design-v5.public-page--home
+    .garda-home-statistics strong {
+        font-size: clamp(32px, 11vw, 43px);
+    }
+
+    .public-body.garda-design-v5.public-page--home
+    .garda-home-statistics span {
+        margin-top: 11px;
+        font-size: 11px;
+    }
+
+    .public-body.garda-design-v5.public-page--home
+    .garda-home-statistics small {
+        font-size: 9px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .garda-design-v5 *,
+    .garda-design-v5 *::before,
+    .garda-design-v5 *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}

@@ -211,6 +211,14 @@ $socialPublicationScriptVersion =
         ? (string) filemtime($socialPublicationScriptPath)
         : '1';
 
+$gardaDesignSystemStylesheetPath =
+    FCPATH . 'assets/css/garda-design-system-v5.css';
+
+$gardaDesignSystemStylesheetVersion =
+    is_file($gardaDesignSystemStylesheetPath)
+        ? (string) filemtime($gardaDesignSystemStylesheetPath)
+        : '1';
+
 $userName =
     session()->get('name')
     ?? session()->get('full_name')
@@ -349,9 +357,21 @@ $todayLabel =
             ) ?>"
         >
     <?php endif; ?>
+
+    <?php if (is_file($gardaDesignSystemStylesheetPath)) : ?>
+        <link
+            rel="stylesheet"
+            href="<?= base_url(
+                'assets/css/garda-design-system-v5.css'
+            ) ?>?v=<?= esc(
+                $gardaDesignSystemStylesheetVersion,
+                'attr'
+            ) ?>"
+        >
+    <?php endif; ?>
 </head>
 
-<body class="garda-admin-body">
+<body class="garda-admin-body garda-design-v5">
 
 <!-- SVG icon collection -->
 <svg
