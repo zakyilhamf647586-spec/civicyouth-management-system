@@ -463,6 +463,26 @@ ob_start();
             ) ?>"
         >
     <?php endif; ?>
+
+
+    <?php
+    $gardaPublicShellStylesheet =
+        'assets/css/garda-public-shell-v5.css';
+    $gardaPublicShellStylesheetPath =
+        FCPATH . $gardaPublicShellStylesheet;
+    ?>
+
+    <?php if (is_file($gardaPublicShellStylesheetPath)) : ?>
+        <link
+            rel="stylesheet"
+            href="<?= base_url($gardaPublicShellStylesheet) ?>?v=<?= esc(
+                (string) filemtime(
+                    $gardaPublicShellStylesheetPath
+                ),
+                'attr'
+            ) ?>"
+        >
+    <?php endif; ?>
 </head>
 <body class="public-body public-experience-v2 public-experience-v3 garda-design-v5 public-page--<?= esc(
     $publicPageClass,
