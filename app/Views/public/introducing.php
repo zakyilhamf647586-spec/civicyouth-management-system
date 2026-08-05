@@ -262,6 +262,24 @@ ob_start();
         >
     <?php endif; ?>
 
+
+    <?php
+    $introducingV5Stylesheet =
+        'assets/css/garda-introducing-v5.css';
+    ?>
+
+    <?php if (is_file(FCPATH . $introducingV5Stylesheet)) : ?>
+        <link
+            rel="stylesheet"
+            href="<?= base_url($introducingV5Stylesheet) ?>?v=<?= esc(
+                (string) filemtime(
+                    FCPATH . $introducingV5Stylesheet
+                ),
+                'attr'
+            ) ?>"
+        >
+    <?php endif; ?>
+
     <script
         src="<?= base_url($script) ?>?v=<?= esc(
             $scriptVersion,

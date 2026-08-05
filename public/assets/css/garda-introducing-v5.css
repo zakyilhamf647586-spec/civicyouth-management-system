@@ -1,0 +1,123 @@
+/* =========================================================
+   GARDA 01 — Introducing V5 alignment layer
+   Preserves the cinematic Introducing experience while
+   aligning color, control geometry, focus, and responsive
+   behavior with the unified GARDA 01 design system.
+========================================================= */
+
+.g01-intro-body {
+    --garda-intro-navy-950: #04172d;
+    --garda-intro-navy-900: #061b31;
+    --garda-intro-navy-800: #082744;
+    --garda-intro-gold: #e7bb47;
+    --garda-intro-gold-strong: #d9a316;
+    --garda-intro-ivory: #f7f3e9;
+    --garda-intro-muted: #a7bbca;
+    --garda-intro-radius: 14px;
+    --garda-intro-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    background: var(--garda-intro-navy-950);
+    font-family:
+        "Segoe UI Variable",
+        "Segoe UI",
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        Arial,
+        sans-serif;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+}
+
+.g01-intro-body :where(a, button, [tabindex]):focus-visible {
+    outline: 3px solid rgba(231, 187, 71, 0.48);
+    outline-offset: 4px;
+}
+
+.g01-intro-body .g01-intro-eyebrow,
+.g01-intro-body .g01-intro-progress,
+.g01-intro-body .g01-intro-skip,
+.g01-intro-body .g01-intro-scene-meta,
+.g01-intro-body .g01-intro-coordinates,
+.g01-intro-body .g01-intro-edition {
+    font-family: "Cascadia Mono", "Courier New", monospace;
+}
+
+.g01-intro-body .g01-intro-skip {
+    min-height: 42px;
+    padding: 0 4px;
+    border-bottom-color: rgba(231, 187, 71, 0.3);
+    color: rgba(235, 242, 247, 0.76);
+}
+
+.g01-intro-body .g01-intro-skip:hover {
+    color: var(--garda-intro-gold);
+}
+
+.g01-intro-body .g01-intro-destinations a,
+.g01-intro-body .g01-intro-enter-row a {
+    border-radius: var(--garda-intro-radius);
+    transition:
+        transform 260ms var(--garda-intro-ease),
+        border-color 180ms ease,
+        background-color 180ms ease,
+        color 180ms ease,
+        box-shadow 260ms var(--garda-intro-ease);
+}
+
+.g01-intro-body .g01-intro-destinations a:hover,
+.g01-intro-body .g01-intro-enter-row a:hover {
+    transform: translateY(-2px);
+}
+
+.g01-intro-body .g01-intro-portal-shell {
+    border-color: rgba(231, 187, 71, 0.24);
+    box-shadow:
+        0 34px 90px rgba(0, 8, 18, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+.g01-intro-body .g01-intro-progress-track span,
+.g01-intro-body .g01-intro-eyebrow,
+.g01-intro-body .g01-intro-scroll,
+.g01-intro-body .g01-intro-pillar.is-active {
+    color: var(--garda-intro-gold);
+}
+
+.g01-intro-body .g01-intro-progress-track span {
+    background: linear-gradient(
+        180deg,
+        #f3d16c,
+        var(--garda-intro-gold-strong)
+    );
+    box-shadow: 0 0 18px rgba(231, 187, 71, 0.28);
+}
+
+.g01-intro-body .g01-intro-closing {
+    border-top-color: rgba(231, 187, 71, 0.22);
+}
+
+@media (max-width: 760px) {
+    .g01-intro-body .g01-intro-pointer {
+        display: none;
+    }
+
+    .g01-intro-body .g01-intro-skip {
+        right: 16px;
+        bottom: 14px;
+    }
+
+    .g01-intro-body .g01-intro-progress {
+        left: 12px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .g01-intro-body *,
+    .g01-intro-body *::before,
+    .g01-intro-body *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+    }
+}

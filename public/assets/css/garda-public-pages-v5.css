@@ -1,0 +1,1714 @@
+/* =========================================================
+   GARDA 01 — Unified Public Pages V5
+   Phase V5.0C: page hierarchy, editorial surfaces, cards,
+   forms, filters, detail views, and responsive behavior.
+
+   Loaded after garda-design-system-v5.css and
+   garda-public-shell-v5.css. All rules are scoped to the
+   public V5 body contract to avoid Portal regressions.
+========================================================= */
+
+.public-body.garda-design-v5 {
+    --garda-public-section-gap: clamp(54px, 7vw, 92px);
+    --garda-public-copy: min(720px, 100%);
+    --garda-public-panel:
+        linear-gradient(
+            145deg,
+            rgba(255, 255, 255, 0.985),
+            rgba(249, 247, 241, 0.965)
+        );
+    --garda-public-panel-muted:
+        linear-gradient(
+            145deg,
+            rgba(246, 248, 250, 0.98),
+            rgba(238, 243, 247, 0.95)
+        );
+    --garda-public-hero:
+        radial-gradient(
+            circle at 88% 12%,
+            rgba(231, 187, 71, 0.16),
+            transparent 31%
+        ),
+        linear-gradient(135deg, #04172d, #082b49 68%, #0b3659);
+    --garda-public-dark-card:
+        radial-gradient(
+            circle at 92% 8%,
+            rgba(231, 187, 71, 0.15),
+            transparent 34%
+        ),
+        linear-gradient(145deg, #061b31, #0a3151);
+}
+
+html[data-g01-theme="midnight"] .public-body.garda-design-v5 {
+    --garda-public-panel:
+        linear-gradient(
+            145deg,
+            rgba(12, 40, 68, 0.985),
+            rgba(7, 29, 51, 0.97)
+        );
+    --garda-public-panel-muted:
+        linear-gradient(
+            145deg,
+            rgba(15, 48, 78, 0.98),
+            rgba(9, 34, 58, 0.97)
+        );
+    --garda-public-dark-card:
+        radial-gradient(
+            circle at 92% 8%,
+            rgba(231, 187, 71, 0.13),
+            transparent 34%
+        ),
+        linear-gradient(145deg, #071d33, #0d3558);
+}
+
+/* =========================================================
+   Canonical public canvas and type hierarchy
+========================================================= */
+
+.public-body.garda-design-v5 .public-main {
+    position: relative;
+    min-height: 65vh;
+    overflow: clip;
+    color: var(--garda-text);
+    background:
+        radial-gradient(
+            circle at 8% 11%,
+            rgba(231, 187, 71, 0.07),
+            transparent 23%
+        ),
+        linear-gradient(
+            180deg,
+            var(--garda-canvas-soft),
+            var(--garda-canvas)
+        );
+}
+
+.public-body.garda-design-v5 .public-main::before {
+    content: "";
+    position: fixed;
+    inset: var(--garda-shell-height) 0 auto;
+    height: 260px;
+    z-index: 0;
+    opacity: 0.58;
+    pointer-events: none;
+    background:
+        linear-gradient(
+            90deg,
+            transparent 0 11%,
+            rgba(9, 43, 73, 0.035) 11% 11.08%,
+            transparent 11.08% 88.9%,
+            rgba(9, 43, 73, 0.035) 88.9% 88.98%,
+            transparent 88.98%
+        );
+}
+
+html[data-g01-theme="midnight"]
+.public-body.garda-design-v5 .public-main::before {
+    opacity: 0.35;
+    background:
+        linear-gradient(
+            90deg,
+            transparent 0 11%,
+            rgba(203, 220, 234, 0.04) 11% 11.08%,
+            transparent 11.08% 88.9%,
+            rgba(203, 220, 234, 0.04) 88.9% 88.98%,
+            transparent 88.98%
+        );
+}
+
+.public-body.garda-design-v5 .public-main > * {
+    position: relative;
+    z-index: 1;
+}
+
+.public-body.garda-design-v5 :where(
+    .public-page-hero,
+    .public-editorial-hero,
+    .program-detail-hero,
+    .activity-detail-hero,
+    .officials-hero,
+    .contact-public-hero,
+    .garda-home-hero
+) {
+    width: calc(100% - (var(--garda-page-gutter) * 2));
+    max-width: var(--garda-container);
+    margin-inline: auto;
+}
+
+.public-body.garda-design-v5 :where(
+    .public-content-section,
+    .public-page-cta,
+    .activity-detail-main,
+    .activity-editorial-section,
+    .activity-impact-section,
+    .activity-related-section,
+    .officials-structure-section,
+    .officials-profile-section,
+    .officials-public-cta,
+    .contact-channel-section,
+    .contact-public-wrapper,
+    .garda-home-section,
+    .g01-impact-story,
+    .garda-home-collaboration
+) {
+    width: calc(100% - (var(--garda-page-gutter) * 2));
+    max-width: var(--garda-container);
+    margin-inline: auto;
+}
+
+.public-body.garda-design-v5 :where(
+    .public-kicker,
+    .garda-home-eyebrow,
+    .activity-detail-program,
+    .public-activity-program,
+    .program-pillar-label,
+    .official-profile-division
+) {
+    color: var(--garda-gold-600);
+    font-size: 11px;
+    font-weight: 850;
+    letter-spacing: 0.12em;
+    line-height: 1.3;
+    text-transform: uppercase;
+}
+
+html[data-g01-theme="midnight"]
+.public-body.garda-design-v5 :where(
+    .public-kicker,
+    .garda-home-eyebrow,
+    .activity-detail-program,
+    .public-activity-program,
+    .program-pillar-label,
+    .official-profile-division
+) {
+    color: var(--garda-gold-400);
+}
+
+.public-body.garda-design-v5 :where(
+    .public-section-header,
+    .garda-home-section-heading,
+    .officials-section-heading,
+    .activity-editorial-heading,
+    .contact-public-heading
+) {
+    max-width: 760px;
+}
+
+.public-body.garda-design-v5 :where(
+    .public-section-header,
+    .garda-home-section-heading,
+    .officials-section-heading,
+    .activity-editorial-heading,
+    .contact-public-heading
+) h2 {
+    margin: 10px 0 0;
+    color: var(--garda-text);
+    font-size: clamp(34px, 4.6vw, 56px);
+    font-weight: 850;
+    line-height: 1.02;
+    letter-spacing: -0.045em;
+}
+
+.public-body.garda-design-v5 :where(
+    .public-section-header,
+    .garda-home-section-heading,
+    .officials-section-heading,
+    .activity-editorial-heading,
+    .contact-public-heading
+) p {
+    margin: 16px 0 0;
+    max-width: var(--garda-public-copy);
+    color: var(--garda-text-secondary);
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+/* =========================================================
+   Shared hero contract
+========================================================= */
+
+.public-body.garda-design-v5 :where(
+    .public-editorial-hero,
+    .program-detail-hero,
+    .activity-detail-hero,
+    .officials-hero,
+    .contact-public-hero
+) {
+    padding-top: clamp(44px, 6vw, 78px);
+    padding-bottom: 34px;
+}
+
+.public-body.garda-design-v5 :where(
+    .public-editorial-hero-copy,
+    .program-detail-copy,
+    .activity-detail-hero-copy,
+    .officials-hero-copy,
+    .contact-public-hero-copy
+) {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding: clamp(34px, 5vw, 58px);
+    color: #fff;
+    background: var(--garda-public-hero);
+    border: 1px solid rgba(231, 187, 71, 0.28);
+    border-radius: var(--garda-radius-shell);
+    box-shadow: var(--garda-shadow-overlay);
+}
+
+.public-body.garda-design-v5 :where(
+    .public-editorial-hero-copy,
+    .program-detail-copy,
+    .activity-detail-hero-copy,
+    .officials-hero-copy,
+    .contact-public-hero-copy
+)::before {
+    content: "G01";
+    position: absolute;
+    right: -12px;
+    bottom: -38px;
+    z-index: -1;
+    color: rgba(255, 255, 255, 0.035);
+    font-size: clamp(120px, 16vw, 230px);
+    font-weight: 900;
+    line-height: 0.8;
+    letter-spacing: -0.08em;
+    pointer-events: none;
+}
+
+.public-body.garda-design-v5 :where(
+    .public-editorial-hero-copy,
+    .program-detail-copy,
+    .activity-detail-hero-copy,
+    .officials-hero-copy,
+    .contact-public-hero-copy
+) h1 {
+    margin: 14px 0 18px;
+    max-width: 900px;
+    color: #fff;
+    font-size: clamp(46px, 6vw, 78px);
+    font-weight: 900;
+    line-height: 0.98;
+    letter-spacing: -0.055em;
+}
+
+.public-body.garda-design-v5 :where(
+    .public-editorial-hero-copy,
+    .program-detail-copy,
+    .activity-detail-hero-copy,
+    .officials-hero-copy,
+    .contact-public-hero-copy
+) > p {
+    max-width: 750px;
+    color: rgba(229, 239, 247, 0.84);
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+.public-body.garda-design-v5 .public-editorial-actions {
+    gap: 11px;
+    margin-top: 28px;
+}
+
+.public-body.garda-design-v5 .public-main :where(.btn, .public-read-more) {
+    min-height: 44px;
+    padding: 0 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: var(--garda-radius-control);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.005em;
+    text-decoration: none;
+}
+
+.public-body.garda-design-v5 .public-main .btn-primary {
+    color: #fff;
+    background: linear-gradient(145deg, #082f4f, #041d35);
+    border: 1px solid rgba(231, 187, 71, 0.26);
+    box-shadow: 0 12px 26px rgba(4, 23, 45, 0.16);
+}
+
+.public-body.garda-design-v5 .public-main .btn-primary:hover {
+    color: #04172d;
+    background: linear-gradient(145deg, var(--garda-gold-400), #d5a315);
+    border-color: var(--garda-gold-400);
+    box-shadow: 0 16px 34px rgba(170, 119, 5, 0.2);
+}
+
+.public-body.garda-design-v5 .public-main .btn-secondary,
+.public-body.garda-design-v5 .garda-home-outline-button {
+    color: var(--garda-text);
+    background: rgba(255, 255, 255, 0.62);
+    border: 1px solid var(--garda-border-strong);
+    box-shadow: var(--garda-shadow-xs);
+}
+
+html[data-g01-theme="midnight"]
+.public-body.garda-design-v5 .public-main .btn-secondary,
+html[data-g01-theme="midnight"]
+.public-body.garda-design-v5 .garda-home-outline-button {
+    color: #edf5fb;
+    background: rgba(15, 48, 78, 0.92);
+    border-color: rgba(177, 202, 224, 0.2);
+}
+
+/* =========================================================
+   Shared cards and CTA
+========================================================= */
+
+.public-body.garda-design-v5 :where(
+    .public-content-card,
+    .public-brand-lockup-card,
+    .public-program-summary,
+    .profile-identity-card,
+    .profile-vision-card,
+    .profile-mission-card,
+    .profile-value-grid article,
+    .program-pillar-card,
+    .program-detail-number,
+    .program-focus-grid > div,
+    .program-campaign-card,
+    .public-activity-card,
+    .activity-detail-program-card,
+    .activity-detail-summary,
+    .activity-editorial-section,
+    .activity-related-card,
+    .officials-hero-emblem,
+    .officials-structure-section,
+    .officials-profile-section,
+    .official-profile-card,
+    .contact-public-identity,
+    .contact-channel-grid article,
+    .contact-public-form-card,
+    .contact-public-sidebar-card,
+    .contact-public-location-card
+) {
+    border: 1px solid var(--garda-border);
+    border-radius: var(--garda-radius-card);
+    box-shadow: var(--garda-shadow-card);
+}
+
+.public-body.garda-design-v5 :where(
+    .public-content-card,
+    .public-brand-lockup-card,
+    .public-program-summary,
+    .profile-mission-card,
+    .profile-value-grid article,
+    .program-pillar-card,
+    .program-detail-number,
+    .program-focus-grid > div,
+    .public-activity-card,
+    .activity-detail-summary,
+    .activity-related-card,
+    .officials-hero-emblem,
+    .official-profile-card,
+    .contact-public-identity,
+    .contact-channel-grid article,
+    .contact-public-form-card,
+    .contact-public-sidebar-card,
+    .contact-public-location-card
+) {
+    color: var(--garda-text);
+    background: var(--garda-public-panel);
+}
+
+.public-body.garda-design-v5 :where(
+    .profile-value-grid article,
+    .program-pillar-card,
+    .public-activity-card,
+    .activity-related-card,
+    .official-profile-card,
+    .contact-channel-grid article
+) {
+    transition:
+        transform var(--garda-duration-normal) var(--garda-ease-emphasis),
+        box-shadow var(--garda-duration-normal) var(--garda-ease-standard),
+        border-color var(--garda-duration-normal) ease;
+}
+
+@media (hover: hover) {
+    .public-body.garda-design-v5 :where(
+        .profile-value-grid article,
+        .program-pillar-card,
+        .public-activity-card,
+        .activity-related-card,
+        .official-profile-card,
+        .contact-channel-grid article
+    ):hover {
+        transform: translateY(-4px);
+        border-color: rgba(216, 163, 22, 0.32);
+        box-shadow: var(--garda-shadow-card-hover);
+    }
+}
+
+.public-body.garda-design-v5 .public-page-cta {
+    position: relative;
+    isolation: isolate;
+    margin-top: var(--garda-public-section-gap);
+    margin-bottom: var(--garda-public-section-gap);
+    padding: clamp(32px, 5vw, 58px);
+    overflow: hidden;
+    color: #fff;
+    background: var(--garda-public-dark-card);
+    border: 1px solid rgba(231, 187, 71, 0.25);
+    border-radius: var(--garda-radius-feature);
+    box-shadow: var(--garda-shadow-card);
+}
+
+.public-body.garda-design-v5 .public-page-cta::after {
+    content: "GARDA 01";
+    position: absolute;
+    right: 18px;
+    bottom: -28px;
+    z-index: -1;
+    color: rgba(255, 255, 255, 0.035);
+    font-size: clamp(76px, 11vw, 160px);
+    font-weight: 900;
+    line-height: 0.8;
+    letter-spacing: -0.07em;
+}
+
+.public-body.garda-design-v5 .public-page-cta h2 {
+    max-width: 760px;
+    margin: 12px 0 0;
+    color: #fff;
+    font-size: clamp(32px, 4.5vw, 54px);
+    line-height: 1.04;
+    letter-spacing: -0.045em;
+}
+
+.public-body.garda-design-v5 .public-page-cta p {
+    max-width: 720px;
+    color: rgba(225, 237, 246, 0.78);
+    line-height: 1.75;
+}
+
+/* =========================================================
+   Home
+========================================================= */
+
+.public-body.garda-design-v5.public-page--home .garda-home {
+    padding-bottom: 20px;
+}
+
+.public-body.garda-design-v5.public-page--home .garda-home-hero {
+    padding-top: clamp(24px, 4vw, 54px);
+    gap: 20px;
+}
+
+.public-body.garda-design-v5.public-page--home .garda-home-hero-copy {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    min-height: 540px;
+    padding: clamp(34px, 5vw, 58px);
+    color: #fff;
+    background: var(--garda-public-hero);
+    border: 1px solid rgba(231, 187, 71, 0.28);
+    border-radius: var(--garda-radius-shell);
+    box-shadow: var(--garda-shadow-overlay);
+}
+
+.public-body.garda-design-v5.public-page--home .garda-home-hero-copy h1 {
+    margin: 22px 0 8px;
+    color: #fff;
+    font-size: clamp(58px, 8vw, 104px);
+    font-weight: 900;
+    line-height: 0.88;
+    letter-spacing: -0.07em;
+}
+
+.public-body.garda-design-v5.public-page--home .garda-home-hero-copy h2 {
+    margin: 0;
+    color: var(--garda-gold-400);
+    font-size: clamp(24px, 3vw, 36px);
+    line-height: 1.1;
+}
+
+.public-body.garda-design-v5.public-page--home .garda-home-manifesto {
+    margin-top: 30px;
+    padding-left: 18px;
+    color: #fff;
+    border-left: 2px solid var(--garda-gold-500);
+    font-size: clamp(16px, 1.8vw, 19px);
+    line-height: 1.65;
+}
+
+.public-body.garda-design-v5.public-page--home .garda-home-introduction {
+    max-width: 720px;
+    color: rgba(225, 237, 246, 0.8);
+    line-height: 1.8;
+}
+
+.public-body.garda-design-v5.public-page--home .garda-home-hero-watermark {
+    right: -2px;
+    bottom: -35px;
+    color: rgba(255, 255, 255, 0.038);
+    font-size: clamp(120px, 16vw, 230px);
+}
+
+.public-body.garda-design-v5.public-page--home .garda-home-featured {
+    overflow: hidden;
+    background: var(--garda-public-panel);
+    border: 1px solid var(--garda-border);
+    border-radius: var(--garda-radius-feature);
+    box-shadow: var(--garda-shadow-card);
+}
+
+.public-body.garda-design-v5.public-page--home .garda-home-featured-media {
+    min-height: 310px;
+}
+
+.public-body.garda-design-v5.public-page--home .garda-home-featured-content {
+    padding: 26px;
+}
+
+.public-body.garda-design-v5.public-page--home .garda-home-featured-content h3 {
+    color: var(--garda-text);
+    font-size: clamp(24px, 2.8vw, 34px);
+    line-height: 1.1;
+}
+
+.public-body.garda-design-v5.public-page--home :where(
+    .garda-home-values,
+    .garda-home-programs,
+    .garda-home-latest
+) {
+    padding-top: var(--garda-public-section-gap);
+    padding-bottom: 0;
+}
+
+.public-body.garda-design-v5.public-page--home .garda-home-value-grid,
+.public-body.garda-design-v5.public-page--home .garda-home-program-grid,
+.public-body.garda-design-v5.public-page--home .garda-home-activity-grid {
+    gap: 18px;
+}
+
+.public-body.garda-design-v5.public-page--home :where(
+    .garda-home-value-grid article,
+    .garda-home-program-card,
+    .garda-home-activity-card
+) {
+    position: relative;
+    overflow: hidden;
+    background: var(--garda-public-panel);
+    border: 1px solid var(--garda-border);
+    border-radius: var(--garda-radius-card);
+    box-shadow: var(--garda-shadow-card);
+}
+
+.public-body.garda-design-v5.public-page--home .garda-home-value-grid article {
+    min-height: 260px;
+    padding: 30px;
+}
+
+.public-body.garda-design-v5.public-page--home .garda-home-value-grid article::after {
+    content: attr(data-value);
+    position: absolute;
+    right: 14px;
+    bottom: -20px;
+    color: rgba(4, 23, 45, 0.045);
+    font-size: 104px;
+    font-weight: 900;
+    line-height: 1;
+}
+
+html[data-g01-theme="midnight"]
+.public-body.garda-design-v5.public-page--home
+.garda-home-value-grid article::after {
+    color: rgba(230, 240, 248, 0.045);
+}
+
+.public-body.garda-design-v5.public-page--home .garda-home-program-card {
+    min-height: 300px;
+    padding: 28px;
+}
+
+.public-body.garda-design-v5.public-page--home .g01-impact-story {
+    margin-top: var(--garda-public-section-gap);
+    overflow: hidden;
+    border: 1px solid var(--garda-border);
+    border-radius: var(--garda-radius-feature);
+    box-shadow: var(--garda-shadow-card);
+}
+
+.public-body.garda-design-v5.public-page--home .g01-impact-story__content {
+    background: var(--garda-public-dark-card);
+}
+
+.public-body.garda-design-v5.public-page--home .garda-home-activity-content {
+    padding: 24px;
+}
+
+.public-body.garda-design-v5.public-page--home .garda-home-collaboration {
+    margin-top: var(--garda-public-section-gap);
+    margin-bottom: var(--garda-public-section-gap);
+    padding: clamp(34px, 5vw, 58px);
+    overflow: hidden;
+    background: var(--garda-public-dark-card);
+    border: 1px solid rgba(231, 187, 71, 0.25);
+    border-radius: var(--garda-radius-feature);
+    box-shadow: var(--garda-shadow-card);
+}
+
+.public-body.garda-design-v5.public-page--home .garda-home-collaboration h2 {
+    color: #fff;
+    font-size: clamp(34px, 4.8vw, 58px);
+    letter-spacing: -0.045em;
+}
+
+.public-body.garda-design-v5.public-page--home .garda-home-collaboration p {
+    color: rgba(225, 237, 246, 0.8);
+}
+
+/* =========================================================
+   Profile
+========================================================= */
+
+.public-body.garda-design-v5.public-page--profile .public-editorial-hero {
+    grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.55fr);
+    gap: 20px;
+}
+
+.public-body.garda-design-v5.public-page--profile .public-brand-lockup-card {
+    position: relative;
+    overflow: hidden;
+    padding: 36px 28px;
+    border-top: 0;
+}
+
+.public-body.garda-design-v5.public-page--profile .public-brand-lockup-card::before {
+    content: "IDENTITY";
+    position: absolute;
+    top: 18px;
+    right: -8px;
+    color: rgba(4, 23, 45, 0.045);
+    font-size: 42px;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+}
+
+.public-body.garda-design-v5.public-page--profile .profile-introduction-grid,
+.public-body.garda-design-v5.public-page--profile .profile-direction-grid {
+    gap: 18px;
+}
+
+.public-body.garda-design-v5.public-page--profile .profile-story-card,
+.public-body.garda-design-v5.public-page--profile .profile-identity-card,
+.public-body.garda-design-v5.public-page--profile .profile-vision-card,
+.public-body.garda-design-v5.public-page--profile .profile-mission-card {
+    padding: clamp(28px, 4vw, 42px);
+}
+
+.public-body.garda-design-v5.public-page--profile .profile-identity-card,
+.public-body.garda-design-v5.public-page--profile .profile-vision-card {
+    color: #fff;
+    background: var(--garda-public-dark-card);
+}
+
+.public-body.garda-design-v5.public-page--profile .profile-identity-card h2,
+.public-body.garda-design-v5.public-page--profile .profile-vision-card h3 {
+    color: #fff;
+}
+
+.public-body.garda-design-v5.public-page--profile .profile-value-grid {
+    gap: 16px;
+}
+
+.public-body.garda-design-v5.public-page--profile .profile-value-grid article {
+    min-height: 220px;
+    padding: 28px;
+    border-top: 1px solid var(--garda-border);
+}
+
+.public-body.garda-design-v5.public-page--profile .profile-value-grid article::before {
+    content: "";
+    display: block;
+    width: 34px;
+    height: 3px;
+    margin-bottom: 20px;
+    background: var(--garda-gold-500);
+    border-radius: 999px;
+}
+
+/* =========================================================
+   Programs and program detail
+========================================================= */
+
+.public-body.garda-design-v5.public-page--programs .public-program-hero {
+    grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.55fr);
+    gap: 20px;
+}
+
+.public-body.garda-design-v5.public-page--programs .public-program-summary {
+    padding: 36px 28px;
+    border-top: 0;
+}
+
+.public-body.garda-design-v5.public-page--programs .public-program-summary > strong {
+    color: var(--garda-text);
+    font-size: clamp(74px, 8vw, 104px);
+    letter-spacing: -0.06em;
+}
+
+.public-body.garda-design-v5.public-page--programs .program-pillar-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.public-body.garda-design-v5.public-page--programs .program-pillar-card {
+    min-height: 330px;
+    padding: 30px;
+}
+
+.public-body.garda-design-v5.public-page--programs .program-pillar-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 30px;
+    left: 30px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--garda-gold-500), transparent);
+}
+
+.public-body.garda-design-v5.public-page--programs .program-pillar-number {
+    color: rgba(4, 23, 45, 0.045);
+    font-size: 100px;
+}
+
+html[data-g01-theme="midnight"]
+.public-body.garda-design-v5.public-page--programs .program-pillar-number {
+    color: rgba(230, 240, 248, 0.045);
+}
+
+.public-body.garda-design-v5.public-page--program-detail .program-detail-hero {
+    grid-template-columns: minmax(0, 1.5fr) minmax(240px, 0.5fr);
+    gap: 20px;
+}
+
+.public-body.garda-design-v5.public-page--program-detail .program-detail-number {
+    position: relative;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    min-height: 100%;
+    color: var(--garda-text);
+}
+
+.public-body.garda-design-v5.public-page--program-detail .program-detail-number strong {
+    color: var(--garda-gold-500);
+    font-size: clamp(82px, 10vw, 136px);
+    letter-spacing: -0.08em;
+}
+
+.public-body.garda-design-v5.public-page--program-detail .program-detail-grid {
+    gap: 18px;
+}
+
+.public-body.garda-design-v5.public-page--program-detail .program-focus-grid {
+    gap: 12px;
+}
+
+.public-body.garda-design-v5.public-page--program-detail .program-focus-grid > div {
+    padding: 18px;
+    box-shadow: none;
+}
+
+.public-body.garda-design-v5.public-page--program-detail .program-campaign-card {
+    padding: 34px;
+    color: #fff;
+    background: var(--garda-public-dark-card);
+}
+
+.public-body.garda-design-v5.public-page--program-detail .program-campaign-card h2,
+.public-body.garda-design-v5.public-page--program-detail .program-campaign-card p {
+    color: #fff;
+}
+
+/* =========================================================
+   Activities index
+========================================================= */
+
+.public-body.garda-design-v5.public-page--activities .public-page-hero {
+    padding-top: clamp(48px, 6vw, 82px);
+    padding-bottom: 18px;
+}
+
+.public-body.garda-design-v5.public-page--activities .public-page-hero h1 {
+    margin: 12px 0 14px;
+    color: var(--garda-text);
+    font-size: clamp(48px, 6vw, 76px);
+    font-weight: 900;
+    line-height: 0.98;
+    letter-spacing: -0.055em;
+}
+
+.public-body.garda-design-v5.public-page--activities .public-page-hero p {
+    max-width: 760px;
+    color: var(--garda-text-secondary);
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+.public-body.garda-design-v5.public-page--activities .activity-public-filter {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: 6px;
+    margin-bottom: 26px;
+    padding: 7px;
+    overflow: hidden;
+    background: var(--garda-public-panel-muted);
+    border: 1px solid var(--garda-border);
+    border-radius: 16px;
+    box-shadow: var(--garda-shadow-xs);
+}
+
+.public-body.garda-design-v5.public-page--activities .activity-public-filter a {
+    min-width: 0;
+    min-height: 54px;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    color: var(--garda-text-secondary);
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 11px;
+    font-size: 12px;
+    font-weight: 800;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.public-body.garda-design-v5.public-page--activities
+.activity-public-filter a:hover {
+    color: var(--garda-text);
+    background: rgba(255, 255, 255, 0.54);
+    border-color: var(--garda-border);
+}
+
+html[data-g01-theme="midnight"]
+.public-body.garda-design-v5.public-page--activities
+.activity-public-filter a:hover {
+    background: rgba(255, 255, 255, 0.055);
+}
+
+.public-body.garda-design-v5.public-page--activities
+.activity-public-filter a.active {
+    color: #fff;
+    background: linear-gradient(145deg, #0a3151, #041b32);
+    border-color: rgba(231, 187, 71, 0.34);
+    box-shadow: 0 10px 22px rgba(4, 23, 45, 0.16);
+}
+
+.public-body.garda-design-v5.public-page--activities .public-activity-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.public-body.garda-design-v5.public-page--activities .public-activity-card {
+    overflow: hidden;
+}
+
+.public-body.garda-design-v5.public-page--activities .public-activity-image-link,
+.public-body.garda-design-v5.public-page--activities .public-activity-placeholder {
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+}
+
+.public-body.garda-design-v5.public-page--activities .public-activity-image-link img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--garda-duration-slow) var(--garda-ease-emphasis);
+}
+
+@media (hover: hover) {
+    .public-body.garda-design-v5.public-page--activities
+    .public-activity-card:hover .public-activity-image-link img {
+        transform: scale(1.035);
+    }
+}
+
+.public-body.garda-design-v5.public-page--activities .public-activity-card-content {
+    padding: 26px;
+}
+
+.public-body.garda-design-v5.public-page--activities .public-activity-card h3 {
+    margin: 12px 0 8px;
+    color: var(--garda-text);
+    font-size: clamp(22px, 2.5vw, 30px);
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+}
+
+.public-body.garda-design-v5.public-page--activities .public-activity-excerpt,
+.public-body.garda-design-v5.public-page--activities .public-activity-location {
+    color: var(--garda-text-secondary);
+    line-height: 1.7;
+}
+
+.public-body.garda-design-v5.public-page--activities .public-read-more {
+    min-height: auto;
+    margin-top: 12px;
+    padding: 0;
+    color: var(--garda-gold-600);
+    background: transparent;
+}
+
+/* =========================================================
+   Activity detail
+========================================================= */
+
+.public-body.garda-design-v5.public-page--activity-detail .activity-detail-hero {
+    grid-template-columns: minmax(0, 1.5fr) minmax(230px, 0.5fr);
+    gap: 20px;
+}
+
+.public-body.garda-design-v5.public-page--activity-detail
+.activity-detail-program-card {
+    min-height: 100%;
+    padding: 34px 28px;
+    display: grid;
+    place-items: center;
+    color: #fff;
+    text-align: center;
+    background: var(--garda-public-dark-card);
+}
+
+.public-body.garda-design-v5.public-page--activity-detail .activity-detail-main {
+    display: grid;
+    grid-template-columns: minmax(0, 1.55fr) minmax(280px, 0.55fr);
+    gap: 18px;
+    margin-top: 28px;
+    padding: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+.public-body.garda-design-v5.public-page--activity-detail
+.activity-detail-documentation {
+    overflow: hidden;
+    background: var(--garda-public-panel);
+    border: 1px solid var(--garda-border);
+    border-radius: var(--garda-radius-feature);
+    box-shadow: var(--garda-shadow-card);
+}
+
+.public-body.garda-design-v5.public-page--activity-detail
+.activity-detail-main-image,
+.public-body.garda-design-v5.public-page--activity-detail
+.activity-detail-image-placeholder {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+}
+
+.public-body.garda-design-v5.public-page--activity-detail .activity-detail-caption {
+    padding: 20px 24px;
+    color: var(--garda-text-secondary);
+    background: transparent;
+}
+
+.public-body.garda-design-v5.public-page--activity-detail .activity-detail-summary {
+    position: sticky;
+    top: calc(var(--garda-shell-height) + 18px);
+    align-self: start;
+    padding: 28px;
+}
+
+.public-body.garda-design-v5.public-page--activity-detail
+.activity-detail-summary-heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+}
+
+.public-body.garda-design-v5.public-page--activity-detail
+.activity-detail-summary h2 {
+    margin: 8px 0 0;
+    color: var(--garda-text);
+    font-size: clamp(28px, 3vw, 38px);
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+}
+
+.public-body.garda-design-v5.public-page--activity-detail
+.activity-detail-summary-monogram {
+    color: var(--garda-gold-500);
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+}
+
+.public-body.garda-design-v5.public-page--activity-detail
+.activity-detail-summary-list {
+    margin: 22px 0 0;
+}
+
+.public-body.garda-design-v5.public-page--activity-detail
+.activity-detail-summary-row {
+    padding: 14px 0;
+    border-bottom: 1px solid var(--garda-border);
+}
+
+.public-body.garda-design-v5.public-page--activity-detail
+.activity-detail-summary-row dt {
+    color: var(--garda-text-muted);
+    font-size: 10px;
+    font-weight: 850;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.public-body.garda-design-v5.public-page--activity-detail
+.activity-detail-summary-row dd {
+    margin: 6px 0 0;
+    color: var(--garda-text);
+    font-size: 14px;
+    font-weight: 750;
+    line-height: 1.5;
+}
+
+.public-body.garda-design-v5.public-page--activity-detail
+.activity-editorial-section,
+.public-body.garda-design-v5.public-page--activity-detail
+.activity-impact-section,
+.public-body.garda-design-v5.public-page--activity-detail
+.activity-related-section {
+    margin-top: var(--garda-public-section-gap);
+}
+
+.public-body.garda-design-v5.public-page--activity-detail
+.activity-editorial-section {
+    padding: clamp(30px, 5vw, 52px);
+}
+
+.public-body.garda-design-v5.public-page--activity-detail
+.activity-impact-section {
+    display: grid;
+    grid-template-columns: 180px minmax(0, 1fr);
+    gap: 28px;
+    padding: clamp(32px, 5vw, 54px);
+    color: #fff;
+    background: var(--garda-public-dark-card);
+    border: 1px solid rgba(231, 187, 71, 0.25);
+    border-radius: var(--garda-radius-feature);
+    box-shadow: var(--garda-shadow-card);
+}
+
+.public-body.garda-design-v5.public-page--activity-detail
+.activity-impact-number {
+    color: var(--garda-gold-400);
+    font-size: clamp(70px, 9vw, 116px);
+    font-weight: 900;
+    line-height: 0.85;
+    letter-spacing: -0.07em;
+}
+
+.public-body.garda-design-v5.public-page--activity-detail
+.activity-impact-copy h2 {
+    color: #fff;
+}
+
+.public-body.garda-design-v5.public-page--activity-detail
+.activity-impact-copy p {
+    color: rgba(225, 237, 246, 0.8);
+}
+
+.public-body.garda-design-v5.public-page--activity-detail
+.activity-related-section {
+    padding: clamp(30px, 4vw, 46px);
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+.public-body.garda-design-v5.public-page--activity-detail
+.activity-related-header {
+    align-items: end;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.public-body.garda-design-v5.public-page--activity-detail
+.activity-related-count {
+    min-width: 72px;
+    min-height: 72px;
+    display: grid;
+    place-items: center;
+    color: var(--garda-text);
+    background: var(--garda-public-panel);
+    border: 1px solid var(--garda-border);
+    border-radius: 18px;
+    box-shadow: var(--garda-shadow-xs);
+    font-size: 20px;
+    font-weight: 900;
+}
+
+.public-body.garda-design-v5.public-page--activity-detail
+.activity-related-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.public-body.garda-design-v5.public-page--activity-detail
+.activity-related-card {
+    min-height: 100%;
+    overflow: hidden;
+}
+
+.public-body.garda-design-v5.public-page--activity-detail
+.activity-related-media {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--garda-public-dark-card);
+}
+
+.public-body.garda-design-v5.public-page--activity-detail
+.activity-related-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.public-body.garda-design-v5.public-page--activity-detail
+.activity-related-placeholder {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    place-items: center;
+    padding: 22px;
+    color: var(--garda-gold-400);
+    background:
+        radial-gradient(circle at 50% 35%, rgba(231, 187, 71, 0.15), transparent 34%),
+        linear-gradient(145deg, #061b31, #0b3152);
+    text-align: center;
+}
+
+.public-body.garda-design-v5.public-page--activity-detail
+.activity-related-content {
+    padding: 22px;
+}
+
+.public-body.garda-design-v5.public-page--activity-detail
+.activity-related-card h3 {
+    margin: 12px 0 8px;
+    color: var(--garda-text);
+    font-size: 22px;
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+}
+
+.public-body.garda-design-v5.public-page--activity-detail
+.activity-related-summary,
+.public-body.garda-design-v5.public-page--activity-detail
+.activity-related-meta {
+    color: var(--garda-text-secondary);
+    line-height: 1.65;
+}
+
+/* =========================================================
+   Officials
+========================================================= */
+
+.public-body.garda-design-v5.public-page--officials .officials-public-page {
+    padding-bottom: 1px;
+}
+
+.public-body.garda-design-v5.public-page--officials .officials-hero {
+    grid-template-columns: minmax(0, 1.45fr) minmax(250px, 0.55fr);
+    gap: 20px;
+}
+
+.public-body.garda-design-v5.public-page--officials .officials-hero-emblem {
+    min-height: 100%;
+    padding: 30px;
+    display: grid;
+    place-items: center;
+    text-align: center;
+}
+
+.public-body.garda-design-v5.public-page--officials
+.officials-structure-section,
+.public-body.garda-design-v5.public-page--officials
+.officials-profile-section {
+    margin-top: var(--garda-public-section-gap);
+    padding: clamp(28px, 4vw, 44px);
+    background: var(--garda-public-panel);
+}
+
+.public-body.garda-design-v5.public-page--officials .officials-chart {
+    margin-top: 28px;
+}
+
+.public-body.garda-design-v5.public-page--officials
+.officials-chart-node {
+    color: var(--garda-text);
+    background: var(--garda-public-panel-muted);
+    border: 1px solid var(--garda-border);
+    border-radius: 16px;
+    box-shadow: var(--garda-shadow-xs);
+}
+
+.public-body.garda-design-v5.public-page--officials
+.officials-chart-node-primary {
+    color: #fff;
+    background: var(--garda-public-dark-card);
+    border-color: rgba(231, 187, 71, 0.32);
+}
+
+.public-body.garda-design-v5.public-page--officials
+.official-profile-card {
+    overflow: hidden;
+}
+
+.public-body.garda-design-v5.public-page--officials
+.official-profile-content {
+    padding: 24px;
+}
+
+.public-body.garda-design-v5.public-page--officials
+.official-profile-content h3 {
+    color: var(--garda-text);
+    font-size: 24px;
+    line-height: 1.1;
+}
+
+.public-body.garda-design-v5.public-page--officials .officials-public-cta {
+    margin-top: var(--garda-public-section-gap);
+    margin-bottom: var(--garda-public-section-gap);
+    padding: clamp(30px, 5vw, 52px);
+    color: #fff;
+    background: var(--garda-public-dark-card);
+    border: 1px solid rgba(231, 187, 71, 0.25);
+    border-radius: var(--garda-radius-feature);
+    box-shadow: var(--garda-shadow-card);
+}
+
+.public-body.garda-design-v5.public-page--officials .officials-public-cta h2 {
+    color: #fff;
+}
+
+/* =========================================================
+   Contact
+========================================================= */
+
+.public-body.garda-design-v5.public-page--contact .contact-public-hero {
+    grid-template-columns: minmax(0, 1.45fr) minmax(270px, 0.55fr);
+    gap: 20px;
+}
+
+.public-body.garda-design-v5.public-page--contact .contact-public-identity {
+    padding: 32px;
+}
+
+.public-body.garda-design-v5.public-page--contact .contact-channel-section {
+    margin-top: var(--garda-public-section-gap);
+    padding: 0;
+    background: transparent;
+    border: 0;
+    box-shadow: none;
+}
+
+.public-body.garda-design-v5.public-page--contact .contact-channel-grid {
+    gap: 16px;
+}
+
+.public-body.garda-design-v5.public-page--contact .contact-channel-grid article {
+    min-height: 200px;
+    padding: 28px;
+}
+
+.public-body.garda-design-v5.public-page--contact .contact-response-strip {
+    margin-top: 18px;
+    padding: 16px 18px;
+    color: var(--garda-text-secondary);
+    background: rgba(231, 187, 71, 0.09);
+    border: 1px solid rgba(216, 163, 22, 0.22);
+    border-radius: 14px;
+}
+
+.public-body.garda-design-v5.public-page--contact .contact-public-wrapper {
+    margin-top: var(--garda-public-section-gap);
+    margin-bottom: var(--garda-public-section-gap);
+    grid-template-columns: minmax(0, 1.3fr) minmax(300px, 0.7fr);
+    gap: 18px;
+}
+
+.public-body.garda-design-v5.public-page--contact .contact-public-form-card,
+.public-body.garda-design-v5.public-page--contact .contact-public-sidebar-card,
+.public-body.garda-design-v5.public-page--contact .contact-public-location-card {
+    padding: clamp(26px, 4vw, 40px);
+}
+
+.public-body.garda-design-v5.public-page--contact .contact-public-form {
+    margin-top: 24px;
+}
+
+.public-body.garda-design-v5.public-page--contact .contact-form-grid {
+    gap: 16px;
+}
+
+.public-body.garda-design-v5.public-page--contact :where(
+    .contact-public-form input,
+    .contact-public-form select,
+    .contact-public-form textarea
+) {
+    min-height: 48px;
+    color: var(--garda-text);
+    background: var(--garda-surface-strong);
+    border: 1px solid var(--garda-border-strong);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+html[data-g01-theme="midnight"]
+.public-body.garda-design-v5.public-page--contact :where(
+    .contact-public-form input,
+    .contact-public-form select,
+    .contact-public-form textarea
+) {
+    color: #edf5fb;
+    background: #081f36;
+    border-color: #2d506c;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+.public-body.garda-design-v5.public-page--contact
+.contact-public-form label {
+    color: var(--garda-text);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.public-body.garda-design-v5.public-page--contact .contact-public-note {
+    color: var(--garda-text-secondary);
+    background: var(--garda-public-panel-muted);
+    border: 1px solid var(--garda-border);
+    border-radius: 14px;
+}
+
+/* =========================================================
+   Empty, alert, pagination
+========================================================= */
+
+.public-body.garda-design-v5 :where(.public-empty, .alert-error, .alert-success) {
+    padding: 24px;
+    border-radius: var(--garda-radius-card);
+    box-shadow: var(--garda-shadow-xs);
+}
+
+.public-body.garda-design-v5 .public-empty {
+    color: var(--garda-text-secondary);
+    background: var(--garda-public-panel-muted);
+    border: 1px dashed var(--garda-border-strong);
+}
+
+.public-body.garda-design-v5 .public-pagination {
+    gap: 7px;
+}
+
+.public-body.garda-design-v5 .public-pagination :where(a, span) {
+    min-width: 42px;
+    min-height: 42px;
+    display: inline-grid;
+    place-items: center;
+    color: var(--garda-text-secondary);
+    background: var(--garda-public-panel);
+    border: 1px solid var(--garda-border);
+    border-radius: 11px;
+    box-shadow: var(--garda-shadow-xs);
+}
+
+.public-body.garda-design-v5 .public-pagination .active {
+    color: #fff;
+    background: var(--garda-navy-900);
+    border-color: rgba(231, 187, 71, 0.3);
+}
+
+/* =========================================================
+   Midnight contrast contract
+========================================================= */
+
+html[data-g01-theme="midnight"]
+.public-body.garda-design-v5 :where(
+    .public-content-card,
+    .public-brand-lockup-card,
+    .public-program-summary,
+    .profile-mission-card,
+    .profile-value-grid article,
+    .program-pillar-card,
+    .program-detail-number,
+    .program-focus-grid > div,
+    .public-activity-card,
+    .activity-detail-documentation,
+    .activity-detail-summary,
+    .activity-editorial-section,
+    .activity-related-card,
+    .officials-hero-emblem,
+    .officials-structure-section,
+    .officials-profile-section,
+    .official-profile-card,
+    .contact-public-identity,
+    .contact-channel-grid article,
+    .contact-public-form-card,
+    .contact-public-sidebar-card,
+    .contact-public-location-card,
+    .garda-home-featured,
+    .garda-home-value-grid article,
+    .garda-home-program-card,
+    .garda-home-activity-card
+) {
+    color: var(--garda-text);
+    background: var(--garda-public-panel);
+    border-color: var(--garda-border);
+}
+
+html[data-g01-theme="midnight"]
+.public-body.garda-design-v5 :where(
+    .public-content-card,
+    .public-brand-lockup-card,
+    .public-program-summary,
+    .profile-mission-card,
+    .profile-value-grid article,
+    .program-pillar-card,
+    .program-detail-number,
+    .program-focus-grid > div,
+    .public-activity-card,
+    .activity-detail-documentation,
+    .activity-detail-summary,
+    .activity-editorial-section,
+    .activity-related-card,
+    .officials-hero-emblem,
+    .officials-structure-section,
+    .officials-profile-section,
+    .official-profile-card,
+    .contact-public-identity,
+    .contact-channel-grid article,
+    .contact-public-form-card,
+    .contact-public-sidebar-card,
+    .contact-public-location-card,
+    .garda-home-featured,
+    .garda-home-value-grid article,
+    .garda-home-program-card,
+    .garda-home-activity-card
+) :where(h1, h2, h3, h4, strong, b, dt, dd, label) {
+    color: #f1f6fa;
+}
+
+html[data-g01-theme="midnight"]
+.public-body.garda-design-v5 :where(
+    .public-content-card,
+    .public-brand-lockup-card,
+    .public-program-summary,
+    .profile-mission-card,
+    .profile-value-grid article,
+    .program-pillar-card,
+    .program-detail-number,
+    .program-focus-grid > div,
+    .public-activity-card,
+    .activity-detail-documentation,
+    .activity-detail-summary,
+    .activity-editorial-section,
+    .activity-related-card,
+    .officials-hero-emblem,
+    .officials-structure-section,
+    .officials-profile-section,
+    .official-profile-card,
+    .contact-public-identity,
+    .contact-channel-grid article,
+    .contact-public-form-card,
+    .contact-public-sidebar-card,
+    .contact-public-location-card,
+    .garda-home-featured,
+    .garda-home-value-grid article,
+    .garda-home-program-card,
+    .garda-home-activity-card
+) :where(p, small, li, span, address) {
+    color: #aec2d3;
+}
+
+/* =========================================================
+   Responsive system
+========================================================= */
+
+@media (max-width: 1024px) {
+    .public-body.garda-design-v5 :where(
+        .public-editorial-hero,
+        .program-detail-hero,
+        .activity-detail-hero,
+        .officials-hero,
+        .contact-public-hero,
+        .garda-home-hero
+    ) {
+        grid-template-columns: 1fr;
+    }
+
+    .public-body.garda-design-v5 :where(
+        .profile-introduction-grid,
+        .profile-direction-grid,
+        .program-detail-grid,
+        .activity-detail-main,
+        .contact-public-wrapper
+    ) {
+        grid-template-columns: 1fr;
+    }
+
+    .public-body.garda-design-v5.public-page--activity-detail
+    .activity-detail-summary {
+        position: static;
+    }
+
+    .public-body.garda-design-v5.public-page--programs
+    .program-pillar-grid,
+    .public-body.garda-design-v5.public-page--activity-detail
+    .activity-related-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .public-body.garda-design-v5.public-page--activities
+    .activity-public-filter {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+    .public-body.garda-design-v5 {
+        --garda-public-section-gap: 46px;
+    }
+
+    .public-body.garda-design-v5 .public-main::before {
+        display: none;
+    }
+
+    .public-body.garda-design-v5 :where(
+        .public-editorial-hero-copy,
+        .program-detail-copy,
+        .activity-detail-hero-copy,
+        .officials-hero-copy,
+        .contact-public-hero-copy,
+        .garda-home-hero-copy
+    ) {
+        border-radius: 24px;
+    }
+
+    .public-body.garda-design-v5 :where(
+        .public-editorial-hero-copy,
+        .program-detail-copy,
+        .activity-detail-hero-copy,
+        .officials-hero-copy,
+        .contact-public-hero-copy
+    ) h1 {
+        font-size: clamp(40px, 12vw, 58px);
+    }
+
+    .public-body.garda-design-v5.public-page--home
+    .garda-home-hero-copy {
+        min-height: auto;
+    }
+
+    .public-body.garda-design-v5.public-page--home
+    .garda-home-hero-copy h1 {
+        font-size: clamp(54px, 18vw, 78px);
+    }
+
+    .public-body.garda-design-v5 :where(
+        .profile-value-grid,
+        .program-pillar-grid,
+        .public-activity-grid,
+        .activity-related-grid,
+        .contact-channel-grid
+    ) {
+        grid-template-columns: 1fr !important;
+    }
+
+    .public-body.garda-design-v5.public-page--activities
+    .activity-public-filter {
+        display: flex;
+        overflow-x: auto;
+        overscroll-behavior-inline: contain;
+        scroll-snap-type: inline mandatory;
+        scrollbar-width: thin;
+    }
+
+    .public-body.garda-design-v5.public-page--activities
+    .activity-public-filter a {
+        flex: 0 0 auto;
+        min-width: 116px;
+        scroll-snap-align: start;
+    }
+
+    .public-body.garda-design-v5.public-page--activity-detail
+    .activity-impact-section {
+        grid-template-columns: 1fr;
+    }
+
+    .public-body.garda-design-v5.public-page--contact
+    .contact-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .public-body.garda-design-v5 .public-page-cta,
+    .public-body.garda-design-v5.public-page--home
+    .garda-home-collaboration {
+        border-radius: 22px;
+    }
+}
+
+@media (max-width: 480px) {
+    .public-body.garda-design-v5 :where(
+        .public-editorial-hero-copy,
+        .program-detail-copy,
+        .activity-detail-hero-copy,
+        .officials-hero-copy,
+        .contact-public-hero-copy,
+        .garda-home-hero-copy
+    ) {
+        padding: 28px 22px;
+    }
+
+    .public-body.garda-design-v5 :where(
+        .public-content-card,
+        .public-page-cta,
+        .officials-structure-section,
+        .officials-profile-section,
+        .contact-public-form-card,
+        .contact-public-sidebar-card,
+        .contact-public-location-card,
+        .activity-editorial-section
+    ) {
+        padding: 24px 20px;
+    }
+
+    .public-body.garda-design-v5 .public-main :where(.btn) {
+        width: 100%;
+    }
+
+    .public-body.garda-design-v5 .public-editorial-actions,
+    .public-body.garda-design-v5 .activity-detail-cta-actions,
+    .public-body.garda-design-v5 .garda-home-hero-actions,
+    .public-body.garda-design-v5 .garda-home-collaboration-actions {
+        display: grid;
+        grid-template-columns: 1fr;
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .public-body.garda-design-v5 :where(
+        .program-pillar-card,
+        .public-activity-card,
+        .activity-related-card,
+        .official-profile-card,
+        .profile-value-grid article,
+        .contact-channel-grid article
+    ) {
+        transition: none;
+    }
+}

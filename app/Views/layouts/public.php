@@ -483,6 +483,26 @@ ob_start();
             ) ?>"
         >
     <?php endif; ?>
+
+
+    <?php
+    $gardaPublicPagesStylesheet =
+        'assets/css/garda-public-pages-v5.css';
+    $gardaPublicPagesStylesheetPath =
+        FCPATH . $gardaPublicPagesStylesheet;
+    ?>
+
+    <?php if (is_file($gardaPublicPagesStylesheetPath)) : ?>
+        <link
+            rel="stylesheet"
+            href="<?= base_url($gardaPublicPagesStylesheet) ?>?v=<?= esc(
+                (string) filemtime(
+                    $gardaPublicPagesStylesheetPath
+                ),
+                'attr'
+            ) ?>"
+        >
+    <?php endif; ?>
 </head>
 <body class="public-body public-experience-v2 public-experience-v3 garda-design-v5 public-page--<?= esc(
     $publicPageClass,

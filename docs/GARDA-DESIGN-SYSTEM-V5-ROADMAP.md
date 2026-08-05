@@ -2,7 +2,7 @@
 
 ## V5.0A — Foundation and regression hotfix
 
-Status after installing this package: **ready for runtime validation**.
+Status in the V5.0C cumulative package: **included; requires runtime confirmation on the user baseline**.
 
 Changes:
 
@@ -23,6 +23,8 @@ Exit criteria:
 - checkpoint created.
 
 ## V5.0B — Public shell unification
+
+Status in the V5.0C cumulative package: **included; requires runtime confirmation**.
 
 Scope:
 
@@ -48,6 +50,8 @@ Exit criteria:
 - no cross-page selector leakage.
 
 ## V5.0C — Public content components
+
+Status after installing the cumulative V5.0C package: **implementation complete; awaiting runtime visual validation and checkpoint**.
 
 Order:
 
