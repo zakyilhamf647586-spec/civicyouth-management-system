@@ -219,6 +219,26 @@ $gardaDesignSystemStylesheetVersion =
         ? (string) filemtime($gardaDesignSystemStylesheetPath)
         : '1';
 
+$gardaPortalShellStylesheetPath =
+    FCPATH . 'assets/css/garda-portal-shell-v5.css';
+
+$gardaPortalShellStylesheetVersion =
+    is_file($gardaPortalShellStylesheetPath)
+        ? (string) filemtime($gardaPortalShellStylesheetPath)
+        : '1';
+
+$portalPageSlug = preg_replace(
+    '/[^a-z0-9]+/',
+    '-',
+    strtolower((string) $currentSegment)
+) ?: 'portal';
+
+$portalSectionSlug = preg_replace(
+    '/[^a-z0-9]+/',
+    '-',
+    strtolower((string) $pageContext['section'])
+) ?: 'portal';
+
 $userName =
     session()->get('name')
     ?? session()->get('full_name')
@@ -369,9 +389,28 @@ $todayLabel =
             ) ?>"
         >
     <?php endif; ?>
+
+    <?php if (is_file($gardaPortalShellStylesheetPath)) : ?>
+        <link
+            rel="stylesheet"
+            href="<?= base_url(
+                'assets/css/garda-portal-shell-v5.css'
+            ) ?>?v=<?= esc(
+                $gardaPortalShellStylesheetVersion,
+                'attr'
+            ) ?>"
+        >
+    <?php endif; ?>
 </head>
 
-<body class="garda-admin-body garda-design-v5">
+<body
+    class="garda-admin-body garda-design-v5 garda-portal-v5 garda-admin-page--<?= esc($portalPageSlug, 'attr') ?>"
+    data-admin-section="<?= esc($portalSectionSlug, 'attr') ?>"
+>
+
+<a class="garda-admin-skip-link" href="#gardaAdminMain">
+    Lewati ke konten utama
+</a>
 
 <!-- SVG icon collection -->
 <svg
@@ -1121,7 +1160,7 @@ $todayLabel =
 
         </header>
 
-        <main class="garda-admin-content">
+        <main class="garda-admin-content" id="gardaAdminMain" tabindex="-1">
             <div class="garda-admin-content-inner">
                 <?= $this->renderSection('content') ?>
             </div>

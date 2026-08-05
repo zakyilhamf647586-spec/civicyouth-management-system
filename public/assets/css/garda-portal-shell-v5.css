@@ -1,0 +1,1010 @@
+/* =========================================================
+   GARDA 01 — Unified Portal Shell V5
+   Phase V5.0D: management shell, navigation, topbar,
+   responsive drawer, and shared operational primitives.
+
+   Loaded after legacy portal styles. Every rule is scoped to
+   .garda-admin-body.garda-portal-v5 so public pages and auth
+   screens cannot inherit portal-only presentation.
+========================================================= */
+
+.garda-admin-body.garda-portal-v5 {
+    --portal-sidebar-width: 284px;
+    --portal-sidebar-compact: 92px;
+    --portal-topbar-height: 80px;
+    --portal-content-max: 1540px;
+    --portal-sidebar-surface: #04172d;
+    --portal-sidebar-surface-2: #07243f;
+    --portal-sidebar-border: rgba(231, 187, 71, 0.18);
+    --portal-sidebar-text: rgba(240, 246, 251, 0.76);
+    --portal-sidebar-muted: rgba(213, 225, 235, 0.44);
+    --portal-topbar-surface: rgba(255, 255, 255, 0.9);
+    --portal-card-surface: rgba(255, 255, 255, 0.96);
+    --portal-card-border: rgba(4, 23, 45, 0.09);
+    --portal-canvas: #f4f1e9;
+    --portal-canvas-soft: #faf8f3;
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+    overflow-x: hidden;
+    color: var(--garda-text);
+    background:
+        radial-gradient(
+            circle at 93% -5%,
+            rgba(216, 165, 31, 0.09),
+            transparent 28rem
+        ),
+        radial-gradient(
+            circle at 20% 105%,
+            rgba(8, 39, 68, 0.055),
+            transparent 32rem
+        ),
+        var(--portal-canvas);
+}
+
+.garda-admin-body.garda-portal-v5::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    opacity: 0.42;
+    pointer-events: none;
+    background-image:
+        linear-gradient(rgba(4, 23, 45, 0.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(4, 23, 45, 0.018) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: linear-gradient(to bottom, black, transparent 82%);
+}
+
+.garda-admin-body.garda-portal-v5 :where(*, *::before, *::after) {
+    box-sizing: border-box;
+}
+
+.garda-admin-body.garda-portal-v5 a {
+    text-underline-offset: 0.18em;
+}
+
+.garda-admin-skip-link {
+    position: fixed;
+    top: 12px;
+    left: 50%;
+    z-index: 3000;
+    padding: 11px 16px;
+    color: #04172d;
+    background: #f0bd35;
+    border: 1px solid rgba(4, 23, 45, 0.18);
+    border-radius: 12px;
+    box-shadow: var(--garda-shadow-card);
+    font-size: 13px;
+    font-weight: 850;
+    text-decoration: none;
+    transform: translate(-50%, -160%);
+    transition: transform var(--garda-duration-fast) ease;
+}
+
+.garda-admin-skip-link:focus {
+    transform: translate(-50%, 0);
+}
+
+/* =========================================================
+   Shell and sidebar
+========================================================= */
+
+.garda-admin-body.garda-portal-v5 .garda-admin-shell {
+    min-height: 100vh;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 1200;
+    width: var(--portal-sidebar-width);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    color: #fff;
+    background:
+        radial-gradient(
+            circle at 92% 2%,
+            rgba(231, 187, 71, 0.16),
+            transparent 21rem
+        ),
+        radial-gradient(
+            circle at 0 100%,
+            rgba(42, 102, 145, 0.16),
+            transparent 25rem
+        ),
+        linear-gradient(
+            165deg,
+            var(--portal-sidebar-surface) 0%,
+            var(--portal-sidebar-surface-2) 100%
+        );
+    border-right: 1px solid var(--portal-sidebar-border);
+    box-shadow: 18px 0 52px rgba(4, 23, 45, 0.13);
+    transition:
+        width var(--garda-duration-normal) var(--garda-ease-standard),
+        transform var(--garda-duration-normal) var(--garda-ease-standard);
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-sidebar::after {
+    content: "G01";
+    position: absolute;
+    right: -17px;
+    bottom: 118px;
+    z-index: -1;
+    color: rgba(255, 255, 255, 0.025);
+    font-size: 108px;
+    font-weight: 900;
+    line-height: 0.8;
+    letter-spacing: -0.1em;
+    pointer-events: none;
+    transform: rotate(-90deg);
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-brand {
+    min-height: 92px;
+    padding: 17px 15px 16px 20px;
+    gap: 11px;
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.045),
+        rgba(255, 255, 255, 0.012)
+    );
+    border-bottom: 1px solid rgba(255, 255, 255, 0.075);
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-brand-link {
+    gap: 13px;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-brand-link img {
+    width: 50px;
+    height: 50px;
+    padding: 3px;
+    background: rgba(255, 255, 255, 0.97);
+    border: 1px solid rgba(231, 187, 71, 0.72);
+    border-radius: 17px;
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.16),
+        inset 0 0 0 1px rgba(255, 255, 255, 0.66);
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-brand-copy strong {
+    color: #fff;
+    font-size: 19px;
+    font-weight: 900;
+    letter-spacing: 0.055em;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-brand-copy span {
+    margin-top: 5px;
+    color: #eac65f;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.045em;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-collapse-button {
+    width: 36px;
+    height: 36px;
+    padding: 9px;
+    color: rgba(255, 255, 255, 0.72);
+    background: rgba(255, 255, 255, 0.055);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 12px;
+    transition:
+        color var(--garda-duration-fast) ease,
+        background var(--garda-duration-fast) ease,
+        border-color var(--garda-duration-fast) ease,
+        transform var(--garda-duration-fast) ease;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-collapse-button:hover {
+    color: #04172d;
+    background: #edc457;
+    border-color: #edc457;
+    transform: translateY(-1px);
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-organization-label {
+    padding: 17px 22px 5px;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-organization-label span {
+    color: rgba(245, 249, 252, 0.8);
+    font-size: 10.5px;
+    font-weight: 800;
+    line-height: 1.35;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-organization-label small {
+    margin-top: 4px;
+    color: var(--portal-sidebar-muted);
+    font-size: 9.5px;
+    line-height: 1.4;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-navigation {
+    padding: 6px 13px 24px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(231, 187, 71, 0.36) transparent;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-navigation::-webkit-scrollbar {
+    width: 5px;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-navigation::-webkit-scrollbar-thumb {
+    background: rgba(231, 187, 71, 0.34);
+    border-radius: 99px;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-nav-section {
+    margin-top: 22px;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-nav-section:first-child {
+    margin-top: 10px;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-nav-heading {
+    margin: 0 11px 9px;
+    color: rgba(222, 233, 241, 0.35);
+    font-size: 8.5px;
+    font-weight: 900;
+    letter-spacing: 0.15em;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-nav-link {
+    min-height: 46px;
+    margin: 4px 0;
+    padding: 10px 12px;
+    gap: 12px;
+    color: var(--portal-sidebar-text);
+    border: 1px solid transparent;
+    border-radius: 13px;
+    transition:
+        color var(--garda-duration-fast) ease,
+        background var(--garda-duration-fast) ease,
+        border-color var(--garda-duration-fast) ease,
+        transform var(--garda-duration-fast) ease,
+        box-shadow var(--garda-duration-normal) ease;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-nav-link svg {
+    width: 19px;
+    height: 19px;
+    stroke-width: 1.65;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-nav-link span {
+    font-size: 12px;
+    font-weight: 720;
+    letter-spacing: 0.005em;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-nav-link:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.065);
+    border-color: rgba(255, 255, 255, 0.075);
+    transform: translateX(2px);
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-nav-link.active {
+    color: #fff;
+    background:
+        linear-gradient(
+            90deg,
+            rgba(231, 187, 71, 0.14),
+            rgba(255, 255, 255, 0.055)
+        );
+    border-color: rgba(231, 187, 71, 0.22);
+    box-shadow:
+        inset 0 0 0 1px rgba(255, 255, 255, 0.018),
+        0 10px 28px rgba(0, 0, 0, 0.1);
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-nav-link.active svg {
+    color: #f1c854;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-nav-link.active::before {
+    left: -13px;
+    width: 3px;
+    height: 25px;
+    background: linear-gradient(#f1c854, #c9910b);
+    box-shadow: 0 0 16px rgba(231, 187, 71, 0.42);
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-sidebar-footer {
+    padding: 13px 14px 15px;
+    background: rgba(0, 0, 0, 0.08);
+    border-top: 1px solid rgba(255, 255, 255, 0.075);
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-sidebar-user {
+    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.065);
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.047);
+}
+
+.garda-admin-body.garda-portal-v5 :where(
+    .garda-admin-user-avatar,
+    .garda-admin-profile-avatar
+) {
+    color: #04172d;
+    background: linear-gradient(145deg, #f2ca60, #d9a316);
+    border: 1px solid rgba(255, 255, 255, 0.38);
+    box-shadow: 0 7px 18px rgba(0, 0, 0, 0.13);
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-sidebar-user-copy strong {
+    color: #fff;
+    font-size: 11.5px;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-sidebar-user-copy span {
+    color: rgba(224, 234, 242, 0.5);
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-sidebar-actions {
+    gap: 7px;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-sidebar-actions a {
+    min-height: 38px;
+    color: rgba(240, 246, 251, 0.7);
+    background: rgba(255, 255, 255, 0.018);
+    border-color: rgba(255, 255, 255, 0.1);
+    border-radius: 11px;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-sidebar-actions a:hover {
+    color: #04172d;
+    background: #fff;
+    border-color: #fff;
+}
+
+/* =========================================================
+   Workspace and topbar
+========================================================= */
+
+.garda-admin-body.garda-portal-v5 .garda-admin-workspace {
+    min-height: 100vh;
+    margin-left: var(--portal-sidebar-width);
+    transition: margin-left var(--garda-duration-normal) var(--garda-ease-standard);
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    min-height: var(--portal-topbar-height);
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    background: var(--portal-topbar-surface);
+    border-bottom: 1px solid rgba(4, 23, 45, 0.085);
+    box-shadow: 0 10px 30px rgba(4, 23, 45, 0.04);
+    backdrop-filter: blur(18px) saturate(145%);
+    -webkit-backdrop-filter: blur(18px) saturate(145%);
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-topbar::after {
+    content: "";
+    position: absolute;
+    right: 24px;
+    bottom: -1px;
+    left: 24px;
+    height: 1px;
+    opacity: 0.42;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(216, 165, 31, 0.5),
+        transparent
+    );
+    pointer-events: none;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-topbar-left,
+.garda-admin-body.garda-portal-v5 .garda-admin-topbar-actions {
+    display: flex;
+    align-items: center;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-topbar-left {
+    min-width: 0;
+    gap: 13px;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-topbar-actions {
+    gap: 9px;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-mobile-menu {
+    width: 42px;
+    height: 42px;
+    padding: 10px;
+    color: #0a3153;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(4, 23, 45, 0.11);
+    border-radius: 13px;
+    box-shadow: var(--garda-shadow-xs);
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-page-context > span {
+    color: #6d8295;
+    font-size: 10px;
+    font-weight: 780;
+    letter-spacing: 0.015em;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-page-context > span b {
+    margin: 0 6px;
+    color: #c78c08;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-page-context > strong {
+    margin-top: 5px;
+    color: #04172d;
+    font-size: 17.5px;
+    font-weight: 860;
+    letter-spacing: -0.018em;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-date {
+    color: #70869a;
+    font-size: 10.5px;
+    font-weight: 720;
+}
+
+.garda-admin-body.garda-portal-v5 :where(
+    .garda-admin-icon-button,
+    .garda-admin-public-button,
+    .garda-admin-profile-button
+) {
+    color: #143b5d;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(4, 23, 45, 0.11);
+    box-shadow: 0 7px 20px rgba(4, 23, 45, 0.045);
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-icon-button {
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-public-button {
+    min-height: 42px;
+    padding: 9px 14px;
+    border-radius: 13px;
+    font-size: 11px;
+    font-weight: 820;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-profile-button {
+    min-height: 48px;
+    padding: 5px 9px 5px 5px;
+    border-radius: 15px;
+}
+
+.garda-admin-body.garda-portal-v5 :where(
+    .garda-admin-icon-button,
+    .garda-admin-public-button,
+    .garda-admin-profile-button
+):hover {
+    color: #04172d;
+    background: #fffaf0;
+    border-color: rgba(216, 165, 31, 0.38);
+    box-shadow: 0 10px 24px rgba(4, 23, 45, 0.07);
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-profile-copy strong {
+    color: #082744;
+    font-size: 10.8px;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-profile-copy small {
+    color: #71869a;
+    font-size: 8.8px;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-profile-menu {
+    top: calc(100% + 12px);
+    width: 270px;
+    padding: 10px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.98);
+    border: 1px solid rgba(4, 23, 45, 0.1);
+    border-radius: 19px;
+    box-shadow: var(--garda-shadow-overlay);
+    backdrop-filter: blur(18px);
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-profile-summary {
+    padding: 11px;
+    background:
+        radial-gradient(
+            circle at 100% 0,
+            rgba(216, 165, 31, 0.1),
+            transparent 56%
+        ),
+        #f5f7f8;
+    border: 1px solid rgba(4, 23, 45, 0.055);
+    border-radius: 14px;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-profile-menu > a {
+    min-height: 42px;
+    margin-top: 5px;
+    padding: 10px 11px;
+    color: #4b657c;
+    border-radius: 11px;
+    font-size: 11.3px;
+    font-weight: 740;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-profile-menu > a:hover {
+    color: #04172d;
+    background: #eff3f6;
+}
+
+/* =========================================================
+   Main content and shared operational primitives
+========================================================= */
+
+.garda-admin-body.garda-portal-v5 .garda-admin-content {
+    padding: clamp(22px, 2.35vw, 34px);
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-content-inner {
+    width: 100%;
+    max-width: var(--portal-content-max);
+    margin: 0 auto;
+}
+
+.garda-admin-body.garda-portal-v5 .garda-admin-content-inner:focus {
+    outline: 0;
+}
+
+.garda-admin-body.garda-portal-v5 .page-header {
+    margin-bottom: 24px;
+    padding: 3px 1px;
+    align-items: flex-end;
+    gap: 22px;
+}
+
+.garda-admin-body.garda-portal-v5 .page-header h1,
+.garda-admin-body.garda-portal-v5 .page-header h2 {
+    color: #04172d;
+    font-size: clamp(26px, 2.65vw, 35px);
+    font-weight: 880;
+    line-height: 1.08;
+    letter-spacing: -0.035em;
+}
+
+.garda-admin-body.garda-portal-v5 .page-header p {
+    max-width: 760px;
+    margin-top: 8px;
+    color: #61798e;
+    font-size: 12.5px;
+    line-height: 1.65;
+}
+
+.garda-admin-body.garda-portal-v5 :where(
+    .filter-card,
+    .table-card,
+    .form-card,
+    .card,
+    .empty-state
+) {
+    color: var(--garda-text);
+    background: var(--portal-card-surface);
+    border: 1px solid var(--portal-card-border);
+    border-radius: var(--garda-radius-card);
+    box-shadow: var(--garda-shadow-sm);
+}
+
+.garda-admin-body.garda-portal-v5 .filter-card {
+    margin-bottom: 20px;
+    border-left: 0;
+    box-shadow:
+        inset 3px 0 0 rgba(216, 165, 31, 0.95),
+        var(--garda-shadow-sm);
+}
+
+.garda-admin-body.garda-portal-v5 .table-card {
+    overflow: hidden;
+}
+
+.garda-admin-body.garda-portal-v5 .form-card {
+    box-shadow: var(--garda-shadow-sm);
+}
+
+.garda-admin-body.garda-portal-v5 :where(.btn) {
+    min-height: 42px;
+    padding: 9px 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    border: 1px solid transparent;
+    border-radius: var(--garda-radius-control);
+    font-size: 12px;
+    font-weight: 780;
+    line-height: 1.2;
+    text-decoration: none;
+    box-shadow: none;
+}
+
+.garda-admin-body.garda-portal-v5 :where(.btn-primary) {
+    color: #fff;
+    background: linear-gradient(145deg, #0a3154, #041d35);
+    border-color: rgba(4, 23, 45, 0.84);
+    box-shadow: 0 8px 18px rgba(4, 23, 45, 0.13);
+}
+
+.garda-admin-body.garda-portal-v5 :where(.btn-primary):hover {
+    color: #fff;
+    background: linear-gradient(145deg, #0d3a62, #062642);
+    box-shadow: 0 12px 25px rgba(4, 23, 45, 0.18);
+}
+
+.garda-admin-body.garda-portal-v5 :where(.btn-secondary) {
+    color: #284a67;
+    background: #fff;
+    border-color: rgba(4, 23, 45, 0.15);
+}
+
+.garda-admin-body.garda-portal-v5 :where(.btn-secondary):hover {
+    color: #04172d;
+    background: #f5f8fa;
+    border-color: rgba(4, 23, 45, 0.23);
+}
+
+.garda-admin-body.garda-portal-v5 :where(.btn-warning) {
+    color: #352600;
+    background: linear-gradient(145deg, #efc24c, #d9a316);
+    border-color: rgba(169, 119, 5, 0.34);
+}
+
+.garda-admin-body.garda-portal-v5 :where(.btn-warning):hover {
+    color: #251b00;
+    background: linear-gradient(145deg, #f4ce67, #e2ae20);
+}
+
+.garda-admin-body.garda-portal-v5 :where(.btn-danger) {
+    color: #982f3a;
+    background: #fff;
+    border-color: rgba(159, 47, 59, 0.23);
+}
+
+.garda-admin-body.garda-portal-v5 :where(.btn-danger):hover {
+    color: #fff;
+    background: #a63440;
+    border-color: #a63440;
+}
+
+.garda-admin-body.garda-portal-v5 :where(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="hidden"]),
+    select,
+    textarea
+) {
+    min-height: 44px;
+    color: #143b5d;
+    background: rgba(255, 255, 255, 0.98);
+    border: 1px solid #d3dde5;
+    border-radius: var(--garda-radius-control);
+    box-shadow: inset 0 1px 2px rgba(4, 23, 45, 0.025);
+}
+
+.garda-admin-body.garda-portal-v5 textarea {
+    min-height: 116px;
+}
+
+.garda-admin-body.garda-portal-v5 :where(
+    input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="hidden"]),
+    select,
+    textarea
+):focus {
+    border-color: rgba(216, 165, 31, 0.7);
+    box-shadow: 0 0 0 4px rgba(216, 165, 31, 0.11);
+    outline: 0;
+}
+
+.garda-admin-body.garda-portal-v5 :where(label) {
+    color: #163c5c;
+    font-weight: 760;
+}
+
+.garda-admin-body.garda-portal-v5 :where(table) {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.garda-admin-body.garda-portal-v5 table thead {
+    background: linear-gradient(180deg, #f6f8fa, #eef3f6);
+}
+
+.garda-admin-body.garda-portal-v5 table th {
+    padding-top: 14px;
+    padding-bottom: 14px;
+    color: #173c5b;
+    font-size: 9.5px;
+    font-weight: 900;
+    letter-spacing: 0.055em;
+    text-transform: uppercase;
+    border-bottom: 1px solid rgba(4, 23, 45, 0.11);
+}
+
+.garda-admin-body.garda-portal-v5 table td {
+    color: #294b67;
+    font-size: 11.5px;
+    line-height: 1.5;
+    border-bottom-color: rgba(4, 23, 45, 0.085);
+}
+
+.garda-admin-body.garda-portal-v5 table tbody tr {
+    transition:
+        background-color var(--garda-duration-fast) ease,
+        box-shadow var(--garda-duration-fast) ease;
+}
+
+.garda-admin-body.garda-portal-v5 table tbody tr:hover {
+    background: rgba(244, 248, 250, 0.82);
+}
+
+.garda-admin-body.garda-portal-v5 :where(
+    .badge,
+    .status-badge,
+    [class*="status-"]
+) {
+    border-radius: var(--garda-radius-pill);
+}
+
+.garda-admin-body.garda-portal-v5 .pagination {
+    gap: 7px;
+}
+
+.garda-admin-body.garda-portal-v5 .pagination a,
+.garda-admin-body.garda-portal-v5 .pagination span {
+    min-width: 38px;
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #214865;
+    background: #fff;
+    border: 1px solid rgba(4, 23, 45, 0.12);
+    border-radius: 11px;
+    text-decoration: none;
+}
+
+.garda-admin-body.garda-portal-v5 .pagination .active,
+.garda-admin-body.garda-portal-v5 .pagination [aria-current="page"] {
+    color: #fff;
+    background: #082744;
+    border-color: #082744;
+}
+
+.garda-admin-body.garda-portal-v5 .empty-state {
+    padding: clamp(28px, 5vw, 52px);
+    text-align: center;
+}
+
+/* =========================================================
+   Collapsed desktop state
+========================================================= */
+
+.garda-admin-body.garda-portal-v5.garda-admin-sidebar-collapsed
+.garda-admin-sidebar {
+    width: var(--portal-sidebar-compact);
+}
+
+.garda-admin-body.garda-portal-v5.garda-admin-sidebar-collapsed
+.garda-admin-workspace {
+    margin-left: var(--portal-sidebar-compact);
+}
+
+.garda-admin-body.garda-portal-v5.garda-admin-sidebar-collapsed
+.garda-admin-brand {
+    padding-inline: 18px;
+}
+
+.garda-admin-body.garda-portal-v5.garda-admin-sidebar-collapsed
+.garda-admin-brand-link img {
+    width: 48px;
+    height: 48px;
+}
+
+.garda-admin-body.garda-portal-v5.garda-admin-sidebar-collapsed
+.garda-admin-collapse-button {
+    top: 73px;
+    right: -17px;
+    color: #082744;
+    background: #fff;
+    border-color: rgba(4, 23, 45, 0.1);
+    box-shadow: 0 10px 24px rgba(4, 23, 45, 0.16);
+}
+
+.garda-admin-body.garda-portal-v5.garda-admin-sidebar-collapsed
+.garda-admin-nav-link.active::before {
+    left: -13px;
+}
+
+/* =========================================================
+   Drawer and responsive shell
+========================================================= */
+
+.garda-admin-body.garda-portal-v5 .garda-admin-overlay {
+    background: rgba(1, 11, 23, 0.58);
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
+}
+
+@media (min-width: 1280px) {
+    .garda-admin-body.garda-portal-v5 .garda-admin-sidebar:not(.is-mobile-drawer) {
+        width: var(--portal-sidebar-width);
+    }
+}
+
+@media (min-width: 961px) and (max-width: 1279px) {
+    .garda-admin-body.garda-portal-v5 .garda-admin-sidebar {
+        width: var(--portal-sidebar-compact) !important;
+    }
+
+    .garda-admin-body.garda-portal-v5 .garda-admin-workspace,
+    .garda-admin-body.garda-portal-v5.garda-admin-sidebar-collapsed
+    .garda-admin-workspace {
+        margin-left: var(--portal-sidebar-compact) !important;
+    }
+
+    .garda-admin-body.garda-portal-v5 .garda-admin-brand {
+        padding-inline: 19px !important;
+    }
+
+    .garda-admin-body.garda-portal-v5 .garda-admin-brand-link img {
+        width: 50px;
+        height: 50px;
+    }
+
+    .garda-admin-body.garda-portal-v5 .garda-admin-content {
+        padding: 26px 24px;
+    }
+
+    .garda-admin-body.garda-portal-v5 .garda-admin-topbar {
+        padding-inline: 21px;
+    }
+}
+
+@media (max-width: 960px) {
+    .garda-admin-body.garda-portal-v5 .garda-admin-sidebar {
+        width: min(296px, 88vw);
+        box-shadow: 22px 0 60px rgba(1, 12, 25, 0.34);
+    }
+
+    .garda-admin-body.garda-portal-v5 .garda-admin-workspace,
+    .garda-admin-body.garda-portal-v5.garda-admin-sidebar-collapsed
+    .garda-admin-workspace {
+        margin-left: 0;
+    }
+
+    .garda-admin-body.garda-portal-v5 .garda-admin-topbar {
+        min-height: 72px;
+        padding: 10px 17px;
+    }
+
+    .garda-admin-body.garda-portal-v5 .garda-admin-content {
+        padding: 22px 18px 28px;
+    }
+
+    .garda-admin-body.garda-portal-v5 .page-header {
+        margin-bottom: 20px;
+        gap: 15px !important;
+    }
+}
+
+@media (max-width: 760px) {
+    .garda-admin-body.garda-portal-v5 {
+        --portal-topbar-height: 68px;
+    }
+
+    .garda-admin-body.garda-portal-v5 .garda-admin-topbar {
+        min-height: var(--portal-topbar-height);
+        padding: 9px 14px;
+    }
+
+    .garda-admin-body.garda-portal-v5 .garda-admin-topbar::after {
+        right: 14px;
+        left: 14px;
+    }
+
+    .garda-admin-body.garda-portal-v5 .garda-admin-content {
+        padding: 19px 14px 26px;
+    }
+
+    .garda-admin-body.garda-portal-v5 .garda-admin-page-context > strong {
+        max-width: min(49vw, 240px);
+        font-size: 15.5px;
+    }
+
+    .garda-admin-body.garda-portal-v5 .page-header h1,
+    .garda-admin-body.garda-portal-v5 .page-header h2 {
+        font-size: clamp(24px, 7vw, 29px);
+    }
+
+    .garda-admin-body.garda-portal-v5 :where(.btn) {
+        min-height: 41px;
+        padding: 9px 13px;
+    }
+}
+
+@media (max-width: 520px) {
+    .garda-admin-body.garda-portal-v5 .garda-admin-sidebar {
+        width: min(292px, 90vw);
+    }
+
+    .garda-admin-body.garda-portal-v5 .garda-admin-page-context > strong {
+        max-width: 48vw;
+    }
+
+    .garda-admin-body.garda-portal-v5 .page-header > div:last-child:not(:first-child) {
+        display: grid;
+        grid-template-columns: 1fr;
+        width: 100%;
+    }
+
+    .garda-admin-body.garda-portal-v5 .page-header > a.btn,
+    .garda-admin-body.garda-portal-v5 .page-header > button.btn,
+    .garda-admin-body.garda-portal-v5 .page-header > div:last-child:not(:first-child) .btn {
+        width: 100%;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .garda-admin-body.garda-portal-v5 *,
+    .garda-admin-body.garda-portal-v5 *::before,
+    .garda-admin-body.garda-portal-v5 *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+@media print {
+    .garda-admin-body.garda-portal-v5 {
+        background: #fff !important;
+    }
+
+    .garda-admin-body.garda-portal-v5 :where(
+        .garda-admin-sidebar,
+        .garda-admin-topbar,
+        .garda-admin-overlay,
+        .garda-admin-skip-link
+    ) {
+        display: none !important;
+    }
+
+    .garda-admin-body.garda-portal-v5 .garda-admin-workspace {
+        margin-left: 0 !important;
+    }
+
+    .garda-admin-body.garda-portal-v5 .garda-admin-content {
+        padding: 0 !important;
+    }
+
+    .garda-admin-body.garda-portal-v5 :where(
+        .filter-card,
+        .table-card,
+        .form-card,
+        .card
+    ) {
+        box-shadow: none !important;
+    }
+}

@@ -2,7 +2,7 @@
 
 ## V5.0A — Foundation and regression hotfix
 
-Status in the V5.0C cumulative package: **included; requires runtime confirmation on the user baseline**.
+Status in the V5.0D cumulative package: **included; preserve the runtime result already confirmed by the user**.
 
 Changes:
 
@@ -24,7 +24,7 @@ Exit criteria:
 
 ## V5.0B — Public shell unification
 
-Status in the V5.0C cumulative package: **included; requires runtime confirmation**.
+Status in the V5.0D cumulative package: **included; preserve the runtime result already confirmed by the user**.
 
 Scope:
 
@@ -51,7 +51,7 @@ Exit criteria:
 
 ## V5.0C — Public content components
 
-Status after installing the cumulative V5.0C package: **implementation complete; awaiting runtime visual validation and checkpoint**.
+Status in the V5.0D cumulative package: **included as the public-page layer; its visual checkpoint remains independent from Portal migration**.
 
 Order:
 
@@ -73,6 +73,8 @@ Each module receives:
 - visual regression checklist.
 
 ## V5.0D — Portal shell unification
+
+Status in the cumulative V5.0D package: **implementation complete; awaiting runtime visual validation and checkpoint**.
 
 Scope:
 
